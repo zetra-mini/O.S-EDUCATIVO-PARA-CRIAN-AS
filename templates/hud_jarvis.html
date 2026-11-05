@@ -213,8 +213,28 @@
       background: radial-gradient(circle, #ffffff 15%, #fb7185 58%, #e11d48 100%);
       box-shadow: 0 0 42px #f43f5e;
     }
+    .arc-reactor.processing {
+      box-shadow: 0 0 55px rgba(168, 85, 247, 0.9);
+      border-color: #c084fc;
+    }
+    .arc-reactor.processing .ring-1 {
+      border: 3px solid #c084fc;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+    .arc-reactor.processing .ring-2 {
+      border: 2px solid #f472b6;
+      border-bottom-color: transparent;
+      animation: spinReverse 0.6s linear infinite;
+    }
+    .arc-reactor.processing .arc-core {
+      transform: scale(1.16);
+      background: radial-gradient(circle, #ffffff 18%, #a855f7 55%, #6366f1 100%);
+      box-shadow: 0 0 50px #c084fc;
+      animation: pulseProcessing 0.7s infinite alternate;
+    }
 
-    /* BOTÃO GIGANTE TÁTIL DE VOZ PUSH-TO-TAL (SEGURE PARA FALAR) */
+    /* BOTÃO GIGANTE TÁTIL DE VOZ INTELIGENTE */
     .btn-hold-mic {
       background: linear-gradient(135deg, #2563eb 0%, #9333ea 50%, #ec4899 100%);
       color: #ffffff;
@@ -228,23 +248,90 @@
       align-items: center;
       gap: 10px;
       box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
       outline: none;
+      user-select: none;
     }
-    .btn-hold-mic:active, .btn-hold-mic.listening {
-      background: linear-gradient(135deg, #e11d48, #ea580c);
-      border-color: #fef08a;
+    .btn-hold-mic:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 35px rgba(168, 85, 247, 0.8);
+    }
+    .btn-hold-mic.listening {
+      background: linear-gradient(135deg, #e11d48, #ea580c) !important;
+      border-color: #fef08a !important;
       transform: scale(1.08);
-      box-shadow: 0 0 45px rgba(244, 63, 94, 0.9);
-      animation: pulseMic 1.2s infinite alternate;
+      box-shadow: 0 0 45px rgba(244, 63, 94, 0.95);
+      animation: pulseMic 1.1s infinite alternate;
+    }
+    .btn-hold-mic.processing {
+      background: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%) !important;
+      border-color: #f0abfc !important;
+      transform: scale(1.06);
+      box-shadow: 0 0 45px rgba(192, 132, 252, 0.9);
+      animation: pulseProcessing 0.75s infinite alternate;
+      cursor: wait;
+    }
+    .btn-hold-mic.speaking {
+      background: linear-gradient(135deg, #059669 0%, #0284c7 100%) !important;
+      border-color: #a7f3d0 !important;
+      box-shadow: 0 0 35px rgba(52, 211, 153, 0.8);
     }
 
     @keyframes pulseMic {
-      from { box-shadow: 0 0 25px rgba(244, 63, 94, 0.7); }
-      to { box-shadow: 0 0 50px rgba(244, 63, 94, 1); }
+      from { box-shadow: 0 0 25px rgba(244, 63, 94, 0.7); transform: scale(1.05); }
+      to { box-shadow: 0 0 50px rgba(244, 63, 94, 1); transform: scale(1.10); }
+    }
+    @keyframes pulseProcessing {
+      from { box-shadow: 0 0 25px rgba(192, 132, 252, 0.6); transform: scale(1.03); }
+      to { box-shadow: 0 0 50px rgba(236, 72, 153, 0.95); transform: scale(1.08); }
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
+
+    /* ESTILOS DO LABORATÓRIO MUSICAL EXPANDIDO */
+    .music-tab-btn {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .music-tab-btn:hover {
+      background: #334155;
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .music-tab-btn.active {
+      background: linear-gradient(135deg, #0284c7, #06b6d4);
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.6);
+      transform: scale(1.04);
+    }
+    .drum-pad {
+      border-radius: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 900;
+      color: #fff;
+      transition: transform 0.1s, box-shadow 0.1s;
+      user-select: none;
+    }
+    .drum-pad:active {
+      transform: scale(0.92);
+      filter: brightness(1.35);
+    }
 
     /* FOOTER VOZ FALADA (LEGENDA EM FONTE GRANDE) */
     footer {
@@ -477,31 +564,28 @@
       </div>
     </div>
 
-    <!-- CENTRO: REATOR ARC INTERATIVO + PUSH-TO-TAL (SEGURE PARA FALAR) -->
+    <!-- CENTRO: REATOR ARC INTERATIVO + BOTÃO DE VOZ (CLIQUE PARA FALAR / ESCUTANDO / PROCESSANDO) -->
     <div class="arc-container">
-      <div class="arc-reactor" id="arc-reactor" onclick="clickArcToy()" title="Toque para falar comigo!">
+      <div class="arc-reactor" id="arc-reactor" onclick="clickArcToy()" title="Toque para conversar comigo!">
         <div class="ring-1"></div>
         <div class="ring-2"></div>
         <div class="arc-core"></div>
       </div>
 
-      <!-- BOTÃO TÁTIL PUSH-TO-TAL (SEGURE PARA FALAR E SOLTE PARA OUVIR) -->
+      <!-- BOTÃO TÁTIL DE VOZ INTELIGENTE (UM CLIQUE PARA FALAR) -->
       <button
         type="button"
         class="btn-hold-mic"
         id="btn-voice-push"
-        onmousedown="startPushToTalk(event)"
-        onmouseup="stopPushToTalk(event)"
-        onmouseleave="stopPushToTalk(event)"
-        ontouchstart="startPushToTalk(event)"
-        ontouchend="stopPushToTalk(event)"
+        onclick="toggleVoiceListening()"
+        title="Clique para conversar por voz com o Járvis"
       >
-        <span id="mic-icon" style="font-size: 1.5rem;">🎙️</span>
-        <span id="mic-label">SEGURE PARA FALAR</span>
+        <span id="mic-icon" style="font-size: 1.6rem;">🎙️</span>
+        <span id="mic-label">CLIQUE PARA FALAR</span>
       </button>
 
-      <div style="color: #cbd5e1; font-weight: 700; font-size: 0.88rem; text-align: center;">
-        Segure o botão, fale e solte para ouvir o Járvis!
+      <div style="color: #cbd5e1; font-weight: 700; font-size: 0.9rem; text-align: center;" id="voice-hint-text">
+        Clique para falar com o Járvis! Ele vai te ouvir e responder por voz!
       </div>
     </div>
 
@@ -635,8 +719,6 @@
     let currentAudio = null;
     let ttsAbortCtrl = null;
     let recognitionObj = null;
-    let isRecordingPush = false;
-    let pushTranscript = '';
     let gateExpectedAnswer = 12;
     let lastSpokenHint = '';
 
@@ -769,7 +851,7 @@
     }
 
     function speakCardHint(text) {
-      if (isRecordingPush) return;
+      if (voiceState !== 'idle') return;
       document.getElementById('subtitle-bar').textContent = text;
       // Fala apenas se não estiver falando agora
       if (!currentAudio && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
@@ -806,54 +888,122 @@
         `${provMap[data.config.active_provider] || 'JARVIS'} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
 
       if (greet) {
-        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Reator ou segure o Microfone!)';
+        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Clique no Microfone ou no Reator Arc para falar!)';
       }
     }
     loadState(true);
 
-    function clickArcToy() {
-      playTone(784, 120);
-      const jokes = [
-        `Eu sou o Járvis, seu melhor amigo robô! Seus propulsores estão em cem por cento, ${appState.config.child_name}!`,
-        `Bip bop! Meus sensores indicam que você tem o maior sorriso do mundo hoje!`,
-        `Sabia que o Tiranossauro Rex tinha bracinhos bem curtinhos? Uááár! Vamos brincar!`,
-        `Que tal abrir um livrinho mágico na estante para ganharmos medalhas de herói?`
-      ];
-      const joke = jokes[Math.floor(Math.random() * jokes.length)];
-      speak(joke);
-    }
-
     // =========================================================================
-    // PUSH-TO-TALK ROBUSTO PARA CRIANÇA (SEGURE PARA FALAR, SOLTE PARA OUVIR)
+    // VOZ INTELIGENTE INFANTIL: CLIQUE PARA FALAR -> DETECTA TÉRMINO -> PROCESSA -> RESPONDE
     // =========================================================================
-    function startPushToTalk(e) {
-      if (e) e.preventDefault();
-      if (isRecordingPush) return;
-      isRecordingPush = true;
-      pushTranscript = '';
-      stopCurrentSpeech();
+    let voiceState = 'idle'; // 'idle' | 'listening' | 'processing' | 'speaking'
+    let silenceTimer = null;
+    let pushTranscript = '';
 
-      playTone(587, 80);
-      setTimeout(() => playTone(880, 120), 80);
-
+    function setVoiceVisualState(state, infoText = '') {
+      voiceState = state;
       const btn = document.getElementById('btn-voice-push');
       const arc = document.getElementById('arc-reactor');
+      const micIcon = document.getElementById('mic-icon');
+      const micLabel = document.getElementById('mic-label');
+      const hintText = document.getElementById('voice-hint-text');
+
       if (btn) {
-        btn.classList.add('listening');
-        document.getElementById('mic-label').textContent = 'FALE AGORA!';
-        document.getElementById('mic-icon').textContent = '🛑';
+        btn.classList.remove('listening', 'processing', 'speaking');
       }
-      if (arc) arc.classList.add('listening');
-      document.getElementById('subtitle-bar').textContent = '🎧 Ouvindo você falar em Português...';
+      if (arc) {
+        arc.classList.remove('listening', 'processing', 'speaking');
+      }
+
+      if (state === 'listening') {
+        if (btn) {
+          btn.classList.add('listening');
+          if (micIcon) micIcon.textContent = '🛑';
+          if (micLabel) micLabel.textContent = 'OUVINDO... (PODE FALAR!)';
+        }
+        if (arc) arc.classList.add('listening');
+        if (hintText) hintText.textContent = 'Pode falar! Quando terminar, o Járvis vai processar e responder!';
+      } else if (state === 'processing') {
+        if (btn) {
+          btn.classList.add('processing');
+          if (micIcon) micIcon.textContent = '⏳';
+          if (micLabel) micLabel.textContent = 'PROCESSANDO O QUE OUVIU...';
+        }
+        if (arc) arc.classList.add('processing');
+        if (hintText) hintText.textContent = '🧠 O Járvis está pensando na sua resposta... Aguarde um instante!';
+      } else if (state === 'speaking') {
+        if (btn) {
+          btn.classList.add('speaking');
+          if (micIcon) micIcon.textContent = '🔊';
+          if (micLabel) micLabel.textContent = 'JÁRVIS RESPONDENDO...';
+        }
+        if (arc) arc.classList.add('speaking');
+        if (hintText) hintText.textContent = 'Ouvindo a resposta do Járvis!';
+      } else {
+        // idle
+        if (btn) {
+          if (micIcon) micIcon.textContent = '🎙️';
+          if (micLabel) micLabel.textContent = 'CLIQUE PARA FALAR';
+        }
+        if (hintText) hintText.textContent = 'Clique para falar com o Járvis! Ele escuta e responde por voz!';
+      }
+    }
+
+    function clickArcToy() {
+      // Ao tocar no reator arc, ele também ativa a conversa por voz!
+      toggleVoiceListening();
+    }
+
+    function toggleVoiceListening() {
+      if (voiceState === 'idle') {
+        startVoiceListening();
+      } else if (voiceState === 'listening') {
+        // Criança clicou para encerrar a fala e processar imediatamente!
+        finishVoiceListeningAndProcess();
+      } else if (voiceState === 'speaking') {
+        // Interrompe fala e volta ao início
+        stopCurrentSpeech();
+        resetVoiceToIdle();
+      }
+      // Se estiver em 'processing', ignora cliques até terminar o processamento
+    }
+
+    function resetVoiceToIdle() {
+      clearTimeout(silenceTimer);
+      silenceTimer = null;
+      if (recognitionObj) {
+        try { recognitionObj.stop(); } catch (e) {}
+        recognitionObj = null;
+      }
+      setVoiceVisualState('idle');
+    }
+
+    function startVoiceListening() {
+      stopCurrentSpeech();
+      pushTranscript = '';
+      clearTimeout(silenceTimer);
+      silenceTimer = null;
 
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRec) {
-        showToast('Navegador sem suporte a microfone. Use o Google Chrome ou Edge!', true);
-        isRecordingPush = false;
+        showToast('Navegador sem suporte ao microfone. Use Google Chrome ou Edge!', true);
         return;
       }
 
-      const rec = new SpeechRec();
+      setVoiceVisualState('listening');
+      playTone(587, 80);
+      setTimeout(() => playTone(880, 120), 80);
+      document.getElementById('subtitle-bar').textContent = '🎧 Estou ouvindo você falar em Português... Pode falar!';
+
+      let rec;
+      try {
+        rec = new SpeechRec();
+      } catch (e) {
+        resetVoiceToIdle();
+        showToast('Erro ao iniciar microfone: ' + e.message, true);
+        return;
+      }
+
       rec.lang = 'pt-BR';
       rec.interimResults = true;
       rec.continuous = true;
@@ -861,39 +1011,55 @@
 
       rec.onresult = (ev) => {
         let text = '';
+        let hasFinal = false;
         for (let i = 0; i < ev.results.length; i++) {
           text += ev.results[i][0].transcript + ' ';
+          if (ev.results[i].isFinal) hasFinal = true;
         }
         pushTranscript = text.trim();
         if (pushTranscript) {
           document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
+
+          // DETECÇÃO AUTOMÁTICA DE SILÊNCIO / TÉRMINO DA FALA
+          clearTimeout(silenceTimer);
+          const silenceWaitMs = hasFinal ? 1300 : 2000;
+          silenceTimer = setTimeout(() => {
+            finishVoiceListeningAndProcess();
+          }, silenceWaitMs);
         }
       };
 
       rec.onerror = (ev) => {
+        console.warn('SpeechRecognition error:', ev.error);
         if (ev.error === 'not-allowed') {
           showToast('Permita o uso do Microfone no navegador para a criança conversar por voz!', true);
+          resetVoiceToIdle();
+        }
+      };
+
+      rec.onend = () => {
+        if (voiceState === 'listening') {
+          if (pushTranscript.trim()) {
+            finishVoiceListeningAndProcess();
+          } else {
+            resetVoiceToIdle();
+            document.getElementById('subtitle-bar').textContent = 'Não ouvi sua vozinha. Clique no botão de novo e fale comigo!';
+          }
         }
       };
 
       try {
         rec.start();
-      } catch (err) {}
+      } catch (err) {
+        console.error('Erro ao acionar reconhecimento:', err);
+        resetVoiceToIdle();
+      }
     }
 
-    async function stopPushToTalk(e) {
-      if (e) e.preventDefault();
-      if (!isRecordingPush) return;
-      isRecordingPush = false;
-
-      const btn = document.getElementById('btn-voice-push');
-      const arc = document.getElementById('arc-reactor');
-      if (btn) {
-        btn.classList.remove('listening');
-        document.getElementById('mic-label').textContent = 'SEGURE PARA FALAR';
-        document.getElementById('mic-icon').textContent = '🎙️';
-      }
-      if (arc) arc.classList.remove('listening');
+    async function finishVoiceListeningAndProcess() {
+      if (voiceState !== 'listening') return;
+      clearTimeout(silenceTimer);
+      silenceTimer = null;
 
       if (recognitionObj) {
         try { recognitionObj.stop(); } catch (err) {}
@@ -902,20 +1068,42 @@
 
       const spoken = pushTranscript.trim();
       if (!spoken) {
-        document.getElementById('subtitle-bar').textContent = 'Segure o botão com o dedinho e fale comigo!';
+        resetVoiceToIdle();
+        document.getElementById('subtitle-bar').textContent = 'Não ouvi sua voz. Clique no botão e fale pertinho!';
+        speak('Não consegui te ouvir! Toque no botão e fale pertinho de mim!');
         return;
       }
 
-      document.getElementById('subtitle-bar').textContent = `✨ O Járvis está pensando na resposta...`;
+      // ESTADO OBRIGATÓRIO: PROCESSANDO O QUE OUVIU!
+      setVoiceVisualState('processing');
+      document.getElementById('subtitle-bar').textContent = `🧠 Processando o que você falou: "${spoken}"... O Járvis está pensando!`;
       playTone(659, 100);
+      setTimeout(() => playTone(784, 120), 100);
 
-      const res = await fetch('/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: spoken })
-      });
-      const data = await res.json();
-      speak(data.reply);
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: spoken })
+        });
+        const data = await res.json();
+
+        if (voiceState !== 'processing') return;
+
+        // ESTADO OBRIGATÓRIO: RESPONDENDO COM O JARVIS!
+        setVoiceVisualState('speaking');
+        document.getElementById('subtitle-bar').textContent = `🤖 Járvis: "${data.reply}"`;
+
+        speak(data.reply, {
+          onEnd: () => {
+            resetVoiceToIdle();
+            document.getElementById('subtitle-bar').textContent = 'Clique para falar de novo com o Járvis!';
+          }
+        });
+      } catch (err) {
+        resetVoiceToIdle();
+        speak('Tive uma falha de conexão com meu cérebro agora. Clique para tentar de novo!');
+      }
     }
 
     function openModal(title) {
@@ -929,10 +1117,8 @@
     function closeModal(restoreVoice = true) {
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
-      if (isRecordingPush && recognitionObj) {
-        try { recognitionObj.stop(); } catch (e) {}
-        isRecordingPush = false;
-      }
+      if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
+      resetVoiceToIdle();
       document.getElementById('activity-modal').classList.remove('open');
       document.getElementById('modal-body').innerHTML = '';
       if (restoreVoice) loadState(false);
@@ -1326,8 +1512,17 @@
     }
 
     // =========================================================================
-    // 3. ATIVIDADE DE MÚSICA: ENSINAR A CRIAR MELODIAS (MAESTRO & GRAVADOR)
+    // 3. LABORATÓRIO MUSICAL EXPANDIDO (PIANO, BATERIA, BICHINHOS, SYNTH, CANÇÕES & GRAVADOR)
     // =========================================================================
+    let musicBeatInterval = null;
+    let musicBeatStep = 0;
+    function stopMusicRhythmBeat() {
+      if (musicBeatInterval) {
+        clearInterval(musicBeatInterval);
+        musicBeatInterval = null;
+      }
+    }
+
     const MELODIES = {
       estrelinha: {
         title: 'Brilha, Brilha, Estrelinha',
@@ -1335,7 +1530,11 @@
           ['DÓ', 262, '#ef4444'], ['DÓ', 262, '#ef4444'],
           ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
           ['LÁ', 440, '#3b82f6'], ['LÁ', 440, '#3b82f6'],
-          ['SOL', 392, '#06b6d4']
+          ['SOL', 392, '#06b6d4'],
+          ['FÁ', 349, '#22c55e'], ['FÁ', 349, '#22c55e'],
+          ['MI', 330, '#facc15'], ['MI', 330, '#facc15'],
+          ['RÉ', 294, '#f97316'], ['RÉ', 294, '#f97316'],
+          ['DÓ', 262, '#ef4444']
         ]
       },
       aranha: {
@@ -1343,7 +1542,9 @@
         notes: [
           ['DÓ', 262, '#ef4444'], ['MI', 330, '#facc15'],
           ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
-          ['LÁ', 440, '#3b82f6'], ['SOL', 392, '#06b6d4']
+          ['LÁ', 440, '#3b82f6'], ['SOL', 392, '#06b6d4'],
+          ['FÁ', 349, '#22c55e'], ['MI', 330, '#facc15'],
+          ['RÉ', 294, '#f97316'], ['DÓ', 262, '#ef4444']
         ]
       },
       balao: {
@@ -1351,79 +1552,443 @@
         notes: [
           ['DÓ', 262, '#ef4444'], ['DÓ', 262, '#ef4444'],
           ['RÉ', 294, '#f97316'], ['RÉ', 294, '#f97316'],
-          ['MI', 330, '#facc15'], ['DÓ', 262, '#ef4444']
+          ['MI', 330, '#facc15'], ['DÓ', 262, '#ef4444'],
+          ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
+          ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4']
+        ]
+      },
+      parabens: {
+        title: 'Parabéns Pra Você',
+        notes: [
+          ['DÓ', 262, '#ef4444'], ['DÓ', 262, '#ef4444'],
+          ['RÉ', 294, '#f97316'], ['DÓ', 262, '#ef4444'],
+          ['FÁ', 349, '#22c55e'], ['MI', 330, '#facc15'],
+          ['DÓ', 262, '#ef4444'], ['DÓ', 262, '#ef4444'],
+          ['RÉ', 294, '#f97316'], ['DÓ', 262, '#ef4444'],
+          ['SOL', 392, '#06b6d4'], ['FÁ', 349, '#22c55e']
+        ]
+      },
+      soldado: {
+        title: 'Marcha Soldado',
+        notes: [
+          ['DÓ', 262, '#ef4444'], ['MI', 330, '#facc15'],
+          ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
+          ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
+          ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
+          ['LÁ', 440, '#3b82f6'], ['SOL', 392, '#06b6d4'],
+          ['FÁ', 349, '#22c55e'], ['MI', 330, '#facc15'],
+          ['RÉ', 294, '#f97316'], ['DÓ', 262, '#ef4444']
+        ]
+      },
+      ciranda: {
+        title: 'Ciranda, Cirandinha',
+        notes: [
+          ['DÓ', 262, '#ef4444'], ['RÉ', 294, '#f97316'],
+          ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
+          ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
+          ['LÁ', 440, '#3b82f6'], ['SOL', 392, '#06b6d4'],
+          ['FÁ', 349, '#22c55e'], ['MI', 330, '#facc15'],
+          ['RÉ', 294, '#f97316'], ['DÓ', 262, '#ef4444']
         ]
       }
     };
 
-    const PIANO_KEYS = [
-      ['DÓ', 262, '#ef4444'], ['RÉ', 294, '#f97316'], ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
-      ['SOL', 392, '#06b6d4'], ['LÁ', 440, '#3b82f6'], ['SI', 494, '#a855f7'], ['DÓ+', 523, '#ec4899']
+    const SCALE_NOTES = [
+      ['DÓ', 262, '#ef4444', '🐱', 'Gatinho', 'miau'],
+      ['RÉ', 294, '#f97316', '🐶', 'Cachorrinho', 'au-au'],
+      ['MI', 330, '#facc15', '🐥', 'Pintinho', 'piu'],
+      ['FÁ', 349, '#22c55e', '🐸', 'Sapinho', 'croac'],
+      ['SOL', 392, '#06b6d4', '🦆', 'Patinho', 'qua'],
+      ['LÁ', 440, '#3b82f6', '🐮', 'Vaquinha', 'muu'],
+      ['SI', 494, '#a855f7', '🐑', 'Ovelhinha', 'bee'],
+      ['DÓ+', 523, '#ec4899', '🐴', 'Cavalinho', 'relincho']
     ];
 
+    const DRUM_PADS = [
+      { id: 'kick', name: 'BUMBO', icon: '💥', col: '#ef4444', desc: 'Bumbo Grave Stark' },
+      { id: 'snare', name: 'CAIXA', icon: '🎯', col: '#f59e0b', desc: 'Caixa Estelar' },
+      { id: 'hihat', name: 'PRATO', icon: '🔔', col: '#10b981', desc: 'Prato Laser' },
+      { id: 'tom', name: 'TOM-TOM', icon: '🪘', col: '#06b6d4', desc: 'Tambor Bouncy' },
+      { id: 'clap', name: 'PALMAS', icon: '👏', col: '#8b5cf6', desc: 'Palmas de Herói' },
+      { id: 'laser', name: 'RAIO LASER', icon: '⚡', col: '#ec4899', desc: 'Disparo de Laser' }
+    ];
+
+    function playDrumSound(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+
+      if (type === 'kick') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(155, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.16);
+        gain.gain.setValueAtTime(0.45, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.18);
+      } else if (type === 'snare') {
+        const osc = audioCtx.createOscillator();
+        const oscGain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(190, now);
+        osc.frequency.exponentialRampToValueAtTime(75, now + 0.1);
+        oscGain.gain.setValueAtTime(0.22, now);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.connect(oscGain);
+        oscGain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.12);
+
+        const bufSize = Math.floor(audioCtx.sampleRate * 0.16);
+        const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) d[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buf;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 1000;
+        const nGain = audioCtx.createGain();
+        nGain.gain.setValueAtTime(0.28, now);
+        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(audioCtx.destination);
+        noise.start(now);
+        noise.stop(now + 0.16);
+      } else if (type === 'hihat') {
+        const bufSize = Math.floor(audioCtx.sampleRate * 0.07);
+        const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) d[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buf;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 6500;
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start(now);
+        noise.stop(now + 0.07);
+      } else if (type === 'tom') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(85, now + 0.22);
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.22);
+      } else if (type === 'clap') {
+        [0, 0.015, 0.03].forEach(offset => {
+          const bufSize = Math.floor(audioCtx.sampleRate * 0.08);
+          const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let i = 0; i < bufSize; i++) d[i] = Math.random() * 2 - 1;
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buf;
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.value = 1200;
+          filter.Q.value = 3;
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(0.2, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.08);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+          noise.start(now + offset);
+          noise.stop(now + offset + 0.08);
+        });
+      } else if (type === 'laser') {
+        const osc = audioCtx.createOscillator();
+        const filter = audioCtx.createBiquadFilter();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(160, now + 0.24);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(3500, now);
+        filter.frequency.exponentialRampToValueAtTime(400, now + 0.24);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
+    function playInstrumentSound(inst, freq, durMs = 320, animalKey = 'miau') {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+
+      if (inst === 'piano') {
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(freq, now);
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(freq * 2, now);
+        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + durMs / 1000);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + durMs / 1000);
+        osc2.stop(now + durMs / 1000);
+      } else if (inst === 'laser') {
+        const osc = audioCtx.createOscillator();
+        const filter = audioCtx.createBiquadFilter();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(freq * 4, now);
+        filter.frequency.exponentialRampToValueAtTime(freq * 0.8, now + durMs / 1000);
+        filter.Q.value = 6;
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + durMs / 1000);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + durMs / 1000);
+      } else if (inst === 'bichinhos') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (animalKey === 'miau') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq * 0.9, now);
+          osc.frequency.linearRampToValueAtTime(freq * 1.35, now + 0.16);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.8, now + 0.38);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.4);
+        } else if (animalKey === 'au-au') {
+          [0, 0.16].forEach(off => {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freq * 1.2, now + off);
+            o.frequency.exponentialRampToValueAtTime(freq * 0.7, now + off + 0.12);
+            g.gain.setValueAtTime(0.28, now + off);
+            g.gain.exponentialRampToValueAtTime(0.001, now + off + 0.12);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(now + off); o.stop(now + off + 0.12);
+          });
+        } else if (animalKey === 'piu') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq * 2.2, now);
+          osc.frequency.linearRampToValueAtTime(freq * 2.9, now + 0.18);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.22);
+        } else if (animalKey === 'croac') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq * 0.6, now);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.3);
+        } else if (animalKey === 'qua') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(freq * 0.95, now);
+          const f = audioCtx.createBiquadFilter();
+          f.type = 'bandpass';
+          f.frequency.value = 850;
+          f.Q.value = 4;
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+          osc.connect(f); f.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.32);
+        } else if (animalKey === 'muu') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq * 0.7, now);
+          osc.frequency.linearRampToValueAtTime(freq * 0.65, now + 0.55);
+          gain.gain.setValueAtTime(0.26, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.6);
+        } else if (animalKey === 'bee') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now);
+          const lfo = audioCtx.createOscillator();
+          const lfoGain = audioCtx.createGain();
+          lfo.frequency.value = 9;
+          lfoGain.gain.value = 18;
+          lfo.connect(osc.frequency);
+          lfo.start(now); lfo.stop(now + 0.45);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.45);
+        } else {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq * 0.9, now);
+          osc.frequency.linearRampToValueAtTime(freq * 1.8, now + 0.25);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc.connect(gain); gain.connect(audioCtx.destination);
+          osc.start(now); osc.stop(now + 0.4);
+        }
+      }
+    }
+
     function openMusicComposer() {
-      const body = openModal('🎵 ACADEMIA DE MÚSICA & CRIAÇÃO DE MELODIAS');
-      speak('Bem-vindo ao Laboratório Musical! Escolha uma música para aprender ou crie sua própria melodia no gravador!');
+      const body = openModal('🎵 LABORATÓRIO MUSICAL DO JÁRVIS');
+      speak('Bem-vindo ao Laboratório Musical! Escolha seu instrumento favorito, aprenda canções famosas ou invente a sua própria melodia!');
 
-      body.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-          <div style="display:flex; gap:10px;">
-            <button type="button" class="big-btn" style="background:#7c3aed;" id="btn-song-estrela">⭐ Brilha Estrelinha</button>
-            <button type="button" class="big-btn" style="background:#0284c7;" id="btn-song-aranha">🕷️ Dona Aranha</button>
-            <button type="button" class="big-btn" style="background:#059669;" id="btn-song-balao">🎈 Cai Cai Balão</button>
-          </div>
-          <div style="display:flex; gap:10px;">
-            <button type="button" class="big-btn" style="background:#e11d48;" id="btn-rec-start">🔴 Gravar Minha Música</button>
-            <button type="button" class="big-btn" style="background:#10b981;" id="btn-rec-play">▶ Tocar Minha Música</button>
-          </div>
-        </div>
-
-        <div id="music-sky" style="flex:1; background:#050b18; border:3px solid var(--cyan); border-radius:18px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px;">
-          <div id="music-prompt" style="font-size:2rem; font-weight:900; color:#fde047; text-align:center;">
-            Toque nas teclas coloridas abaixo para começar!
-          </div>
-          <div id="music-stars-area" style="position:absolute; inset:0; pointer-events:none;"></div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(8, 1fr); gap:10px; height:180px; margin-top:14px;" id="piano-keys-row"></div>
-      `;
-
+      let currentInstrument = 'piano'; // 'piano' | 'bateria' | 'bichinhos' | 'laser'
       let activeMelody = null;
       let melodyIdx = 0;
       let recordedNotes = [];
       let isRecording = false;
+      let songPlayTimer = null;
 
-      const row = document.getElementById('piano-keys-row');
-      const keyButtons = {};
+      body.innerHTML = `
+        <!-- BARRA SUPERIOR: ABAS DE INSTRUMENTOS + GRAVADOR + BATIDA -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <!-- ABAS DE INSTRUMENTO -->
+          <div style="display:flex; gap:8px; flex-wrap:wrap;" id="inst-tabs">
+            <button type="button" class="music-tab-btn active" id="tab-piano">🎹 Piano Mágico</button>
+            <button type="button" class="music-tab-btn" id="tab-bateria">🥁 Bateria Stark</button>
+            <button type="button" class="music-tab-btn" id="tab-bichinhos">🐱 Bichinhos Cantores</button>
+            <button type="button" class="music-tab-btn" id="tab-laser">🛸 Laser Espacial</button>
+          </div>
 
-      PIANO_KEYS.forEach(([name, freq, col]) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'big-btn';
-        b.style.cssText = `background:${col}; font-size:1.7rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;`;
-        b.innerHTML = `<span>${name}</span><span style="font-size:1.1rem; opacity:0.8;">★</span>`;
-        b.onclick = () => onPianoKeyTouch(name, freq, col);
-        row.appendChild(b);
-        keyButtons[name] = b;
-      });
+          <!-- CONTROLES: BATIDA DE FUNDO & GRAVADOR -->
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="big-btn" style="background:#0ea5e9; font-size:1.05rem;" id="btn-toggle-beat">🥁 Ligar Batida Animada</button>
+            <button type="button" class="big-btn" style="background:#e11d48; font-size:1.05rem;" id="btn-rec-start">🔴 Gravar Minha Música</button>
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.05rem;" id="btn-rec-play">▶ Tocar Minha Música</button>
+            <button type="button" class="big-btn" style="background:#475569; font-size:1.05rem;" id="btn-rec-clear">🗑️ Limpar</button>
+          </div>
+        </div>
 
-      function spawnStarInSky(col, text) {
+        <!-- BARRA DE MÚSICAS INFANTIS (6 CANÇÕES) -->
+        <div style="background:#0b1528; border:2px solid #334155; border-radius:14px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-weight:900; color:#38bdf8; font-size:1.05rem; margin-right:4px;">Canções Infantis:</span>
+          <button type="button" class="big-btn" style="background:#7c3aed; font-size:0.95rem; padding:8px 14px;" id="song-estrela">⭐ Brilha Estrelinha</button>
+          <button type="button" class="big-btn" style="background:#0284c7; font-size:0.95rem; padding:8px 14px;" id="song-aranha">🕷️ Dona Aranha</button>
+          <button type="button" class="big-btn" style="background:#059669; font-size:0.95rem; padding:8px 14px;" id="song-balao">🎈 Cai Cai Balão</button>
+          <button type="button" class="big-btn" style="background:#d97706; font-size:0.95rem; padding:8px 14px;" id="song-parabens">🎂 Parabéns Pra Você</button>
+          <button type="button" class="big-btn" style="background:#dc2626; font-size:0.95rem; padding:8px 14px;" id="song-soldado">🪖 Marcha Soldado</button>
+          <button type="button" class="big-btn" style="background:#c026d3; font-size:0.95rem; padding:8px 14px;" id="song-ciranda">🎡 Ciranda Cirandinha</button>
+        </div>
+
+        <!-- CÉU MUSICAL: ÁREA VISUAL COM ESTRELAS E PROMPT GRANDE -->
+        <div id="music-sky" style="flex:1; min-height:160px; background:radial-gradient(ellipse at center, #0a1936 0%, #030712 100%); border:3px solid var(--cyan); border-radius:18px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; box-shadow:inset 0 0 40px rgba(0,240,255,0.15);">
+          <div id="music-prompt" style="font-size:1.85rem; font-weight:900; color:#fde047; text-align:center; text-shadow:0 0 20px rgba(250,204,21,0.6); z-index:2;">
+            Toque nas teclas ou tambores abaixo para fazer música!
+          </div>
+          <div id="music-song-actions" style="margin-top:12px; display:none; gap:12px; z-index:3;">
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.15rem;" id="btn-song-listen">🎧 Ouvir Canção</button>
+            <button type="button" class="big-btn" style="background:#f59e0b; font-size:1.15rem;" id="btn-song-play-guide">🎯 Aprender a Tocar (Siga a Estrela!)</button>
+          </div>
+          <div id="music-stars-area" style="position:absolute; inset:0; pointer-events:none;"></div>
+        </div>
+
+        <!-- TECLADO / TAMBORES DINÂMICOS -->
+        <div id="music-instrument-container" style="margin-top:14px; min-height:180px;"></div>
+      `;
+
+      function spawnVisualEffect(col, text) {
         const area = document.getElementById('music-stars-area');
         if (!area) return;
         const s = document.createElement('div');
-        s.style.cssText = `position:absolute; left:${Math.random()*80 + 10}%; top:${Math.random()*70 + 10}%; font-size:2.8rem; color:${col}; font-weight:900; filter:drop-shadow(0 0 12px ${col}); animation:pulseMic 0.5s ease-out;`;
-        s.textContent = `★ ${text}`;
+        s.style.cssText = `position:absolute; left:${Math.random()*75 + 12}%; top:${Math.random()*60 + 15}%; font-size:2.8rem; color:${col}; font-weight:900; filter:drop-shadow(0 0 16px ${col}); animation:pulseMic 0.6s ease-out;`;
+        s.textContent = text;
         area.appendChild(s);
-        if (area.children.length > 20) area.removeChild(area.firstChild);
+        if (area.children.length > 22) area.removeChild(area.firstChild);
       }
 
-      function onPianoKeyTouch(name, freq, col) {
-        playTone(freq, 280);
-        spawnStarInSky(col, name);
+      function updateSkyPrompt(text, col = '#fde047') {
+        const p = document.getElementById('music-prompt');
+        if (p) {
+          p.textContent = text;
+          p.style.color = col;
+        }
+      }
+
+      function renderInstrumentUI() {
+        const container = document.getElementById('music-instrument-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (currentInstrument === 'bateria') {
+          container.style.cssText = 'display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; height:180px;';
+          DRUM_PADS.forEach(pad => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'drum-pad';
+            btn.style.background = pad.col;
+            btn.style.boxShadow = `0 0 20px ${pad.col}66`;
+            btn.innerHTML = `
+              <span style="font-size:2.6rem; margin-bottom:4px;">${pad.icon}</span>
+              <span style="font-size:1.2rem; font-weight:900;">${pad.name}</span>
+            `;
+            btn.onclick = () => {
+              playDrumSound(pad.id);
+              spawnVisualEffect(pad.col, `${pad.icon} ${pad.name}!`);
+              updateSkyPrompt(`${pad.icon} ${pad.name}!`, pad.col);
+              if (isRecording) {
+                recordedNotes.push({ type: 'drum', padId: pad.id, col: pad.col, name: pad.name, icon: pad.icon });
+                updateSkyPrompt(`🔴 Gravando bateria: ${recordedNotes.length} batidas!`, '#f43f5e');
+              }
+            };
+            container.appendChild(btn);
+          });
+        } else {
+          container.style.cssText = 'display:grid; grid-template-columns:repeat(8, 1fr); gap:10px; height:180px;';
+          SCALE_NOTES.forEach(([name, freq, col, icon, label, animalKey]) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'big-btn';
+            btn.id = `key-${name.replace('+', 'plus')}`;
+
+            if (currentInstrument === 'piano') {
+              btn.style.cssText = `background:${col}; font-size:1.6rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;`;
+              btn.innerHTML = `<span>${name}</span><span style="font-size:1.15rem; opacity:0.85;">★</span>`;
+            } else if (currentInstrument === 'bichinhos') {
+              btn.style.cssText = `background:${col}; font-size:1.35rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;`;
+              btn.innerHTML = `<span style="font-size:2.1rem;">${icon}</span><span>${name}</span><span style="font-size:0.8rem; opacity:0.9;">${label}</span>`;
+            } else {
+              btn.style.cssText = `background:linear-gradient(180deg, #0f172a, ${col}); border:2px solid #38bdf8; font-size:1.5rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; box-shadow:0 0 15px ${col}88;`;
+              btn.innerHTML = `<span>⚡ ${name}</span><span style="font-size:0.9rem; color:#a5f3fc;">LASER</span>`;
+            }
+
+            btn.onclick = () => onScaleKeyTouch(name, freq, col, icon, label, animalKey);
+            container.appendChild(btn);
+          });
+        }
+      }
+
+      function onScaleKeyTouch(name, freq, col, icon, label, animalKey) {
+        playInstrumentSound(currentInstrument, freq, 320, animalKey);
+
+        const badgeText = currentInstrument === 'bichinhos' ? `${icon} ${label}!` : `★ ${name}`;
+        spawnVisualEffect(col, badgeText);
+        updateSkyPrompt(badgeText, col);
 
         if (isRecording) {
-          recordedNotes.push([name, freq, col]);
-          document.getElementById('music-prompt').textContent = `Gravando: ${recordedNotes.length} notas gravadas!`;
+          recordedNotes.push({ type: 'scale', inst: currentInstrument, name, freq, col, icon, label, animalKey });
+          updateSkyPrompt(`🔴 Gravando melodia: ${recordedNotes.length} notas!`, '#f43f5e');
         }
 
         if (activeMelody) {
@@ -1432,71 +1997,204 @@
             melodyIdx++;
             if (melodyIdx >= activeMelody.notes.length) {
               addStar(1);
-              document.getElementById('music-prompt').textContent = `🏆 Parabéns! Você tocou a melodia "${activeMelody.title}"!`;
+              updateSkyPrompt(`🏆 Parabéns! Você tocou "${activeMelody.title}" todinha!`, '#34d399');
               speak(`Muito bem, ${appState.config.child_name}! Você tocou a música todinha como um verdadeiro maestro!`);
               activeMelody = null;
-              highlightNextMelodyKey(null);
+              highlightKey(null);
+              const act = document.getElementById('music-song-actions');
+              if (act) act.style.display = 'none';
             } else {
-              highlightNextMelodyKey(activeMelody.notes[melodyIdx][0]);
+              highlightKey(activeMelody.notes[melodyIdx][0]);
             }
           }
         }
       }
 
-      function highlightNextMelodyKey(expectedName) {
-        Object.values(keyButtons).forEach(b => {
-          b.style.transform = 'scale(1)';
-          b.style.boxShadow = 'none';
-          b.style.border = 'none';
+      function highlightKey(expectedName) {
+        SCALE_NOTES.forEach(([n]) => {
+          const el = document.getElementById(`key-${n.replace('+', 'plus')}`);
+          if (el) {
+            el.style.transform = 'scale(1)';
+            el.style.boxShadow = 'none';
+            el.style.border = currentInstrument === 'laser' ? '2px solid #38bdf8' : 'none';
+          }
         });
-        if (expectedName && keyButtons[expectedName]) {
-          const b = keyButtons[expectedName];
-          b.style.transform = 'scale(1.12)';
-          b.style.boxShadow = '0 0 30px #ffffff, 0 0 45px #facc15';
-          b.style.border = '4px solid #ffffff';
-          document.getElementById('music-prompt').innerHTML = `Toque na nota brilhante: <span style="color:#ffffff;">${expectedName}</span>!`;
+
+        if (expectedName) {
+          const target = document.getElementById(`key-${expectedName.replace('+', 'plus')}`);
+          if (target) {
+            target.style.transform = 'scale(1.12)';
+            target.style.boxShadow = '0 0 35px #ffffff, 0 0 50px #facc15';
+            target.style.border = '4px solid #ffffff';
+            updateSkyPrompt(`Toque na tecla brilhante: ${expectedName}!`, '#ffffff');
+          }
         }
       }
 
-      function startSongTraining(key) {
-        activeMelody = MELODIES[key];
-        melodyIdx = 0;
-        speak(`Vamos aprender a tocar ${activeMelody.title}! Siga a tecla brilhante!`);
-        highlightNextMelodyKey(activeMelody.notes[0][0]);
+      let selectedSongKey = null;
+      function selectSong(key) {
+        selectedSongKey = key;
+        const song = MELODIES[key];
+        activeMelody = null;
+        highlightKey(null);
+        if (songPlayTimer) { clearTimeout(songPlayTimer); songPlayTimer = null; }
+
+        if (currentInstrument === 'bateria') {
+          currentInstrument = 'piano';
+          updateTabButtons();
+          renderInstrumentUI();
+        }
+
+        updateSkyPrompt(`Canção Escolhida: ⭐ ${song.title}`, '#38bdf8');
+        speak(`Vamos brincar com ${song.title}! Escolha ouvir a canção ou aprender a tocar comigo!`);
+
+        const actions = document.getElementById('music-song-actions');
+        if (actions) actions.style.display = 'flex';
       }
 
-      document.getElementById('btn-song-estrela').onclick = () => startSongTraining('estrelinha');
-      document.getElementById('btn-song-aranha').onclick = () => startSongTraining('aranha');
-      document.getElementById('btn-song-balao').onclick = () => startSongTraining('balao');
+      document.getElementById('song-estrela').onclick = () => selectSong('estrelinha');
+      document.getElementById('song-aranha').onclick = () => selectSong('aranha');
+      document.getElementById('song-balao').onclick = () => selectSong('balao');
+      document.getElementById('song-parabens').onclick = () => selectSong('parabens');
+      document.getElementById('song-soldado').onclick = () => selectSong('soldado');
+      document.getElementById('song-ciranda').onclick = () => selectSong('ciranda');
+
+      document.getElementById('btn-song-listen').onclick = () => {
+        if (!selectedSongKey) return;
+        const song = MELODIES[selectedSongKey];
+        speak(`Ouvindo ${song.title}! Veja as estrelinhas brilhando!`);
+        updateSkyPrompt(`🎶 Tocando: ${song.title}...`, '#38bdf8');
+
+        song.notes.forEach(([name, freq, col], i) => {
+          setTimeout(() => {
+            playInstrumentSound(currentInstrument, freq, 360);
+            spawnVisualEffect(col, `★ ${name}`);
+            highlightKey(name);
+          }, i * 440);
+        });
+
+        setTimeout(() => {
+          highlightKey(null);
+          updateSkyPrompt(`Gostou de ${song.title}? Agora aperte "Aprender a Tocar"!`, '#fde047');
+          speak('Agora é a sua vez! Aperte o botão amarelo de aprender a tocar!');
+        }, song.notes.length * 440 + 400);
+      };
+
+      document.getElementById('btn-song-play-guide').onclick = () => {
+        if (!selectedSongKey) return;
+        activeMelody = MELODIES[selectedSongKey];
+        melodyIdx = 0;
+        speak(`Siga a tecla brilhante para tocar ${activeMelody.title}!`);
+        highlightKey(activeMelody.notes[0][0]);
+      };
+
+      function updateTabButtons() {
+        ['piano', 'bateria', 'bichinhos', 'laser'].forEach(id => {
+          const tab = document.getElementById(`tab-${id}`);
+          if (tab) tab.classList.toggle('active', currentInstrument === id);
+        });
+      }
+
+      document.getElementById('tab-piano').onclick = () => {
+        currentInstrument = 'piano';
+        updateTabButtons();
+        renderInstrumentUI();
+        speak('Piano Mágico ativado! Toque nas teclas coloridas!');
+      };
+      document.getElementById('tab-bateria').onclick = () => {
+        currentInstrument = 'bateria';
+        updateTabButtons();
+        renderInstrumentUI();
+        speak('Bateria Stark ativada! Bumbo, caixa, prato e tambores para você fazer muito som!');
+      };
+      document.getElementById('tab-bichinhos').onclick = () => {
+        currentInstrument = 'bichinhos';
+        updateTabButtons();
+        renderInstrumentUI();
+        speak('Bichinhos Cantores ativados! Cada tecla é um animalzinho fofo!');
+      };
+      document.getElementById('tab-laser').onclick = () => {
+        currentInstrument = 'laser';
+        updateTabButtons();
+        renderInstrumentUI();
+        speak('Sintetizador Laser ativado! Sons espaciais do Homem de Ferro!');
+      };
+
+      const btnBeat = document.getElementById('btn-toggle-beat');
+      btnBeat.onclick = () => {
+        if (musicBeatInterval) {
+          stopMusicRhythmBeat();
+          btnBeat.textContent = '🥁 Ligar Batida Animada';
+          btnBeat.style.background = '#0ea5e9';
+          updateSkyPrompt('Batida desligada.', '#94a3b8');
+        } else {
+          musicBeatStep = 0;
+          btnBeat.textContent = '⏹ Parar Batida Animada';
+          btnBeat.style.background = '#e11d48';
+          speak('Batida animada ligada! Toque seus instrumentos no ritmo da música!');
+          updateSkyPrompt('🥁 Batida Animada Tocando! Acompanhe o ritmo!', '#38bdf8');
+
+          musicBeatInterval = setInterval(() => {
+            if (musicBeatStep === 0) {
+              playDrumSound('kick'); playDrumSound('hihat');
+            } else if (musicBeatStep === 2 || musicBeatStep === 6) {
+              playDrumSound('snare'); playDrumSound('hihat');
+            } else if (musicBeatStep === 4 || musicBeatStep === 5) {
+              playDrumSound('kick'); playDrumSound('hihat');
+            } else {
+              playDrumSound('hihat');
+            }
+            musicBeatStep = (musicBeatStep + 1) % 8;
+          }, 140);
+        }
+      };
 
       document.getElementById('btn-rec-start').onclick = () => {
         isRecording = true;
         recordedNotes = [];
         activeMelody = null;
-        highlightNextMelodyKey(null);
-        document.getElementById('music-prompt').textContent = '🔴 Gravador ligado! Toque suas notas favoritas!';
-        speak('Gravador ligado! Toque as notas no piano para criar sua música!');
+        highlightKey(null);
+        updateSkyPrompt('🔴 Gravador ligado! Toque qualquer instrumento para inventar sua música!', '#f43f5e');
+        speak('Gravador ligado! Toque as notas ou os tambores para criar a sua música!');
       };
 
       document.getElementById('btn-rec-play').onclick = () => {
         if (!recordedNotes.length) {
-          speak('Grave algumas notas primeiro apertando o botão vermelho!');
+          speak('Grave algumas notas primeiro apertando o botão vermelho de gravar!');
+          updateSkyPrompt('Grave algumas notas primeiro apertando no botão vermelho!', '#facc15');
           return;
         }
         isRecording = false;
         speak('Ouvindo a sua melodia!');
-        document.getElementById('music-prompt').textContent = '🎶 Tocando a música que você criou!';
-        recordedNotes.forEach(([n, f, c], i) => {
+        updateSkyPrompt('🎶 Tocando a música linda que você criou!', '#34d399');
+
+        recordedNotes.forEach((item, i) => {
           setTimeout(() => {
-            playTone(f, 320);
-            spawnStarInSky(c, n);
-          }, i * 400);
+            if (item.type === 'drum') {
+              playDrumSound(item.padId);
+              spawnVisualEffect(item.col, `${item.icon} ${item.name}!`);
+            } else {
+              playInstrumentSound(item.inst, item.freq, 340, item.animalKey);
+              spawnVisualEffect(item.col, item.inst === 'bichinhos' ? `${item.icon} ${item.label}!` : `★ ${item.name}`);
+            }
+          }, i * 380);
         });
+
         setTimeout(() => {
           addStar(1);
-          speak(`Que melodia linda você inventou, ${appState.config.child_name}! Você é um verdadeiro artista!`);
-        }, recordedNotes.length * 400 + 400);
+          speak(`Que melodia incrível você inventou, ${appState.config.child_name}! Você ganhou mais uma estrela de herói!`);
+          updateSkyPrompt(`🏆 Você ganhou +1 Estrela Stark pela sua música!`, '#fde047');
+        }, recordedNotes.length * 380 + 400);
       };
+
+      document.getElementById('btn-rec-clear').onclick = () => {
+        recordedNotes = [];
+        isRecording = false;
+        updateSkyPrompt('Gravador limpo. Pronto para uma nova música!', '#94a3b8');
+        speak('Gravador limpo! Pronto para uma nova criação musical!');
+      };
+
+      renderInstrumentUI();
     }
 
     // =========================================================================
