@@ -795,15 +795,13 @@
         <div class="arc-core"></div>
       </div>
 
-      <!-- BOTÃO DE VOZ ROBUSTO (CLIQUE ÚNICO OU SEGURE) -->
+      <!-- BOTÃO DE VOZ ROBUSTO (CLIQUE ÚNICO PARA FALAR OU ENVIAR) -->
       <button
         type="button"
         class="btn-hold-mic"
         id="btn-voice-push"
-        onpointerdown="onMicPointerDown(event)"
-        onpointerup="onMicPointerUp(event)"
-        onclick="onMicClick(event)"
-        title="Clique para falar ou segure para conversar"
+        onclick="toggleVoiceListening()"
+        title="Clique para falar ou clique de novo para enviar"
       >
         <span id="mic-icon" style="font-size: 1.6rem;">🎙️</span>
         <div id="mic-sound-waves" style="display:none; gap:4px; align-items:center; height:24px;">
@@ -1183,7 +1181,6 @@
     let recordedAudioChunks = [];
     let audioAnalyserNode = null;
     let visualizerAnimFrame = null;
-    let recognitionObj = null;
 
     function stopMicVisualizer() {
       if (visualizerAnimFrame) {
@@ -1258,38 +1255,6 @@
       }
     }
 
-    function onMicPointerDown(e) {
-      micPointerDownTime = Date.now();
-      if (voiceState === 'idle') {
-        startVoiceListening();
-        isMicHolding = true;
-      }
-    }
-
-    function onMicPointerUp(e) {
-      const elapsed = Date.now() - micPointerDownTime;
-      if (isMicHolding && elapsed > 550 && voiceState === 'listening') {
-        // Criança ou pai segurou por mais de meio segundo e soltou (estilo walkie-talkie)
-        isMicHolding = false;
-        finishVoiceListeningAndProcess();
-      } else {
-        // Foi clique rápido: mantém ouvindo continuamente
-        isMicHolding = false;
-      }
-    }
-
-    function onMicClick(e) {
-      const elapsed = Date.now() - micPointerDownTime;
-      if (elapsed <= 550) {
-        if (voiceState === 'listening' && Date.now() - listeningSessionStart > 600) {
-          finishVoiceListeningAndProcess();
-        } else if (voiceState === 'speaking') {
-          stopCurrentSpeech();
-          resetVoiceToIdle();
-        }
-      }
-    }
-
     function resetVoiceToIdle() {
       stopMicVisualizer();
       clearTimeout(silenceTimer);
@@ -1314,10 +1279,19 @@
       silenceTimer = null;
       listeningSessionStart = Date.now();
 
+      // FEEDBACK VISUAL E SONORO IMEDIATO (SEM ATRASO)
+      setVoiceVisualState('listening');
+      document.getElementById('subtitle-bar').textContent = '🎧 JÁRVIS OUVINDO... PODE FALAR NO MICROFONE!';
+      if (audioCtx && audioCtx.state === 'suspended') {
+        try { await audioCtx.resume(); } catch (e) {}
+      }
+      playTone(587, 80);
+      setTimeout(() => playTone(880, 120), 80);
+
       // 1. SOLICITA ACESSO AO MICROFONE FÍSICO REAL DO APARELHO
       try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error('Navegador sem suporte a getUserMedia');
+          throw new Error('Navegador sem suporte a getUserMedia ou acessado via HTTP inseguro');
         }
         mediaStreamObj = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -1329,19 +1303,17 @@
       } catch (err) {
         console.warn('Acesso ao microfone negado ou indisponível:', err);
         showToast('⚠️ Microfone não liberado! Clique no cadeado do navegador e permita o microfone.', true);
+        document.getElementById('subtitle-bar').textContent = '⚠️ Microfone não liberado! Clique no cadeado no topo do navegador e permita o microfone.';
         speak('Por favor, autorize o microfone no navegador para conversarmos!');
         resetVoiceToIdle();
+        openTalkModal();
+        const rep = document.getElementById('jarvis-talk-reply');
+        if (rep) rep.textContent = '⚠️ Microfone bloqueado no navegador. Digite sua pergunta ou toque em um tema!';
         return;
       }
 
-      setVoiceVisualState('listening');
-      playTone(587, 80);
-      setTimeout(() => playTone(880, 120), 80);
-      document.getElementById('subtitle-bar').textContent = '🎧 JÁRVIS OUVINDO VOCÊ... FALE PERTINHO DO MICROFONE!';
-
       // 2. CONECTA O ANALISADOR DE ÁUDIO REAL (MEDIDOR VISUAL DE DECIBÉIS)
       try {
-        if (audioCtx.state === 'suspended') await audioCtx.resume();
         const source = audioCtx.createMediaStreamSource(mediaStreamObj);
         audioAnalyserNode = audioCtx.createAnalyser();
         audioAnalyserNode.fftSize = 64;
@@ -1429,7 +1401,6 @@
 
           rec.onerror = (ev) => {
             console.warn('SpeechRecognition notice:', ev.error);
-            // NÃO reseta para idle se for network/no-speech, pois temos o MediaRecorder gravando!
             if (ev.error === 'not-allowed') {
               showToast('Permita o microfone no navegador!', true);
               resetVoiceToIdle();
@@ -1440,11 +1411,6 @@
             if (voiceState === 'listening') {
               if (pushTranscript.trim()) {
                 finishVoiceListeningAndProcess();
-              } else {
-                const elapsed = Date.now() - listeningSessionStart;
-                if (elapsed < 14000) {
-                  try { rec.start(); } catch (e) {}
-                }
               }
             }
           };
@@ -1455,12 +1421,12 @@
         }
       }
 
-      // Limite máximo de segurança: 16 segundos
+      // Limite máximo de segurança: 18 segundos
       setTimeout(() => {
         if (voiceState === 'listening') {
           finishVoiceListeningAndProcess();
         }
-      }, 16000);
+      }, 18000);
     }
 
     async function finishVoiceListeningAndProcess() {
