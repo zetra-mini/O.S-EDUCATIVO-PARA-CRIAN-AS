@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>◈ J.A.R.V.I.S. Kids OS v2.0 — Stark Educational HUD</title>
+  <style>
+    :root {
+      --bg: #040914;
+      --panel: #0a1628;
+      --panel-hover: #132642;
+      --cyan: #00f0ff;
+      --cyan-dim: #0c4a6e;
+      --gold: #fbbf24;
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f97316;
+      --purple: #a855f7;
+      --pink: #ec4899;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: "Segoe UI", system-ui, sans-serif; }
+
+    body {
+      background: radial-gradient(circle at center, #08172e 0%, #040914 75%);
+      color: #f0f9ff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* TOP BAR */
+    header {
+      height: 52px;
+      background: #071120;
+      border-bottom: 1px solid var(--cyan-dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .hud-title { color: var(--cyan); font-family: Consolas, monospace; font-size: 1.15rem; }
+    .badge-stars { color: var(--gold); font-size: 1.05rem; }
+    .badge-books { color: #4ade80; font-size: 1.02rem; }
+    .hud-right { display: flex; align-items: center; gap: 14px; }
+    .mode-tag { font-family: Consolas, monospace; font-size: 0.8rem; color: #38bdf8; }
+    .btn-parents {
+      background: #0f172a;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-parents:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* MAIN 3-COLUMN STARK HUD */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 310px 1fr;
+      gap: 16px;
+      padding: 14px 20px;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      min-height: 0;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .module-card {
+      flex: 1;
+      background: var(--panel);
+      border: 2px solid var(--cyan);
+      border-radius: 14px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .module-card:hover {
+      background: var(--panel-hover);
+      transform: scale(1.02);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.22);
+    }
+    .module-icon { font-size: 2.3rem; width: 52px; text-align: center; }
+    .module-info h3 { font-size: 1.12rem; color: #ffffff; margin-bottom: 3px; }
+    .module-info p { font-size: 0.86rem; color: #94a3b8; }
+
+    /* CENTER ARC REACTOR */
+    .arc-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .arc-reactor {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 38px rgba(0, 240, 255, 0.35), inset 0 0 28px rgba(0, 240, 255, 0.3);
+      border: 3px solid var(--cyan);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .arc-reactor.speaking {
+      border-color: var(--gold);
+      box-shadow: 0 0 55px rgba(251, 191, 36, 0.75), inset 0 0 35px rgba(251, 191, 36, 0.5);
+    }
+    .ring-1 {
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      border: 6px dashed var(--cyan);
+      animation: spin 12s linear infinite;
+    }
+    .arc-reactor.speaking .ring-1 { border-color: var(--gold); animation-duration: 4s; }
+    .ring-2 {
+      position: absolute;
+      width: 156px;
+      height: 156px;
+      border-radius: 50%;
+      border: 4px dashed #38bdf8;
+      animation: spinReverse 8s linear infinite;
+    }
+    .arc-core {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 12%, #00f0ff 58%, #0284c7 100%);
+      box-shadow: 0 0 30px #00f0ff;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .arc-reactor.speaking .arc-core {
+      transform: scale(1.16);
+      background: radial-gradient(circle, #ffffff 15%, #fde047 58%, #d97706 100%);
+      box-shadow: 0 0 42px #fbbf24;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
+
+    /* SUBTITLE VOICE BAR */
+    footer {
+      height: 72px;
+      margin: 0 20px 14px;
+      background: #071324;
+      border: 2px solid var(--cyan);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 22px;
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f0f9ff;
+    }
+
+    /* FULLSCREEN ACTIVITY MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-header {
+      height: 56px;
+      background: #071120;
+      border-bottom: 2px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 18px;
+    }
+    .btn-back {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .modal-body {
+      flex: 1;
+      padding: 20px 28px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .big-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+    .big-btn:hover { transform: scale(1.03); }
+
+    /* KEYBOARD TRAINER */
+    .kb-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
+    .kb-key {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.25);
+      cursor: pointer;
+    }
+    .kb-left { background: #0369a1; }
+    .kb-right { background: #a16207; }
+    .kb-active {
+      background: #22c55e !important;
+      color: #040914 !important;
+      transform: scale(1.14);
+      box-shadow: 0 0 22px #22c55e;
+      border-color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hud-brand">
+      <span class="hud-title">◈ J.A.R.V.I.S. KIDS OS v2.0</span>
+      <span class="badge-stars" id="stars-badge">★ 0 Estrelas</span>
+      <span class="badge-books" id="books-badge">📖 Livros hoje: 0</span>
+    </div>
+    <div class="hud-right">
+      <span class="mode-tag" id="mode-badge">CARREGANDO...</span>
+      <button class="btn-parents" onclick="openParentsGate()">⚙ PAIS</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- COLUNA ESQUERDA: OS 4 PILARES PRINCIPAIS -->
+    <div class="col">
+      <div class="module-card" style="border-color: var(--gold);" onclick="openBooksLibrary()" onmouseenter="previewHint('Biblioteca de Livros! Nossa base principal de aventuras e sabedoria!')">
+        <div class="module-icon">📚</div>
+        <div class="module-info">
+          <h3>LER LIVROS (BASE)</h3>
+          <p>Histórias Ilustradas, Voz & Palavras</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="previewHint('Academia de Tecnologia! Aprenda a usar o mouse e digitar com as duas mãozinhas!')">
+        <div class="module-icon">⌨️</div>
+        <div class="module-info">
+          <h3>MOUSE & DIGITAÇÃO</h3>
+          <p>Treino de Mouse e as 2 Mãozinhas</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--green);" onclick="openEmotionsCenter()" onmouseenter="previewHint('Centro das Emoções e Reator da Calma!')">
+        <div class="module-icon">💚</div>
+        <div class="module-info">
+          <h3>EMOÇÕES & CALMA</h3>
+          <p>Sentimentos e Respiração Guiada</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--red);" onclick="openCinemaStark()" onmouseenter="previewHint('Cinema Stark! Netflix e YouTube Kids no horário combinado!')">
+        <div class="module-icon">🎬</div>
+        <div class="module-info">
+          <h3>CINEMA NO HORÁRIO</h3>
+          <p>YouTube Kids & Netflix Controlados</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTRO: REATOR ARC INTERATIVO -->
+    <div class="arc-container">
+      <div class="arc-reactor" id="arc-reactor" onclick="clickArcReactor()">
+        <div class="ring-1"></div>
+        <div class="ring-2"></div>
+        <div class="arc-core"></div>
+      </div>
+      <div style="color: var(--cyan); font-weight: 700; font-size: 0.92rem; text-align: center;">
+        Toque no Reator Arc para falar comigo!
+      </div>
+      <div style="font-family: Consolas, monospace; font-size: 0.75rem; color: #38bdf8;">
+        ACER ASPIRE ONE 532 READY
+      </div>
+    </div>
+
+    <!-- COLUNA DIREITA: JOGOS, PINTURA, PIANO E CONVERSA -->
+    <div class="col">
+      <div class="module-card" style="border-color: #22c55e;" onclick="openColorsMission()" onmouseenter="previewHint('Desafio de Cores e Formas do Járvis!')">
+        <div class="module-icon">🌟</div>
+        <div class="module-info">
+          <h3>JOGOS EDUCATIVOS</h3>
+          <p>Desafio de Cores, Formas & GCompris</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--orange);" onclick="openStarkPaint()" onmouseenter="previewHint('Lousa Holográfica de Pintura Mágica!')">
+        <div class="module-icon">🎨</div>
+        <div class="module-info">
+          <h3>PINTURA MÁGICA</h3>
+          <p>Lousa Neon & Tux Paint</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--purple);" onclick="openMusicSynth()" onmouseenter="previewHint('Piano Musical Stark e Chuva de Estrelas!')">
+        <div class="module-icon">🎵</div>
+        <div class="module-info">
+          <h3>PIANO & MÚSICA</h3>
+          <p>Notas Coloridas & Gamine</p>
+        </div>
+      </div>
+
+      <div class="module-card" style="border-color: var(--pink);" onclick="openTalkHub()" onmouseenter="previewHint('Conversar com o Járvis sobre Espaço, Dinossauros e Foguetes!')">
+        <div class="module-icon">🚀</div>
+        <div class="module-info">
+          <h3>CONVERSAR & CONTAR</h3>
+          <p>Espaço, Dinos e Perguntas ao JARVIS</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="subtitle-bar">
+    Clique em qualquer módulo ou no Reator Arc para ativar a voz do J.A.R.V.I.S.!
+  </footer>
+
+  <!-- JANELA MODAL DE ATIVIDADES -->
+  <div class="modal-overlay" id="activity-modal">
+    <div class="modal-header">
+      <button class="btn-back" onclick="closeModal()">⬅ VOLTAR AO JARVIS</button>
+      <h2 id="modal-title" style="color: var(--cyan); font-size: 1.2rem;">ATIVIDADE</h2>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+
+  <script>
+    let appState = {
+      config: { child_name: 'Pequeno Inventor', voice_enabled: true, media_start_time: '16:00', media_end_time: '17:00' },
+      books: [],
+      books_read_today: 0,
+      stars: 0
+    };
+    let activeInterval = null;
+    let keyHandler = null;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq = 523, durationMs = 150) {
+      if (!appState.config.voice_enabled) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + durationMs / 1000);
+      } catch (e) {}
+    }
+
+    function speak(text) {
+      document.getElementById('subtitle-bar').textContent = text;
+      if (!appState.config.voice_enabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'pt-BR';
+      utter.rate = 1.02;
+      utter.pitch = 1.05;
+      const arc = document.getElementById('arc-reactor');
+      utter.onstart = () => arc.classList.add('speaking');
+      utter.onend = () => arc.classList.remove('speaking');
+      utter.onerror = () => arc.classList.remove('speaking');
+      window.speechSynthesis.speak(utter);
+    }
+
+    function previewHint(txt) {
+      document.getElementById('subtitle-bar').textContent = txt;
+    }
+
+    function addStar(count = 1) {
+      appState.stars += count;
+      document.getElementById('stars-badge').textContent = `★ ${appState.stars} Estrelas`;
+      playTone(523, 90);
+      setTimeout(() => playTone(659, 90), 100);
+      setTimeout(() => playTone(784, 160), 200);
+    }
+
+    async function loadState(greet = false) {
+      const res = await fetch('/api/state');
+      const data = await res.json();
+      appState.config = data.config;
+      appState.books = data.books;
+      appState.books_read_today = data.books_read_today;
+      appState.media_permission = data.media_permission;
+
+      document.getElementById('books-badge').textContent = `📖 Livros hoje: ${data.books_read_today}`;
+      document.getElementById('mode-badge').textContent =
+        `${data.config.mode.toUpperCase()} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
+
+      if (greet) {
+        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Reator para ouvir!)';
+      }
+    }
+    loadState(true);
+
+    async function clickArcReactor() {
+      playTone(784, 130);
+      const topics = ['heroi', 'elogio', 'espaco', 'animais'];
+      const chosen = topics[Math.floor(Math.random() * topics.length)];
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: chosen })
+      });
+      const data = await res.json();
+      speak(data.reply);
+    }
+
+    function openModal(title) {
+      closeModal(false);
+      playTone(659, 90);
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('activity-modal').classList.add('open');
+      return document.getElementById('modal-body');
+    }
+
+    function closeModal(restoreVoice = true) {
+      if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
+      if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+      document.getElementById('activity-modal').classList.remove('open');
+      document.getElementById('modal-body').innerHTML = '';
+      if (restoreVoice) loadState(false);
+    }
+
+    // =========================================================================
+    // 1. BIBLIOTECA DE LIVROS (A BASE PRINCIPAL)
+    // =========================================================================
+    function openBooksLibrary() {
+      const body = openModal('📚 BIBLIOTECA HOLOGRÁFICA STARK (HÁBITO DE LER)');
+      renderBooksShelf(body);
+    }
+
+    function renderBooksShelf(body) {
+      speak(`Bem-vindo à Biblioteca Stark, ${appState.config.child_name}! Escolha um livro colorido para lermos juntos!`);
+      body.innerHTML = `
+        <div style="background:#0c1e35; border:2px solid #38bdf8; border-radius:12px; padding:12px 18px; margin-bottom:16px; text-align:center; font-size:1.1rem; font-weight:700;">
+          📖 Livros lidos hoje: ${appState.books_read_today} &nbsp;|&nbsp; Ler pelo menos 1 livro por dia libera superpoderes e o Cinema Stark!
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; flex:1;" id="shelf-grid"></div>
+      `;
+      const grid = document.getElementById('shelf-grid');
+      appState.books.forEach((b, idx) => {
+        const card = document.createElement('div');
+        card.style.cssText = `background:${b.theme_color}; border:3px solid #e0f2fe; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; cursor:pointer;`;
+        card.innerHTML = `
+          <div style="font-size:3rem; margin-bottom:8px;">📘</div>
+          <h3 style="font-size:1.45rem; margin-bottom:8px;">${b.title}</h3>
+          <p style="font-size:1rem; opacity:0.9;">${b.pages.length} páginas ilustradas • Toque para ler!</p>
+        `;
+        card.onclick = () => openBookPage(body, idx, 0);
+        grid.appendChild(card);
+      });
+    }
+
+    const SCENE_EMOJIS = {
+      book_glow: '📖✨', rocket: '🚀🌌', castle: '🏰🐉', heart: '💖🌟',
+      sun: '☀️🌻', clock: '⏰⭐', star: '🌟🦸', fire: '🐲🔥',
+      cloud: '☁️💙', flower: '🌸🌬️', smile: '😊🌈', tree: '🌳🐰', gift: '🎁🤝'
+    };
+
+    function openBookPage(body, bookIdx, pageIdx) {
+      const book = appState.books[bookIdx];
+      const page = book.pages[pageIdx];
+      playTone(587, 110);
+      speak(page.text);
+
+      body.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <button class="big-btn" style="background:#334155; padding:8px 16px; font-size:0.95rem;" id="btn-shelf">📚 Outros Livros</button>
+          <span style="color:#38bdf8; font-weight:800; font-size:1.1rem;">${book.title} — Página ${pageIdx + 1} de ${book.pages.length}</span>
+        </div>
+        <div style="flex:1; background:#0b192c; border:3px solid ${book.theme_color}; border-radius:16px; display:grid; grid-template-columns:320px 1fr; gap:24px; padding:24px; align-items:center;">
+          <div style="background:#081221; border-radius:14px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px; gap:16px;">
+            <div style="font-size:5.2rem;">${SCENE_EMOJIS[page.scene] || '🌟'}</div>
+            <button class="big-btn" style="background:#facc15; color:#0f172a; font-size:1.6rem;" id="btn-spell">🔤 ${page.word}</button>
+            <small style="color:#94a3b8;">Toque na palavra amarela para soletrar!</small>
+          </div>
+          <div style="font-size:1.75rem; font-weight:700; line-height:1.5;">
+            ${page.text}
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:16px;">
+          <div>
+            ${pageIdx > 0 ? '<button class="big-btn" style="background:#475569; margin-right:10px;" id="btn-prev">⬅ Página Anterior</button>' : ''}
+            <button class="big-btn" style="background:#0284c7;" id="btn-repeat">🔊 Ouvir de Novo</button>
+          </div>
+          <div>
+            ${pageIdx < book.pages.length - 1
+              ? '<button class="big-btn" style="background:#10b981;" id="btn-next">Próxima Página ➡</button>'
+              : '<button class="big-btn" style="background:#eab308; color:#0f172a;" id="btn-finish">🏆 Concluir Livro e Ganhar Medalha!</button>'}
+          </div>
+        </div>
+      `;
+
+      document.getElementById('btn-shelf').onclick = () => renderBooksShelf(body);
+      document.getElementById('btn-repeat').onclick = () => speak(page.text);
+      document.getElementById('btn-spell').onclick = () => {
+        playTone(659, 100);
+        const spelled = page.word.replace(/\s+/g, '').split('').join(', ');
+        speak(`A palavra é ${page.word}! Vamos soletrar: ${spelled}. ${page.word}!`);
+      };
+      if (pageIdx > 0) document.getElementById('btn-prev').onclick = () => openBookPage(body, bookIdx, pageIdx - 1);
+      if (pageIdx < book.pages.length - 1) {
+        document.getElementById('btn-next').onclick = () => openBookPage(body, bookIdx, pageIdx + 1);
+      } else {
+        document.getElementById('btn-finish').onclick = async () => {
+          const res = await fetch('/api/book-finished', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_id: book.id })
+          });
+          const d = await res.json();
+          appState.books_read_today = d.books_read_today;
+          document.getElementById('books-badge').textContent = `📖 Livros hoje: ${d.books_read_today}`;
+          addStar(2);
+          speak(`Parabéns, ${appState.config.child_name}! Você leu o livro inteiro e ganhou duas estrelas de Super Leitor!`);
+          renderBooksShelf(body);
+        };
+      }
+    }
+
+    // =========================================================================
+    // 2. ACADEMIA DE MOUSE & DIGITAÇÃO CORRETA (AS DUAS MÃOZINHAS)
+    // =========================================================================
+    const LEFT_KEYS = new Set('QWERTASDFGZXCVB'.split(''));
+    const KB_ROWS = [
+      ['Q','W','E','R','T','Y','U','I','O','P'],
+      ['A','S','D','F','G','H','J','K','L'],
+      ['Z','X','C','V','B','N','M']
+    ];
+    const WORDS_POOL = ['LIVRO', 'SOL', 'LUA', 'AMOR', 'CALMA', 'CASA', 'BOLA', 'VIDA'];
+
+    function openTechAcademy() {
+      const body = openModal('⌨️ ACADEMIA DE MOUSE & DIGITAÇÃO CORRETA');
+      body.innerHTML = `
+        <div style="display:flex; gap:12px; margin-bottom:14px;">
+          <button class="big-btn" style="background:#eab308; color:#0f172a; padding:10px 18px; font-size:1rem;" id="tab-kb">⌨️ Digitação das Duas Mãozinhas</button>
+          <button class="big-btn" style="background:#0284c7; padding:10px 18px; font-size:1rem;" id="tab-mouse">🖱️ Treino de Mouse (Mover, Clicar e Arrastar)</button>
+        </div>
+        <div id="tech-stage" style="flex:1; display:flex; flex-direction:column;"></div>
+      `;
+      document.getElementById('tab-kb').onclick = renderTypingStage;
+      document.getElementById('tab-mouse').onclick = renderMouseStage;
+      renderTypingStage();
+    }
+
+    function renderTypingStage() {
+      if (keyHandler) window.removeEventListener('keydown', keyHandler);
+      const stage = document.getElementById('tech-stage');
+      stage.innerHTML = `
+        <div style="display:flex; justify-content:space-between; background:#0b192c; border:1px solid #38bdf8; border-radius:10px; padding:10px 18px; margin-bottom:10px; font-weight:700;">
+          <span style="color:#38bdf8;">🖐 MÃO ESQUERDA = Teclas Azuis (Indicador no F•)</span>
+          <span style="color:#facc15;">🤚 MÃO DIREITA = Teclas Amarelas (Indicador no J•)</span>
+        </div>
+        <div id="typing-word" style="text-align:center; font-family:Consolas,monospace; font-size:2.6rem; font-weight:900; margin:6px 0;"></div>
+        <div id="typing-hint" style="text-align:center; color:#4ade80; font-size:1.25rem; font-weight:700; margin-bottom:14px;"></div>
+        <div id="kb-container" style="margin:auto;"></div>
+      `;
+
+      const kb = document.getElementById('kb-container');
+      const keyEls = {};
+      KB_ROWS.forEach(row => {
+        const rDiv = document.createElement('div');
+        rDiv.className = 'kb-row';
+        row.forEach(k => {
+          const btn = document.createElement('div');
+          btn.className = 'kb-key ' + (LEFT_KEYS.has(k) ? 'kb-left' : 'kb-right');
+          btn.textContent = (k === 'F' || k === 'J') ? `${k}•` : k;
+          btn.onclick = () => handleKey(k);
+          rDiv.appendChild(btn);
+          keyEls[k] = btn;
+        });
+        kb.appendChild(rDiv);
+      });
+      const sp = document.createElement('div');
+      sp.style.cssText = 'background:#15803d; text-align:center; padding:10px; border-radius:10px; font-weight:800; width:360px; margin:8px auto 0;';
+      sp.textContent = '👍 BARRA DE ESPAÇO (DEDÕES)';
+      kb.appendChild(sp);
+
+      let word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
+      let idx = 0;
+
+      function refreshUI(announceWord) {
+        Object.values(keyEls).forEach(el => el.classList.remove('kb-active'));
+        const target = word[idx];
+        document.getElementById('typing-word').textContent = `${word.slice(0, idx)} [ ${target} ] ${word.slice(idx + 1)}`;
+        const isLeft = LEFT_KEYS.has(target);
+        document.getElementById('typing-hint').textContent =
+          `Aperte a letra "${target}" usando a ${isLeft ? '🖐 MÃOZINHA ESQUERDA (Azul)' : '🤚 MÃOZINHA DIREITA (Amarela)'}!`;
+        if (keyEls[target]) keyEls[target].classList.add('kb-active');
+
+        const handSpeech = isLeft ? 'mãozinha esquerda' : 'mãozinha direita';
+        if (announceWord) speak(`Vamos escrever a palavra ${word}! Aperte a letra ${target} com a ${handSpeech}!`);
+        else speak(`Letra ${target}, com a ${handSpeech}!`);
+      }
+
+      function handleKey(ch) {
+        const target = word[idx];
+        if (ch === target) {
+          playTone(659, 100);
+          idx++;
+          if (idx >= word.length) {
+            addStar(1);
+            document.getElementById('typing-word').textContent = `🌟 ${word} 🌟`;
+            speak(`Parabéns! Você digitou ${word} usando as duas mãozinhas!`);
+            setTimeout(() => {
+              word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
+              idx = 0;
+              refreshUI(true);
+            }, 2300);
+          } else {
+            refreshUI(false);
+          }
+        } else if (keyEls[ch]) {
+          playTone(220, 140);
+          speak(`Procure a tecla verde brilhante da letra ${target}!`);
+        }
+      }
+
+      keyHandler = (e) => {
+        if (e.key && e.key.length === 1) handleKey(e.key.toUpperCase());
+      };
+      window.addEventListener('keydown', keyHandler);
+      refreshUI(true);
+    }
+
+    function renderMouseStage() {
+      if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+      const stage = document.getElementById('tech-stage');
+      let phase = 1;
+      let hits = 0;
+
+      stage.innerHTML = `
+        <div id="mouse-instruction" style="text-align:center; font-size:1.3rem; font-weight:800; color:#38bdf8; margin-bottom:10px;">
+          Fase 1: Passeie com o mouse e encoste na bola azul!
+        </div>
+        <div id="mouse-arena" style="flex:1; background:#06101f; border:2px solid #0284c7; border-radius:14px; position:relative; overflow:hidden;"></div>
+      `;
+      speak('Fase um do mouse: leve a setinha até encostar na bola azul brilhante!');
+
+      function spawn() {
+        const arena = document.getElementById('mouse-arena');
+        if (!arena) return;
+        arena.innerHTML = '';
+        const x = Math.floor(Math.random() * (arena.clientWidth - 160)) + 40;
+        const y = Math.floor(Math.random() * (arena.clientHeight - 140)) + 30;
+
+        if (phase === 1) {
+          const orb = document.createElement('div');
+          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:90px; height:90px; border-radius:50%; background:#00f0ff; color:#040914; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff;`;
+          orb.textContent = 'ENCOSTE';
+          orb.onmouseenter = advance;
+          arena.appendChild(orb);
+        } else if (phase === 2) {
+          const orb = document.createElement('div');
+          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:95px; height:95px; border-radius:50%; background:#22c55e; color:#fff; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:pointer;`;
+          orb.textContent = 'CLIQUE!';
+          orb.onclick = advance;
+          arena.appendChild(orb);
+        } else {
+          const reactor = document.createElement('div');
+          reactor.style.cssText = `position:absolute; right:50px; top:35%; width:130px; height:130px; border-radius:50%; background:#0c4a6e; border:4px dashed #00f0ff; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:800;`;
+          reactor.textContent = 'SOLTE AQUI\nNO REATOR';
+          reactor.ondragover = (e) => e.preventDefault();
+          reactor.ondrop = () => advance();
+
+          const battery = document.createElement('div');
+          battery.draggable = true;
+          battery.style.cssText = `position:absolute; left:60px; top:40%; width:95px; height:95px; border-radius:50%; background:#facc15; color:#0f172a; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:grab;`;
+          battery.textContent = 'ARRASTE';
+
+          arena.appendChild(reactor);
+          arena.appendChild(battery);
+        }
+      }
+
+      function advance() {
+        playTone(659, 100);
+        hits++;
+        const inst = document.getElementById('mouse-instruction');
+        if (phase === 1 && hits >= 3) {
+          phase = 2; hits = 0;
+          inst.textContent = 'Fase 2: Agora CLIQUE com o dedinho indicador no círculo verde!';
+          speak('Muito bem! Agora clique com o dedinho indicador no círculo verde!');
+        } else if (phase === 2 && hits >= 3) {
+          phase = 3; hits = 0;
+          inst.textContent = 'Fase 3: Segure o botão na bola amarela e ARRASTE até o Reator!';
+          speak('Excelente! Agora segure a energia amarela e arraste até soltar dentro do Reator!');
+        } else if (phase === 3 && hits >= 2) {
+          addStar(1);
+          phase = 1; hits = 0;
+          inst.textContent = '🏆 Mestre do Mouse! Você ganhou uma Estrela Stark!';
+          speak(`Parabéns, ${appState.config.child_name}! Você dominou o mouse!`);
+        }
+        spawn();
+      }
+      setTimeout(spawn, 100);
+    }
+
+    // =========================================================================
+    // 3. GESTÃO DAS EMOÇÕES & REATOR DA CALMA
+    // =========================================================================
+    function openEmotionsCenter() {
+      const body = openModal('💚 GESTÃO DAS EMOÇÕES & REATOR DA CALMA');
+      const n = appState.config.child_name;
+      speak(`Como o seu coração está se sentindo agora, ${n}? Toque em um rostinho!`);
+
+      const emotions = [
+        { e: '😊', t: 'FELIZ', c: '#16a34a', b: false, m: `Que maravilha que você está feliz, ${n}! Espalhe esse sorriso lindo pela casa!` },
+        { e: '😠', t: 'BRAVO', c: '#dc2626', b: true, m: `Tudo bem ficar bravo quando algo dá errado, ${n}. Vamos respirar com o Reator da Calma para esfriar esse vulcão?` },
+        { e: '😢', t: 'TRISTE', c: '#2563eb', b: true, m: `Quando estamos tristes, um abraço bem apertado na família e respirar devagar ajudam o coração!` },
+        { e: '😨', t: 'COM MEDO', c: '#7c3aed', b: true, m: `Você está seguro e protegido, ${n}! Todo herói respira fundo para ganhar coragem!` },
+        { e: '⚡', t: 'AGITADO', c: '#d97706', b: true, m: `Seus propulsores estão super rápidos! Vamos acalmar a armadura respirando juntos?` }
+      ];
+
+      body.innerHTML = `
+        <h3 style="text-align:center; font-size:1.5rem; margin-bottom:16px;">Como o seu coração está se sentindo agora?</h3>
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px;" id="emo-grid"></div>
+        <div id="emo-msg" style="background:#0b192c; border:2px solid #38bdf8; border-radius:14px; padding:20px; margin:20px 0; font-size:1.3rem; font-weight:700; text-align:center;">
+          Toque em um dos rostinhos acima!
+        </div>
+        <div style="text-align:center;">
+          <button class="big-btn" style="background:#0284c7;" id="btn-breath">🌬️ LIGAR REATOR DA CALMA (RESPIRAÇÃO GUIADA)</button>
+        </div>
+      `;
+
+      const grid = document.getElementById('emo-grid');
+      emotions.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'big-btn';
+        btn.style.cssText = `background:${item.c}; padding:20px 10px; font-size:1.3rem;`;
+        btn.innerHTML = `<div style="font-size:2.8rem; margin-bottom:6px;">${item.e}</div>${item.t}`;
+        btn.onclick = () => {
+          playTone(523, 120);
+          document.getElementById('emo-msg').textContent = item.m;
+          speak(item.m);
+        };
+        grid.appendChild(btn);
+      });
+
+      document.getElementById('btn-breath').onclick = () => startBreathingUI(body);
+    }
+
+    function startBreathingUI(body) {
+      if (activeInterval) clearInterval(activeInterval);
+      body.innerHTML = `
+        <h2 id="breath-text" style="text-align:center; color:#34d399; font-size:1.8rem; margin-bottom:20px;">🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)</h2>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <div id="breath-orb" style="width:110px; height:110px; border-radius:50%; background:#10b981; border:5px solid #fff; box-shadow:0 0 40px #10b981; transition:all 4s ease-in-out; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.3rem; color:#040914;">AR</div>
+        </div>
+      `;
+      let inhale = true;
+      let count = 0;
+
+      function cycle() {
+        const orb = document.getElementById('breath-orb');
+        const txt = document.getElementById('breath-text');
+        if (!orb) return;
+        if (count >= 6) {
+          clearInterval(activeInterval);
+          addStar(1);
+          txt.textContent = '🌟 Coração calmo e mente brilhante! (+1 Estrela)';
+          speak(`Parabéns, ${appState.config.child_name}! Seu Reator da Calma está completo!`);
+          return;
+        }
+        if (inhale) {
+          txt.textContent = '🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)';
+          txt.style.color = '#34d399';
+          orb.style.transform = 'scale(2.3)';
+          orb.style.background = '#10b981';
+          orb.textContent = 'INSPIRAR';
+          playTone(440, 200);
+          speak('Puxe o ar cheirando a florzinha...');
+        } else {
+          txt.textContent = '🕯️ SOLTE O AR PELA BOCA (Sopre a velinha devagar...)';
+          txt.style.color = '#fbbf24';
+          orb.style.transform = 'scale(1.0)';
+          orb.style.background = '#38bdf8';
+          orb.textContent = 'CALMA';
+          playTone(330, 200);
+          speak('Agora sopre a velinha bem devagar...');
+        }
+        inhale = !inhale;
+        count++;
+      }
+      setTimeout(cycle, 100);
+      activeInterval = setInterval(cycle, 4200);
+    }
+
+    // =========================================================================
+    // 4. CINEMA STARK (NETFLIX & YOUTUBE KIDS COM EDUCAÇÃO DO TEMPO)
+    // =========================================================================
+    async function openCinemaStark() {
+      const body = openModal('🎬 CINEMA STARK — TUDO TEM O SEU TEMPO');
+      await loadState(false);
+      const perm = appState.media_permission;
+
+      if (!perm.allowed) {
+        speak(perm.message);
+        body.innerHTML = `
+          <div style="margin:auto; background:#0f172a; border:3px solid #f59e0b; border-radius:18px; padding:36px; max-width:820px; text-align:center;">
+            <div style="font-size:4.5rem; margin-bottom:12px;">${perm.reason === 'need_book' ? '📚' : '⏰'}</div>
+            <h3 style="font-size:1.55rem; line-height:1.45; margin-bottom:24px;">${perm.message}</h3>
+            <div style="display:flex; gap:16px; justify-content:center;">
+              <button class="big-btn" style="background:#10b981;" onclick="openBooksLibrary()">📚 IR PARA A BIBLIOTECA DE LIVROS!</button>
+              <button class="big-btn" style="background:#f97316;" onclick="openStarkPaint()">🎨 IR PARA PINTURA MÁGICA</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      let rem = perm.remaining_sec;
+      let warned = false;
+      speak(`Horário liberado, ${appState.config.child_name}! Escolha YouTube Kids ou Netflix Infantil. Quando o tempo acabar, faremos uma nova atividade!`);
+
+      body.innerHTML = `
+        <div id="cinema-timer" style="text-align:center; font-size:2rem; font-weight:900; color:#34d399; margin-bottom:18px;">
+          ⏱ Tempo disponível hoje: ${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:22px; flex:1;">
+          <button class="big-btn" style="background:#dc2626; font-size:1.8rem;" id="btn-yt">▶ YOUTUBE KIDS<br><span style="font-size:1rem; font-weight:400;">Abrir com Cronômetro Stark</span></button>
+          <button class="big-btn" style="background:#991b1b; font-size:1.8rem;" id="btn-nf">🎬 NETFLIX INFANTIL<br><span style="font-size:1rem; font-weight:400;">Abrir com Cronômetro Stark</span></button>
+        </div>
+      `;
+
+      let popupWin = null;
+      function launchControlledVideo(url, label) {
+        speak(`Abrindo ${label}! Eu aviso você dois minutinhos antes de terminar!`);
+        popupWin = window.open(url, 'StarkCinemaWindow', 'width=980,height=580');
+        if (activeInterval) clearInterval(activeInterval);
+        activeInterval = setInterval(async () => {
+          const res = await fetch('/api/media/tick', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ seconds: 5 })
+          });
+          const d = await res.json();
+          rem = d.remaining_sec;
+          const el = document.getElementById('cinema-timer');
+          if (el) el.textContent = `⏱ Tempo restante hoje: ${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}`;
+
+          if (rem <= 120 && rem >= 114 && !warned) {
+            warned = true;
+            speak(`Atenção, ${appState.config.child_name}! Faltam dois minutinhos para terminar o vídeo!`);
+          }
+          if (rem <= 0) {
+            clearInterval(activeInterval);
+            if (popupWin && !popupWin.closed) popupWin.close();
+            addStar(1);
+            speak(`O tempo de vídeo terminou, ${appState.config.child_name}! Parabéns por cumprir o combinado! Agora vamos para uma nova aventura na Biblioteca de Livros!`);
+            openBooksLibrary();
+          }
+        }, 5000);
+      }
+
+      document.getElementById('btn-yt').onclick = () => launchControlledVideo('https://www.youtubekids.com', 'YouTube Kids');
+      document.getElementById('btn-nf').onclick = () => launchControlledVideo('https://www.netflix.com/Kids', 'Netflix Infantil');
+    }
+
+    // =========================================================================
+    // 5. DEMAIS MÓDULOS: CORES, LOUSA NEON, PIANO E CONVERSA COM JARVIS
+    // =========================================================================
+    function openColorsMission() {
+      const body = openModal('🌟 DESAFIO DE CORES E FORMAS');
+      const items = [
+        { name: 'VERMELHO', color: '#ef4444', shape: '● CÍRCULO' },
+        { name: 'AZUL', color: '#3b82f6', shape: '■ QUADRADO' },
+        { name: 'AMARELO', color: '#eab308', shape: '▲ TRIÂNGULO' },
+        { name: 'VERDE', color: '#10b981', shape: '★ ESTRELA' }
+      ];
+
+      function nextRound() {
+        const target = items[Math.floor(Math.random() * items.length)];
+        const msg = `${appState.config.child_name}, toque no ${target.name}!`;
+        speak(msg);
+        body.innerHTML = `
+          <h2 style="text-align:center; font-size:1.8rem; margin-bottom:20px;">${msg}</h2>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; flex:1;" id="colors-grid"></div>
+        `;
+        const g = document.getElementById('colors-grid');
+        [...items].sort(() => Math.random() - 0.5).forEach(it => {
+          const b = document.createElement('button');
+          b.className = 'big-btn';
+          b.style.cssText = `background:${it.color}; font-size:1.5rem;`;
+          b.innerHTML = `${it.shape}<br><br>${it.name}`;
+          b.onclick = () => {
+            if (it.name === target.name) {
+              addStar(1);
+              speak(`Isso mesmo! Você encontrou o ${it.name}!`);
+              setTimeout(nextRound, 1800);
+            } else {
+              playTone(220, 180);
+              speak(`Esse é o ${it.name}! Procure o ${target.name}!`);
+            }
+          };
+          g.appendChild(b);
+        });
+      }
+      nextRound();
+    }
+
+    function openStarkPaint() {
+      const body = openModal('🎨 LOUSA HOLOGRÁFICA STARK');
+      speak('Escolha uma cor brilhante e desenhe à vontade!');
+      body.innerHTML = `
+        <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;" id="paint-bar"></div>
+        <canvas id="paint-canvas" width="940" height="400" style="background:#030712; border:2px solid var(--cyan); border-radius:12px; cursor:crosshair; align-self:center;"></canvas>
+      `;
+      let color = '#00f0ff';
+      const bar = document.getElementById('paint-bar');
+      ['#00f0ff','#ef4444','#facc15','#22c55e','#fb923c','#f472b6','#ffffff'].forEach(c => {
+        const b = document.createElement('button');
+        b.style.cssText = `width:44px; height:44px; border-radius:50%; background:${c}; border:3px solid #fff; cursor:pointer;`;
+        b.onclick = () => { color = c; playTone(587, 80); };
+        bar.appendChild(b);
+      });
+      const clr = document.createElement('button');
+      clr.className = 'big-btn';
+      clr.style.cssText = 'background:#a855f7; margin-left:auto; padding:8px 18px; font-size:0.95rem;';
+      clr.textContent = '✨ Limpar Tela';
+      bar.appendChild(clr);
+
+      const cv = document.getElementById('paint-canvas');
+      const ctx = cv.getContext('2d');
+      let drawing = false;
+      cv.onmousedown = (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+      cv.onmousemove = (e) => {
+        if (!drawing) return;
+        ctx.strokeStyle = color; ctx.lineWidth = 9; ctx.lineCap = 'round';
+        ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke();
+      };
+      window.onmouseup = () => { drawing = false; };
+      clr.onclick = () => { ctx.clearRect(0, 0, cv.width, cv.height); speak('Tela limpinha!'); };
+    }
+
+    function openMusicSynth() {
+      const body = openModal('🎵 SINTETIZADOR MUSICAL STARK');
+      speak('Toque nas teclas coloridas para criar música e estrelas!');
+      const notes = [
+        ['DÓ', 262, '#ef4444'], ['RÉ', 294, '#f97316'], ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
+        ['SOL', 392, '#06b6d4'], ['LÁ', 440, '#3b82f6'], ['SI', 494, '#a855f7'], ['DÓ+', 523, '#ec4899']
+      ];
+      body.innerHTML = `
+        <div id="star-sky" style="flex:1; background:#050b18; border-radius:14px; position:relative; overflow:hidden; margin-bottom:14px;"></div>
+        <div style="display:grid; grid-template-columns:repeat(8, 1fr); gap:10px; height:170px;" id="piano-row"></div>
+      `;
+      const sky = document.getElementById('star-sky');
+      const row = document.getElementById('piano-row');
+      notes.forEach(([n, f, c]) => {
+        const b = document.createElement('button');
+        b.className = 'big-btn';
+        b.style.cssText = `background:${c}; font-size:1.5rem;`;
+        b.textContent = n;
+        b.onclick = () => {
+          playTone(f, 260);
+          const s = document.createElement('div');
+          s.style.cssText = `position:absolute; left:${Math.random()*85 + 5}%; top:${Math.random()*70 + 10}%; font-size:2.4rem; color:${c}; font-weight:900;`;
+          s.textContent = `★ ${n}`;
+          sky.appendChild(s);
+          if (sky.children.length > 24) sky.removeChild(sky.firstChild);
+        };
+        row.appendChild(b);
+      });
+    }
+
+    function openTalkHub() {
+      const body = openModal('🚀 CONVERSAR COM O J.A.R.V.I.S.');
+      speak(`Sobre o que vamos conversar agora, ${appState.config.child_name}?`);
+      body.innerHTML = `
+        <div id="jarvis-reply" style="background:#0a192f; border:2px solid var(--cyan); border-radius:14px; padding:20px; font-size:1.35rem; font-weight:700; min-height:95px; margin-bottom:16px; text-align:center;">
+          Toque em um tema abaixo ou envie uma pergunta!
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; flex:1;" id="talk-grid"></div>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          <input id="custom-q" placeholder="Digite uma pergunta para o JARVIS responder à criança..." style="flex:1; background:#1e293b; color:#fff; border:1px solid #38bdf8; border-radius:10px; padding:12px; font-size:1.05rem;" />
+          <button class="big-btn" style="background:var(--cyan); color:#040914;" id="btn-send-q">Perguntar</button>
+        </div>
+      `;
+      const topics = [
+        ['🚀 ESPAÇO E PLANETAS', 'espaco', '#0284c7'],
+        ['🦖 DINOSSAUROS', 'dinossauros', '#16a34a'],
+        ['🦁 ANIMAIS', 'animais', '#ea580c'],
+        ['🦸 SUPER-HERÓI', 'heroi', '#dc2626'],
+        ['🔢 CONTAR DE 1 A 10', 'numeros', '#9333ea'],
+        ['⭐ ELOGIO DO JARVIS', 'elogio', '#ca8a04']
+      ];
+      const g = document.getElementById('talk-grid');
+      topics.forEach(([lbl, key, col]) => {
+        const b = document.createElement('button');
+        b.className = 'big-btn';
+        b.style.background = col;
+        b.textContent = lbl;
+        b.onclick = async () => {
+          playTone(659, 90);
+          const r = await fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({topic:key}) });
+          const d = await r.json();
+          document.getElementById('jarvis-reply').textContent = d.reply;
+          speak(d.reply);
+        };
+        g.appendChild(b);
+      });
+      document.getElementById('btn-send-q').onclick = async () => {
+        const q = document.getElementById('custom-q').value.trim();
+        if (!q) return;
+        document.getElementById('custom-q').value = '';
+        const r = await fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({question:q}) });
+        const d = await r.json();
+        document.getElementById('jarvis-reply').textContent = d.reply;
+        speak(d.reply);
+      };
+    }
+
+    // =========================================================================
+    // 6. PAINEL DOS PAIS (TRAVA MATEMÁTICA + HORÁRIO + SELETOR HÍBRIDO)
+    // =========================================================================
+    function openParentsGate() {
+      const a = Math.floor(Math.random() * 7) + 6;
+      const b = Math.floor(Math.random() * 6) + 4;
+      const ans = prompt(`🔒 Área dos Pais — Quanto é ${a} + ${b}?`);
+      if (ans === null) return;
+      if (parseInt(ans.trim(), 10) !== a + b) {
+        alert('Resposta incorreta!');
+        return;
+      }
+      openParentsPanel();
+    }
+
+    function openParentsPanel() {
+      const body = openModal('⚙ PAINEL DOS PAIS — ROTINA DE VÍDEO, LEITURA & MOTOR IA');
+      const c = appState.config;
+      body.innerHTML = `
+        <div style="max-width:700px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:14px; background:#0f172a; padding:24px; border-radius:16px; border:1px solid #334155;">
+          <div>
+            <label>Nome da Criança (falado pelo JARVIS):</label><br>
+            <input id="cfg-name" value="${c.child_name}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div>
+              <label style="color:#fde047;">Início Cinema (HH:MM):</label>
+              <input id="cfg-start" value="${c.media_start_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+            <div>
+              <label style="color:#fde047;">Fim Cinema (HH:MM):</label>
+              <input id="cfg-end" value="${c.media_end_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+            <div>
+              <label style="color:#fde047;">Limite Diário (min):</label>
+              <input id="cfg-mins" type="number" value="${c.media_daily_minutes}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+          </div>
+          <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="cfg-req-book" ${c.require_book_before_media ? 'checked' : ''} />
+            📚 Exigir leitura de pelo menos 1 Livro no dia antes de liberar Netflix / YouTube Kids
+          </label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label>Motor de IA (Seletor Híbrido):</label>
+              <select id="cfg-mode" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;">
+                <option value="offline" ${c.mode==='offline'?'selected':''}>100% Offline (Sem Wi-Fi)</option>
+                <option value="ollama" ${c.mode==='ollama'?'selected':''}>IA Local na Rede (Ollama)</option>
+                <option value="cloud" ${c.mode==='cloud'?'selected':''}>Nuvem Externa (Groq / Gemini / OpenAI)</option>
+              </select>
+            </div>
+            <div>
+              <label>URL Ollama (se modo Ollama):</label>
+              <input id="cfg-ollama" value="${c.ollama_url}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <button class="big-btn" style="background:#0284c7; font-size:0.95rem;" id="btn-bonus">🎁 Liberar +15 min de Cinema Agora</button>
+            <button class="big-btn" style="background:#10b981;" id="btn-save-cfg">💾 Salvar Configurações</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('btn-bonus').onclick = async () => {
+        await fetch('/api/media/bonus', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({minutes:15}) });
+        alert('Foram liberados +15 minutos imediatos de Cinema Stark para hoje!');
+      };
+
+      document.getElementById('btn-save-cfg').onclick = async () => {
+        const payload = {
+          child_name: document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor',
+          media_start_time: document.getElementById('cfg-start').value.trim() || '16:00',
+          media_end_time: document.getElementById('cfg-end').value.trim() || '17:00',
+          media_daily_minutes: parseInt(document.getElementById('cfg-mins').value, 10) || 25,
+          require_book_before_media: document.getElementById('cfg-req-book').checked,
+          mode: document.getElementById('cfg-mode').value,
+          ollama_url: document.getElementById('cfg-ollama').value.trim()
+        };
+        await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+        await loadState(false);
+        closeModal();
+        speak(`Configurações atualizadas! Olá, ${payload.child_name}!`);
+      };
+    }
+  </script>
+</body>
+</html>
