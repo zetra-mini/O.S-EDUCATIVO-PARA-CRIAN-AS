@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 config.json
+uso_diario.json
 .env
 .venv/
 venv/

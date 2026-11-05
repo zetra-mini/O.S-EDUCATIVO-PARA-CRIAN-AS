@@ -1,36 +1,40 @@
-# ◈ J.A.R.V.I.S. Kids OS — Stark Educational System (4 Anos)
+# ◈ J.A.R.V.I.S. Kids OS v2.0 — Stark Educational System (4 Anos)
 
 Sistema educativo estilo **JARVIS do Homem de Ferro** projetado sob medida para o netbook **Acer Aspire One 532h** (`Intel Atom N450`, `1 GB–2 GB RAM`, vídeo `Intel GMA 3150`, tela `1024x600`).
 
-Consome **menos de 28 MB de memória RAM**, funciona **100% offline sem Wi-Fi** (por padrão) e traz um **Seletor Híbrido** protegido no Painel dos Pais para conectar opcionalmente ao **Ollama na rede local** ou **APIs em Nuvem (Groq / Gemini / OpenAI)**.
+Consome **menos de 28 MB de memória RAM**, funciona **100% offline** nas atividades educativas e integra controle de tempo inteligente caso o Wi-Fi esteja ligado para o horário do cinema.
 
 ---
 
-## O que vem integrado no JARVIS Kids OS:
+## Os 4 Pilares Pedagógicos do JARVIS Kids OS v2.0
 
-1. **Reator Arc Animado Central (`1024x600`):** Pulsa e muda de cor quando o JARVIS fala em Português com a criança pelo nome!
-2. **Lançadores Automáticos + Jogos Integrados:**
-   - **★ Jogos Educativos:** Abre o **GCompris** (pré-configurado em renderização por software para a placa Intel GMA 3150 + filtro para 4 anos em PT-BR) ou o **Desafio de Cores e Formas** integrado.
-   - **✎ Pintura Mágica:** Abre o **Tux Paint** em tela cheia ou a **Lousa Holográfica Neon Stark** integrada.
-   - **♪ Piano & Sons:** Sintetizador musical colorido (DÓ a DÓ+) com geração sonora em memória e chuva de estrelas estilo **Gamine**.
-   - **123 Contar Foguetes:** Contagem interativa falada de 1 até 10 com conquista de Estrelas Stark.
-   - **◈ Conversar com o JARVIS:** 6 botões visuais grandes (Espaço, Dinossauros, Animais, Super-Herói, Números e Elogios) + caixa de perguntas conectada ao cérebro híbrido.
-3. **🔒 Painel dos Pais (com Trava Matemática Anti-Criança):**
-   - Personalizar o **Nome da Criança** falado pelo JARVIS;
-   - Alternar o **Motor de IA** entre `offline` (padrão 100% sem Wi-Fi), `ollama` (rede local) ou `cloud` (Groq/Gemini/OpenAI);
-   - Sair do Modo Quiosque ou desligar o netbook com segurança.
+1. **📚 Hábito de Ler Livros (A Base Principal — `biblioteca_livros.py`):**
+   - Biblioteca Holográfica com livros infantis ilustrados e narrados em voz alta pelo JARVIS.
+   - Destaca **Palavras-Chave Gigantes** em cada página com soletração sonora para pré-alfabetização.
+   - Regra pedagógica ativa por padrão: **ler pelo menos 1 livro no dia** antes de liberar o horário do Cinema!
+
+2. **💚 Gestão das Emoções (`academia_emocoes_tech.py`):**
+   - Roda de Sentimentos (Feliz, Bravo, Triste, Com Medo, Agitado) com acolhimento empático por voz.
+   - **Exercício do Reator da Calma:** respiração guiada visual e sonora (*"Cheire a florzinha... Sopre a velinha devagar..."*).
+
+3. **⌨️ Tecnologia: Mouse, Teclado & Digitação Correta (`academia_emocoes_tech.py`):**
+   - **Treino de Mouse em 3 Fases:** Mover até o alvo, Clique Esquerdo com o indicador e Segurar/Arrastar (*Drag & Drop*).
+   - **Digitação das Duas Mãozinhas:** Mapa visual colorido dividindo **Mão Esquerda (Azul — tecla guia `F•`)**, **Mão Direita (Amarelo — tecla guia `J•`)** e **Dedões no Espaço**, ensinando a digitar palavras dos livros e o próprio nome da criança sem viciar em um dedo só.
+
+4. **🎬 Netflix & YouTube Kids com Educação do Tempo (`gestao_tempo_midia.py`):**
+   - Só libera dentro da **janela de horário definida pelos pais** (ex: `16:00` às `17:00`) e respeitando o **limite de minutos diários** (ex: `25 min`).
+   - Avisa gentilmente por voz **faltando 2 minutos** para preparar emocionalmente a criança.
+   - Ao terminar o tempo, **fecha automaticamente o vídeo** (liberando 100% da RAM do netbook), parabeniza a criança por cumprir o combinado e a **redireciona automaticamente para outra atividade educativa** (Biblioteca de Livros).
 
 ---
 
-## Passo a Passo para Instalar no Acer Aspire One 532
+## Instalação Rápida no Acer Aspire One 532
 
-1. **Instale o antiX Linux no netbook:**
-   - Baixe o **antiX Linux Full (32-bit `i386` se tiver 1 GB de RAM, ou 64-bit se tiver 2 GB)** em https://antixlinux.com e instale marcando **Auto-Login**.
-2. **Baixe diretamente do GitHub no netbook (ou leve via pendrive):**
+1. Instale o **antiX Linux** (32-bit `i386` para 1 GB RAM, ou 64-bit para 2 GB RAM) com **Auto-Login** ativado.
+2. Abra o terminal uma única vez e execute:
    ```bash
    git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git jarvis-kids-os
    cd jarvis-kids-os
    chmod +x instalar_antix_kiosk.sh
    bash instalar_antix_kiosk.sh
    ```
-4. **Pronto!** Pode desligar o Wi-Fi do netbook: toda vez que apertar o botão Power do Acer Aspire One 532, ele ligará direto no **JARVIS Kids OS** falando em Português!

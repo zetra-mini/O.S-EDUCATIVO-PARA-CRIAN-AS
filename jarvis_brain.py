@@ -16,6 +16,11 @@ DEFAULT_CONFIG = {
     "cloud_api_key": "",
     "cloud_model": "llama-3.3-70b-versatile",
     "voice_enabled": True,
+    "media_start_time": "16:00",
+    "media_end_time": "17:00",
+    "media_daily_minutes": 25,
+    "require_book_before_media": True,
+    "custom_books": [],
 }
 
 

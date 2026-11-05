@@ -31,6 +31,7 @@ sudo apt-get install -y \
   gcompris-qt \
   tuxpaint \
   gamine \
+  firefox-esr \
   zram-tools || true
 
 echo "[2/6] Copiando arquivos do JARVIS Kids OS para $APP_DIR ..."

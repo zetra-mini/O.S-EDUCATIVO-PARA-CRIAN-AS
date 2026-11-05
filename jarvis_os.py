@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-import math
-import os
 import platform
 import random
 import shutil
@@ -9,13 +7,21 @@ import sys
 import tkinter as tk
 from tkinter import messagebox
 
+from academia_emocoes_tech import EmotionsCenterModal, TechAcademyModal
+from biblioteca_livros import BookLibraryModal
+from gestao_tempo_midia import CinemaStarkModal, MediaTimeManager
 from jarvis_brain import JarvisBrain
 from voz_jarvis import JarvisVoice
 
 
 class JarvisKidsOS:
     """
-    JARVIS Kids OS — Central Educativa Estilo Homem de Ferro para Crianças de ~4 Anos.
+    JARVIS Kids OS v2.0 — Central Educativa Estilo Homem de Ferro para Crianças de ~4 Anos.
+    Pilares:
+      1. Hábito de Ler Livros (Base Principal — Biblioteca Ilustrada e Narrada)
+      2. Gestão das Emoções (Roda de Sentimentos e Reator da Calma)
+      3. Tecnologia (Domínio do Mouse + Digitação Correta com as Duas Mãozinhas)
+      4. Educação do Tempo (Netflix & YouTube Kids com Horário Fixo, Cronômetro e Redirecionamento)
     Projetado sob medida para Acer Aspire One 532h (1024x600, Atom N450, GMA 3150, < 30 MB RAM).
     """
 
@@ -33,31 +39,31 @@ class JarvisKidsOS:
     def __init__(self, kiosk: bool = False):
         self.kiosk = kiosk
         self.brain = JarvisBrain()
+        self.media_mgr = MediaTimeManager(self.brain)
         self.is_speaking = False
         self.voice = JarvisVoice(on_speaking_change=self._on_speaking_state)
         self.voice.muted = not self.brain.config.get("voice_enabled", True)
 
         self.root = tk.Tk()
-        self.root.title("J.A.R.V.I.S. Kids OS — Stark Educational System")
+        self.root.title("J.A.R.V.I.S. Kids OS v2.0 — Stark Educational System")
         self.root.configure(bg=self.BG_DARK)
         self.root.geometry("1024x600")
-        self.root.minsize(800, 520)
+        self.root.minsize(860, 540)
 
         if self.kiosk:
             self.root.attributes("-fullscreen", True)
-            self.root.protocol("WM_DELETE_WINDOW", lambda: None)  # Bloqueia Alt+F4 infantil
+            self.root.protocol("WM_DELETE_WINDOW", lambda: None)
 
         self.angle = 0
         self.pulse = 0
         self.stars_earned = 0
-        self.subtitle_var = tk.StringVar(value="Inicializando sistemas Stark...")
+        self.subtitle_var = tk.StringVar(value="Inicializando sistemas educativos Stark...")
         self.mode_badge_var = tk.StringVar()
         self._update_mode_badge()
 
         self._build_main_hud()
         self._animate_arc_reactor()
 
-        # Saudação inicial por voz após abrir a janela
         self.root.after(700, self._welcome)
 
     def _on_speaking_state(self, speaking: bool):
@@ -65,29 +71,41 @@ class JarvisKidsOS:
 
     def _update_mode_badge(self):
         m = self.brain.config.get("mode", "offline")
+        sched = f"{self.brain.config.get('media_start_time', '16:00')}-{self.brain.config.get('media_end_time', '17:00')}"
         labels = {
-            "offline": "MODO: 100% OFFLINE (SEM WI-FI)",
-            "ollama": "MODO: HÍBRIDO REDE LOCAL (OLLAMA)",
-            "cloud": f"MODO: HÍBRIDO NUVEM ({self.brain.config.get('cloud_provider', 'API').upper()})",
+            "offline": f"OFFLINE • CINEMA: {sched}",
+            "ollama": f"OLLAMA REDE • CINEMA: {sched}",
+            "cloud": f"NUVEM ({self.brain.config.get('cloud_provider', 'API').upper()}) • CINEMA: {sched}",
         }
         self.mode_badge_var.set(labels.get(m, "MODO: 100% OFFLINE"))
+
+    def update_books_badge(self):
+        n = self.media_mgr.get_books_read_today()
+        self.books_label.configure(text=f"📖 Livros hoje: {n}")
 
     def say(self, text: str):
         self.subtitle_var.set(text)
         self.voice.speak(text)
 
     def _welcome(self):
-        self.voice.play_tone(523, 120)
-        self.root.after(140, lambda: self.voice.play_tone(659, 120))
-        self.root.after(280, lambda: self.voice.play_tone(784, 180))
-        self.root.after(450, lambda: self.say(self.brain.get_greeting()))
+        self.voice.play_tone(523, 110)
+        self.root.after(130, lambda: self.voice.play_tone(659, 110))
+        self.root.after(260, lambda: self.voice.play_tone(784, 170))
+        books_today = self.media_mgr.get_books_read_today()
+        if books_today == 0:
+            msg = (
+                f"Olá, {self.brain.name}! Eu sou o Járvis! "
+                f"Que tal começarmos o dia abrindo um livro mágico na Biblioteca Stark?"
+            )
+        else:
+            msg = self.brain.get_greeting()
+        self.root.after(440, lambda: self.say(msg))
 
     # ==========================================================================
-    # HUD PRINCIPAL (1024 x 600)
+    # HUD PRINCIPAL (1024 x 600) — 8 GRANDES MÓDULOS + REATOR ARC
     # ==========================================================================
     def _build_main_hud(self):
-        # Barra Superior HUD
-        top_bar = tk.Frame(self.root, bg="#071120", height=48, highlightthickness=1, highlightbackground=self.CYAN_DIM)
+        top_bar = tk.Frame(self.root, bg="#071120", height=46, highlightthickness=1, highlightbackground=self.CYAN_DIM)
         top_bar.pack(fill="x", side="top")
         top_bar.pack_propagate(False)
 
@@ -96,17 +114,26 @@ class JarvisKidsOS:
             text="◈ J.A.R.V.I.S. KIDS OS",
             fg=self.CYAN,
             bg="#071120",
-            font=("Consolas", 14, "bold"),
-        ).pack(side="left", padx=16)
+            font=("Consolas", 13, "bold"),
+        ).pack(side="left", padx=14)
 
         self.stars_label = tk.Label(
             top_bar,
             text="★ 0 Estrelas",
             fg=self.GOLD,
             bg="#071120",
-            font=("Arial", 13, "bold"),
+            font=("Arial", 12, "bold"),
         )
-        self.stars_label.pack(side="left", padx=18)
+        self.stars_label.pack(side="left", padx=10)
+
+        self.books_label = tk.Label(
+            top_bar,
+            text=f"📖 Livros hoje: {self.media_mgr.get_books_read_today()}",
+            fg="#4ade80",
+            bg="#071120",
+            font=("Arial", 12, "bold"),
+        )
+        self.books_label.pack(side="left", padx=12)
 
         tk.Button(
             top_bar,
@@ -121,7 +148,7 @@ class JarvisKidsOS:
             pady=4,
             cursor="hand2",
             command=self._open_parent_gate,
-        ).pack(side="right", padx=12, pady=8)
+        ).pack(side="right", padx=12, pady=7)
 
         tk.Label(
             top_bar,
@@ -129,103 +156,121 @@ class JarvisKidsOS:
             fg="#38bdf8",
             bg="#071120",
             font=("Consolas", 9),
-        ).pack(side="right", padx=12)
+        ).pack(side="right", padx=8)
 
-        # Área Central: 3 Colunas (Botões Esquerda | Reator Arc Central | Botões Direita)
+        # Área Central: 3 Colunas
         center = tk.Frame(self.root, bg=self.BG_DARK)
-        center.pack(fill="both", expand=True, padx=16, pady=8)
+        center.pack(fill="both", expand=True, padx=14, pady=6)
         center.columnconfigure(0, weight=1)
-        center.columnconfigure(1, weight=1)
+        center.columnconfigure(1, weight=0)
         center.columnconfigure(2, weight=1)
         center.rowconfigure(0, weight=1)
 
         left_col = tk.Frame(center, bg=self.BG_DARK)
-        left_col.grid(row=0, column=0, sticky="nsew", padx=8)
+        left_col.grid(row=0, column=0, sticky="nsew", padx=6)
 
-        mid_col = tk.Frame(center, bg=self.BG_DARK)
+        mid_col = tk.Frame(center, bg=self.BG_DARK, width=280)
         mid_col.grid(row=0, column=1, sticky="nsew", padx=4)
 
         right_col = tk.Frame(center, bg=self.BG_DARK)
-        right_col.grid(row=0, column=2, sticky="nsew", padx=8)
+        right_col.grid(row=0, column=2, sticky="nsew", padx=6)
 
-        # 3 Grandes Módulos da Esquerda
+        # COLUNA ESQUERDA: Os 4 Pilares Principais (Livros, Mouse/Teclado, Emoções, Cinema com Tempo)
         self._make_big_module_btn(
             left_col,
-            icon="★",
-            title="JOGOS EDUCATIVOS",
-            subtitle="GCompris / Formas",
+            icon="📚",
+            title="LER LIVROS (BASE)",
+            subtitle="Histórias Narradas & Palavras",
+            color=self.GOLD,
+            voice_hint="Biblioteca de Livros! Nossa base principal de aventuras e sabedoria!",
+            command=self._open_book_library,
+        )
+        self._make_big_module_btn(
+            left_col,
+            icon="⌨",
+            title="MOUSE & DIGITAÇÃO",
+            subtitle="Usar Mouse e as 2 Mãozinhas",
+            color=self.CYAN,
+            voice_hint="Academia de Tecnologia! Aprenda a usar o mouse e digitar com as duas mãozinhas!",
+            command=self._open_tech_academy,
+        )
+        self._make_big_module_btn(
+            left_col,
+            icon="💚",
+            title="EMOÇÕES & CALMA",
+            subtitle="Sentimentos e Respiração",
             color=self.GREEN_OK,
-            voice_hint="Jogos educativos! Vamos brincar e aprender!",
-            command=self._launch_gcompris_or_shapes,
+            voice_hint="Centro das Emoções e Reator da Calma!",
+            command=self._open_emotions_center,
         )
         self._make_big_module_btn(
             left_col,
-            icon="✎",
-            title="PINTURA MÁGICA",
-            subtitle="Tux Paint / Lousa Neon",
-            color=self.ORANGE,
-            voice_hint="Laboratório de pintura! Vamos desenhar com cores brilhantes!",
-            command=self._launch_tuxpaint_or_draw,
-        )
-        self._make_big_module_btn(
-            left_col,
-            icon="♪",
-            title="PIANO & SONS",
-            subtitle="Gamine / Música Stark",
-            color=self.PURPLE,
-            voice_hint="Piano musical e sons coloridos!",
-            command=self._open_music_synth,
+            icon="🎬",
+            title="CINEMA NO HORÁRIO",
+            subtitle="YouTube Kids & Netflix",
+            color=self.RED_STARK,
+            voice_hint="Cinema Stark! Lembre-se: tudo tem o seu tempo combinado!",
+            command=self._open_cinema_stark,
         )
 
-        # Centro: Reator Arc Interativo
+        # CENTRO: Reator Arc Interativo
         self.arc_canvas = tk.Canvas(
-            mid_col, width=300, height=320, bg=self.BG_DARK, highlightthickness=0, cursor="hand2"
+            mid_col, width=270, height=290, bg=self.BG_DARK, highlightthickness=0, cursor="hand2"
         )
         self.arc_canvas.pack(expand=True)
         self.arc_canvas.bind("<Button-1>", lambda _e: self._on_arc_clicked())
 
         tk.Label(
             mid_col,
-            text="Toque no Reator Arc para falar comigo!",
+            text="Toque no Reator para falar comigo!",
             fg=self.CYAN,
             bg=self.BG_DARK,
-            font=("Arial", 10, "bold"),
-        ).pack(pady=(0, 6))
+            font=("Arial", 9, "bold"),
+        ).pack(pady=(0, 4))
 
-        # 3 Grandes Módulos da Direita
+        # COLUNA DIREITA: Jogos GCompris, Pintura Tux Paint, Música e Conversa JARVIS
         self._make_big_module_btn(
             right_col,
-            icon="❖",
-            title="DESAFIO CORES",
-            subtitle="Missão com Voz",
-            color=self.GOLD,
-            voice_hint="Desafio das cores e formas do Járvis!",
-            command=self._open_colors_mission,
+            icon="★",
+            title="JOGOS EDUCATIVOS",
+            subtitle="GCompris / Desafio Cores",
+            color="#22c55e",
+            voice_hint="Jogos educativos e desafio das cores!",
+            command=self._launch_gcompris_or_shapes,
         )
         self._make_big_module_btn(
             right_col,
-            icon="◈",
-            title="FALAR COM JARVIS",
-            subtitle="Espaço, Dinos e Heróis",
-            color=self.CYAN,
-            voice_hint="Conversar com o Járvis! Sobre o que você quer saber?",
+            icon="✎",
+            title="PINTURA MÁGICA",
+            subtitle="Tux Paint / Lousa Neon",
+            color=self.ORANGE,
+            voice_hint="Laboratório de pintura mágica!",
+            command=self._launch_tuxpaint_or_draw,
+        )
+        self._make_big_module_btn(
+            right_col,
+            icon="♪",
+            title="PIANO & MÚSICA",
+            subtitle="Gamine / Notas Coloridas",
+            color=self.PURPLE,
+            voice_hint="Piano musical e chuva de estrelas!",
+            command=self._open_music_synth,
+        )
+        self._make_big_module_btn(
+            right_col,
+            icon="🚀",
+            title="CONVERSAR & CONTAR",
+            subtitle="Dinos, Espaço e Foguetes",
+            color=self.PINK,
+            voice_hint="Conversar com o Járvis sobre espaço, dinossauros e foguetes!",
             command=self._open_talk_hub,
         )
-        self._make_big_module_btn(
-            right_col,
-            icon="123",
-            title="CONTAR FOGUETES",
-            subtitle="Números de 1 a 10",
-            color=self.PINK,
-            voice_hint="Vamos contar foguetes de um até dez!",
-            command=self._open_counting_mission,
-        )
 
-        # Barra Inferior de Legenda / Voz do JARVIS
+        # Barra Inferior de Voz / Legenda
         bottom_bar = tk.Frame(
-            self.root, bg="#071324", height=74, highlightthickness=2, highlightbackground=self.CYAN
+            self.root, bg="#071324", height=66, highlightthickness=2, highlightbackground=self.CYAN
         )
-        bottom_bar.pack(fill="x", side="bottom", padx=16, pady=(0, 12))
+        bottom_bar.pack(fill="x", side="bottom", padx=14, pady=(0, 10))
         bottom_bar.pack_propagate(False)
 
         tk.Label(
@@ -233,10 +278,10 @@ class JarvisKidsOS:
             textvariable=self.subtitle_var,
             fg="#f0f9ff",
             bg="#071324",
-            font=("Arial", 13, "bold"),
+            font=("Arial", 12, "bold"),
             wraplength=960,
             justify="center",
-        ).pack(expand=True, fill="both", padx=14, pady=8)
+        ).pack(expand=True, fill="both", padx=12, pady=6)
 
     def _make_big_module_btn(self, parent, icon, title, subtitle, color, voice_hint, command):
         card = tk.Frame(
@@ -245,29 +290,29 @@ class JarvisKidsOS:
             highlightthickness=2,
             highlightbackground=color,
             cursor="hand2",
-            pady=10,
-            padx=12,
+            pady=6,
+            padx=10,
         )
-        card.pack(fill="both", expand=True, pady=7)
+        card.pack(fill="both", expand=True, pady=5)
 
         row = tk.Frame(card, bg=self.PANEL_BG)
         row.pack(expand=True, fill="both")
 
         lbl_icon = tk.Label(
-            row, text=icon, fg=color, bg=self.PANEL_BG, font=("Arial", 28, "bold"), width=3
+            row, text=icon, fg=color, bg=self.PANEL_BG, font=("Arial", 22, "bold"), width=3
         )
-        lbl_icon.pack(side="left", padx=(2, 10))
+        lbl_icon.pack(side="left", padx=(2, 8))
 
         txt_frame = tk.Frame(row, bg=self.PANEL_BG)
         txt_frame.pack(side="left", fill="both", expand=True)
 
         lbl_title = tk.Label(
-            txt_frame, text=title, fg="#ffffff", bg=self.PANEL_BG, font=("Arial", 13, "bold"), anchor="w"
+            txt_frame, text=title, fg="#ffffff", bg=self.PANEL_BG, font=("Arial", 12, "bold"), anchor="w"
         )
-        lbl_title.pack(fill="x", pady=(4, 0))
+        lbl_title.pack(fill="x", pady=(2, 0))
 
         lbl_sub = tk.Label(
-            txt_frame, text=subtitle, fg="#94a3b8", bg=self.PANEL_BG, font=("Arial", 10), anchor="w"
+            txt_frame, text=subtitle, fg="#94a3b8", bg=self.PANEL_BG, font=("Arial", 9), anchor="w"
         )
         lbl_sub.pack(fill="x")
 
@@ -276,21 +321,13 @@ class JarvisKidsOS:
             command()
 
         def on_enter(_e=None):
-            card.configure(bg="#132642")
-            row.configure(bg="#132642")
-            lbl_icon.configure(bg="#132642")
-            txt_frame.configure(bg="#132642")
-            lbl_title.configure(bg="#132642")
-            lbl_sub.configure(bg="#132642")
+            for w in (card, row, lbl_icon, txt_frame, lbl_title, lbl_sub):
+                w.configure(bg="#132642")
             self.subtitle_var.set(voice_hint)
 
         def on_leave(_e=None):
-            card.configure(bg=self.PANEL_BG)
-            row.configure(bg=self.PANEL_BG)
-            lbl_icon.configure(bg=self.PANEL_BG)
-            txt_frame.configure(bg=self.PANEL_BG)
-            lbl_title.configure(bg=self.PANEL_BG)
-            lbl_sub.configure(bg=self.PANEL_BG)
+            for w in (card, row, lbl_icon, txt_frame, lbl_title, lbl_sub):
+                w.configure(bg=self.PANEL_BG)
 
         for w in (card, row, lbl_icon, txt_frame, lbl_title, lbl_sub):
             w.bind("<Button-1>", on_click)
@@ -298,54 +335,34 @@ class JarvisKidsOS:
         card.bind("<Leave>", on_leave)
 
     # ==========================================================================
-    # ANIMAÇÃO DO REATOR ARC (LEVE PARA INTEL GMA 3150 — ~15 FPS)
+    # ANIMAÇÃO DO REATOR ARC
     # ==========================================================================
     def _animate_arc_reactor(self):
         c = self.arc_canvas
         c.delete("all")
-        cx, cy = 150, 160
+        cx, cy = 135, 145
         self.angle = (self.angle + 6) % 360
         self.pulse = (self.pulse + 1) % 20
 
-        glow_extra = 10 if self.is_speaking and (self.pulse % 4 < 2) else 0
+        glow_extra = 9 if self.is_speaking and (self.pulse % 4 < 2) else 0
         core_color = self.GOLD if self.is_speaking else self.CYAN
 
-        # Anel externo tecnológico
-        c.create_oval(cx - 125, cy - 125, cx + 125, cy + 125, outline=self.CYAN_DIM, width=3)
-        c.create_oval(cx - 110, cy - 110, cx + 110, cy + 110, outline=self.CYAN, width=2)
+        c.create_oval(cx - 114, cy - 114, cx + 114, cy + 114, outline=self.CYAN_DIM, width=3)
+        c.create_oval(cx - 100, cy - 100, cx + 100, cy + 100, outline=self.CYAN, width=2)
 
-        # Segmentos giratórios do Reator Arc
         for i in range(6):
             start_ang = (self.angle + i * 60) % 360
             c.create_arc(
-                cx - 96,
-                cy - 96,
-                cx + 96,
-                cy + 96,
-                start=start_ang,
-                extent=32,
-                style="arc",
-                outline=core_color,
-                width=7,
+                cx - 86, cy - 86, cx + 86, cy + 86, start=start_ang, extent=32, style="arc", outline=core_color, width=6
             )
 
-        # Anel contra-rotativo interno
         for i in range(4):
             start_ang = (-self.angle * 1.5 + i * 90) % 360
             c.create_arc(
-                cx - 68,
-                cy - 68,
-                cx + 68,
-                cy + 68,
-                start=start_ang,
-                extent=45,
-                style="arc",
-                outline="#38bdf8",
-                width=4,
+                cx - 60, cy - 60, cx + 60, cy + 60, start=start_ang, extent=45, style="arc", outline="#38bdf8", width=4
             )
 
-        # Núcleo brilhante central
-        r_core = 42 + glow_extra
+        r_core = 38 + glow_extra
         c.create_oval(
             cx - r_core,
             cy - r_core,
@@ -355,10 +372,9 @@ class JarvisKidsOS:
             outline="#e0f2fe",
             width=3,
         )
-        c.create_oval(cx - 22, cy - 22, cx + 22, cy + 22, fill="#e0f2fe", outline="")
-        c.create_text(cx, cy + 142, text="STARK EDU CORE v1.0", fill="#38bdf8", font=("Consolas", 9, "bold"))
+        c.create_oval(cx - 19, cy - 19, cx + 19, cy + 19, fill="#e0f2fe", outline="")
+        c.create_text(cx, cy + 130, text="STARK EDU CORE v2.0", fill="#38bdf8", font=("Consolas", 9, "bold"))
 
-        # 70ms (~14 FPS) consome quase 0% de CPU no Atom N450
         self.root.after(70, self._animate_arc_reactor)
 
     def _on_arc_clicked(self):
@@ -372,6 +388,21 @@ class JarvisKidsOS:
         self.voice.play_tone(523, 90)
         self.root.after(100, lambda: self.voice.play_tone(659, 90))
         self.root.after(200, lambda: self.voice.play_tone(784, 150))
+
+    # ==========================================================================
+    # ABERTURA DOS NOVOS PILARES EDUCATIVOS
+    # ==========================================================================
+    def _open_book_library(self):
+        BookLibraryModal(self)
+
+    def _open_tech_academy(self):
+        TechAcademyModal(self)
+
+    def _open_emotions_center(self):
+        EmotionsCenterModal(self)
+
+    def _open_cinema_stark(self):
+        CinemaStarkModal(self)
 
     # ==========================================================================
     # LANÇADORES EXTERNOS (LINUX) COM FALLBACK INTEGRADO
@@ -404,9 +435,6 @@ class JarvisKidsOS:
         if not launched:
             self._open_stark_paint()
 
-    # ==========================================================================
-    # JANELA BASE DE ATIVIDADES INFANTIS EM TELA CHEIA
-    # ==========================================================================
     def _create_activity_window(self, title: str):
         win = tk.Toplevel(self.root)
         win.title(title)
@@ -417,7 +445,7 @@ class JarvisKidsOS:
         win.transient(self.root)
         win.grab_set()
 
-        header = tk.Frame(win, bg="#071120", height=54, highlightthickness=1, highlightbackground=self.CYAN)
+        header = tk.Frame(win, bg="#071120", height=52, highlightthickness=1, highlightbackground=self.CYAN)
         header.pack(fill="x", side="top")
         header.pack_propagate(False)
 
@@ -427,22 +455,22 @@ class JarvisKidsOS:
             fg="#ffffff",
             bg=self.RED_STARK,
             activebackground="#dc2626",
-            font=("Arial", 12, "bold"),
+            font=("Arial", 11, "bold"),
             relief="flat",
-            padx=16,
-            pady=6,
+            padx=14,
+            pady=5,
             cursor="hand2",
             command=win.destroy,
         ).pack(side="left", padx=12, pady=7)
 
         tk.Label(
-            header, text=title, fg=self.CYAN, bg="#071120", font=("Arial", 14, "bold")
-        ).pack(side="left", padx=16)
+            header, text=title, fg=self.CYAN, bg="#071120", font=("Arial", 13, "bold")
+        ).pack(side="left", padx=14)
 
         return win
 
     # ==========================================================================
-    # MÓDULO 1: LOUSA HOLOGRÁFICA STARK (PINTURA NEON INTEGRADA)
+    # MÓDULOS CLÁSSICOS: PINTURA, PIANO, CORES E CONVERSA/FOGUETES
     # ==========================================================================
     def _open_stark_paint(self):
         win = self._create_activity_window("✎ LOUSA HOLOGRÁFICA STARK")
@@ -500,31 +528,17 @@ class JarvisKidsOS:
         def draw(e):
             if last_pos["x"] is not None:
                 canvas.create_line(
-                    last_pos["x"],
-                    last_pos["y"],
-                    e.x,
-                    e.y,
-                    fill=current_color.get(),
-                    width=10,
-                    capstyle="round",
-                    smooth=True,
+                    last_pos["x"], last_pos["y"], e.x, e.y, fill=current_color.get(), width=10, capstyle="round", smooth=True
                 )
             last_pos["x"], last_pos["y"] = e.x, e.y
 
-        def stop_draw(_e):
-            last_pos["x"], last_pos["y"] = None, None
-
         canvas.bind("<ButtonPress-1>", start_draw)
         canvas.bind("<B1-Motion>", draw)
-        canvas.bind("<ButtonRelease-1>", stop_draw)
+        canvas.bind("<ButtonRelease-1>", lambda _e: last_pos.update({"x": None, "y": None}))
 
-    # ==========================================================================
-    # MÓDULO 2: PIANO MUSICAL STARK & MODO GAMINE (TECLAS E ESTRELAS)
-    # ==========================================================================
     def _open_music_synth(self):
-        # No Linux se quiser Gamine externo temos atalho dentro da própria janela também!
         win = self._create_activity_window("♪ SINTETIZADOR MUSICAL STARK")
-        self.say("Toque nas teclas coloridas ou aperte qualquer botão do teclado para fazer música e estrelas!")
+        self.say("Toque nas teclas coloridas ou aperte o teclado para fazer música e estrelas!")
 
         sky = tk.Canvas(win, bg="#050b18", height=250, highlightthickness=0)
         sky.pack(fill="both", expand=True, padx=16, pady=(10, 6))
@@ -544,9 +558,7 @@ class JarvisKidsOS:
         ]
 
         def spawn_star(color, label_txt=""):
-            x = random.randint(60, 920)
-            y = random.randint(40, 210)
-            r = random.randint(22, 42)
+            x, y, r = random.randint(60, 920), random.randint(40, 210), random.randint(22, 42)
             sky.create_oval(x - r, y - r, x + r, y + r, fill=color, outline="#ffffff", width=2)
             if label_txt:
                 sky.create_text(x, y, text=label_txt, fill="#ffffff", font=("Arial", 14, "bold"))
@@ -554,49 +566,31 @@ class JarvisKidsOS:
                 for item in sky.find_all()[:6]:
                     sky.delete(item)
 
-        def play_note(name, freq, color):
-            self.voice.play_tone(freq, 240)
-            spawn_star(color, name)
-
         for n_name, freq, col in notes:
-            btn = tk.Button(
+            tk.Button(
                 keys_frame,
                 text=n_name,
                 bg=col,
                 fg="#ffffff",
-                activebackground="#ffffff",
-                activeforeground=col,
                 font=("Arial", 18, "bold"),
                 height=5,
                 relief="raised",
                 bd=4,
                 cursor="hand2",
-                command=lambda n=n_name, f=freq, c=col: play_note(n, f, c),
-            )
-            btn.pack(side="left", fill="both", expand=True, padx=5)
+                command=lambda n=n_name, f=freq, c=col: (self.voice.play_tone(f, 240), spawn_star(c, n)),
+            ).pack(side="left", fill="both", expand=True, padx=5)
 
-        def on_any_key(event):
-            n_name, freq, col = random.choice(notes)
-            ch = event.char.upper() if event.char and event.char.isalnum() else "★"
-            self.voice.play_tone(freq, 200)
-            spawn_star(col, ch)
+        win.bind(
+            "<Key>",
+            lambda e: (
+                self.voice.play_tone(random.choice(notes)[1], 200),
+                spawn_star(random.choice(notes)[2], e.char.upper() if e.char and e.char.isalnum() else "★"),
+            ),
+        )
 
-        win.bind("<Key>", on_any_key)
-
-    # ==========================================================================
-    # MÓDULO 3: DESAFIO DE CORES E FORMAS COM VOZ
-    # ==========================================================================
     def _open_colors_mission(self):
         win = self._create_activity_window("❖ MISSÃO STARK: CORES E FORMAS")
-
-        prompt_lbl = tk.Label(
-            win,
-            text="",
-            fg="#ffffff",
-            bg=self.BG_DARK,
-            font=("Arial", 20, "bold"),
-            pady=14,
-        )
+        prompt_lbl = tk.Label(win, text="", fg="#ffffff", bg=self.BG_DARK, font=("Arial", 20, "bold"), pady=14)
         prompt_lbl.pack()
 
         board = tk.Frame(win, bg=self.BG_DARK)
@@ -617,7 +611,6 @@ class JarvisKidsOS:
             random.shuffle(shuffled)
             chosen = random.choice(shuffled)
             target["name"] = chosen[0]
-
             instruction = f"{self.brain.name}, toque no botão {chosen[0]}!"
             prompt_lbl.configure(text=instruction)
             self.say(instruction)
@@ -628,7 +621,6 @@ class JarvisKidsOS:
                     text=f"{shape_txt}\n\n{cname}",
                     bg=hex_c,
                     fg="#ffffff",
-                    activebackground=hex_c,
                     font=("Arial", 20, "bold"),
                     relief="raised",
                     bd=6,
@@ -647,80 +639,33 @@ class JarvisKidsOS:
 
         next_round()
 
-    # ==========================================================================
-    # MÓDULO 4: CONTAR FOGUETES DE 1 A 10
-    # ==========================================================================
-    def _open_counting_mission(self):
-        win = self._create_activity_window("123 MISSÃO CONTAGEM DE FOGUETES")
-        count = {"n": 0}
-        names_pt = ["Zero", "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito", "Nove", "Dez"]
-
-        lbl_num = tk.Label(win, text="0", fg=self.GOLD, bg=self.BG_DARK, font=("Arial", 64, "bold"))
-        lbl_num.pack(pady=(12, 4))
-
-        rockets_lbl = tk.Label(win, text="Toque no botão verde para lançar foguetes!", fg=self.CYAN, bg=self.BG_DARK, font=("Arial", 24))
-        rockets_lbl.pack(pady=14)
-
-        def add_rocket():
-            count["n"] += 1
-            if count["n"] > 10:
-                count["n"] = 1
-            n = count["n"]
-            lbl_num.configure(text=str(n))
-            rockets_lbl.configure(text="🚀 " * n)
-            self.voice.play_tone(300 + n * 45, 140)
-            if n == 10:
-                self._add_star()
-                self.say(f"Dez foguetes lançados! Parabéns, {self.brain.name}! Decolagem completa!")
-            else:
-                self.say(f"{names_pt[n]}!")
-
-        tk.Button(
-            win,
-            text="🚀 LANÇAR MAIS UM FOGUETE! (+1)",
-            bg=self.GREEN_OK,
-            fg="#ffffff",
-            font=("Arial", 20, "bold"),
-            padx=28,
-            pady=18,
-            relief="raised",
-            bd=5,
-            cursor="hand2",
-            command=add_rocket,
-        ).pack(pady=18)
-
-        self.say(f"Vamos contar foguetes até dez, {self.brain.name}! Toque no botão verde!")
-
-    # ==========================================================================
-    # MÓDULO 5: CONVERSAR COM O JARVIS (TEMAS ILUSTRADOS + PERGUNTA LIVRE)
-    # ==========================================================================
     def _open_talk_hub(self):
-        win = self._create_activity_window("◈ CONVERSAR COM O J.A.R.V.I.S.")
+        win = self._create_activity_window("🚀 CONVERSAR COM O JARVIS & CONTAR FOGUETES")
 
         ans_box = tk.Label(
             win,
             text=f"Sobre o que vamos conversar agora, {self.brain.name}?",
             fg="#f8fafc",
             bg="#0a192f",
-            font=("Arial", 16, "bold"),
+            font=("Arial", 15, "bold"),
             wraplength=920,
             height=4,
             padx=18,
-            pady=12,
+            pady=10,
             highlightthickness=2,
             highlightbackground=self.CYAN,
         )
-        ans_box.pack(fill="x", padx=24, pady=14)
+        ans_box.pack(fill="x", padx=24, pady=12)
 
         grid = tk.Frame(win, bg=self.BG_DARK)
-        grid.pack(expand=True, fill="both", padx=24, pady=6)
+        grid.pack(expand=True, fill="both", padx=24, pady=4)
 
         topics = [
             ("🚀 ESPAÇO E PLANETAS", "espaco", "#0284c7"),
             ("🦖 DINOSSAUROS", "dinossauros", "#16a34a"),
             ("🦁 ANIMAIS DA SELVA", "animais", "#ea580c"),
             ("🦸 SUPER-HERÓI STARK", "heroi", "#dc2626"),
-            ("🔢 CONTAR NÚMEROS", "numeros", "#9333ea"),
+            ("🔢 CONTAR ATÉ DEZ", "numeros", "#9333ea"),
             ("⭐ ELOGIO DO JARVIS", "elogio", "#ca8a04"),
         ]
 
@@ -739,19 +684,18 @@ class JarvisKidsOS:
                 text=label,
                 bg=col,
                 fg="#ffffff",
-                font=("Arial", 15, "bold"),
+                font=("Arial", 14, "bold"),
                 relief="raised",
                 bd=4,
                 cursor="hand2",
                 command=lambda k=key: trigger_topic(k),
             ).grid(row=r, column=c, sticky="nsew", padx=8, pady=8)
 
-        # Pergunta digitada (para brincar junto com papai/mamãe)
         ask_bar = tk.Frame(win, bg=self.BG_DARK)
         ask_bar.pack(fill="x", padx=24, pady=(4, 14))
 
         q_entry = tk.Entry(ask_bar, font=("Arial", 13), bg="#1e293b", fg="#ffffff", insertbackground="#ffffff")
-        q_entry.pack(side="left", fill="x", expand=True, ipady=7, padx=(0, 10))
+        q_entry.pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 10))
 
         def send_custom(_e=None):
             q = q_entry.get().strip()
@@ -775,7 +719,7 @@ class JarvisKidsOS:
         ).pack(side="right")
 
     # ==========================================================================
-    # PAINEL DOS PAIS (COM BLOQUEIO MATEMÁTICO E SELETOR HÍBRIDO DE IA)
+    # PAINEL DOS PAIS (HORÁRIO DE CINEMA, REGRA DE LIVRO, SELETOR DE IA)
     # ==========================================================================
     def _open_parent_gate(self):
         gate = tk.Toplevel(self.root)
@@ -812,58 +756,105 @@ class JarvisKidsOS:
 
     def _open_parent_settings(self):
         cfg_win = tk.Toplevel(self.root)
-        cfg_win.title("Configurações dos Pais — Seletor Híbrido JARVIS")
+        cfg_win.title("Configurações dos Pais — Educação do Tempo, Leitura & IA")
         cfg_win.configure(bg=self.PANEL_BG)
-        cfg_win.geometry("660x510")
+        cfg_win.geometry("760x570")
         cfg_win.transient(self.root)
         cfg_win.grab_set()
 
-        pad = {"padx": 20, "pady": 6}
         tk.Label(
             cfg_win,
-            text="⚙ Painel dos Pais & Seletor de Motor IA",
+            text="⚙ Painel dos Pais — Rotina de Vídeo, Leitura & Motor IA",
             fg=self.CYAN,
             bg=self.PANEL_BG,
             font=("Arial", 14, "bold"),
-        ).pack(pady=14)
+        ).pack(pady=10)
 
         form = tk.Frame(cfg_win, bg=self.PANEL_BG)
         form.pack(fill="both", expand=True, padx=24)
 
-        tk.Label(form, text="Nome da Criança (falado pelo JARVIS):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=0, column=0, sticky="w", pady=6)
+        tk.Label(form, text="Nome da Criança:", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=0, column=0, sticky="w", pady=5)
         name_var = tk.StringVar(value=self.brain.config.get("child_name", "Pequeno Inventor"))
-        tk.Entry(form, textvariable=name_var, width=34, font=("Arial", 11)).grid(row=0, column=1, sticky="w", pady=6)
+        tk.Entry(form, textvariable=name_var, width=32, font=("Arial", 11)).grid(row=0, column=1, sticky="w", pady=5)
 
-        tk.Label(form, text="Motor de Inteligência (Seletor Híbrido):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=1, column=0, sticky="w", pady=6)
+        tk.Label(form, text="Horário Permitido Netflix/YouTube (HH:MM):", fg="#fde047", bg=self.PANEL_BG, font=("Arial", 10, "bold")).grid(row=1, column=0, sticky="w", pady=5)
+        sched_frame = tk.Frame(form, bg=self.PANEL_BG)
+        sched_frame.grid(row=1, column=1, sticky="w", pady=5)
+        start_var = tk.StringVar(value=self.brain.config.get("media_start_time", "16:00"))
+        end_var = tk.StringVar(value=self.brain.config.get("media_end_time", "17:00"))
+        tk.Entry(sched_frame, textvariable=start_var, width=8, font=("Arial", 11)).pack(side="left")
+        tk.Label(sched_frame, text=" até ", fg="#cbd5e1", bg=self.PANEL_BG).pack(side="left")
+        tk.Entry(sched_frame, textvariable=end_var, width=8, font=("Arial", 11)).pack(side="left")
+
+        tk.Label(form, text="Tempo Máximo de Vídeo por Dia (minutos):", fg="#fde047", bg=self.PANEL_BG, font=("Arial", 10, "bold")).grid(row=2, column=0, sticky="w", pady=5)
+        limit_var = tk.StringVar(value=str(self.brain.config.get("media_daily_minutes", 25)))
+        tk.Entry(form, textvariable=limit_var, width=10, font=("Arial", 11)).grid(row=2, column=1, sticky="w", pady=5)
+
+        req_book_var = tk.BooleanVar(value=self.brain.config.get("require_book_before_media", True))
+        tk.Checkbutton(
+            form,
+            text="📚 Exigir leitura de pelo menos 1 Livro no dia antes de liberar Netflix / YouTube Kids",
+            variable=req_book_var,
+            bg=self.PANEL_BG,
+            fg="#4ade80",
+            selectcolor="#0f172a",
+            font=("Arial", 10, "bold"),
+        ).grid(row=3, column=0, columnspan=2, sticky="w", pady=6)
+
+        tk.Label(form, text="Motor de IA (offline / ollama / cloud):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=4, column=0, sticky="w", pady=5)
         mode_var = tk.StringVar(value=self.brain.config.get("mode", "offline"))
-        mode_menu = tk.OptionMenu(form, mode_var, "offline", "ollama", "cloud")
-        mode_menu.configure(width=28)
-        mode_menu.grid(row=1, column=1, sticky="w", pady=6)
+        tk.OptionMenu(form, mode_var, "offline", "ollama", "cloud").grid(row=4, column=1, sticky="w", pady=5)
 
-        tk.Label(form, text="URL Ollama na Rede (se modo 'ollama'):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=2, column=0, sticky="w", pady=6)
+        tk.Label(form, text="URL Ollama na Rede (se 'ollama'):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=5, column=0, sticky="w", pady=5)
         ollama_url_var = tk.StringVar(value=self.brain.config.get("ollama_url", "http://127.0.0.1:11434"))
-        tk.Entry(form, textvariable=ollama_url_var, width=34, font=("Arial", 10)).grid(row=2, column=1, sticky="w", pady=6)
+        tk.Entry(form, textvariable=ollama_url_var, width=32, font=("Arial", 10)).grid(row=5, column=1, sticky="w", pady=5)
 
-        tk.Label(form, text="Provedor Nuvem (groq / gemini / openai):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=3, column=0, sticky="w", pady=6)
+        tk.Label(form, text="Provedor Cloud & API Key (opcional):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=6, column=0, sticky="w", pady=5)
+        cloud_row = tk.Frame(form, bg=self.PANEL_BG)
+        cloud_row.grid(row=6, column=1, sticky="w", pady=5)
         cloud_prov_var = tk.StringVar(value=self.brain.config.get("cloud_provider", "groq"))
-        tk.OptionMenu(form, cloud_prov_var, "groq", "gemini", "openai").grid(row=3, column=1, sticky="w", pady=6)
-
-        tk.Label(form, text="API Key Nuvem (opcional):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=4, column=0, sticky="w", pady=6)
+        tk.OptionMenu(cloud_row, cloud_prov_var, "groq", "gemini", "openai").pack(side="left", padx=(0, 6))
         api_key_var = tk.StringVar(value=self.brain.config.get("cloud_api_key", ""))
-        tk.Entry(form, textvariable=api_key_var, show="*", width=34, font=("Arial", 10)).grid(row=4, column=1, sticky="w", pady=6)
+        tk.Entry(cloud_row, textvariable=api_key_var, show="*", width=20, font=("Arial", 10)).pack(side="left")
 
         voice_var = tk.BooleanVar(value=self.brain.config.get("voice_enabled", True))
         tk.Checkbutton(
             form,
-            text="Ativar Voz Falada do JARVIS e Sons",
+            text="Ativar Voz Falada do JARVIS e Efeitos Sonoros",
             variable=voice_var,
             bg=self.PANEL_BG,
             fg="#ffffff",
             selectcolor="#0f172a",
-        ).grid(row=5, column=0, columnspan=2, sticky="w", pady=10)
+        ).grid(row=7, column=0, columnspan=2, sticky="w", pady=6)
+
+        def grant_now():
+            self.media_mgr.grant_bonus_minutes(15)
+            messagebox.showinfo(
+                "Sessão Liberada",
+                "Foram liberados +15 minutos imediatos de Cinema Stark para hoje (mesmo fora do horário padrão)!",
+                parent=cfg_win,
+            )
+
+        tk.Button(
+            form,
+            text="🎁 Liberar +15 Minutos de Cinema Agora (Exceção dos Pais)",
+            bg="#0284c7",
+            fg="#ffffff",
+            font=("Arial", 10, "bold"),
+            padx=12,
+            pady=6,
+            command=grant_now,
+        ).grid(row=8, column=0, columnspan=2, sticky="w", pady=8)
 
         def save_all():
             self.brain.config["child_name"] = name_var.get().strip() or "Pequeno Inventor"
+            self.brain.config["media_start_time"] = start_var.get().strip() or "16:00"
+            self.brain.config["media_end_time"] = end_var.get().strip() or "17:00"
+            try:
+                self.brain.config["media_daily_minutes"] = max(1, int(limit_var.get().strip()))
+            except ValueError:
+                self.brain.config["media_daily_minutes"] = 25
+            self.brain.config["require_book_before_media"] = req_book_var.get()
             self.brain.config["mode"] = mode_var.get()
             self.brain.config["ollama_url"] = ollama_url_var.get().strip()
             self.brain.config["cloud_provider"] = cloud_prov_var.get()
@@ -873,10 +864,10 @@ class JarvisKidsOS:
             self.voice.muted = not voice_var.get()
             self._update_mode_badge()
             cfg_win.destroy()
-            self.say(f"Configurações atualizadas! Olá, {self.brain.name}!")
+            self.say(f"Configurações salvas! Tudo pronto para aprender e brincar, {self.brain.name}!")
 
         btn_bar = tk.Frame(cfg_win, bg=self.PANEL_BG)
-        btn_bar.pack(fill="x", padx=24, pady=16)
+        btn_bar.pack(fill="x", padx=24, pady=12)
 
         tk.Button(
             btn_bar, text="💾 Salvar Configurações", bg=self.GREEN_OK, fg="#ffffff", font=("Arial", 11, "bold"), padx=14, pady=8, command=save_all
