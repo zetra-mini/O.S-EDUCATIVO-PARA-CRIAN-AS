@@ -180,10 +180,17 @@ class NeuralTTSService:
                         buf.extend(chunk["data"])
                 return bytes(buf)
 
-            mp3_bytes = asyncio.run(_run())
+            # Usar loop isolado para segurança em threads de servidores web
+            loop = asyncio.new_event_loop()
+            try:
+                asyncio.set_event_loop(loop)
+                mp3_bytes = loop.run_until_complete(_run())
+            finally:
+                loop.close()
+
             if mp3_bytes:
                 return mp3_bytes, "audio/mpeg"
-        except Exception:
+        except BaseException:
             pass
         return b"", ""
 

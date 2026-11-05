@@ -1,40 +1,60 @@
-# ◈ J.A.R.V.I.S. Kids OS v2.0 — Stark Educational System (4 Anos)
+# ◈ J.A.R.V.I.S. Kids OS v2.5 — Stark Educational System (Para Kaleo Noah)
 
-Sistema educativo estilo **JARVIS do Homem de Ferro** projetado sob medida para o netbook **Acer Aspire One 532h** (`Intel Atom N450`, `1 GB–2 GB RAM`, vídeo `Intel GMA 3150`, tela `1024x600`).
+Sistema educativo completo estilo **JARVIS do Homem de Ferro** projetado sob medida para o netbook **Acer Aspire One 532h** (`Intel Atom N450`, `2 GB RAM`, SSD, vídeo `Intel GMA 3150`, tela `1024x600`).
 
-Consome **menos de 28 MB de memória RAM**, funciona **100% offline** nas atividades educativas e integra controle de tempo inteligente caso o Wi-Fi esteja ligado para o horário do cinema.
-
----
-
-## Os 4 Pilares Pedagógicos do JARVIS Kids OS v2.0
-
-1. **📚 Hábito de Ler Livros (A Base Principal — `biblioteca_livros.py`):**
-   - Biblioteca Holográfica com livros infantis ilustrados e narrados em voz alta pelo JARVIS.
-   - Destaca **Palavras-Chave Gigantes** em cada página com soletração sonora para pré-alfabetização.
-   - Regra pedagógica ativa por padrão: **ler pelo menos 1 livro no dia** antes de liberar o horário do Cinema!
-
-2. **💚 Gestão das Emoções (`academia_emocoes_tech.py`):**
-   - Roda de Sentimentos (Feliz, Bravo, Triste, Com Medo, Agitado) com acolhimento empático por voz.
-   - **Exercício do Reator da Calma:** respiração guiada visual e sonora (*"Cheire a florzinha... Sopre a velinha devagar..."*).
-
-3. **⌨️ Tecnologia: Mouse, Teclado & Digitação Correta (`academia_emocoes_tech.py`):**
-   - **Treino de Mouse em 3 Fases:** Mover até o alvo, Clique Esquerdo com o indicador e Segurar/Arrastar (*Drag & Drop*).
-   - **Digitação das Duas Mãozinhas:** Mapa visual colorido dividindo **Mão Esquerda (Azul — tecla guia `F•`)**, **Mão Direita (Amarelo — tecla guia `J•`)** e **Dedões no Espaço**, ensinando a digitar palavras dos livros e o próprio nome da criança sem viciar em um dedo só.
-
-4. **🎬 Netflix & YouTube Kids com Educação do Tempo (`gestao_tempo_midia.py`):**
-   - Só libera dentro da **janela de horário definida pelos pais** (ex: `16:00` às `17:00`) e respeitando o **limite de minutos diários** (ex: `25 min`).
-   - Avisa gentilmente por voz **faltando 2 minutos** para preparar emocionalmente a criança.
-   - Ao terminar o tempo, **fecha automaticamente o vídeo** (liberando 100% da RAM do netbook), parabeniza a criança por cumprir o combinado e a **redireciona automaticamente para outra atividade educativa** (Biblioteca de Livros).
+Consome **menos de 28 MB de memória RAM no modo nativo (ou ~180 MB no modo Web Arcade Kiosk)**, funciona **100% offline** nas atividades educativas com respostas instantâneas (< 1 ms) e integra controle de tempo pedagógico inteligente para o horário do cinema.
 
 ---
 
-## Instalação Rápida no Acer Aspire One 532
+## Novidades da Versão 2.5
 
-1. Instale o **antiX Linux** (32-bit `i386` para 1 GB RAM, ou 64-bit para 2 GB RAM) com **Auto-Login** ativado.
-2. Abra o terminal uma única vez e execute:
+1. **⚡ Armadura Stark por Conquistas (Gamificação Lúdica):**
+   - Conforme a criança lê livros, treina dedinhos ou acerta letrinhas, desbloqueia em tempo real as 4 peças da Armadura Stark no centro da tela:
+     - ⛑️ Capacete Stark
+     - 🧤 Luvas com Repulsores
+     - 🥾 Botas a Jato
+     - ⚡ Reator Arc Dourado Completo
+   - Ao completar as 4 partes, o JARVIS celebra com fanfarra musical e parabéns por voz!
+
+2. **🔤 Método Fônico & Lousa de Traçado Neon:**
+   - **Método Fônico:** Ao tocar nas letras, a criança ouve o nome da letra e o fonema estendido (*"/b/ /b/ de Bola!"*, *"/k/ /k/ de Casa!"*).
+   - **Aba "✍️ Traçar Letras":** Canvas interativo com guia pontilhada onde o traço acende em neon ciano e amarelo com faíscas elétricas e sons estelares.
+
+3. **📖 Histórias Interativas ("Você Decide!"):**
+   - Livros com pontos de decisão (ex: *"A Grande Aventura Espacial de Kaleo"*). A criança escolhe entre viajar para o Planeta dos Dinossauros ou Planeta dos Robôs com cards ilustrados de 1 toque!
+
+4. **📱 Painel dos Pais no Celular (Mesmo Wi-Fi — `/pais`):**
+   - Acesse `http://<IP-DO-NETBOOK>:5090/pais` em qualquer smartphone conectado na mesma rede:
+     - Ver tempo restante de vídeo e livros lidos hoje;
+     - Botão de 1 toque para conceder **+15 min de bônus** de cinema;
+     - Botão **"Pausar Tela (Almoço / Jantar)"** que aciona aviso carinhoso em tela cheia no netbook;
+     - Alternador do Modo Noturno.
+
+5. **🌙 Modo Noturno Automático (Proteção Visual & Sono):**
+   - Redução automática de luz azul após as 19h30 com paleta de repouso ambarina e fala acolhedora.
+
+6. **🔒 Blindagem de Quiosque no antiX Linux / IceWM:**
+   - Bloqueio de teclas acidentais (`Alt+Tab`, `Alt+F4`, `Ctrl+Alt+T`);
+   - Trava de volume ALSA seguro a 75%;
+   - Otimizações para GPU Intel GMA 3150 (remoção de blur por software e aceleração de composição `translateZ(0)`).
+
+---
+
+## Como Rodar no Windows
+
+- **Modo Nativo Desktop:** Clique duas vezes em `testar_no_windows.bat`
+- **Modo Web Arcade:** Clique duas vezes em `iniciar_web_windows.bat` (abre em `http://127.0.0.1:5090`)
+
+---
+
+## Instalação no Acer Aspire One 532 (antiX Linux)
+
+1. Instale o **antiX Linux** (64-bit para 2 GB RAM ou 32-bit `i386`) com **Auto-Login** ativado.
+2. Abra o terminal e execute:
    ```bash
    git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git jarvis-kids-os
    cd jarvis-kids-os
    chmod +x instalar_antix_kiosk.sh
    bash instalar_antix_kiosk.sh
    ```
+3. O netbook reiniciará já configurado em modo quiosque automático com ZRAM lz4 ativado!

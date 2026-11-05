@@ -225,6 +225,20 @@ class JarvisBrain:
             return f"Eu adoro histórias, {self.name}! Que tal abrirmos a Biblioteca de Histórias para ver os Três Porquinhos ou o Tito Dinossauro?"
         if any(w in q_low for w in ["adivinha", "brincar", "jogo", "charada"]):
             return self.ask_topic("adivinha")
+        if any(w in q_low for w in ["cor", "cores", "azul", "vermelho", "amarelo", "verde", "rosa", "roxo"]):
+            return f"As cores são mágicas, {self.name}! O azul é da cor do céu, o amarelo é do Sol quentinho e o vermelho é do Reator Stark! Qual é a sua cor preferida?"
+        if any(w in q_low for w in ["carro", "avião", "aviao", "trem", "barco", "foguete", "caminhão", "caminhao"]):
+            return f"Motores roncando! Vrum, vrum! Eu adoro máquinas velozes! Você quer pilotar um carro de corrida ou um foguete espacial comigo?"
+        if any(w in q_low for w in ["comida", "fruta", "banana", "maçã", "maca", "laranja", "fome", "comer"]):
+            return f"Hummm, comer frutinhas bem doces e comidinha saudável dá muita energia para o reator de todo super-herói! Qual fruta você mais gosta de morder?"
+        if any(w in q_low for w in ["música", "musica", "cantar", "piano", "bateria", "canção", "cancao"]):
+            return f"A música deixa o coração alegre, {self.name}! Que tal abrirmos o Laboratório Musical para tocar piano ou fazer barulho na Bateria Stark?"
+        if any(w in q_low for w in ["papai", "pai", "mamãe", "mamae", "mãe", "mae", "família", "familia"]):
+            return f"A sua família tem o maior superpoder do mundo: o amor e o carinho por você! Já deu um abraço bem apertado neles hoje?"
+        if any(w in q_low for w in ["bravo", "raiva", "triste", "medo", "chorar"]):
+            return f"Quando bater uma sensação difícil, {self.name}, lembre-se: respire bem fundo três vezes, cheirando a florzinha e assoprando a velinha! Eu estou aqui com você!"
+        if any(w in q_low for w in ["stark", "ferro", "armadura", "jarvis", "robô", "robo"]):
+            return self.ask_topic("heroi")
         return f"Que legal o que você falou, {self.name}! Segure o botão para me contar mais ou toque num desenho colorido para brincarmos juntos!"
 
     def _try_smart_conversation(self, user_input: str) -> tuple[str, str]:

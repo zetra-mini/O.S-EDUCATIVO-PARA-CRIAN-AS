@@ -118,33 +118,119 @@
       justify-content: space-between;
     }
 
-    /* CARDS GIGANTES E TÁTEIS (FEITOS PARA FUÇAR E TOCAR) */
+    /* CARDS GIGANTES E TÁTEIS (FEITOS PARA CRIANÇA DE 4 ANOS FUÇAR E TOCAR) */
     .toy-card {
       flex: 1;
       background: var(--panel);
-      border: 3px solid var(--cyan);
-      border-radius: 18px;
-      padding: 12px 18px;
+      border: 4px solid var(--cyan);
+      border-radius: 20px;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 18px;
       cursor: pointer;
       transition: transform 0.15s, background 0.15s, box-shadow 0.15s, border-color 0.15s;
       box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+      user-select: none;
     }
     .toy-card:hover, .toy-card:active {
-      transform: scale(1.035);
+      transform: scale(1.04);
       background: var(--panel-hover);
-      box-shadow: 0 0 24px rgba(0, 240, 255, 0.45);
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.55);
     }
     .toy-icon {
-      font-size: 2.8rem;
-      min-width: 58px;
+      font-size: 3.4rem;
+      min-width: 62px;
       text-align: center;
       filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
     }
-    .toy-info h3 { font-size: 1.25rem; font-weight: 900; color: #ffffff; margin-bottom: 3px; letter-spacing: 0.02em; }
-    .toy-info p { font-size: 0.92rem; color: #cbd5e1; font-weight: 600; }
+    .toy-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    /* ONDAS DE SOM ANIMADAS DENTRO DO BOTÃO DE MICROFONE */
+    .sound-wave-bar {
+      width: 5px;
+      height: 10px;
+      background: #fef08a;
+      border-radius: 999px;
+      animation: waveBounce 0.55s infinite alternate ease-in-out;
+    }
+    .sound-wave-bar:nth-child(1) { animation-delay: 0.0s; }
+    .sound-wave-bar:nth-child(2) { animation-delay: 0.12s; }
+    .sound-wave-bar:nth-child(3) { animation-delay: 0.24s; }
+    .sound-wave-bar:nth-child(4) { animation-delay: 0.36s; }
+    .sound-wave-bar:nth-child(5) { animation-delay: 0.18s; }
+    @keyframes waveBounce {
+      0% { height: 6px; }
+      100% { height: 26px; }
+    }
+
+    /* PÍLULAS DE PERGUNTAS RÁPIDAS COM ÁUDIO */
+    .quick-pill {
+      background: rgba(15, 23, 42, 0.92);
+      border: 2px solid #38bdf8;
+      color: #f1f5f9;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.92rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s, background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+    .quick-pill:hover, .quick-pill:active {
+      background: #0284c7;
+      transform: scale(1.08);
+      border-color: #facc15;
+    }
+
+    /* ESTILOS DA ACADEMIA DE ALFABETIZAÇÃO INFANTIL */
+    .letter-btn {
+      background: #1e293b;
+      border: 3px solid #38bdf8;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 900;
+      color: #fff;
+      transition: transform 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .letter-btn:hover, .letter-btn:active {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.85);
+      border-color: #facc15;
+    }
+    .word-slot {
+      width: 76px;
+      height: 90px;
+      background: #0f172a;
+      border: 3px dashed #38bdf8;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      font-weight: 900;
+      color: #facc15;
+      text-shadow: 0 0 16px rgba(250, 204, 21, 0.7);
+    }
+    .word-slot.filled {
+      border: 3px solid #10b981;
+      background: #064e3b;
+      color: #fff;
+    }
 
     /* REATOR ARC DO JARVIS + BOTÃO DE VOZ 'SEGURE PARA FALAR' */
     .arc-container {
@@ -391,8 +477,7 @@
     .gate-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.88);
-      backdrop-filter: blur(6px);
+      background: rgba(2, 6, 23, 0.95);
       z-index: 250;
       display: none;
       align-items: center;
@@ -513,120 +598,259 @@
       padding: 24px;
     }
     .lockdown-shield.open { display: flex; }
+
+    /* OTIMIZAÇÃO DE HARDWARE — ACER ASPIRE ONE 532 (1024x600 & GPU GMA 3150) */
+    .toy-card, .btn-hold-mic, .quick-pill, .gate-card, .modal-card {
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    @media (max-height: 650px) {
+      header {
+        height: 44px;
+        padding: 0 14px;
+      }
+      .hud-title {
+        font-size: 1.05rem;
+      }
+      .badge-stars, .badge-books {
+        font-size: 0.85rem;
+        padding: 3px 10px;
+      }
+      .btn-parents {
+        padding: 4px 12px;
+        font-size: 0.85rem;
+      }
+      main {
+        padding: 6px 12px;
+        gap: 10px;
+      }
+      .col {
+        gap: 8px;
+      }
+      .toy-card {
+        padding: 8px 12px;
+        gap: 12px;
+        border-radius: 14px;
+      }
+      .toy-icon {
+        font-size: 2.3rem;
+        min-width: 44px;
+      }
+      .toy-title {
+        font-size: 1.15rem;
+      }
+      .arc-container {
+        gap: 8px;
+      }
+      .arc-reactor {
+        width: 170px;
+        height: 170px;
+      }
+      .ring-1 {
+        width: 146px;
+        height: 146px;
+      }
+      .ring-2 {
+        width: 116px;
+        height: 116px;
+      }
+      .arc-core {
+        width: 74px;
+        height: 74px;
+      }
+      .btn-hold-mic {
+        padding: 8px 16px;
+        font-size: 1rem;
+        border-radius: 14px;
+      }
+      .quick-pill {
+        padding: 4px 10px;
+        font-size: 0.82rem;
+      }
+      .modal-header {
+        height: 46px;
+        padding: 0 12px;
+        gap: 12px;
+      }
+      .btn-back {
+        padding: 6px 16px;
+        font-size: 0.95rem;
+      }
+      .modal-body {
+        padding: 10px 14px;
+      }
+      #subtitle-bar {
+        font-size: 0.92rem;
+        padding: 4px 10px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+      }
+    }
+    /* ARMADURA STARK POR CONQUISTAS (GAMIFICAÇÃO) */
+    .armor-hud {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #334155;
+      border-radius: 999px;
+      padding: 6px 14px;
+      user-select: none;
+    }
+    .armor-slot {
+      font-size: 1.45rem;
+      opacity: 0.3;
+      filter: grayscale(1);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .armor-slot.unlocked {
+      opacity: 1;
+      filter: grayscale(0) drop-shadow(0 0 10px #facc15);
+      transform: scale(1.18);
+      animation: pulseArmor 1.6s infinite alternate ease-in-out;
+    }
+    @keyframes pulseArmor {
+      0% { transform: scale(1.12); filter: drop-shadow(0 0 6px #facc15); }
+      100% { transform: scale(1.24); filter: drop-shadow(0 0 14px #f59e0b); }
+    }
+
+    /* MODO NOTURNO SUAVE (REDUÇÃO DE LUZ AZUL) */
+    body.night-mode {
+      background: #110703 !important;
+    }
+    body.night-mode header {
+      background: #1a0b06 !important;
+      border-color: #f97316 !important;
+    }
+    body.night-mode .toy-card {
+      background: #1c0e08 !important;
+      border-color: #ea580c !important;
+    }
+    body.night-mode .btn-hold-mic {
+      background: linear-gradient(135deg, #7c2d12, #451a03) !important;
+      border-color: #f97316 !important;
+    }
+    body.night-mode .gate-card, body.night-mode .modal-card {
+      background: #160a05 !important;
+      border-color: #ea580c !important;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="hud-brand">
-      <span class="hud-title">◈ J.A.R.V.I.S. KIDS OS v2.2</span>
-      <span class="badge-stars" id="stars-badge">★ 0 Estrelas</span>
-      <span class="badge-books" id="books-badge">📖 Livros hoje: 0</span>
+      <span class="hud-title">◈ J.A.R.V.I.S. KIDS</span>
+      <span class="badge-stars" id="stars-badge">★ 0</span>
+      <span class="badge-books" id="books-badge">📖 0</span>
     </div>
     <div class="hud-right">
-      <span class="mode-tag" id="mode-badge">CARREGANDO...</span>
       <button type="button" class="btn-parents" onclick="openParentsGate()">⚙ PAIS</button>
     </div>
   </header>
 
   <main>
-    <!-- COLUNA ESQUERDA: OS 4 PILARES PRINCIPAIS -->
+    <!-- COLUNA ESQUERDA: HISTÓRIAS, LER & ESCREVER, TECLADO, MOUSE -->
     <div class="col">
-      <div class="toy-card" style="border-color: var(--gold);" onclick="openBooksLibrary()" onmouseenter="speakCardHint('Biblioteca de Livros! Nossas histórias mágicas com figuras e sons!')">
+      <div class="toy-card" style="border-color: var(--blue);" onclick="openBooksLibrary()" onmouseenter="speakCardHint('Histórias mágicas com contos infantis e sons divertidos!')">
         <div class="toy-icon">📚</div>
-        <div class="toy-info">
-          <h3>HISTÓRIAS MÁGICAS</h3>
-          <p>Três Porquinhos, Dinos & Fábulas</p>
-        </div>
+        <div class="toy-title">HISTÓRIAS</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="speakCardHint('Academia das Mãozinhas! Treine o mouse e veja qual dedinho usar no teclado!')">
-        <div class="toy-icon">🖐️</div>
-        <div class="toy-info">
-          <h3>MÃOZINHAS & DEDOS</h3>
-          <p>Qual Dedo Usar no Teclado & Mouse</p>
-        </div>
+      <div class="toy-card" style="border-color: #10b981;" onclick="openLiteracyAcademy()" onmouseenter="speakCardHint('Aprender a ler e escrever! Sons das letras e primeiras palavras!')">
+        <div class="toy-icon">🔤</div>
+        <div class="toy-title">LER & ESCREVER</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--green);" onclick="openEmotionsCenter()" onmouseenter="speakCardHint('Centro das Emoções! Conte ao Járvis como você está e respire com o Reator da Calma!')">
-        <div class="toy-icon">💚</div>
-        <div class="toy-info">
-          <h3>EMOÇÕES & CALMA</h3>
-          <p>Sentimentos e Florzinha da Calma</p>
-        </div>
+      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="speakCardHint('Teclado e mãozinhas! Treine qual dedinho usar no teclado!')">
+        <div class="toy-icon">⌨️</div>
+        <div class="toy-title">TECLADO</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--red);" onclick="openCinemaStark()" onmouseenter="speakCardHint('Cinema Stark! Desenhos infantis com horário e tempo controlado!')">
-        <div class="toy-icon">🎬</div>
-        <div class="toy-info">
-          <h3>CINEMA NO HORÁRIO</h3>
-          <p>YouTube Kids & Netflix Infantil</p>
-        </div>
+      <div class="toy-card" style="border-color: var(--orange);" onclick="openMouseTraining()" onmouseenter="speakCardHint('Treino do mouse! Mira, clique e arraste com o Járvis!')">
+        <div class="toy-icon">🖱️</div>
+        <div class="toy-title">MOUSE</div>
       </div>
     </div>
 
-    <!-- CENTRO: REATOR ARC INTERATIVO + BOTÃO DE VOZ (CLIQUE PARA FALAR / ESCUTANDO / PROCESSANDO) -->
+    <!-- CENTRO: REATOR ARC + BOTÃO DE VOZ ROBUSTO + ONDAS SONORAS + PERGUNTAS RÁPIDAS -->
     <div class="arc-container">
+      <!-- ARMADURA STARK POR CONQUISTAS -->
+      <div class="armor-hud" id="armor-hud" title="Conquiste estrelas para desbloquear a Armadura Stark!">
+        <span class="armor-slot" id="armor-helmet" title="Capacete Stark">⛑️</span>
+        <span class="armor-slot" id="armor-gauntlets" title="Luvas Repulsoras">🧤</span>
+        <span class="armor-slot" id="armor-boots" title="Botas a Jato">🥾</span>
+        <span class="armor-slot" id="armor-reactor" title="Reator Arc Dourado">⚡</span>
+      </div>
+
       <div class="arc-reactor" id="arc-reactor" onclick="clickArcToy()" title="Toque para conversar comigo!">
         <div class="ring-1"></div>
         <div class="ring-2"></div>
         <div class="arc-core"></div>
       </div>
 
-      <!-- BOTÃO TÁTIL DE VOZ INTELIGENTE (UM CLIQUE PARA FALAR) -->
+      <!-- BOTÃO DE VOZ ROBUSTO (CLIQUE ÚNICO OU SEGURE) -->
       <button
         type="button"
         class="btn-hold-mic"
         id="btn-voice-push"
-        onclick="toggleVoiceListening()"
-        title="Clique para conversar por voz com o Járvis"
+        onpointerdown="onMicPointerDown(event)"
+        onpointerup="onMicPointerUp(event)"
+        onclick="onMicClick(event)"
+        title="Clique para falar ou segure para conversar"
       >
         <span id="mic-icon" style="font-size: 1.6rem;">🎙️</span>
-        <span id="mic-label">CLIQUE PARA FALAR</span>
+        <div id="mic-sound-waves" style="display:none; gap:4px; align-items:center; height:24px;">
+          <span class="sound-wave-bar"></span>
+          <span class="sound-wave-bar"></span>
+          <span class="sound-wave-bar"></span>
+          <span class="sound-wave-bar"></span>
+          <span class="sound-wave-bar"></span>
+        </div>
+        <span id="mic-label">FALAR COM JÁRVIS</span>
       </button>
 
-      <div style="color: #cbd5e1; font-weight: 700; font-size: 0.9rem; text-align: center;" id="voice-hint-text">
-        Clique para falar com o Járvis! Ele vai te ouvir e responder por voz!
+      <!-- PÍLULAS DE PERGUNTAS RÁPIDAS (TÓPICOS COM 1 TOQUE) -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; max-width:320px; margin-top:4px;">
+        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, como você voa com a armadura do Homem de Ferro?')">🚀 Voar</button>
+        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, me conta sobre dinossauros!')">🦖 Dinos</button>
+        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, como são as estrelas do espaço?')">🌟 Estrelas</button>
+        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, conta uma piada de robô bem engraçada!')">🤖 Piada</button>
       </div>
     </div>
 
-    <!-- COLUNA DIREITA: JOGOS, PINTURA, PIANO/MELODIAS E PAPO DE VOZ -->
+    <!-- COLUNA DIREITA: MÚSICA, PINTAR, VÍDEOS, EMOÇÕES -->
     <div class="col">
-      <div class="toy-card" style="border-color: var(--purple);" onclick="openMusicComposer()" onmouseenter="speakCardHint('Música e Melodias! Aprenda canções famosas ou invente sua própria música!')">
+      <div class="toy-card" style="border-color: var(--purple);" onclick="openMusicComposer()" onmouseenter="speakCardHint('Música e instrumentos! Piano, bateria e canções infantis!')">
         <div class="toy-icon">🎵</div>
-        <div class="toy-info">
-          <h3>CRIAR MELODIAS</h3>
-          <p>Brilha Estrelinha & Gravador Stark</p>
-        </div>
+        <div class="toy-title">MÚSICA</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--orange);" onclick="openStarkPaint()" onmouseenter="speakCardHint('Pintura Mágica! Cores neon que brilham para você desenhar com o mouse!')">
+      <div class="toy-card" style="border-color: #ec4899;" onclick="openStarkPaint()" onmouseenter="speakCardHint('Pintura mágica com cores neon e brilhantes!')">
         <div class="toy-icon">🎨</div>
-        <div class="toy-info">
-          <h3>PINTURA MÁGICA</h3>
-          <p>Lousa Neon que Brilha</p>
-        </div>
+        <div class="toy-title">PINTAR</div>
       </div>
 
-      <div class="toy-card" style="border-color: #22c55e;" onclick="openColorsMission()" onmouseenter="speakCardHint('Desafio de Cores e Formas! Encontre as cores que o Járvis pedir!')">
-        <div class="toy-icon">🌟</div>
-        <div class="toy-info">
-          <h3>CORES & FORMAS</h3>
-          <p>Desafio das Cores Brilhantes</p>
-        </div>
+      <div class="toy-card" style="border-color: var(--red);" onclick="openCinemaStark()" onmouseenter="speakCardHint('Cinema no horário! YouTube Kids e Netflix!')">
+        <div class="toy-icon">🎬</div>
+        <div class="toy-title">VÍDEOS</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--pink);" onclick="openTalkModal()" onmouseenter="speakCardHint('Conversar com o Járvis! Fale sobre dinossauros, planetas e foguetes!')">
-        <div class="toy-icon">✨</div>
-        <div class="toy-info">
-          <h3>FALAR COM JÁRVIS</h3>
-          <p>Dinos, Foguetes & Perguntas</p>
-        </div>
+      <div class="toy-card" style="border-color: var(--green);" onclick="openEmotionsCenter()" onmouseenter="speakCardHint('Centro das emoções e florzinha da calma!')">
+        <div class="toy-icon">💚</div>
+        <div class="toy-title">EMOÇÕES</div>
       </div>
     </div>
   </main>
 
   <footer id="subtitle-bar">
-    Toque em qualquer botão colorido ou segure o microfone no centro para falar com o Járvis!
+    Toque em qualquer botão colorido ou fale com o Járvis!
   </footer>
 
   <!-- MODAL DE ATIVIDADE INFANTIL -->
@@ -748,6 +972,12 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + durationMs / 1000);
+        osc.onended = () => {
+          try {
+            osc.disconnect();
+            gain.disconnect();
+          } catch (err) {}
+        };
       } catch (e) {}
     }
 
@@ -859,12 +1089,51 @@
       }
     }
 
+    let armorCelebrated = false;
+    function updateArmorDisplay() {
+      const s = appState.stars || 0;
+      const h = document.getElementById('armor-helmet');
+      const g = document.getElementById('armor-gauntlets');
+      const b = document.getElementById('armor-boots');
+      const r = document.getElementById('armor-reactor');
+
+      if (h) h.classList.toggle('unlocked', s >= 1);
+      if (g) g.classList.toggle('unlocked', s >= 2);
+      if (b) b.classList.toggle('unlocked', s >= 3);
+      if (r) r.classList.toggle('unlocked', s >= 4);
+
+      if (s >= 4 && !armorCelebrated) {
+        armorCelebrated = true;
+        setTimeout(playStarkArmorFanfare, 400);
+      }
+    }
+
+    function playStarkArmorFanfare() {
+      playTone(523, 140);
+      setTimeout(() => playTone(659, 140), 140);
+      setTimeout(() => playTone(784, 180), 280);
+      setTimeout(() => playTone(1046, 400), 460);
+      speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você conquistou a Armadura Completa do Homem de Ferro! Você é um verdadeiro super-herói Stark!`);
+    }
+
+    function checkNightMode(serverNightMode) {
+      const hour = new Date().getHours();
+      const isNight = serverNightMode || (hour >= 20 || hour < 6);
+      if (isNight) {
+        document.body.classList.add('night-mode');
+      } else {
+        document.body.classList.remove('night-mode');
+      }
+    }
+
     function addStar(count = 1) {
       appState.stars += count;
-      document.getElementById('stars-badge').textContent = `★ ${appState.stars} Estrelas`;
+      const sBadge = document.getElementById('stars-badge');
+      if (sBadge) sBadge.textContent = `★ ${appState.stars}`;
       playTone(523, 90);
       setTimeout(() => playTone(659, 90), 100);
       setTimeout(() => playTone(784, 160), 200);
+      updateArmorDisplay();
     }
 
     async function loadState(greet = false) {
@@ -876,81 +1145,130 @@
       appState.books_read_today = data.books_read_today;
       appState.media_permission = data.media_permission;
 
-      document.getElementById('books-badge').textContent = `📖 Livros hoje: ${data.books_read_today}`;
-      const provMap = {
-        gemini: data.config.has_gemini_key ? '✨ GEMINI 3.8 ATIVO' : '✨ GEMINI (LOCAL)',
-        openai: '🤖 OPENAI CHATGPT',
-        groq: '⚡ GROQ LLAMA 3.3',
-        ollama: '🏠 IA LOCAL OLLAMA',
-        offline: '🛡️ 100% OFFLINE'
-      };
-      document.getElementById('mode-badge').textContent =
-        `${provMap[data.config.active_provider] || 'JARVIS'} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
+      const bBadge = document.getElementById('books-badge');
+      if (bBadge) bBadge.textContent = `📖 ${data.books_read_today}`;
+
+      const sBadge = document.getElementById('stars-badge');
+      if (sBadge) sBadge.textContent = `★ ${appState.stars}`;
+
+      const mBadge = document.getElementById('mode-badge');
+      if (mBadge) {
+        const provMap = {
+          gemini: data.config.has_gemini_key ? '✨ GEMINI 3.8 ATIVO' : '✨ GEMINI (LOCAL)',
+          openai: '🤖 OPENAI CHATGPT',
+          groq: '⚡ GROQ LLAMA 3.3',
+          ollama: '🏠 IA LOCAL OLLAMA',
+          offline: '🛡️ 100% OFFLINE'
+        };
+        mBadge.textContent = `${provMap[data.config.active_provider] || 'JARVIS'}`;
+      }
 
       if (greet) {
-        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Clique no Microfone ou no Reator Arc para falar!)';
+        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Microfone ou no Reator Arc para falar!)';
       }
     }
     loadState(true);
 
     // =========================================================================
-    // VOZ INTELIGENTE INFANTIL: CLIQUE PARA FALAR -> DETECTA TÉRMINO -> PROCESSA -> RESPONDE
+    // VOZ INTELIGENTE INFANTIL: CLIQUE ÚNICO OU SEGURAR (NÃO DESLIGA SOZINHO)
     // =========================================================================
     let voiceState = 'idle'; // 'idle' | 'listening' | 'processing' | 'speaking'
     let silenceTimer = null;
     let pushTranscript = '';
+    let listeningSessionStart = 0;
+    let micPointerDownTime = 0;
+    let isMicHolding = false;
+    let mediaStreamObj = null;
+    let audioAnalyserNode = null;
+    let visualizerAnimFrame = null;
 
-    function setVoiceVisualState(state, infoText = '') {
+    async function startMicVisualizer() {
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+        mediaStreamObj = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        const source = audioCtx.createMediaStreamSource(mediaStreamObj);
+        audioAnalyserNode = audioCtx.createAnalyser();
+        audioAnalyserNode.fftSize = 32;
+        source.connect(audioAnalyserNode);
+
+        const dataArray = new Uint8Array(audioAnalyserNode.frequencyBinCount);
+        function drawWave() {
+          if (voiceState !== 'listening') return;
+          audioAnalyserNode.getByteFrequencyData(dataArray);
+          const bars = document.querySelectorAll('.sound-wave-bar');
+          bars.forEach((bar, idx) => {
+            const val = dataArray[idx % dataArray.length] || 12;
+            const h = Math.max(6, Math.min(32, Math.round((val / 255) * 36)));
+            bar.style.height = `${h}px`;
+          });
+          visualizerAnimFrame = requestAnimationFrame(drawWave);
+        }
+        drawWave();
+      } catch (e) {
+        console.warn('Visualizer status:', e);
+      }
+    }
+
+    function stopMicVisualizer() {
+      if (visualizerAnimFrame) {
+        cancelAnimationFrame(visualizerAnimFrame);
+        visualizerAnimFrame = null;
+      }
+      if (mediaStreamObj) {
+        try {
+          mediaStreamObj.getTracks().forEach(t => t.stop());
+        } catch (e) {}
+        mediaStreamObj = null;
+      }
+    }
+
+    function setVoiceVisualState(state) {
       voiceState = state;
       const btn = document.getElementById('btn-voice-push');
       const arc = document.getElementById('arc-reactor');
       const micIcon = document.getElementById('mic-icon');
       const micLabel = document.getElementById('mic-label');
-      const hintText = document.getElementById('voice-hint-text');
+      const waveBox = document.getElementById('mic-sound-waves');
 
-      if (btn) {
-        btn.classList.remove('listening', 'processing', 'speaking');
-      }
-      if (arc) {
-        arc.classList.remove('listening', 'processing', 'speaking');
-      }
+      if (btn) btn.classList.remove('listening', 'processing', 'speaking');
+      if (arc) arc.classList.remove('listening', 'processing', 'speaking');
 
       if (state === 'listening') {
         if (btn) {
           btn.classList.add('listening');
           if (micIcon) micIcon.textContent = '🛑';
-          if (micLabel) micLabel.textContent = 'OUVINDO... (PODE FALAR!)';
+          if (micLabel) micLabel.textContent = 'OUVINDO...';
         }
         if (arc) arc.classList.add('listening');
-        if (hintText) hintText.textContent = 'Pode falar! Quando terminar, o Járvis vai processar e responder!';
+        if (waveBox) waveBox.style.display = 'flex';
       } else if (state === 'processing') {
         if (btn) {
           btn.classList.add('processing');
           if (micIcon) micIcon.textContent = '⏳';
-          if (micLabel) micLabel.textContent = 'PROCESSANDO O QUE OUVIU...';
+          if (micLabel) micLabel.textContent = 'PENSANDO...';
         }
         if (arc) arc.classList.add('processing');
-        if (hintText) hintText.textContent = '🧠 O Járvis está pensando na sua resposta... Aguarde um instante!';
+        if (waveBox) waveBox.style.display = 'none';
       } else if (state === 'speaking') {
         if (btn) {
           btn.classList.add('speaking');
           if (micIcon) micIcon.textContent = '🔊';
-          if (micLabel) micLabel.textContent = 'JÁRVIS RESPONDENDO...';
+          if (micLabel) micLabel.textContent = 'FALANDO...';
         }
         if (arc) arc.classList.add('speaking');
-        if (hintText) hintText.textContent = 'Ouvindo a resposta do Járvis!';
+        if (waveBox) waveBox.style.display = 'none';
       } else {
         // idle
         if (btn) {
           if (micIcon) micIcon.textContent = '🎙️';
-          if (micLabel) micLabel.textContent = 'CLIQUE PARA FALAR';
+          if (micLabel) micLabel.textContent = 'FALAR COM JÁRVIS';
         }
-        if (hintText) hintText.textContent = 'Clique para falar com o Járvis! Ele escuta e responde por voz!';
+        if (waveBox) waveBox.style.display = 'none';
       }
     }
 
     function clickArcToy() {
-      // Ao tocar no reator arc, ele também ativa a conversa por voz!
       toggleVoiceListening();
     }
 
@@ -958,17 +1276,47 @@
       if (voiceState === 'idle') {
         startVoiceListening();
       } else if (voiceState === 'listening') {
-        // Criança clicou para encerrar a fala e processar imediatamente!
         finishVoiceListeningAndProcess();
       } else if (voiceState === 'speaking') {
-        // Interrompe fala e volta ao início
         stopCurrentSpeech();
         resetVoiceToIdle();
       }
-      // Se estiver em 'processing', ignora cliques até terminar o processamento
+    }
+
+    function onMicPointerDown(e) {
+      micPointerDownTime = Date.now();
+      if (voiceState === 'idle') {
+        startVoiceListening();
+        isMicHolding = true;
+      }
+    }
+
+    function onMicPointerUp(e) {
+      const elapsed = Date.now() - micPointerDownTime;
+      if (isMicHolding && elapsed > 550 && voiceState === 'listening') {
+        // Criança ou pai segurou por mais de meio segundo e soltou (estilo walkie-talkie)
+        isMicHolding = false;
+        finishVoiceListeningAndProcess();
+      } else {
+        // Foi clique rápido: mantém ouvindo continuamente
+        isMicHolding = false;
+      }
+    }
+
+    function onMicClick(e) {
+      const elapsed = Date.now() - micPointerDownTime;
+      if (elapsed <= 550) {
+        if (voiceState === 'listening' && Date.now() - listeningSessionStart > 800) {
+          finishVoiceListeningAndProcess();
+        } else if (voiceState === 'speaking') {
+          stopCurrentSpeech();
+          resetVoiceToIdle();
+        }
+      }
     }
 
     function resetVoiceToIdle() {
+      stopMicVisualizer();
       clearTimeout(silenceTimer);
       silenceTimer = null;
       if (recognitionObj) {
@@ -983,6 +1331,7 @@
       pushTranscript = '';
       clearTimeout(silenceTimer);
       silenceTimer = null;
+      listeningSessionStart = Date.now();
 
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRec) {
@@ -991,6 +1340,7 @@
       }
 
       setVoiceVisualState('listening');
+      startMicVisualizer();
       playTone(587, 80);
       setTimeout(() => playTone(880, 120), 80);
       document.getElementById('subtitle-bar').textContent = '🎧 Estou ouvindo você falar em Português... Pode falar!';
@@ -1020,9 +1370,9 @@
         if (pushTranscript) {
           document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
 
-          // DETECÇÃO AUTOMÁTICA DE SILÊNCIO / TÉRMINO DA FALA
+          // DETECÇÃO AUTOMÁTICA DE SILÊNCIO APÓS A FALA
           clearTimeout(silenceTimer);
-          const silenceWaitMs = hasFinal ? 1300 : 2000;
+          const silenceWaitMs = hasFinal ? 1500 : 2500;
           silenceTimer = setTimeout(() => {
             finishVoiceListeningAndProcess();
           }, silenceWaitMs);
@@ -1032,8 +1382,10 @@
       rec.onerror = (ev) => {
         console.warn('SpeechRecognition error:', ev.error);
         if (ev.error === 'not-allowed') {
-          showToast('Permita o uso do Microfone no navegador para a criança conversar por voz!', true);
+          showToast('Permita o microfone no navegador para conversar com o Járvis!', true);
           resetVoiceToIdle();
+        } else if (ev.error === 'network') {
+          showToast('Reconhecimento online indisponível. Toque nos temas rápidos!', true);
         }
       };
 
@@ -1042,8 +1394,17 @@
           if (pushTranscript.trim()) {
             finishVoiceListeningAndProcess();
           } else {
+            // SE AINDA NÃO DEU 15 SEGUNDOS, RE-ARMA PARA NÃO CAIR SOZINHO!
+            const elapsed = Date.now() - listeningSessionStart;
+            if (elapsed < 15000) {
+              try {
+                rec.start();
+                return;
+              } catch (e) {}
+            }
+            // Apenas após 15 segundos inteiros sem som:
             resetVoiceToIdle();
-            document.getElementById('subtitle-bar').textContent = 'Não ouvi sua vozinha. Clique no botão de novo e fale comigo!';
+            document.getElementById('subtitle-bar').textContent = 'Pronto! Clique no microfone quando quiser falar com o Járvis!';
           }
         }
       };
@@ -1058,6 +1419,7 @@
 
     async function finishVoiceListeningAndProcess() {
       if (voiceState !== 'listening') return;
+      stopMicVisualizer();
       clearTimeout(silenceTimer);
       silenceTimer = null;
 
@@ -1069,14 +1431,14 @@
       const spoken = pushTranscript.trim();
       if (!spoken) {
         resetVoiceToIdle();
-        document.getElementById('subtitle-bar').textContent = 'Não ouvi sua voz. Clique no botão e fale pertinho!';
+        document.getElementById('subtitle-bar').textContent = 'Não ouvi sua voz. Toque no microfone e fale pertinho!';
         speak('Não consegui te ouvir! Toque no botão e fale pertinho de mim!');
         return;
       }
 
-      // ESTADO OBRIGATÓRIO: PROCESSANDO O QUE OUVIU!
+      // ESTADO: PENSANDO / PROCESSANDO!
       setVoiceVisualState('processing');
-      document.getElementById('subtitle-bar').textContent = `🧠 Processando o que você falou: "${spoken}"... O Járvis está pensando!`;
+      document.getElementById('subtitle-bar').textContent = `🧠 Processando o que você falou: "${spoken}"...`;
       playTone(659, 100);
       setTimeout(() => playTone(784, 120), 100);
 
@@ -1090,20 +1452,476 @@
 
         if (voiceState !== 'processing') return;
 
-        // ESTADO OBRIGATÓRIO: RESPONDENDO COM O JARVIS!
+        // ESTADO: FALANDO!
         setVoiceVisualState('speaking');
         document.getElementById('subtitle-bar').textContent = `🤖 Járvis: "${data.reply}"`;
 
         speak(data.reply, {
           onEnd: () => {
             resetVoiceToIdle();
-            document.getElementById('subtitle-bar').textContent = 'Clique para falar de novo com o Járvis!';
+            document.getElementById('subtitle-bar').textContent = 'Toque para falar de novo com o Járvis!';
           }
         });
       } catch (err) {
         resetVoiceToIdle();
         speak('Tive uma falha de conexão com meu cérebro agora. Clique para tentar de novo!');
       }
+    }
+
+    async function askQuickPrompt(questionText) {
+      if (voiceState === 'speaking' || voiceState === 'processing') return;
+      stopCurrentSpeech();
+      resetVoiceToIdle();
+      setVoiceVisualState('processing');
+      document.getElementById('subtitle-bar').textContent = `🧠 ${questionText}`;
+      playTone(659, 100);
+
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: questionText })
+        });
+        const data = await res.json();
+        setVoiceVisualState('speaking');
+        document.getElementById('subtitle-bar').textContent = `🤖 Járvis: "${data.reply}"`;
+        speak(data.reply, {
+          onEnd: () => {
+            resetVoiceToIdle();
+            document.getElementById('subtitle-bar').textContent = 'Toque em outro tema ou fale com o Járvis!';
+          }
+        });
+      } catch (e) {
+        resetVoiceToIdle();
+      }
+    }
+
+    // =========================================================================
+    // ACADEMIA DE ALFABETIZAÇÃO: ENSINAR A LER E ESCREVER (4 ANOS)
+    // =========================================================================
+    const ALPHABET_DATA = [
+      { letter: 'A', name: 'Á', sound: 'ááá', word: 'Abelha', icon: '🐝', col: '#ef4444', desc: 'A de Abelha e Avião!' },
+      { letter: 'B', name: 'Bê', sound: 'b-b-b', word: 'Bola', icon: '⚽', col: '#f97316', desc: 'B de Bola e Borboleta!' },
+      { letter: 'C', name: 'Cê', sound: 'k-k-k', word: 'Casa', icon: '🏠', col: '#facc15', desc: 'C de Casa e Cachorro!' },
+      { letter: 'D', name: 'Dê', sound: 'd-d-d', word: 'Dado', icon: '🎲', col: '#22c55e', desc: 'D de Dado e Dinossauro!' },
+      { letter: 'E', name: 'É', sound: 'ééé', word: 'Estrela', icon: '⭐', col: '#06b6d4', desc: 'E de Estrela e Elefante!' },
+      { letter: 'F', name: 'Éfe', sound: 'fff', word: 'Flor', icon: '🌸', col: '#3b82f6', desc: 'F de Flor e Foguete!' },
+      { letter: 'G', name: 'Gê', sound: 'g-g-g', word: 'Gato', icon: '🐱', col: '#8b5cf6', desc: 'G de Gato e Girafa!' },
+      { letter: 'H', name: 'Agá', sound: 'mudo', word: 'Herói', icon: '🦸', col: '#ec4899', desc: 'H de Herói e Helicóptero!' },
+      { letter: 'I', name: 'Í', sound: 'ííí', word: 'Iglu', icon: '❄️', col: '#06b6d4', desc: 'I de Iglu e Ilha!' },
+      { letter: 'J', name: 'Jota', sound: 'jjj', word: 'Jacaré', icon: '🐊', col: '#10b981', desc: 'J de Jacaré e Joaninha!' },
+      { letter: 'K', name: 'Cá', sound: 'k-k-k', word: 'Kiwi', icon: '🥝', col: '#84cc16', desc: 'K de Kiwi e Kart!' },
+      { letter: 'L', name: 'Éle', sound: 'lll', word: 'Leão', icon: '🦁', col: '#f59e0b', desc: 'L de Leão e Lua!' },
+      { letter: 'M', name: 'Ême', sound: 'mmm', word: 'Maçã', icon: '🍎', col: '#ef4444', desc: 'M de Maçã e Macaco!' },
+      { letter: 'N', name: 'Êne', sound: 'nnn', word: 'Navio', icon: '🚢', col: '#0ea5e9', desc: 'N de Navio e Nuvem!' },
+      { letter: 'O', name: 'Ó', sound: 'óóó', word: 'Ovelha', icon: '🐑', col: '#eab308', desc: 'O de Ovelha e Ônibus!' },
+      { letter: 'P', name: 'Pê', sound: 'p-p-p', word: 'Pato', icon: '🦆', col: '#14b8a6', desc: 'P de Pato e Pipoca!' },
+      { letter: 'Q', name: 'Quê', sound: 'k-k-k', word: 'Queijo', icon: '🧀', col: '#fbbf24', desc: 'Q de Queijo e Quati!' },
+      { letter: 'R', name: 'Érre', sound: 'rrr', word: 'Robô', icon: '🤖', col: '#6366f1', desc: 'R de Robô e Rato!' },
+      { letter: 'S', name: 'Ésse', sound: 'sss', word: 'Sol', icon: '☀️', col: '#f59e0b', desc: 'S de Sol e Sapo!' },
+      { letter: 'T', name: 'Tê', sound: 't-t-t', word: 'Trem', icon: '🚂', col: '#ec4899', desc: 'T de Trem e Tartaruga!' },
+      { letter: 'U', name: 'Ú', sound: 'úúú', word: 'Uva', icon: '🍇', col: '#9333ea', desc: 'U de Uva e Urso!' },
+      { letter: 'V', name: 'Vê', sound: 'vvv', word: 'Vaca', icon: '🐮', col: '#10b981', desc: 'V de Vaca e Violão!' },
+      { letter: 'W', name: 'Dáblio', sound: 'uuu', word: 'Waffle', icon: '🧇', col: '#d97706', desc: 'W de Waffle e Wifi!' },
+      { letter: 'X', name: 'Xis', sound: 'ch-ch', word: 'Xícara', icon: '☕', col: '#0284c7', desc: 'X de Xícara e Xilofone!' },
+      { letter: 'Y', name: 'Ípslon', sound: 'ííí', word: 'Yoga', icon: '🧘', col: '#a855f7', desc: 'Y de Yoga e Yakisoba!' },
+      { letter: 'Z', name: 'Zê', sound: 'zzz', word: 'Zebra', icon: '🦓', col: '#64748b', desc: 'Z de Zebra e Zíper!' }
+    ];
+
+    const SIGHT_WORDS = [
+      { word: 'GATO', missingIdx: 3, icon: '🐱', hint: 'G - A - T ... Qual letrinha falta para GATO? É a letra O!', choices: ['O', 'A', 'E'] },
+      { word: 'CASA', missingIdx: 1, icon: '🏠', hint: 'C - ? - S - A ... Qual letrinha falta para CASA? É a letra A!', choices: ['A', 'O', 'I'] },
+      { word: 'BOLA', missingIdx: 0, icon: '⚽', hint: '? - O - L - A ... Qual letrinha começa BOLA? É a letra B!', choices: ['B', 'P', 'D'] },
+      { word: 'PATO', missingIdx: 2, icon: '🦆', hint: 'P - A - ? - O ... Qual letrinha falta para PATO? É a letra T!', choices: ['T', 'M', 'L'] },
+      { word: 'SOL', missingIdx: 2, icon: '☀️', hint: 'S - O - ? ... Qual letrinha termina SOL? É a letra L!', choices: ['L', 'R', 'S'] },
+      { word: 'LUA', missingIdx: 1, icon: '🌙', hint: 'L - ? - A ... Qual letrinha do meio da LUA? É a letra U!', choices: ['U', 'O', 'E'] },
+      { word: 'VACA', missingIdx: 0, icon: '🐮', hint: '? - A - C - A ... Qual letrinha começa VACA? É a letra V!', choices: ['V', 'F', 'B'] },
+      { word: 'ROBÔ', missingIdx: 3, icon: '🤖', hint: 'R - O - B - ? ... Qual letrinha termina ROBÔ? É a letra O!', choices: ['O', 'U', 'A'] },
+      { word: 'UVA', missingIdx: 0, icon: '🍇', hint: '? - V - A ... Qual letrinha começa UVA? É a letra U!', choices: ['U', 'I', 'O'] },
+      { word: 'MEL', missingIdx: 0, icon: '🐝', hint: '? - E - L ... Qual letrinha começa MEL? É a letra M!', choices: ['M', 'N', 'P'] }
+    ];
+
+    const LETTER_QUIZZES = [
+      { letter: 'B', correctIcon: '⚽', correctName: 'Bola', choices: [{ icon: '⚽', name: 'Bola', ok: true }, { icon: '🍎', name: 'Maçã', ok: false }, { icon: '🚗', name: 'Carro', ok: false }] },
+      { letter: 'M', correctIcon: '🍎', correctName: 'Maçã', choices: [{ icon: '🐱', name: 'Gato', ok: false }, { icon: '🍎', name: 'Maçã', ok: true }, { icon: '⚽', name: 'Bola', ok: false }] },
+      { letter: 'S', correctIcon: '☀️', correctName: 'Sol', choices: [{ icon: '☀️', name: 'Sol', ok: true }, { icon: '🦆', name: 'Pato', ok: false }, { icon: '🏠', name: 'Casa', ok: false }] },
+      { letter: 'C', correctIcon: '🐶', correctName: 'Cachorro', choices: [{ icon: '🤖', name: 'Robô', ok: false }, { icon: '🐝', name: 'Abelha', ok: false }, { icon: '🐶', name: 'Cachorro', ok: true }] },
+      { letter: 'P', correctIcon: '🦆', correctName: 'Pato', choices: [{ icon: '🦆', name: 'Pato', ok: true }, { icon: '🍇', name: 'Uva', ok: false }, { icon: '🌙', name: 'Lua', ok: false }] }
+    ];
+
+    function openLiteracyAcademy() {
+      const body = openModal('🔤 ACADEMIA DE LETRINHAS — LER E ESCREVER');
+      speak('Bem-vindo à Academia de Letrinhas! Vamos conhecer as letras, ouvir seus sons e escrever palavras mágicas!');
+
+      body.innerHTML = `
+        <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+          <button type="button" class="music-tab-btn active" id="tab-alpha">🔤 Alfabeto & Sons</button>
+          <button type="button" class="music-tab-btn" id="tab-words">🧩 Escrever Palavrinhas</button>
+          <button type="button" class="music-tab-btn" id="tab-quiz">🔍 Jogo das Letras</button>
+          <button type="button" class="music-tab-btn" id="tab-trace">✍️ Traçar Letras</button>
+        </div>
+        <div id="literacy-stage" style="flex:1; display:flex; flex-direction:column;"></div>
+      `;
+
+      function updateLitTabs(activeId) {
+        ['tab-alpha', 'tab-words', 'tab-quiz'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.toggle('active', id === activeId);
+        });
+      }
+
+      document.getElementById('tab-alpha').onclick = () => { updateLitTabs('tab-alpha'); 
+      function renderTracingStage() {
+        if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+        const stage = document.getElementById('literacy-stage');
+        let currentTraceChar = 'A';
+        const TRACE_CHARS = ['A', 'B', 'C', '1', '2', '3'];
+
+        stage.innerHTML = `
+          <div style="background:#0f172a; border:3px solid #38bdf8; border-radius:20px; padding:16px; display:flex; flex-direction:column; align-items:center; flex:1; gap:12px;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="font-size:1.35rem; font-weight:900; color:#facc15;">
+                Passe o mouse ou o dedinho por cima da letrinha para acender o neon!
+              </div>
+              <div style="display:flex; gap:8px;" id="trace-char-buttons"></div>
+            </div>
+            <div style="position:relative; width:440px; height:280px; background:#071120; border:3px dashed #38bdf8; border-radius:18px; display:flex; align-items:center; justify-content:center;">
+              <canvas id="trace-canvas" width="440" height="280" style="cursor:crosshair; touch-action:none;"></canvas>
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button type="button" class="big-btn" style="background:#0284c7; padding:8px 18px; font-size:1rem;" id="btn-clear-trace">🧹 Limpar Traço</button>
+            </div>
+          </div>
+        `;
+
+        const btnsBox = document.getElementById('trace-char-buttons');
+        TRACE_CHARS.forEach(c => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'big-btn';
+          b.style.cssText = 'background:#1e293b; border:2px solid #475569; padding:6px 14px; font-size:1.15rem; font-weight:900;';
+          b.textContent = c;
+          b.onclick = () => {
+            currentTraceChar = c;
+            initCanvas();
+            speak(`Vamos traçar a letrinha ${c}! Passe o dedinho por cima dela!`);
+          };
+          btnsBox.appendChild(b);
+        });
+
+        const canvas = document.getElementById('trace-canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let drawnPoints = 0;
+        let traceAwarded = false;
+
+        function initCanvas() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawnPoints = 0;
+          traceAwarded = false;
+
+          // Desenhar guia pontilhada grande
+          ctx.save();
+          ctx.font = 'bold 200px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.setLineDash([8, 10]);
+          ctx.strokeStyle = '#334155';
+          ctx.lineWidth = 6;
+          ctx.strokeText(currentTraceChar, canvas.width / 2, canvas.height / 2 + 10);
+          ctx.restore();
+        }
+
+        function drawNeonPoint(x, y) {
+          ctx.save();
+          ctx.strokeStyle = '#00f0ff';
+          ctx.fillStyle = '#fef08a';
+          ctx.lineWidth = 14;
+          ctx.lineCap = 'round';
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = '#00f0ff';
+
+          ctx.beginPath();
+          ctx.arc(x, y, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          drawnPoints++;
+          if (drawnPoints % 8 === 0) {
+            playTone(700 + Math.random() * 300, 45);
+          }
+
+          if (drawnPoints >= 38 && !traceAwarded) {
+            traceAwarded = true;
+            playTone(523, 100);
+            setTimeout(() => playTone(659, 100), 100);
+            setTimeout(() => playTone(784, 180), 200);
+            addStar(1);
+            speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você traçou a letrinha ${currentTraceChar} perfeitamente!`);
+          }
+        }
+
+        canvas.onmousedown = (e) => { isDrawing = true; drawNeonPoint(e.offsetX, e.offsetY); };
+        canvas.onmousemove = (e) => { if (isDrawing) drawNeonPoint(e.offsetX, e.offsetY); };
+        window.onmouseup = () => { isDrawing = false; };
+
+        canvas.ontouchstart = (e) => {
+          e.preventDefault();
+          isDrawing = true;
+          const rect = canvas.getBoundingClientRect();
+          const t = e.touches[0];
+          drawNeonPoint(t.clientX - rect.left, t.clientY - rect.top);
+        };
+        canvas.ontouchmove = (e) => {
+          e.preventDefault();
+          if (!isDrawing) return;
+          const rect = canvas.getBoundingClientRect();
+          const t = e.touches[0];
+          drawNeonPoint(t.clientX - rect.left, t.clientY - rect.top);
+        };
+        canvas.ontouchend = () => { isDrawing = false; };
+
+        document.getElementById('btn-clear-trace').onclick = initCanvas;
+        initCanvas();
+        speak(`Vamos traçar a letrinha ${currentTraceChar}! Passe o dedinho ou o mouse por cima do desenho pontilhado!`);
+      }
+
+      renderAlphabetStage(); };
+      document.getElementById('tab-words').onclick = () => { updateLitTabs('tab-words'); renderWordsStage(); };
+      document.getElementById('tab-quiz').onclick = () => { updateLitTabs('tab-quiz'); renderQuizStage(); };
+      document.getElementById('tab-trace').onclick = () => { updateLitTabs('tab-trace'); renderTracingStage(); };
+
+      function renderAlphabetStage() {
+        if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+        const stage = document.getElementById('literacy-stage');
+        let selectedItem = ALPHABET_DATA[0];
+
+        stage.innerHTML = `
+          <div id="letter-showcase" style="background:#0f172a; border:3px solid #38bdf8; border-radius:20px; padding:16px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-around; flex-wrap:wrap; gap:16px;">
+            <div style="font-size:7rem; font-weight:900; color:#ef4444; text-shadow:0 0 30px rgba(239,68,68,0.7);" id="showcase-letter">A</div>
+            <div style="text-align:center;">
+              <div style="font-size:5rem;" id="showcase-icon">🐝</div>
+              <div style="font-size:2.2rem; font-weight:900; color:#facc15;" id="showcase-word">Abelha</div>
+              <div style="font-size:1.3rem; font-weight:700; color:#94a3b8;" id="showcase-sound">Som: /ááá/</div>
+            </div>
+            <button type="button" class="big-btn" style="background:#0284c7; font-size:1.2rem; padding:14px 22px;" id="btn-repeat-letter">🔊 Ouvir Som da Letra</button>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(13, 1fr); gap:8px; flex:1;" id="alpha-grid"></div>
+        `;
+
+        function playLetter(item) {
+          selectedItem = item;
+          const letterEl = document.getElementById('showcase-letter');
+          const iconEl = document.getElementById('showcase-icon');
+          const wordEl = document.getElementById('showcase-word');
+          const soundEl = document.getElementById('showcase-sound');
+
+          if (letterEl) {
+            letterEl.textContent = item.letter;
+            letterEl.style.color = item.col;
+            letterEl.style.textShadow = `0 0 30px ${item.col}99`;
+          }
+          if (iconEl) iconEl.textContent = item.icon;
+          if (wordEl) wordEl.textContent = item.word;
+          if (soundEl) soundEl.textContent = `Som: /${item.sound}/`;
+
+          playTone(523, 120);
+          const PHONETICS = {
+            'A': 'Letra A! /a/ /a/! A de Abelha e Avião!',
+            'B': 'Letra B! /b/ /b/! B de Bola e Barco!',
+            'C': 'Letra C! /k/ /k/! C de Casa e Carro!',
+            'D': 'Letra D! /d/ /d/! D de Dinossauro e Dedo!',
+            'E': 'Letra E! /e/ /e/! E de Estrela e Elefante!',
+            'F': 'Letra F! /f/ /f/! F de Foguete e Família!',
+            'G': 'Letra G! /g/ /g/! G de Gato e Girafa!',
+            'H': 'Letra H! O H é mágico! H de Herói e História!',
+            'I': 'Letra I! /i/ /i/! I de Ilha e Irmão!',
+            'J': 'Letra J! /j/ /j/! J de Járvis e Jacaré!',
+            'K': 'Letra K! /k/ /k/! K de Kaleo! O grande herói Kaleo Noah!',
+            'L': 'Letra L! /l/ /l/! L de Livro e Lua!',
+            'M': 'Letra M! /m/ /m/! M de Música e Mamãe!',
+            'N': 'Letra N! /n/ /n/! N de Navio e Nuvem!',
+            'O': 'Letra O! /o/ /o/! O de Olho e Ovelha!',
+            'P': 'Letra P! /p/ /p/! P de Papai e Pipoca!',
+            'Q': 'Letra Q! /k/ /k/! Q de Queijo e Quati!',
+            'R': 'Letra R! /r/ /r/! R de Robô e Reator!',
+            'S': 'Letra S! /s/ /s/! S de Sol e Stark!',
+            'T': 'Letra T! /t/ /t/! T de Trem e Tubarão!',
+            'U': 'Letra U! /u/ /u/! U de Urso e Uva!',
+            'V': 'Letra V! /v/ /v/! V de Voar e Vitória!',
+            'W': 'Letra W! W de Walkie-talkie!',
+            'X': 'Letra X! /ch/ /ch/! X de Xícara!',
+            'Y': 'Letra Y! Y de Yoga!',
+            'Z': 'Letra Z! /z/ /z/! Z de Zebra!'
+          };
+          const speechText = PHONETICS[item.letter] || `Esta é a letra ${item.letter}! O som dela é ${item.sound}! ${item.desc}`;
+          speak(speechText);
+        }
+
+        document.getElementById('btn-repeat-letter').onclick = () => playLetter(selectedItem);
+
+        const grid = document.getElementById('alpha-grid');
+        ALPHABET_DATA.forEach(item => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'letter-btn';
+          btn.style.background = '#0b1528';
+          btn.style.borderColor = item.col;
+          btn.innerHTML = `
+            <span style="font-size:1.6rem; color:${item.col};">${item.letter}</span>
+            <span style="font-size:1.2rem;">${item.icon}</span>
+          `;
+          btn.onclick = () => playLetter(item);
+          grid.appendChild(btn);
+        });
+
+        keyHandler = (e) => {
+          const k = e.key.toUpperCase();
+          const match = ALPHABET_DATA.find(x => x.letter === k);
+          if (match) {
+            addStar(1);
+            playLetter(match);
+          }
+        };
+        window.addEventListener('keydown', keyHandler);
+
+        playLetter(ALPHABET_DATA[0]);
+      }
+
+      let wordIdx = 0;
+      function renderWordsStage() {
+        if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+        const stage = document.getElementById('literacy-stage');
+        const item = SIGHT_WORDS[wordIdx % SIGHT_WORDS.length];
+        const correctLetter = item.word[item.missingIdx];
+
+        stage.innerHTML = `
+          <div style="background:#0f172a; border:3px solid #10b981; border-radius:20px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:16px;">
+            <div style="font-size:6rem;" id="word-draw">${item.icon}</div>
+            <div id="word-instruction" style="font-size:1.6rem; font-weight:900; color:#facc15; text-align:center;">
+              Qual letrinha falta para formar a palavra?
+            </div>
+            <div style="display:flex; gap:12px; margin:10px 0;" id="word-slots"></div>
+            <div style="display:flex; gap:16px; margin-top:8px;" id="choice-buttons"></div>
+          </div>
+        `;
+
+        const slots = document.getElementById('word-slots');
+        for (let i = 0; i < item.word.length; i++) {
+          const s = document.createElement('div');
+          s.className = 'word-slot' + (i === item.missingIdx ? '' : ' filled');
+          s.id = `slot-${i}`;
+          s.textContent = (i === item.missingIdx) ? '?' : item.word[i];
+          slots.appendChild(s);
+        }
+
+        const choicesBox = document.getElementById('choice-buttons');
+        item.choices.forEach(letter => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'big-btn';
+          btn.style.cssText = 'background:#1e293b; border:3px solid #38bdf8; font-size:2.4rem; padding:12px 28px; font-weight:900;';
+          btn.textContent = letter;
+          btn.onclick = () => onLetterChosen(letter);
+          choicesBox.appendChild(btn);
+        });
+
+        function onLetterChosen(letter) {
+          if (letter === correctLetter) {
+            const slot = document.getElementById(`slot-${item.missingIdx}`);
+            if (slot) {
+              slot.textContent = correctLetter;
+              slot.classList.add('filled');
+              slot.style.borderColor = '#10b981';
+            }
+            playTone(523, 100);
+            setTimeout(() => playTone(659, 100), 100);
+            setTimeout(() => playTone(784, 200), 200);
+            addStar(1);
+
+            document.getElementById('word-instruction').innerHTML = `🏆 PARABÉNS! Você escreveu <span style="color:#38bdf8;">${item.word}</span>!`;
+            speak(`Muito bem, ${appState.config.child_name}! ${item.word}! Você escreveu certinho!`);
+
+            setTimeout(() => {
+              wordIdx++;
+              renderWordsStage();
+            }, 3000);
+          } else {
+            playTone(220, 180);
+            speak(`Essa é a letra ${letter}! Tente a letrinha ${correctLetter} para formar ${item.word}!`);
+          }
+        }
+
+        keyHandler = (e) => {
+          const k = e.key.toUpperCase();
+          if (item.choices.includes(k) || k === correctLetter) {
+            onLetterChosen(k);
+          }
+        };
+        window.addEventListener('keydown', keyHandler);
+
+        speak(item.hint);
+      }
+
+      let quizIdx = 0;
+      function renderQuizStage() {
+        if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+        const stage = document.getElementById('literacy-stage');
+        const q = LETTER_QUIZZES[quizIdx % LETTER_QUIZZES.length];
+
+        stage.innerHTML = `
+          <div style="background:#0f172a; border:3px solid #8b5cf6; border-radius:20px; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:16px;">
+            <div style="font-size:1.8rem; font-weight:900; color:#facc15; text-align:center;">
+              Qual desenho começa com a letrinha <span style="font-size:3.5rem; color:#38bdf8;">${q.letter}</span>?
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; width:100%; max-width:680px; margin-top:14px;" id="quiz-options"></div>
+          </div>
+        `;
+
+        const opts = document.getElementById('quiz-options');
+        q.choices.forEach(c => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'big-btn';
+          b.style.cssText = 'background:#1e293b; border:3px solid #475569; padding:20px; display:flex; flex-direction:column; align-items:center; gap:8px; border-radius:18px;';
+          b.innerHTML = `
+            <span style="font-size:4.5rem;">${c.icon}</span>
+            <span style="font-size:1.6rem; font-weight:900; color:#fff;">${c.name}</span>
+          `;
+          b.onclick = () => {
+            if (c.ok) {
+              b.style.borderColor = '#10b981';
+              b.style.background = '#064e3b';
+              playTone(523, 100);
+              setTimeout(() => playTone(784, 200), 120);
+              addStar(1);
+              speak(`Isso mesmo! ${c.name} começa com a letrinha ${q.letter}! Você é incrível!`);
+              setTimeout(() => {
+                quizIdx++;
+                renderQuizStage();
+              }, 2500);
+            } else {
+              b.style.borderColor = '#ef4444';
+              playTone(220, 160);
+              speak(`Ops! ${c.name} não começa com ${q.letter}. Tente outro desenho!`);
+            }
+          };
+          opts.appendChild(b);
+        });
+
+        speak(`Qual desenho começa com a letrinha ${q.letter}? É ${q.choices.map(c => c.name).join(', ')}?`);
+      }
+
+      renderAlphabetStage();
+    }
+
+    function openMouseTraining() {
+      const body = openModal('🖱️ TREINO DO MOUSE — MIRA, CLIQUE E ARRASTE');
+      speak('Hora de treinar o mouse! Mova o cursor, clique e arraste com o Járvis!');
+      body.innerHTML = `
+        <div id="tech-stage" style="flex:1; display:flex; flex-direction:column;"></div>
+      `;
+      renderMouseStage();
     }
 
     function openModal(title) {
@@ -1186,8 +2004,22 @@
               🔤 ${page.word}
             </button>
           </div>
-          <div style="font-size:1.85rem; font-weight:800; line-height:1.55; color:#ffffff;">
-            ${page.text}
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div id="book-page-text-content" style="font-size:1.85rem; font-weight:800; line-height:1.55; color:#ffffff;">
+              ${page.text}
+            </div>
+            ${page.decision ? `
+              <div id="decision-box" style="background:#071120; border:2px dashed #facc15; border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+                <div style="font-size:1.25rem; font-weight:900; color:#facc15;">🤔 ${page.decision.question}</div>
+                <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                  ${page.decision.options.map((opt, i) => `
+                    <button type="button" class="big-btn btn-decision-opt" data-opt-idx="${i}" style="flex:1; background:#1e293b; border:3px solid #38bdf8; font-size:1.25rem; padding:12px; display:flex; align-items:center; justify-content:center; gap:10px;">
+                      <span style="font-size:2.2rem;">${opt.icon}</span> ${opt.label}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
           </div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:16px;">
@@ -1749,6 +2581,9 @@
         osc2.start(now);
         osc1.stop(now + durMs / 1000);
         osc2.stop(now + durMs / 1000);
+        osc1.onended = () => {
+          try { osc1.disconnect(); osc2.disconnect(); gain.disconnect(); } catch (e) {}
+        };
       } else if (inst === 'laser') {
         const osc = audioCtx.createOscillator();
         const filter = audioCtx.createBiquadFilter();
@@ -1766,6 +2601,9 @@
         gain.connect(audioCtx.destination);
         osc.start(now);
         osc.stop(now + durMs / 1000);
+        osc.onended = () => {
+          try { osc.disconnect(); filter.disconnect(); gain.disconnect(); } catch (e) {}
+        };
       } else if (inst === 'bichinhos') {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -2258,6 +3096,7 @@
           if (rem <= 0) {
             clearInterval(activeInterval);
             if (popupWin && !popupWin.closed) popupWin.close();
+            fetch('/api/media/close', { method: 'POST' }).catch(() => {});
             closeModal(false);
             triggerCinemaLockdown();
           }
@@ -2269,6 +3108,10 @@
     }
 
     function triggerCinemaLockdown() {
+      try {
+        if (popupWin && !popupWin.closed) popupWin.close();
+      } catch (e) {}
+      fetch('/api/media/close', { method: 'POST' }).catch(() => {});
       playTone(330, 250);
       setTimeout(() => playTone(220, 350), 280);
       document.getElementById('cinema-shield').classList.add('open');
@@ -2550,6 +3393,22 @@
 
           <div id="parents-status-box" style="display:none; padding:12px 16px; border-radius:10px; font-weight:800;"></div>
 
+          <!-- CONTROLE REMOTO NO CELULAR (MESMO WI-FI) -->
+          <div style="background:#071120; border:2px solid #00f0ff; border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="font-size:1.15rem; font-weight:900; color:#00f0ff;">📱 Controle Remoto no Celular (Mesmo Wi-Fi)</div>
+              <div style="font-size:0.88rem; color:#cbd5e1; margin-top:2px;">
+                Abra no seu smartphone para ver status, dar bônus de cinema ou pausar para o almoço:
+              </div>
+              <div style="font-family:Consolas,monospace; font-size:1.1rem; font-weight:900; color:#facc15; margin-top:4px;">
+                ${appState.remote_url || ('http://' + (appState.local_ip || '127.0.0.1') + ':5090/pais')}
+              </div>
+            </div>
+            <a href="${appState.remote_url || '/pais'}" target="_blank" style="background:#0284c7; color:#fff; text-decoration:none; padding:10px 18px; border-radius:12px; font-weight:900; font-size:0.95rem;">
+              Abrir Painel dos Pais ↗
+            </a>
+          </div>
+
           <!-- SELETOR DINÂMICO DE PROVEDORES DE IA -->
           <div style="background:#091326; border:2px solid #3b82f6; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;">
             <h3 style="color:#60a5fa; font-size:1.15rem; font-weight:900;">🤖 Escolha o Motor de Inteligência Artificial:</h3>
@@ -2761,5 +3620,13 @@
       };
     }
   </script>
+  <!-- TELA DE PAUSA REMOTA DOS PAIS (ALMOÇO / JANTAR) -->
+  <div id="remote-pause-screen" style="position:fixed; inset:0; background:radial-gradient(circle, #78350f 0%, #040914 90%); z-index:9000; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
+    <div style="font-size:6rem; margin-bottom:16px;">🍽️</div>
+    <div style="font-size:2.6rem; font-weight:900; color:#facc15; margin-bottom:12px;" id="pause-title">HORA DO LANCHE & REFEIÇÃO!</div>
+    <div style="font-size:1.5rem; color:#f1f5f9; max-width:680px; line-height:1.5; font-weight:700;" id="pause-desc">
+      Hora de recarregar os propulsores com uma comidinha saudável! O Járvis volta a funcionar assim que o prato estiver limpo!
+    </div>
+  </div>
 </body>
 </html>

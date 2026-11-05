@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>J.A.R.V.I.S. Kids — Controle dos Pais</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #040914;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    header {
+      text-align: center;
+      padding: 12px;
+      background: #0f172a;
+      border: 2px solid #00f0ff;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 240, 255, 0.2);
+    }
+    h1 { font-size: 1.35rem; color: #00f0ff; letter-spacing: 0.04em; }
+    .sub { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
+
+    .card {
+      background: #0b1526;
+      border: 2px solid #1e3a5f;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #facc15;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-box {
+      background: #071120;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-val { font-size: 1.6rem; font-weight: 900; color: #38bdf8; }
+    .stat-lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.1s, opacity 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-bonus { background: #10b981; color: #fff; }
+    .btn-pause { background: #f97316; color: #fff; }
+    .btn-resume { background: #0284c7; color: #fff; }
+    .btn-night { background: #8b5cf6; color: #fff; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 2px solid #00f0ff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚙ J.A.R.V.I.S. PAIS</h1>
+    <div class="sub" id="child-name-display">Controle Remoto de Kaleo Noah</div>
+  </header>
+
+  <!-- STATUS DO DIA -->
+  <div class="card">
+    <div class="card-title">📊 Status de Hoje</div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-val" id="val-books">0</div>
+        <div class="stat-lbl">📖 Livros Lidos</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="val-cinema">0m</div>
+        <div class="stat-lbl">⏱ Vídeos Restantes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AÇÕES RÁPIDAS -->
+  <div class="card">
+    <div class="card-title">⚡ Ações Rápidas</div>
+    <button type="button" class="btn btn-bonus" onclick="giveBonus(15)">
+      🎁 +15 Minutos de Vídeo
+    </button>
+    <button type="button" class="btn btn-pause" id="btn-pause-toggle" onclick="togglePause()">
+      🍽️ Pausar Tela (Almoço / Jantar)
+    </button>
+    <button type="button" class="btn btn-night" onclick="toggleNight()">
+      🌙 Alternar Modo Noturno
+    </button>
+  </div>
+
+  <!-- PROVEDOR ATIVO -->
+  <div class="card">
+    <div class="card-title">🤖 Inteligência Artificial</div>
+    <div style="font-size:0.9rem; color:#cbd5e1;" id="ia-provider-info">
+      Carregando provedor ativo...
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Ação concluída com sucesso!</div>
+
+  <script>
+    let isPaused = false;
+    let nightActive = false;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2500);
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch('/api/state');
+        const data = await res.json();
+        document.getElementById('child-name-display').textContent = `Controle Remoto de ${data.config.child_name || 'Kaleo Noah'}`;
+        document.getElementById('val-books').textContent = data.books_read_today || 0;
+        
+        const remSec = (data.media_permission && data.media_permission.remaining_sec) || 0;
+        document.getElementById('val-cinema').textContent = `${Math.ceil(remSec / 60)} min`;
+
+        isPaused = !!data.remote_paused;
+        nightActive = !!data.night_mode;
+
+        const btnP = document.getElementById('btn-pause-toggle');
+        if (isPaused) {
+          btnP.className = 'btn btn-resume';
+          btnP.textContent = '▶️ Retomar Tela do Netbook';
+        } else {
+          btnP.className = 'btn btn-pause';
+          btnP.textContent = '🍽️ Pausar Tela (Almoço / Jantar)';
+        }
+
+        document.getElementById('ia-provider-info').innerHTML = `
+          Modo Atual: <b style="color:#00f0ff;">${(data.config.active_provider || 'offline').toUpperCase()}</b><br>
+          Voz: ${data.config.voice_profile || 'Padrão'}
+        `;
+      } catch (e) {}
+    }
+
+    async function giveBonus(mins) {
+      try {
+        await fetch('/api/media/bonus', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ minutes: mins })
+        });
+        showToast(`+${mins} min concedidos com sucesso!`);
+        refresh();
+      } catch (e) {
+        showToast('Erro ao conceder bônus.');
+      }
+    }
+
+    async function togglePause() {
+      try {
+        if (!isPaused) {
+          await fetch('/api/remote/pause', { method: 'POST' });
+          showToast('Tela do netbook pausada com carinho!');
+        } else {
+          await fetch('/api/remote/resume', { method: 'POST' });
+          showToast('Tela do netbook retomada!');
+        }
+        refresh();
+      } catch (e) {
+        showToast('Erro na comunicação.');
+      }
+    }
+
+    async function toggleNight() {
+      try {
+        await fetch('/api/remote/night', { method: 'POST' });
+        showToast('Modo noturno alternado!');
+        refresh();
+      } catch (e) {
+        showToast('Erro na comunicação.');
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 5000);
+  </script>
+</body>
+</html>

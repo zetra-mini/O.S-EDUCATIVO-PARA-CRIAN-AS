@@ -6,3 +6,5 @@ uso_diario.json
 .env
 .venv/
 venv/
+*.log
+

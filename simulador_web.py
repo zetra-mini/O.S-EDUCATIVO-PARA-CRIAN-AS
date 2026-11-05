@@ -1,4 +1,5 @@
 import os
+import socket
 from flask import Flask, Response, jsonify, render_template, request
 
 from biblioteca_livros import BOOKS
@@ -12,16 +13,43 @@ app = Flask(__name__, template_folder=os.path.join(BASE_DIR, "templates"))
 brain = JarvisBrain()
 media_mgr = MediaTimeManager(brain)
 
+def get_local_ip() -> str:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+REMOTE_STATE = {
+    "paused": False,
+    "pause_message": "Hora de recarregar as energias! Vamos fazer uma pausa para comer comidinha gostosa!",
+    "night_mode": False
+}
+
 
 @app.route("/")
 def index():
     return render_template("hud_jarvis.html")
 
 
+@app.route("/pais")
+def painel_pais():
+    return render_template("painel_pais.html")
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return Response(status=204)
+
+
 @app.route("/api/state", methods=["GET"])
 def api_state():
     brain.load_config()
     perm = media_mgr.check_permission()
+    local_ip = get_local_ip()
     return jsonify(
         {
             "config": {
@@ -54,8 +82,39 @@ def api_state():
             "books": BOOKS,
             "media_permission": perm,
             "greeting": brain.get_greeting(),
+            "local_ip": local_ip,
+            "remote_url": f"http://{local_ip}:5090/pais",
+            "remote_paused": REMOTE_STATE["paused"],
+            "pause_message": REMOTE_STATE["pause_message"],
+            "night_mode": REMOTE_STATE["night_mode"],
         }
     )
+
+
+@app.route("/api/remote/pause", methods=["POST"])
+def api_remote_pause():
+    data = request.get_json(silent=True) or {}
+    msg = data.get("message", "Hora de recarregar as energias! Vamos fazer uma pausa para comer comidinha gostosa!")
+    REMOTE_STATE["paused"] = True
+    REMOTE_STATE["pause_message"] = msg
+    return jsonify({"ok": True, "paused": True, "message": msg})
+
+
+@app.route("/api/remote/resume", methods=["POST"])
+def api_remote_resume():
+    REMOTE_STATE["paused"] = False
+    return jsonify({"ok": True, "paused": False})
+
+
+@app.route("/api/remote/night", methods=["POST"])
+def api_remote_night():
+    data = request.get_json(silent=True) or {}
+    enable = data.get("enable")
+    if enable is None:
+        REMOTE_STATE["night_mode"] = not REMOTE_STATE["night_mode"]
+    else:
+        REMOTE_STATE["night_mode"] = bool(enable)
+    return jsonify({"ok": True, "night_mode": REMOTE_STATE["night_mode"]})
 
 
 @app.route("/api/ask", methods=["POST"])
@@ -77,26 +136,30 @@ def api_ask():
 
 @app.route("/api/tts", methods=["POST"])
 def api_tts():
-    data = request.get_json(silent=True) or {}
-    text = (data.get("text") or "").strip()
-    if not text:
+    try:
+        data = request.get_json(silent=True) or {}
+        text = (data.get("text") or "").strip()
+        if not text:
+            return Response(status=204)
+
+        profile_key = data.get("voice_profile") or brain.config.get(
+            "voice_profile", "jarvis_antonio"
+        )
+        override_key = (data.get("gemini_api_key") or "").strip()
+        effective_key = override_key or brain.get_effective_gemini_key()
+
+        audio_bytes, mime_type = neural_tts.synthesize(text, profile_key, effective_key)
+        if not audio_bytes:
+            return Response(status=204)
+
+        return Response(
+            audio_bytes,
+            mimetype=mime_type,
+            headers={"Cache-Control": "no-store"},
+        )
+    except Exception as e:
+        print(f"Aviso TTS: {e}")
         return Response(status=204)
-
-    profile_key = data.get("voice_profile") or brain.config.get(
-        "voice_profile", "jarvis_antonio"
-    )
-    override_key = (data.get("gemini_api_key") or "").strip()
-    effective_key = override_key or brain.get_effective_gemini_key()
-
-    audio_bytes, mime_type = neural_tts.synthesize(text, profile_key, effective_key)
-    if not audio_bytes:
-        return Response(status=204)
-
-    return Response(
-        audio_bytes,
-        mimetype=mime_type,
-        headers={"Cache-Control": "no-store"},
-    )
 
 
 @app.route("/api/provider/test", methods=["POST"])
@@ -168,6 +231,12 @@ def api_media_bonus():
     return jsonify({"ok": True, "permission": media_mgr.check_permission()})
 
 
+@app.route("/api/media/close", methods=["POST"])
+def api_media_close():
+    media_mgr.close_streaming()
+    return jsonify({"ok": True, "status": "closed"})
+
+
 @app.route("/api/config", methods=["POST"])
 def api_save_config():
     data = request.get_json(silent=True) or {}
@@ -214,5 +283,13 @@ def api_save_config():
 
 
 if __name__ == "__main__":
-    print("Simulador Web J.A.R.V.I.S. Kids OS v2.2 ativo em http://127.0.0.1:5090")
-    app.run(host="127.0.0.1", port=5090, debug=False)
+    import time
+    print(f"Simulador Web J.A.R.V.I.S. Kids OS v2.2 ativo em http://127.0.0.1:5090 e na rede http://{get_local_ip()}:5090/pais")
+    while True:
+        try:
+            app.run(host="0.0.0.0", port=5090, debug=False, threaded=True)
+        except KeyboardInterrupt:
+            break
+        except (Exception, BaseException) as e:
+            print(f"Servidor reiniciando após sinal/erro: {e}")
+        time.sleep(1)

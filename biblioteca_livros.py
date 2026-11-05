@@ -218,6 +218,48 @@ BOOKS = [
             },
         ],
     },
+    {
+        "id": "aventura_stark_decide",
+        "title": "A Grande Aventura Espacial de Kaleo (Você Decide!)",
+        "theme_color": "#e11d48",
+        "cover_emoji": "⚡",
+        "is_interactive": True,
+        "pages": [
+            {
+                "scene": "stark_hangar",
+                "word": "FOGUETE",
+                "tap_hint": "Toque no Reator Arc para ligar os motores!",
+                "tap_sound": "rocket_boost",
+                "text": "O alarme Stark tocou! Járvis disse: 'Kaleo, os propulsores estão prontos para a nossa missão! Para onde vamos viajar?'",
+                "decision": {
+                    "question": "Para onde você quer viajar agora?",
+                    "options": [
+                        {
+                            "label": "🦖 Planeta dos Dinos",
+                            "icon": "🦖",
+                            "sound": "roar_cute",
+                            "next_text": "Você acelerou o foguete em direção ao Planeta dos Dinossauros! O T-Rex Tito acenou com alegria e dividiu frutinhas mágicas com você!",
+                            "next_word": "AMIGOS"
+                        },
+                        {
+                            "label": "🌟 Planeta dos Robôs",
+                            "icon": "🤖",
+                            "sound": "zen_chime",
+                            "next_text": "Você ligou os propulsores velozes rumo ao Planeta dos Robôs! Robôs dançarinos tocaram uma música divertida e deram uma capa dourada para você!",
+                            "next_word": "MÚSICA"
+                        }
+                    ]
+                }
+            },
+            {
+                "scene": "friends_smile",
+                "word": "VITÓRIA",
+                "tap_hint": "Toque na armadura para celebrar a vitória!",
+                "tap_sound": "cheer",
+                "text": "Com a missão cumprida, Kaleo voltou para casa aterrissando suavemente. Járvis exclamou: 'Você é o maior super-herói do universo!'",
+            },
+        ],
+    },
 ]
 
 

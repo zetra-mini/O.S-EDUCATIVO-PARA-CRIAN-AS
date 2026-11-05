@@ -80,21 +80,32 @@ quit=no
 lang=brazilian-portuguese
 EOF
 
-echo "[6/6] Configurando inicialização automática em Modo Quiosque (antiX / Desktop Linux)..."
-# 1. Para antiX Linux (usa ~/.desktop-session/startup)
+echo "[6/6] Configurando inicialização automática em Modo Quiosque e Blindagem (antiX / IceWM)..."
+# 1. Blindagem do Gerenciador de Janelas IceWM (Desativa Alt+Tab e Alt+F4 acidentais da criança)
+mkdir -p "$HOME/.icewm"
+cat > "$HOME/.icewm/prefoverride" << 'EOF'
+# Trava de segurança para netbook infantil
+KeySysSwitchNext=""
+KeySysSwitchLast=""
+KeySysWinClose=""
+KeySysWinMinimize=""
+KeySysDialog=""
+EOF
+
+# 2. Para antiX Linux (usa ~/.desktop-session/startup)
 if [ -d "$HOME/.desktop-session" ]; then
   if ! grep -q "jarvis_os.py" "$HOME/.desktop-session/startup" 2>/dev/null; then
     cat >> "$HOME/.desktop-session/startup" << EOF
 
-# --- JARVIS KIDS OS AUTOSTART ---
+# --- JARVIS KIDS OS AUTOSTART & PROTEÇÃO INFANTIL ---
 xset s off -dpms &
-amixer set Master 85% unmute >/dev/null 2>&1 &
+amixer set Master 75% unmute >/dev/null 2>&1 &
 python3 "$APP_DIR/jarvis_os.py" --kiosk &
 EOF
   fi
 fi
 
-# 2. Padrão XDG Autostart (Q4OS, LXQt, XFCE, Debian)
+# 3. Padrão XDG Autostart (Q4OS, LXQt, XFCE, Debian)
 mkdir -p "$HOME/.config/autostart"
 cat > "$HOME/.config/autostart/jarvis-kids-os.desktop" << EOF
 [Desktop Entry]
@@ -106,19 +117,27 @@ Terminal=false
 X-GNOME-Autostart-enabled=true
 EOF
 
-# 3. Atalho na Área de Trabalho
+# 4. Atalhos na Área de Trabalho (Modo Nativo e Modo Web Quiosque)
 mkdir -p "$HOME/Desktop" "$HOME/Área de Trabalho" 2>/dev/null || true
 for DESK in "$HOME/Desktop" "$HOME/Área de Trabalho"; do
   if [ -d "$DESK" ]; then
     cat > "$DESK/JARVIS-Kids.desktop" << EOF
 [Desktop Entry]
 Type=Application
-Name=JARVIS Kids OS
+Name=JARVIS Kids OS (Nativo)
 Exec=python3 $APP_DIR/jarvis_os.py --kiosk
 Icon=applications-games
 Terminal=false
 EOF
-    chmod +x "$DESK/JARVIS-Kids.desktop"
+    cat > "$DESK/JARVIS-Web-Kiosk.desktop" << EOF
+[Desktop Entry]
+Type=Application
+Name=JARVIS Kids OS (Web Arcade)
+Exec=bash $APP_DIR/iniciar_web_kiosk.sh
+Icon=applications-games
+Terminal=false
+EOF
+    chmod +x "$DESK/JARVIS-Kids.desktop" "$DESK/JARVIS-Web-Kiosk.desktop" 2>/dev/null || true
   fi
 done
 
