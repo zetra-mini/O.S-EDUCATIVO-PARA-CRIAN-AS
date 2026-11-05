@@ -41,7 +41,10 @@ class JarvisKidsOS:
         self.brain = JarvisBrain()
         self.media_mgr = MediaTimeManager(self.brain)
         self.is_speaking = False
-        self.voice = JarvisVoice(on_speaking_change=self._on_speaking_state)
+        self.voice = JarvisVoice(
+            on_speaking_change=self._on_speaking_state,
+            config_getter=lambda: self.brain.config,
+        )
         self.voice.muted = not self.brain.config.get("voice_enabled", True)
 
         self.root = tk.Tk()
@@ -75,14 +78,15 @@ class JarvisKidsOS:
         self.is_speaking = speaking
 
     def _update_mode_badge(self):
-        m = self.brain.config.get("mode", "offline")
+        m = self.brain.config.get("mode", "gemini")
         sched = f"{self.brain.config.get('media_start_time', '16:00')}-{self.brain.config.get('media_end_time', '17:00')}"
         labels = {
+            "gemini": f"GEMINI 3.8 • CINEMA: {sched}",
             "offline": f"OFFLINE • CINEMA: {sched}",
             "ollama": f"OLLAMA REDE • CINEMA: {sched}",
             "cloud": f"NUVEM ({self.brain.config.get('cloud_provider', 'API').upper()}) • CINEMA: {sched}",
         }
-        self.mode_badge_var.set(labels.get(m, "MODO: 100% OFFLINE"))
+        self.mode_badge_var.set(labels.get(m, f"GEMINI • CINEMA: {sched}"))
 
     def update_books_badge(self):
         n = self.media_mgr.get_books_read_today()
@@ -806,26 +810,22 @@ class JarvisKidsOS:
             font=("Arial", 10, "bold"),
         ).grid(row=3, column=0, columnspan=2, sticky="w", pady=6)
 
-        tk.Label(form, text="Motor de IA (offline / ollama / cloud):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=4, column=0, sticky="w", pady=5)
-        mode_var = tk.StringVar(value=self.brain.config.get("mode", "offline"))
-        tk.OptionMenu(form, mode_var, "offline", "ollama", "cloud").grid(row=4, column=1, sticky="w", pady=5)
+        tk.Label(form, text="Motor de IA (gemini / ollama / offline / cloud):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=4, column=0, sticky="w", pady=5)
+        mode_var = tk.StringVar(value=self.brain.config.get("mode", "gemini"))
+        tk.OptionMenu(form, mode_var, "gemini", "ollama", "offline", "cloud").grid(row=4, column=1, sticky="w", pady=5)
 
         tk.Label(form, text="URL Ollama na Rede (se 'ollama'):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=5, column=0, sticky="w", pady=5)
         ollama_url_var = tk.StringVar(value=self.brain.config.get("ollama_url", "http://127.0.0.1:11434"))
         tk.Entry(form, textvariable=ollama_url_var, width=32, font=("Arial", 10)).grid(row=5, column=1, sticky="w", pady=5)
 
-        tk.Label(form, text="Provedor Cloud & API Key (opcional):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=6, column=0, sticky="w", pady=5)
-        cloud_row = tk.Frame(form, bg=self.PANEL_BG)
-        cloud_row.grid(row=6, column=1, sticky="w", pady=5)
-        cloud_prov_var = tk.StringVar(value=self.brain.config.get("cloud_provider", "groq"))
-        tk.OptionMenu(cloud_row, cloud_prov_var, "groq", "gemini", "openai").pack(side="left", padx=(0, 6))
-        api_key_var = tk.StringVar(value=self.brain.config.get("cloud_api_key", ""))
-        tk.Entry(cloud_row, textvariable=api_key_var, show="*", width=20, font=("Arial", 10)).pack(side="left")
+        tk.Label(form, text="Chave Google Gemini (GEMINI_API_KEY):", fg="#60a5fa", bg=self.PANEL_BG, font=("Arial", 10, "bold")).grid(row=6, column=0, sticky="w", pady=5)
+        gemini_key_var = tk.StringVar(value=self.brain.config.get("gemini_api_key", ""))
+        tk.Entry(form, textvariable=gemini_key_var, show="*", width=32, font=("Arial", 10)).grid(row=6, column=1, sticky="w", pady=5)
 
         voice_var = tk.BooleanVar(value=self.brain.config.get("voice_enabled", True))
         tk.Checkbutton(
             form,
-            text="Ativar Voz Falada do JARVIS e Efeitos Sonoros",
+            text="Ativar Voz Neural PT-BR do JARVIS e Efeitos Sonoros",
             variable=voice_var,
             bg=self.PANEL_BG,
             fg="#ffffff",
@@ -862,9 +862,9 @@ class JarvisKidsOS:
             self.brain.config["require_book_before_media"] = req_book_var.get()
             self.brain.config["mode"] = mode_var.get()
             self.brain.config["ollama_url"] = ollama_url_var.get().strip()
-            self.brain.config["cloud_provider"] = cloud_prov_var.get()
-            self.brain.config["cloud_api_key"] = api_key_var.get().strip()
+            self.brain.config["gemini_api_key"] = gemini_key_var.get().strip()
             self.brain.config["voice_enabled"] = voice_var.get()
+            self.brain.reset_conversation()
             self.brain.save_config()
             self.voice.muted = not voice_var.get()
             self._update_mode_badge()

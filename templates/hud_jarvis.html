@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>◈ J.A.R.V.I.S. Kids OS v2.0 — Stark Educational HUD</title>
+  <title>◈ J.A.R.V.I.S. Kids OS v2.1 — Google Gemini & Voz Neural</title>
   <style>
     :root {
       --bg: #040914;
@@ -17,9 +17,11 @@
       --orange: #f97316;
       --purple: #a855f7;
       --pink: #ec4899;
+      --gemini-blue: #60a5fa;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: "Segoe UI", system-ui, sans-serif; }
+    input, select { user-select: text; }
 
     body {
       background: radial-gradient(circle at center, #08172e 0%, #040914 75%);
@@ -32,44 +34,60 @@
 
     /* TOP BAR */
     header {
-      height: 52px;
+      height: 54px;
       background: #071120;
       border-bottom: 1px solid var(--cyan-dim);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 18px;
+      z-index: 20;
     }
     .hud-brand {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
       font-weight: 800;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
     }
-    .hud-title { color: var(--cyan); font-family: Consolas, monospace; font-size: 1.15rem; }
-    .badge-stars { color: var(--gold); font-size: 1.05rem; }
-    .badge-books { color: #4ade80; font-size: 1.02rem; }
-    .hud-right { display: flex; align-items: center; gap: 14px; }
-    .mode-tag { font-family: Consolas, monospace; font-size: 0.8rem; color: #38bdf8; }
+    .hud-title { color: var(--cyan); font-family: Consolas, monospace; font-size: 1.12rem; }
+    .badge-stars { color: var(--gold); font-size: 1.02rem; }
+    .badge-books { color: #4ade80; font-size: 1rem; }
+    .hud-right { display: flex; align-items: center; gap: 12px; }
+    .mode-tag {
+      font-family: Consolas, monospace;
+      font-size: 0.78rem;
+      color: #38bdf8;
+      background: #0b1d36;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #1e3a5f;
+    }
     .btn-parents {
-      background: #0f172a;
-      color: #cbd5e1;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-weight: 700;
+      background: #1e293b;
+      color: #f8fafc;
+      border: 2px solid #475569;
+      border-radius: 10px;
+      padding: 7px 16px;
+      font-weight: 800;
+      font-size: 0.92rem;
       cursor: pointer;
+      transition: all 0.15s;
     }
-    .btn-parents:hover { border-color: var(--cyan); color: var(--cyan); }
+    .btn-parents:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: #0f2440;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+    }
 
     /* MAIN 3-COLUMN STARK HUD */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr 310px 1fr;
+      grid-template-columns: 1fr 320px 1fr;
       gap: 16px;
-      padding: 14px 20px;
+      padding: 12px 20px;
       max-width: 1280px;
       width: 100%;
       margin: 0 auto;
@@ -79,7 +97,7 @@
     .col {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
       justify-content: space-between;
     }
 
@@ -101,20 +119,20 @@
       box-shadow: 0 0 18px rgba(0, 240, 255, 0.22);
     }
     .module-icon { font-size: 2.3rem; width: 52px; text-align: center; }
-    .module-info h3 { font-size: 1.12rem; color: #ffffff; margin-bottom: 3px; }
-    .module-info p { font-size: 0.86rem; color: #94a3b8; }
+    .module-info h3 { font-size: 1.1rem; color: #ffffff; margin-bottom: 3px; }
+    .module-info p { font-size: 0.85rem; color: #94a3b8; }
 
-    /* CENTER ARC REACTOR */
+    /* CENTER ARC REACTOR + QUICK GEMINI MIC */
     .arc-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
     }
     .arc-reactor {
-      width: 250px;
-      height: 250px;
+      width: 230px;
+      height: 230px;
       border-radius: 50%;
       position: relative;
       display: flex;
@@ -123,49 +141,89 @@
       cursor: pointer;
       box-shadow: 0 0 38px rgba(0, 240, 255, 0.35), inset 0 0 28px rgba(0, 240, 255, 0.3);
       border: 3px solid var(--cyan);
-      transition: box-shadow 0.2s, border-color 0.2s;
+      transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
     }
     .arc-reactor.speaking {
       border-color: var(--gold);
-      box-shadow: 0 0 55px rgba(251, 191, 36, 0.75), inset 0 0 35px rgba(251, 191, 36, 0.5);
+      box-shadow: 0 0 58px rgba(251, 191, 36, 0.8), inset 0 0 35px rgba(251, 191, 36, 0.55);
+    }
+    .arc-reactor.listening {
+      border-color: #f43f5e;
+      box-shadow: 0 0 60px rgba(244, 63, 94, 0.85), inset 0 0 35px rgba(244, 63, 94, 0.55);
+      transform: scale(1.04);
     }
     .ring-1 {
       position: absolute;
-      width: 210px;
-      height: 210px;
+      width: 192px;
+      height: 192px;
       border-radius: 50%;
       border: 6px dashed var(--cyan);
       animation: spin 12s linear infinite;
     }
-    .arc-reactor.speaking .ring-1 { border-color: var(--gold); animation-duration: 4s; }
+    .arc-reactor.speaking .ring-1 { border-color: var(--gold); animation-duration: 3.5s; }
+    .arc-reactor.listening .ring-1 { border-color: #fb7185; animation-duration: 2.5s; }
     .ring-2 {
       position: absolute;
-      width: 156px;
-      height: 156px;
+      width: 142px;
+      height: 142px;
       border-radius: 50%;
       border: 4px dashed #38bdf8;
       animation: spinReverse 8s linear infinite;
     }
     .arc-core {
-      width: 92px;
-      height: 92px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
       background: radial-gradient(circle, #ffffff 12%, #00f0ff 58%, #0284c7 100%);
       box-shadow: 0 0 30px #00f0ff;
       transition: transform 0.2s, background 0.2s;
     }
     .arc-reactor.speaking .arc-core {
-      transform: scale(1.16);
+      transform: scale(1.18);
       background: radial-gradient(circle, #ffffff 15%, #fde047 58%, #d97706 100%);
       box-shadow: 0 0 42px #fbbf24;
+    }
+    .arc-reactor.listening .arc-core {
+      transform: scale(1.2);
+      background: radial-gradient(circle, #ffffff 15%, #fb7185 58%, #e11d48 100%);
+      box-shadow: 0 0 42px #f43f5e;
+    }
+
+    .btn-quick-mic {
+      background: linear-gradient(135deg, #2563eb 0%, #9333ea 55%, #ec4899 100%);
+      color: #ffffff;
+      border: 2px solid #f0abfc;
+      border-radius: 999px;
+      padding: 11px 22px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 22px rgba(168, 85, 247, 0.45);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-quick-mic:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(236, 72, 153, 0.7);
+    }
+    .btn-quick-mic.listening {
+      background: linear-gradient(135deg, #e11d48, #f97316);
+      animation: pulseMic 1s infinite alternate;
+    }
+
+    @keyframes pulseMic {
+      from { transform: scale(1); box-shadow: 0 0 18px rgba(244, 63, 94, 0.6); }
+      to { transform: scale(1.07); box-shadow: 0 0 36px rgba(244, 63, 94, 0.95); }
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
 
     /* SUBTITLE VOICE BAR */
     footer {
-      height: 72px;
-      margin: 0 20px 14px;
+      height: 70px;
+      margin: 0 20px 12px;
       background: #071324;
       border: 2px solid var(--cyan);
       border-radius: 12px;
@@ -174,7 +232,7 @@
       justify-content: center;
       padding: 8px 22px;
       text-align: center;
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 700;
       color: #f0f9ff;
     }
@@ -210,17 +268,75 @@
     }
     .modal-body {
       flex: 1;
-      padding: 20px 28px;
+      padding: 18px 26px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
     }
 
+    /* PARENTS MATH GATE DIALOG (SUBSTITUI PROMPT BLOQUEADO PELO NAVEGADOR) */
+    .gate-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
+      backdrop-filter: blur(6px);
+      z-index: 250;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .gate-backdrop.open { display: flex; }
+    .gate-card {
+      background: #0f172a;
+      border: 2px solid var(--cyan);
+      border-radius: 20px;
+      padding: 26px 30px;
+      width: 420px;
+      max-width: 94vw;
+      box-shadow: 0 0 45px rgba(0, 240, 255, 0.25);
+      text-align: center;
+    }
+    .gate-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .gate-key {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .gate-key:hover { background: #334155; border-color: var(--cyan); }
+
+    /* TOAST BANNER IN-PAGE */
+    .toast-banner {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 300;
+      background: #065f46;
+      color: #ffffff;
+      border: 2px solid #34d399;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none;
+      max-width: 460px;
+    }
+
     .big-btn {
       border: none;
       border-radius: 12px;
-      padding: 14px 22px;
-      font-size: 1.1rem;
+      padding: 13px 20px;
+      font-size: 1.05rem;
       font-weight: 800;
       color: #fff;
       cursor: pointer;
@@ -257,13 +373,13 @@
 <body>
   <header>
     <div class="hud-brand">
-      <span class="hud-title">◈ J.A.R.V.I.S. KIDS OS v2.0</span>
+      <span class="hud-title">◈ J.A.R.V.I.S. KIDS OS v2.1</span>
       <span class="badge-stars" id="stars-badge">★ 0 Estrelas</span>
       <span class="badge-books" id="books-badge">📖 Livros hoje: 0</span>
     </div>
     <div class="hud-right">
       <span class="mode-tag" id="mode-badge">CARREGANDO...</span>
-      <button class="btn-parents" onclick="openParentsGate()">⚙ PAIS</button>
+      <button type="button" class="btn-parents" id="btn-open-parents" onclick="openParentsGate()">⚙ PAIS</button>
     </div>
   </header>
 
@@ -274,7 +390,7 @@
         <div class="module-icon">📚</div>
         <div class="module-info">
           <h3>LER LIVROS (BASE)</h3>
-          <p>Histórias Ilustradas, Voz & Palavras</p>
+          <p>Histórias Ilustradas, Voz Neural & Palavras</p>
         </div>
       </div>
 
@@ -303,22 +419,22 @@
       </div>
     </div>
 
-    <!-- CENTRO: REATOR ARC INTERATIVO -->
+    <!-- CENTRO: REATOR ARC INTERATIVO + BOTÃO DE VOZ DIRETA GEMINI -->
     <div class="arc-container">
-      <div class="arc-reactor" id="arc-reactor" onclick="clickArcReactor()">
+      <div class="arc-reactor" id="arc-reactor" onclick="clickArcReactor()" title="Toque para ouvir o Járvis!">
         <div class="ring-1"></div>
         <div class="ring-2"></div>
         <div class="arc-core"></div>
       </div>
-      <div style="color: var(--cyan); font-weight: 700; font-size: 0.92rem; text-align: center;">
-        Toque no Reator Arc para falar comigo!
-      </div>
-      <div style="font-family: Consolas, monospace; font-size: 0.75rem; color: #38bdf8;">
-        ACER ASPIRE ONE 532 READY
+      <button type="button" class="btn-quick-mic" id="btn-home-mic" onclick="quickVoiceChatFromHome()">
+        🎙️ FALAR COM O GEMINI
+      </button>
+      <div style="color: #94a3b8; font-size: 0.8rem; text-align: center;">
+        Toque no microfone e fale com sua voz!
       </div>
     </div>
 
-    <!-- COLUNA DIREITA: JOGOS, PINTURA, PIANO E CONVERSA -->
+    <!-- COLUNA DIREITA: JOGOS, PINTURA, PIANO E CONVERSA GEMINI -->
     <div class="col">
       <div class="module-card" style="border-color: #22c55e;" onclick="openColorsMission()" onmouseenter="previewHint('Desafio de Cores e Formas do Járvis!')">
         <div class="module-icon">🌟</div>
@@ -344,41 +460,108 @@
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--pink);" onclick="openTalkHub()" onmouseenter="previewHint('Conversar com o Járvis sobre Espaço, Dinossauros e Foguetes!')">
-        <div class="module-icon">🚀</div>
+      <div class="module-card" style="border-color: var(--pink); box-shadow: 0 0 16px rgba(236, 72, 153, 0.2);" onclick="openTalkHub()" onmouseenter="previewHint('Bater papo por voz com o Amigo Google Gemini e o Járvis!')">
+        <div class="module-icon">✨</div>
         <div class="module-info">
-          <h3>CONVERSAR & CONTAR</h3>
-          <p>Espaço, Dinos e Perguntas ao JARVIS</p>
+          <h3>CONVERSAR COM GEMINI</h3>
+          <p>Bate-Papo por Voz Natural & Histórias</p>
         </div>
       </div>
     </div>
   </main>
 
   <footer id="subtitle-bar">
-    Clique em qualquer módulo ou no Reator Arc para ativar a voz do J.A.R.V.I.S.!
+    Clique em qualquer módulo, no Reator Arc ou em "🎙️ Falar com o Gemini" para conversar!
   </footer>
 
   <!-- JANELA MODAL DE ATIVIDADES -->
   <div class="modal-overlay" id="activity-modal">
     <div class="modal-header">
-      <button class="btn-back" onclick="closeModal()">⬅ VOLTAR AO JARVIS</button>
-      <h2 id="modal-title" style="color: var(--cyan); font-size: 1.2rem;">ATIVIDADE</h2>
+      <button type="button" class="btn-back" onclick="closeModal()">⬅ VOLTAR AO JARVIS</button>
+      <h2 id="modal-title" style="color: var(--cyan); font-size: 1.18rem;">ATIVIDADE</h2>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 
+  <!-- MODAL DE DESAFIO MATEMÁTICO DOS PAIS (100% HTML — NUNCA BLOQUEIA!) -->
+  <div class="gate-backdrop" id="parents-gate-modal">
+    <div class="gate-card">
+      <div style="font-size: 2.2rem; margin-bottom: 6px;">🔒</div>
+      <h3 style="color: var(--cyan); font-size: 1.3rem; margin-bottom: 6px;">Acesso Exclusivo dos Pais</h3>
+      <p id="gate-question" style="color: #e2e8f0; font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">
+        Quanto é 7 + 5?
+      </p>
+      <input
+        id="gate-input"
+        type="text"
+        inputmode="numeric"
+        placeholder="Resposta"
+        style="width: 100%; text-align: center; font-size: 1.5rem; font-weight: 900; padding: 10px; border-radius: 10px; background: #1e293b; color: #fff; border: 2px solid #38bdf8;"
+      />
+      <div id="gate-error" style="color: #fb7185; font-size: 0.92rem; font-weight: 700; min-height: 22px; margin-top: 6px;"></div>
+      <div class="gate-keypad">
+        <button type="button" class="gate-key" onclick="gateAppend('1')">1</button>
+        <button type="button" class="gate-key" onclick="gateAppend('2')">2</button>
+        <button type="button" class="gate-key" onclick="gateAppend('3')">3</button>
+        <button type="button" class="gate-key" onclick="gateAppend('4')">4</button>
+        <button type="button" class="gate-key" onclick="gateAppend('5')">5</button>
+        <button type="button" class="gate-key" onclick="gateAppend('6')">6</button>
+        <button type="button" class="gate-key" onclick="gateAppend('7')">7</button>
+        <button type="button" class="gate-key" onclick="gateAppend('8')">8</button>
+        <button type="button" class="gate-key" onclick="gateAppend('9')">9</button>
+        <button type="button" class="gate-key" style="color:#fca5a5;" onclick="gateClear()">⌫</button>
+        <button type="button" class="gate-key" onclick="gateAppend('0')">0</button>
+        <button type="button" class="gate-key" style="background:#10b981; color:#040914; border-color:#10b981;" onclick="verifyParentsGate()">OK</button>
+      </div>
+      <button type="button" class="big-btn" style="background:#334155; width:100%; margin-top:12px; padding:10px; font-size:0.95rem;" onclick="closeParentsGate()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- NOTIFICAÇÃO FLUTUANTE -->
+  <div class="toast-banner" id="toast-banner"></div>
+
   <script>
     let appState = {
-      config: { child_name: 'Pequeno Inventor', voice_enabled: true, media_start_time: '16:00', media_end_time: '17:00' },
+      config: {
+        child_name: 'Pequeno Inventor',
+        mode: 'gemini',
+        voice_profile: 'jarvis_antonio',
+        has_gemini_key: false,
+        voice_enabled: true,
+        media_start_time: '16:00',
+        media_end_time: '17:00',
+        media_daily_minutes: 25,
+        require_book_before_media: true
+      },
+      voice_profiles: {},
       books: [],
       books_read_today: 0,
       stars: 0
     };
+
     let activeInterval = null;
     let keyHandler = null;
+    let currentAudio = null;
+    let ttsAbortCtrl = null;
+    let activeRecognition = null;
+    let isListening = false;
+    let gateExpectedAnswer = 12;
+
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function playTone(freq = 523, durationMs = 150) {
+    function showToast(msg, isError = false) {
+      const el = document.getElementById('toast-banner');
+      el.textContent = msg;
+      el.style.background = isError ? '#7f1d1d' : '#065f46';
+      el.style.borderColor = isError ? '#f87171' : '#34d399';
+      el.style.display = 'block';
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => { el.style.display = 'none'; }, 4200);
+    }
+
+    function playTone(freq = 523, durationMs = 140) {
       if (!appState.config.voice_enabled) return;
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -386,7 +569,7 @@
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.16, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -395,23 +578,208 @@
       } catch (e) {}
     }
 
-    function speak(text) {
+    function setSpeakingVisual(speaking) {
+      const arc = document.getElementById('arc-reactor');
+      if (arc) arc.classList.toggle('speaking', speaking);
+      const orb = document.getElementById('gemini-voice-orb');
+      if (orb) orb.classList.toggle('speaking', speaking);
+    }
+
+    function stopCurrentSpeech() {
+      if (ttsAbortCtrl) {
+        try { ttsAbortCtrl.abort(); } catch (e) {}
+        ttsAbortCtrl = null;
+      }
+      if (currentAudio) {
+        try {
+          currentAudio.pause();
+          if (currentAudio._blobUrl) URL.revokeObjectURL(currentAudio._blobUrl);
+        } catch (e) {}
+        currentAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      setSpeakingVisual(false);
+    }
+
+    // =========================================================================
+    // VOZ HUMANA NEURAL PT-BR (GEMINI 3.8 TTS / EDGE NEURAL + FALLBACK OFFLINE)
+    // =========================================================================
+    async function speak(text, options = {}) {
       document.getElementById('subtitle-bar').textContent = text;
-      if (!appState.config.voice_enabled || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
+      if (!appState.config.voice_enabled || !text) {
+        if (options.onEnd) options.onEnd();
+        return;
+      }
+
+      stopCurrentSpeech();
+      const ctrl = new AbortController();
+      ttsAbortCtrl = ctrl;
+
+      try {
+        const payload = { text };
+        if (options.voiceProfile) payload.voice_profile = options.voiceProfile;
+        if (options.geminiApiKey) payload.gemini_api_key = options.geminiApiKey;
+
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: ctrl.signal
+        });
+
+        if (res.status === 200) {
+          const blob = await res.blob();
+          if (blob.size > 200 && ttsAbortCtrl === ctrl) {
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            audio._blobUrl = url;
+            currentAudio = audio;
+            setSpeakingVisual(true);
+            audio.onended = () => {
+              URL.revokeObjectURL(url);
+              if (currentAudio === audio) {
+                currentAudio = null;
+                setSpeakingVisual(false);
+              }
+              if (options.onEnd) options.onEnd();
+            };
+            audio.onerror = () => {
+              URL.revokeObjectURL(url);
+              setSpeakingVisual(false);
+              speakBrowserFallback(text, options.onEnd);
+            };
+            await audio.play();
+            return;
+          }
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+
+      // Fallback local caso esteja 100% sem internet
+      speakBrowserFallback(text, options.onEnd);
+    }
+
+    function speakBrowserFallback(text, onEnd) {
+      if (!('speechSynthesis' in window)) {
+        if (onEnd) onEnd();
+        return;
+      }
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'pt-BR';
-      utter.rate = 1.02;
-      utter.pitch = 1.05;
-      const arc = document.getElementById('arc-reactor');
-      utter.onstart = () => arc.classList.add('speaking');
-      utter.onend = () => arc.classList.remove('speaking');
-      utter.onerror = () => arc.classList.remove('speaking');
+      const voices = window.speechSynthesis.getVoices() || [];
+      const ptVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('pt'));
+      const best =
+        ptVoices.find(v => /natural|neural|online|francisca|antonio|thalita/i.test(v.name)) ||
+        ptVoices.find(v => /google/i.test(v.name)) ||
+        ptVoices[0];
+      if (best) utter.voice = best;
+      utter.rate = 1.0;
+      utter.pitch = 1.03;
+      utter.onstart = () => setSpeakingVisual(true);
+      utter.onend = () => { setSpeakingVisual(false); if (onEnd) onEnd(); };
+      utter.onerror = () => { setSpeakingVisual(false); if (onEnd) onEnd(); };
       window.speechSynthesis.speak(utter);
     }
 
+    // =========================================================================
+    // MICROFONE INFANTIL PT-BR (RECONHECIMENTO DE FALA PARA CONVERSAR COM GEMINI)
+    // =========================================================================
+    function startVoiceListening(onTranscript, onStateChange) {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        showToast('Este navegador não suporta microfone nativo. Use o Google Chrome ou Microsoft Edge para falar por voz!', true);
+        return;
+      }
+
+      if (isListening && activeRecognition) {
+        try { activeRecognition.stop(); } catch (e) {}
+        return;
+      }
+
+      stopCurrentSpeech();
+      playTone(587, 90);
+      setTimeout(() => playTone(880, 110), 90);
+
+      const rec = new SpeechRec();
+      rec.lang = 'pt-BR';
+      rec.interimResults = true;
+      rec.maxAlternatives = 1;
+      activeRecognition = rec;
+
+      const setListenUI = (val) => {
+        isListening = val;
+        const arc = document.getElementById('arc-reactor');
+        const homeBtn = document.getElementById('btn-home-mic');
+        if (arc) arc.classList.toggle('listening', val);
+        if (homeBtn) {
+          homeBtn.classList.toggle('listening', val);
+          homeBtn.innerHTML = val ? '🛑 OUVINDO VOCÊ...' : '🎙️ FALAR COM O GEMINI';
+        }
+        if (onStateChange) onStateChange(val);
+      };
+
+      let finalTranscript = '';
+
+      rec.onstart = () => {
+        setListenUI(true);
+        document.getElementById('subtitle-bar').textContent = '🎧 Estou ouvindo! Pode falar comigo em Português...';
+      };
+
+      rec.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const txt = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalTranscript += txt;
+          else interim += txt;
+        }
+        const liveText = (finalTranscript || interim).trim();
+        if (liveText) {
+          document.getElementById('subtitle-bar').textContent = `👦 Você: "${liveText}"`;
+          const childBubble = document.getElementById('child-said-box');
+          if (childBubble) childBubble.textContent = `👦 Você falou: "${liveText}"`;
+        }
+      };
+
+      rec.onerror = (ev) => {
+        setListenUI(false);
+        if (ev.error === 'not-allowed') {
+          showToast('Permita o uso do Microfone no topo do navegador para a criança conversar por voz!', true);
+        } else if (ev.error !== 'aborted') {
+          document.getElementById('subtitle-bar').textContent = 'Não consegui ouvir direitinho. Aperte o microfone e fale novamente!';
+        }
+      };
+
+      rec.onend = () => {
+        setListenUI(false);
+        const spoken = finalTranscript.trim();
+        if (spoken && onTranscript) {
+          onTranscript(spoken);
+        }
+      };
+
+      rec.start();
+    }
+
+    function quickVoiceChatFromHome() {
+      startVoiceListening(async (spokenText) => {
+        document.getElementById('subtitle-bar').textContent = `✨ Pensando na resposta para "${spokenText}"...`;
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: spokenText })
+        });
+        const data = await res.json();
+        speak(data.reply);
+      });
+    }
+
     function previewHint(txt) {
-      document.getElementById('subtitle-bar').textContent = txt;
+      if (!isListening) {
+        document.getElementById('subtitle-bar').textContent = txt;
+      }
     }
 
     function addStar(count = 1) {
@@ -426,23 +794,30 @@
       const res = await fetch('/api/state');
       const data = await res.json();
       appState.config = data.config;
+      appState.voice_profiles = data.voice_profiles || {};
       appState.books = data.books;
       appState.books_read_today = data.books_read_today;
       appState.media_permission = data.media_permission;
 
       document.getElementById('books-badge').textContent = `📖 Livros hoje: ${data.books_read_today}`;
+      let engineLabel = data.config.mode.toUpperCase();
+      if (data.config.mode === 'gemini') {
+        engineLabel = data.config.has_gemini_key ? '✨ GEMINI 3.8 ATIVO' : '✨ GEMINI (FALLBACK LOCAL)';
+      } else if (data.config.mode === 'ollama') {
+        engineLabel = '🏠 IA LOCAL OLLAMA';
+      }
       document.getElementById('mode-badge').textContent =
-        `${data.config.mode.toUpperCase()} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
+        `${engineLabel} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
 
       if (greet) {
-        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Reator para ouvir!)';
+        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Reator ou no Microfone!)';
       }
     }
     loadState(true);
 
     async function clickArcReactor() {
       playTone(784, 130);
-      const topics = ['heroi', 'elogio', 'espaco', 'animais'];
+      const topics = ['heroi', 'elogio', 'espaco', 'animais', 'adivinha'];
       const chosen = topics[Math.floor(Math.random() * topics.length)];
       const res = await fetch('/api/ask', {
         method: 'POST',
@@ -464,6 +839,9 @@
     function closeModal(restoreVoice = true) {
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+      if (isListening && activeRecognition) {
+        try { activeRecognition.stop(); } catch (e) {}
+      }
       document.getElementById('activity-modal').classList.remove('open');
       document.getElementById('modal-body').innerHTML = '';
       if (restoreVoice) loadState(false);
@@ -753,11 +1131,11 @@
       speak(`Como o seu coração está se sentindo agora, ${n}? Toque em um rostinho!`);
 
       const emotions = [
-        { e: '😊', t: 'FELIZ', c: '#16a34a', b: false, m: `Que maravilha que você está feliz, ${n}! Espalhe esse sorriso lindo pela casa!` },
-        { e: '😠', t: 'BRAVO', c: '#dc2626', b: true, m: `Tudo bem ficar bravo quando algo dá errado, ${n}. Vamos respirar com o Reator da Calma para esfriar esse vulcão?` },
-        { e: '😢', t: 'TRISTE', c: '#2563eb', b: true, m: `Quando estamos tristes, um abraço bem apertado na família e respirar devagar ajudam o coração!` },
-        { e: '😨', t: 'COM MEDO', c: '#7c3aed', b: true, m: `Você está seguro e protegido, ${n}! Todo herói respira fundo para ganhar coragem!` },
-        { e: '⚡', t: 'AGITADO', c: '#d97706', b: true, m: `Seus propulsores estão super rápidos! Vamos acalmar a armadura respirando juntos?` }
+        { e: '😊', t: 'FELIZ', c: '#16a34a', m: `Que maravilha que você está feliz, ${n}! Espalhe esse sorriso lindo pela casa!` },
+        { e: '😠', t: 'BRAVO', c: '#dc2626', m: `Tudo bem ficar bravo quando algo dá errado, ${n}. Vamos respirar com o Reator da Calma para esfriar esse vulcão?` },
+        { e: '😢', t: 'TRISTE', c: '#2563eb', m: `Quando estamos tristes, um abraço bem apertado na família e respirar devagar ajudam o coração!` },
+        { e: '😨', t: 'COM MEDO', c: '#7c3aed', m: `Você está seguro e protegido, ${n}! Todo herói respira fundo para ganhar coragem!` },
+        { e: '⚡', t: 'AGITADO', c: '#d97706', m: `Seus propulsores estão super rápidos! Vamos acalmar a armadura respirando juntos?` }
       ];
 
       body.innerHTML = `
@@ -831,7 +1209,7 @@
         count++;
       }
       setTimeout(cycle, 100);
-      activeInterval = setInterval(cycle, 4200);
+      activeInterval = setInterval(cycle, 4400);
     }
 
     // =========================================================================
@@ -848,9 +1226,10 @@
           <div style="margin:auto; background:#0f172a; border:3px solid #f59e0b; border-radius:18px; padding:36px; max-width:820px; text-align:center;">
             <div style="font-size:4.5rem; margin-bottom:12px;">${perm.reason === 'need_book' ? '📚' : '⏰'}</div>
             <h3 style="font-size:1.55rem; line-height:1.45; margin-bottom:24px;">${perm.message}</h3>
-            <div style="display:flex; gap:16px; justify-content:center;">
+            <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
               <button class="big-btn" style="background:#10b981;" onclick="openBooksLibrary()">📚 IR PARA A BIBLIOTECA DE LIVROS!</button>
-              <button class="big-btn" style="background:#f97316;" onclick="openStarkPaint()">🎨 IR PARA PINTURA MÁGICA</button>
+              <button class="big-btn" style="background:#a855f7;" onclick="openTalkHub()">✨ CONVERSAR COM O GEMINI</button>
+              <button class="big-btn" style="background:#f97316;" onclick="openStarkPaint()">🎨 PINTURA MÁGICA</button>
             </div>
           </div>
         `;
@@ -906,7 +1285,7 @@
     }
 
     // =========================================================================
-    // 5. DEMAIS MÓDULOS: CORES, LOUSA NEON, PIANO E CONVERSA COM JARVIS
+    // 5. CORES, LOUSA NEON & PIANO MUSICAL
     // =========================================================================
     function openColorsMission() {
       const body = openModal('🌟 DESAFIO DE CORES E FORMAS');
@@ -1011,26 +1390,123 @@
       });
     }
 
+    // =========================================================================
+    // 6. CENTRAL DE CONVERSA POR VOZ COM GOOGLE GEMINI & J.A.R.V.I.S.
+    // =========================================================================
     function openTalkHub() {
-      const body = openModal('🚀 CONVERSAR COM O J.A.R.V.I.S.');
-      speak(`Sobre o que vamos conversar agora, ${appState.config.child_name}?`);
+      const body = openModal('✨ CONVERSAR POR VOZ COM O GOOGLE GEMINI & J.A.R.V.I.S.');
+      let lastReplyText = `Oi, ${appState.config.child_name}! Aperte o botão grande do microfone para falar comigo com a sua voz, ou escolha uma brincadeira abaixo!`;
+      speak(lastReplyText);
+
+      const statusBadge = appState.config.has_gemini_key
+        ? '<span style="background:#065f46; border:1px solid #34d399; color:#a7f3d0; padding:4px 12px; border-radius:999px; font-size:0.85rem; font-weight:800;">✨ Google Gemini 3.8 Conectado</span>'
+        : '<span style="background:#1e3a8a; border:1px solid #60a5fa; color:#dbeafe; padding:4px 12px; border-radius:999px; font-size:0.85rem; font-weight:700;">🏠 Voz Neural Ativa • Para conectar o Gemini oficial, cole sua chave gratuita em ⚙ PAIS</span>';
+
       body.innerHTML = `
-        <div id="jarvis-reply" style="background:#0a192f; border:2px solid var(--cyan); border-radius:14px; padding:20px; font-size:1.35rem; font-weight:700; min-height:95px; margin-bottom:16px; text-align:center;">
-          Toque em um tema abaixo ou envie uma pergunta!
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          ${statusBadge}
+          <div style="display:flex; align-items:center; gap:12px;">
+            <label style="display:flex; align-items:center; gap:6px; font-weight:700; color:#fde047; cursor:pointer; font-size:0.92rem;">
+              <input type="checkbox" id="chk-continuous-voice" />
+              🔄 Ouvir automaticamente após resposta
+            </label>
+            <button type="button" class="big-btn" style="background:#334155; padding:7px 14px; font-size:0.85rem;" id="btn-reset-chat">🧹 Nova Conversa</button>
+          </div>
         </div>
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; flex:1;" id="talk-grid"></div>
-        <div style="display:flex; gap:10px; margin-top:14px;">
-          <input id="custom-q" placeholder="Digite uma pergunta para o JARVIS responder à criança..." style="flex:1; background:#1e293b; color:#fff; border:1px solid #38bdf8; border-radius:10px; padding:12px; font-size:1.05rem;" />
-          <button class="big-btn" style="background:var(--cyan); color:#040914;" id="btn-send-q">Perguntar</button>
+
+        <div style="display:grid; grid-template-columns:250px 1fr; gap:18px; margin-bottom:14px; align-items:stretch;">
+          <button type="button" id="btn-big-mic" style="background:linear-gradient(145deg, #2563eb, #9333ea, #ec4899); border:3px solid #f0abfc; border-radius:18px; color:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; gap:8px; box-shadow:0 0 28px rgba(168,85,247,0.45);">
+            <span id="mic-big-icon" style="font-size:3.3rem;">🎙️</span>
+            <span id="mic-big-label" style="font-size:1.15rem; font-weight:900;">APERTE E FALE!</span>
+            <span style="font-size:0.82rem; opacity:0.9;">Conversa por Voz PT-BR</span>
+          </button>
+
+          <div style="background:#0a192f; border:2px solid var(--cyan); border-radius:18px; padding:16px 20px; display:flex; flex-direction:column; justify-content:space-between; gap:10px;">
+            <div id="child-said-box" style="color:#93c5fd; font-size:1rem; font-weight:700; min-height:22px;">
+              👦 Aperte o microfone ao lado e faça qualquer pergunta!
+            </div>
+            <div id="jarvis-reply" style="font-size:1.35rem; font-weight:800; color:#ffffff; line-height:1.45;">
+              ${lastReplyText}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span id="reply-engine-tag" style="font-size:0.8rem; color:#38bdf8; font-family:Consolas,monospace;">VOZ NEURAL PT-BR PRONTA</span>
+              <button type="button" class="big-btn" style="background:#0284c7; padding:7px 14px; font-size:0.88rem;" id="btn-replay-voice">🔊 Ouvir de Novo</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; flex:1;" id="talk-grid"></div>
+
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <input id="custom-q" placeholder="Ou digite aqui uma pergunta / história para conversar com o Gemini..." style="flex:1; background:#1e293b; color:#fff; border:1px solid #38bdf8; border-radius:10px; padding:11px 14px; font-size:1rem;" />
+          <button type="button" class="big-btn" style="background:var(--cyan); color:#040914;" id="btn-send-q">Enviar</button>
         </div>
       `;
+
+      async function askAndSpeak(payload) {
+        const replyEl = document.getElementById('jarvis-reply');
+        const engineTag = document.getElementById('reply-engine-tag');
+        if (replyEl) replyEl.textContent = '✨ Pensando numa resposta bem legal...';
+
+        const r = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const d = await r.json();
+        lastReplyText = d.reply;
+        if (replyEl) replyEl.textContent = d.reply;
+        if (engineTag) {
+          const map = {
+            gemini: '✨ RESPONDIDO PELO GOOGLE GEMINI 3.8',
+            ollama: '🏠 RESPONDIDO PELA IA LOCAL (OLLAMA)',
+            offline: '🛡️ MODO EDUCATIVO OFFLINE',
+            cloud: '☁️ RESPONDIDO PELA NUVEM'
+          };
+          engineTag.textContent = map[d.engine_used] || 'VOZ NEURAL ATIVA';
+        }
+
+        speak(d.reply, {
+          onEnd: () => {
+            const cont = document.getElementById('chk-continuous-voice');
+            if (cont && cont.checked && document.getElementById('btn-big-mic')) {
+              setTimeout(() => triggerHubMic(), 450);
+            }
+          }
+        });
+      }
+
+      function triggerHubMic() {
+        const bigBtn = document.getElementById('btn-big-mic');
+        const bigLbl = document.getElementById('mic-big-label');
+        const bigIco = document.getElementById('mic-big-icon');
+        startVoiceListening(
+          (spokenText) => askAndSpeak({ question: spokenText }),
+          (listening) => {
+            if (!bigBtn) return;
+            bigBtn.style.background = listening
+              ? 'linear-gradient(145deg, #e11d48, #f97316)'
+              : 'linear-gradient(145deg, #2563eb, #9333ea, #ec4899)';
+            if (bigLbl) bigLbl.textContent = listening ? 'OUVINDO VOCÊ...' : 'APERTE E FALE!';
+            if (bigIco) bigIco.textContent = listening ? '🎧' : '🎙️';
+          }
+        );
+      }
+
+      document.getElementById('btn-big-mic').onclick = triggerHubMic;
+      document.getElementById('btn-replay-voice').onclick = () => speak(lastReplyText);
+      document.getElementById('btn-reset-chat').onclick = async () => {
+        await fetch('/api/gemini/reset', { method: 'POST' });
+        showToast('Memória da conversa reiniciada para um novo assunto!');
+      };
+
       const topics = [
-        ['🚀 ESPAÇO E PLANETAS', 'espaco', '#0284c7'],
-        ['🦖 DINOSSAUROS', 'dinossauros', '#16a34a'],
-        ['🦁 ANIMAIS', 'animais', '#ea580c'],
-        ['🦸 SUPER-HERÓI', 'heroi', '#dc2626'],
-        ['🔢 CONTAR DE 1 A 10', 'numeros', '#9333ea'],
-        ['⭐ ELOGIO DO JARVIS', 'elogio', '#ca8a04']
+        ['🚀 PLANETAS E FOGUETES', 'espaco', '#0284c7'],
+        ['🦖 MUNDO DOS DINOSSAUROS', 'dinossauros', '#16a34a'],
+        ['🦁 SONS DOS ANIMAIS', 'animais', '#ea580c'],
+        ['❓ BRINCAR DE ADIVINHAR', 'adivinha', '#db2777'],
+        ['🦸 MISSÃO DE HERÓI', 'heroi', '#dc2626'],
+        ['🔢 CONTAR DE 1 A 10', 'numeros', '#9333ea']
       ];
       const g = document.getElementById('talk-grid');
       topics.forEach(([lbl, key, col]) => {
@@ -1038,92 +1514,236 @@
         b.className = 'big-btn';
         b.style.background = col;
         b.textContent = lbl;
-        b.onclick = async () => {
+        b.onclick = () => {
           playTone(659, 90);
-          const r = await fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({topic:key}) });
-          const d = await r.json();
-          document.getElementById('jarvis-reply').textContent = d.reply;
-          speak(d.reply);
+          const cb = document.getElementById('child-said-box');
+          if (cb) cb.textContent = `👦 Tema escolhido: ${lbl}`;
+          askAndSpeak({ topic: key });
         };
         g.appendChild(b);
       });
-      document.getElementById('btn-send-q').onclick = async () => {
-        const q = document.getElementById('custom-q').value.trim();
+
+      const sendTyped = () => {
+        const inp = document.getElementById('custom-q');
+        const q = inp.value.trim();
         if (!q) return;
-        document.getElementById('custom-q').value = '';
-        const r = await fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({question:q}) });
-        const d = await r.json();
-        document.getElementById('jarvis-reply').textContent = d.reply;
-        speak(d.reply);
+        inp.value = '';
+        const cb = document.getElementById('child-said-box');
+        if (cb) cb.textContent = `👦 Pergunta: "${q}"`;
+        askAndSpeak({ question: q });
+      };
+      document.getElementById('btn-send-q').onclick = sendTyped;
+      document.getElementById('custom-q').onkeydown = (e) => {
+        if (e.key === 'Enter') sendTyped();
       };
     }
 
     // =========================================================================
-    // 6. PAINEL DOS PAIS (TRAVA MATEMÁTICA + HORÁRIO + SELETOR HÍBRIDO)
+    // 7. PAINEL DOS PAIS (MODAL PRÓPRIO SEM PROMPT + GEMINI + VOZ NEURAL)
     // =========================================================================
     function openParentsGate() {
-      const a = Math.floor(Math.random() * 7) + 6;
-      const b = Math.floor(Math.random() * 6) + 4;
-      const ans = prompt(`🔒 Área dos Pais — Quanto é ${a} + ${b}?`);
-      if (ans === null) return;
-      if (parseInt(ans.trim(), 10) !== a + b) {
-        alert('Resposta incorreta!');
-        return;
-      }
-      openParentsPanel();
+      playTone(523, 90);
+      const a = Math.floor(Math.random() * 6) + 5;
+      const b = Math.floor(Math.random() * 5) + 3;
+      gateExpectedAnswer = a + b;
+      document.getElementById('gate-question').textContent = `Quanto é ${a} + ${b}?`;
+      const inp = document.getElementById('gate-input');
+      inp.value = '';
+      document.getElementById('gate-error').textContent = '';
+      document.getElementById('parents-gate-modal').classList.add('open');
+      setTimeout(() => inp.focus(), 80);
     }
 
-    function openParentsPanel() {
-      const body = openModal('⚙ PAINEL DOS PAIS — ROTINA DE VÍDEO, LEITURA & MOTOR IA');
+    function closeParentsGate() {
+      document.getElementById('parents-gate-modal').classList.remove('open');
+    }
+
+    function gateAppend(digit) {
+      const inp = document.getElementById('gate-input');
+      if (inp.value.length < 3) inp.value += digit;
+      document.getElementById('gate-error').textContent = '';
+    }
+
+    function gateClear() {
+      const inp = document.getElementById('gate-input');
+      inp.value = inp.value.slice(0, -1);
+      document.getElementById('gate-error').textContent = '';
+    }
+
+    function verifyParentsGate() {
+      const val = parseInt(document.getElementById('gate-input').value.trim(), 10);
+      if (val === gateExpectedAnswer) {
+        closeParentsGate();
+        openParentsPanel();
+      } else {
+        playTone(220, 160);
+        document.getElementById('gate-error').textContent = 'Resposta incorreta. Tente novamente!';
+        document.getElementById('gate-input').value = '';
+      }
+    }
+
+    document.getElementById('gate-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') verifyParentsGate();
+      if (e.key === 'Escape') closeParentsGate();
+    });
+
+    async function openParentsPanel() {
+      await loadState(false);
+      const body = openModal('⚙ PAINEL DOS PAIS — GOOGLE GEMINI, VOZ HUMANA NEURAL & ROTINA');
       const c = appState.config;
+
+      const voiceOptionsHtml = Object.entries(appState.voice_profiles).map(([k, label]) =>
+        `<option value="${k}" ${c.voice_profile === k ? 'selected' : ''}>${label}</option>`
+      ).join('');
+
       body.innerHTML = `
-        <div style="max-width:700px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:14px; background:#0f172a; padding:24px; border-radius:16px; border:1px solid #334155;">
-          <div>
-            <label>Nome da Criança (falado pelo JARVIS):</label><br>
-            <input id="cfg-name" value="${c.child_name}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+        <div style="max-width:840px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:14px; background:#0f172a; padding:22px 26px; border-radius:16px; border:1px solid #334155;">
+
+          <div id="parents-status-box" style="display:none; padding:12px 16px; border-radius:10px; font-weight:700;"></div>
+
+          <!-- BLOCO 1: CONVERSA COM GOOGLE GEMINI & VOZ NEURAL -->
+          <div style="background:#091326; border:1px solid #3b82f6; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <h3 style="color:#60a5fa; font-size:1.1rem;">✨ Conversa Inteligente (Google Gemini 3.8) & Voz Neural</h3>
+              <span id="gemini-key-pill" style="font-size:0.82rem; font-weight:800; padding:4px 10px; border-radius:999px; background:${c.has_gemini_key ? '#065f46' : '#334155'}; color:${c.has_gemini_key ? '#a7f3d0' : '#cbd5e1'};">
+                ${c.has_gemini_key ? '✅ Chave Google Gemini Salva e Ativa' : 'ℹ️ Sem chave Gemini salva (usando IA Local / Offline)'}
+              </span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:0.9rem; color:#cbd5e1;">Motor Principal de Conversa:</label>
+                <select id="cfg-mode" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px; font-weight:700;">
+                  <option value="gemini" ${c.mode==='gemini'?'selected':''}>✨ Google Gemini 3.8 Flash (Conversa Infantil)</option>
+                  <option value="ollama" ${c.mode==='ollama'?'selected':''}>🏠 IA Local / OpenCode + Ollama (100% Localhost)</option>
+                  <option value="offline" ${c.mode==='offline'?'selected':''}>🛡️ 100% Offline (Sem Wi-Fi p/ Aspire One 532)</option>
+                  <option value="cloud" ${c.mode==='cloud'?'selected':''}>☁️ Outra Nuvem (Groq / OpenAI)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:0.9rem; color:#cbd5e1;">Voz Humana do Sistema (TTS Neural PT-BR):</label>
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                  <select id="cfg-voice-profile" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
+                    ${voiceOptionsHtml}
+                  </select>
+                  <button type="button" class="big-btn" style="background:#7c3aed; padding:8px 14px; font-size:0.9rem;" id="btn-test-voice">🔊 Ouvir</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label style="font-size:0.9rem; color:#93c5fd; font-weight:700;">Chave Gratuita do Google Gemini (GEMINI_API_KEY):</label>
+                <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#38bdf8; font-size:0.85rem; font-weight:700;">🔑 Gerar chave grátis no Google AI Studio ↗</a>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:5px;">
+                <input id="cfg-gemini-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave já salva — cole outra apenas se quiser trocar)' : 'Cole aqui sua chave AIzaSy... do Google AI Studio'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+                <button type="button" class="big-btn" style="background:#334155; padding:8px 12px; font-size:0.88rem;" id="btn-toggle-key">👁</button>
+                <button type="button" class="big-btn" style="background:#2563eb; padding:8px 16px; font-size:0.9rem;" id="btn-test-gemini">✨ Testar & Conectar Gemini</button>
+              </div>
+            </div>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+
+          <!-- BLOCO 2: DADOS DA CRIANÇA & CONTROLE DE TEMPO NETFLIX / YOUTUBE KIDS -->
+          <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
             <div>
-              <label style="color:#fde047;">Início Cinema (HH:MM):</label>
-              <input id="cfg-start" value="${c.media_start_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+              <label style="font-size:0.9rem; color:#cbd5e1;">Nome do seu Filho(a) (falado pelo Gemini e JARVIS):</label>
+              <input id="cfg-name" value="${c.child_name}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
             </div>
             <div>
-              <label style="color:#fde047;">Fim Cinema (HH:MM):</label>
-              <input id="cfg-end" value="${c.media_end_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
-            </div>
-            <div>
-              <label style="color:#fde047;">Limite Diário (min):</label>
-              <input id="cfg-mins" type="number" value="${c.media_daily_minutes}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
-            </div>
-          </div>
-          <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
-            <input type="checkbox" id="cfg-req-book" ${c.require_book_before_media ? 'checked' : ''} />
-            📚 Exigir leitura de pelo menos 1 Livro no dia antes de liberar Netflix / YouTube Kids
-          </label>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div>
-              <label>Motor de IA (Seletor Híbrido):</label>
-              <select id="cfg-mode" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;">
-                <option value="offline" ${c.mode==='offline'?'selected':''}>100% Offline (Sem Wi-Fi)</option>
-                <option value="ollama" ${c.mode==='ollama'?'selected':''}>IA Local na Rede (Ollama)</option>
-                <option value="cloud" ${c.mode==='cloud'?'selected':''}>Nuvem Externa (Groq / Gemini / OpenAI)</option>
-              </select>
-            </div>
-            <div>
-              <label>URL Ollama (se modo Ollama):</label>
+              <label style="font-size:0.9rem; color:#cbd5e1;">URL Servidor Local Ollama (opcional):</label>
               <input id="cfg-ollama" value="${c.ollama_url}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
             </div>
           </div>
-          <div style="display:flex; justify-content:space-between; margin-top:10px;">
-            <button class="big-btn" style="background:#0284c7; font-size:0.95rem;" id="btn-bonus">🎁 Liberar +15 min de Cinema Agora</button>
-            <button class="big-btn" style="background:#10b981;" id="btn-save-cfg">💾 Salvar Configurações</button>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div>
+              <label style="color:#fde047; font-size:0.9rem; font-weight:700;">Início Cinema (HH:MM):</label>
+              <input id="cfg-start" value="${c.media_start_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+            <div>
+              <label style="color:#fde047; font-size:0.9rem; font-weight:700;">Fim Cinema (HH:MM):</label>
+              <input id="cfg-end" value="${c.media_end_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+            <div>
+              <label style="color:#fde047; font-size:0.9rem; font-weight:700;">Limite Diário (min):</label>
+              <input id="cfg-mins" type="number" value="${c.media_daily_minutes}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="cfg-req-book" ${c.require_book_before_media ? 'checked' : ''} />
+              📚 Exigir leitura de pelo menos 1 Livro no dia antes de liberar Netflix / YouTube Kids
+            </label>
+            <label style="color:#e2e8f0; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="cfg-voice-enabled" ${c.voice_enabled ? 'checked' : ''} />
+              🔊 Ativar Voz Falada e Efeitos Sonoros do Sistema
+            </label>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; flex-wrap:wrap; gap:10px;">
+            <button type="button" class="big-btn" style="background:#0284c7; font-size:0.95rem;" id="btn-bonus">🎁 Liberar +15 min de Cinema Agora</button>
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.05rem;" id="btn-save-cfg">💾 Salvar Todas as Configurações</button>
           </div>
         </div>
       `;
 
+      const setPanelStatus = (msg, ok = true) => {
+        const box = document.getElementById('parents-status-box');
+        box.style.display = 'block';
+        box.style.background = ok ? '#064e3b' : '#7f1d1d';
+        box.style.border = `1px solid ${ok ? '#34d399' : '#f87171'}`;
+        box.style.color = '#ffffff';
+        box.textContent = msg;
+      };
+
+      document.getElementById('btn-toggle-key').onclick = () => {
+        const k = document.getElementById('cfg-gemini-key');
+        k.type = k.type === 'password' ? 'text' : 'password';
+      };
+
+      document.getElementById('btn-test-voice').onclick = () => {
+        const prof = document.getElementById('cfg-voice-profile').value;
+        const childName = document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor';
+        const typedKey = document.getElementById('cfg-gemini-key').value.trim();
+        setPanelStatus('🔊 Reproduzindo amostra da nova voz neural...', true);
+        speak(`Olá, ${childName}! Agora a minha voz está muito mais natural, carinhosa e pronta para conversarmos bastante!`, {
+          voiceProfile: prof,
+          geminiApiKey: typedKey
+        });
+      };
+
+      document.getElementById('btn-test-gemini').onclick = async () => {
+        const typedKey = document.getElementById('cfg-gemini-key').value.trim();
+        setPanelStatus('⏳ Testando conexão ao vivo com o Google Gemini 3.8...', true);
+        const res = await fetch('/api/gemini/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gemini_api_key: typedKey })
+        });
+        const d = await res.json();
+        setPanelStatus(d.ok ? `✅ Conectado! Gemini disse: "${d.message}"` : `⚠️ ${d.message}`, d.ok);
+        if (d.ok) {
+          document.getElementById('cfg-mode').value = 'gemini';
+          const pill = document.getElementById('gemini-key-pill');
+          pill.textContent = '✅ Chave Google Gemini Salva e Ativa';
+          pill.style.background = '#065f46';
+          speak(d.message, {
+            voiceProfile: document.getElementById('cfg-voice-profile').value,
+            geminiApiKey: typedKey
+          });
+        }
+      };
+
       document.getElementById('btn-bonus').onclick = async () => {
-        await fetch('/api/media/bonus', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({minutes:15}) });
-        alert('Foram liberados +15 minutos imediatos de Cinema Stark para hoje!');
+        await fetch('/api/media/bonus', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ minutes: 15 })
+        });
+        setPanelStatus('🎁 Foram liberados +15 minutos imediatos de Cinema Stark para hoje!', true);
+        showToast('🎁 +15 minutos de Cinema Stark liberados!');
       };
 
       document.getElementById('btn-save-cfg').onclick = async () => {
@@ -1133,13 +1753,23 @@
           media_end_time: document.getElementById('cfg-end').value.trim() || '17:00',
           media_daily_minutes: parseInt(document.getElementById('cfg-mins').value, 10) || 25,
           require_book_before_media: document.getElementById('cfg-req-book').checked,
+          voice_enabled: document.getElementById('cfg-voice-enabled').checked,
           mode: document.getElementById('cfg-mode').value,
+          voice_profile: document.getElementById('cfg-voice-profile').value,
           ollama_url: document.getElementById('cfg-ollama').value.trim()
         };
-        await fetch('/api/config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+        const gKey = document.getElementById('cfg-gemini-key').value.trim();
+        if (gKey) payload.gemini_api_key = gKey;
+
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
         await loadState(false);
         closeModal();
-        speak(`Configurações atualizadas! Olá, ${payload.child_name}!`);
+        showToast('✅ Configurações salvas com sucesso!');
+        speak(`Configurações atualizadas! Olá, ${payload.child_name}, vamos conversar e brincar!`);
       };
     }
   </script>
