@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>◈ J.A.R.V.I.S. Kids OS v2.1 — Google Gemini & Voz Neural</title>
+  <title>◈ J.A.R.V.I.S. Kids OS v2.2 — Sistema Educativo Infantil Stark</title>
   <style>
     :root {
       --bg: #040914;
@@ -17,14 +17,14 @@
       --orange: #f97316;
       --purple: #a855f7;
       --pink: #ec4899;
-      --gemini-blue: #60a5fa;
+      --blue: #3b82f6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: "Segoe UI", system-ui, sans-serif; }
     input, select { user-select: text; }
 
     body {
-      background: radial-gradient(circle at center, #08172e 0%, #040914 75%);
+      background: radial-gradient(circle at center, #091a35 0%, #040914 80%);
       color: #f0f9ff;
       height: 100vh;
       display: flex;
@@ -32,11 +32,11 @@
       overflow: hidden;
     }
 
-    /* TOP BAR */
+    /* TOP BAR INFANTIL */
     header {
-      height: 54px;
+      height: 56px;
       background: #071120;
-      border-bottom: 1px solid var(--cyan-dim);
+      border-bottom: 2px solid var(--cyan-dim);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -50,27 +50,44 @@
       font-weight: 800;
       letter-spacing: 0.03em;
     }
-    .hud-title { color: var(--cyan); font-family: Consolas, monospace; font-size: 1.12rem; }
-    .badge-stars { color: var(--gold); font-size: 1.02rem; }
-    .badge-books { color: #4ade80; font-size: 1rem; }
+    .hud-title { color: var(--cyan); font-family: Consolas, monospace; font-size: 1.15rem; }
+    .badge-stars {
+      background: #78350f;
+      color: var(--gold);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 1.05rem;
+      border: 1px solid var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-books {
+      background: #064e3b;
+      color: #4ade80;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      border: 1px solid #34d399;
+    }
     .hud-right { display: flex; align-items: center; gap: 12px; }
     .mode-tag {
       font-family: Consolas, monospace;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: #38bdf8;
       background: #0b1d36;
-      padding: 5px 10px;
+      padding: 5px 12px;
       border-radius: 999px;
       border: 1px solid #1e3a5f;
     }
     .btn-parents {
       background: #1e293b;
       color: #f8fafc;
-      border: 2px solid #475569;
-      border-radius: 10px;
+      border: 2px solid #64748b;
+      border-radius: 12px;
       padding: 7px 16px;
-      font-weight: 800;
-      font-size: 0.92rem;
+      font-weight: 900;
+      font-size: 0.95rem;
       cursor: pointer;
       transition: all 0.15s;
     }
@@ -78,17 +95,17 @@
       border-color: var(--cyan);
       color: var(--cyan);
       background: #0f2440;
-      box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
     }
 
-    /* MAIN 3-COLUMN STARK HUD */
+    /* GRID PRINCIPAL DE BRINQUEDOS EDUCATIVOS */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr 320px 1fr;
+      grid-template-columns: 1fr 330px 1fr;
       gap: 16px;
       padding: 12px 20px;
-      max-width: 1280px;
+      max-width: 1320px;
       width: 100%;
       margin: 0 auto;
       min-height: 0;
@@ -97,82 +114,90 @@
     .col {
       display: flex;
       flex-direction: column;
-      gap: 11px;
+      gap: 12px;
       justify-content: space-between;
     }
 
-    .module-card {
+    /* CARDS GIGANTES E TÁTEIS (FEITOS PARA FUÇAR E TOCAR) */
+    .toy-card {
       flex: 1;
       background: var(--panel);
-      border: 2px solid var(--cyan);
-      border-radius: 14px;
-      padding: 10px 16px;
+      border: 3px solid var(--cyan);
+      border-radius: 18px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
       cursor: pointer;
-      transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+      transition: transform 0.15s, background 0.15s, box-shadow 0.15s, border-color 0.15s;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
     }
-    .module-card:hover {
+    .toy-card:hover, .toy-card:active {
+      transform: scale(1.035);
       background: var(--panel-hover);
-      transform: scale(1.02);
-      box-shadow: 0 0 18px rgba(0, 240, 255, 0.22);
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.45);
     }
-    .module-icon { font-size: 2.3rem; width: 52px; text-align: center; }
-    .module-info h3 { font-size: 1.1rem; color: #ffffff; margin-bottom: 3px; }
-    .module-info p { font-size: 0.85rem; color: #94a3b8; }
+    .toy-icon {
+      font-size: 2.8rem;
+      min-width: 58px;
+      text-align: center;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+    .toy-info h3 { font-size: 1.25rem; font-weight: 900; color: #ffffff; margin-bottom: 3px; letter-spacing: 0.02em; }
+    .toy-info p { font-size: 0.92rem; color: #cbd5e1; font-weight: 600; }
 
-    /* CENTER ARC REACTOR + QUICK GEMINI MIC */
+    /* REATOR ARC DO JARVIS + BOTÃO DE VOZ 'SEGURE PARA FALAR' */
     .arc-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
     }
     .arc-reactor {
-      width: 230px;
-      height: 230px;
+      width: 220px;
+      height: 220px;
       border-radius: 50%;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 0 38px rgba(0, 240, 255, 0.35), inset 0 0 28px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 38px rgba(0, 240, 255, 0.38), inset 0 0 28px rgba(0, 240, 255, 0.3);
       border: 3px solid var(--cyan);
       transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
     }
     .arc-reactor.speaking {
       border-color: var(--gold);
-      box-shadow: 0 0 58px rgba(251, 191, 36, 0.8), inset 0 0 35px rgba(251, 191, 36, 0.55);
+      box-shadow: 0 0 60px rgba(251, 191, 36, 0.85), inset 0 0 35px rgba(251, 191, 36, 0.6);
+      transform: scale(1.03);
     }
     .arc-reactor.listening {
       border-color: #f43f5e;
-      box-shadow: 0 0 60px rgba(244, 63, 94, 0.85), inset 0 0 35px rgba(244, 63, 94, 0.55);
-      transform: scale(1.04);
+      box-shadow: 0 0 65px rgba(244, 63, 94, 0.9), inset 0 0 35px rgba(244, 63, 94, 0.6);
+      transform: scale(1.06);
     }
     .ring-1 {
       position: absolute;
-      width: 192px;
-      height: 192px;
+      width: 182px;
+      height: 182px;
       border-radius: 50%;
       border: 6px dashed var(--cyan);
       animation: spin 12s linear infinite;
     }
     .arc-reactor.speaking .ring-1 { border-color: var(--gold); animation-duration: 3.5s; }
-    .arc-reactor.listening .ring-1 { border-color: #fb7185; animation-duration: 2.5s; }
+    .arc-reactor.listening .ring-1 { border-color: #fb7185; animation-duration: 2s; }
     .ring-2 {
       position: absolute;
-      width: 142px;
-      height: 142px;
+      width: 132px;
+      height: 132px;
       border-radius: 50%;
       border: 4px dashed #38bdf8;
       animation: spinReverse 8s linear infinite;
     }
     .arc-core {
-      width: 86px;
-      height: 86px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
       background: radial-gradient(circle, #ffffff 12%, #00f0ff 58%, #0284c7 100%);
       box-shadow: 0 0 30px #00f0ff;
@@ -184,60 +209,61 @@
       box-shadow: 0 0 42px #fbbf24;
     }
     .arc-reactor.listening .arc-core {
-      transform: scale(1.2);
+      transform: scale(1.22);
       background: radial-gradient(circle, #ffffff 15%, #fb7185 58%, #e11d48 100%);
       box-shadow: 0 0 42px #f43f5e;
     }
 
-    .btn-quick-mic {
-      background: linear-gradient(135deg, #2563eb 0%, #9333ea 55%, #ec4899 100%);
+    /* BOTÃO GIGANTE TÁTIL DE VOZ PUSH-TO-TAL (SEGURE PARA FALAR) */
+    .btn-hold-mic {
+      background: linear-gradient(135deg, #2563eb 0%, #9333ea 50%, #ec4899 100%);
       color: #ffffff;
-      border: 2px solid #f0abfc;
+      border: 3px solid #fbcfe8;
       border-radius: 999px;
-      padding: 11px 22px;
-      font-size: 1rem;
-      font-weight: 800;
+      padding: 14px 26px;
+      font-size: 1.15rem;
+      font-weight: 900;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 0 22px rgba(168, 85, 247, 0.45);
+      gap: 10px;
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.5);
       transition: transform 0.15s, box-shadow 0.15s;
+      outline: none;
     }
-    .btn-quick-mic:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 30px rgba(236, 72, 153, 0.7);
-    }
-    .btn-quick-mic.listening {
-      background: linear-gradient(135deg, #e11d48, #f97316);
-      animation: pulseMic 1s infinite alternate;
+    .btn-hold-mic:active, .btn-hold-mic.listening {
+      background: linear-gradient(135deg, #e11d48, #ea580c);
+      border-color: #fef08a;
+      transform: scale(1.08);
+      box-shadow: 0 0 45px rgba(244, 63, 94, 0.9);
+      animation: pulseMic 1.2s infinite alternate;
     }
 
     @keyframes pulseMic {
-      from { transform: scale(1); box-shadow: 0 0 18px rgba(244, 63, 94, 0.6); }
-      to { transform: scale(1.07); box-shadow: 0 0 36px rgba(244, 63, 94, 0.95); }
+      from { box-shadow: 0 0 25px rgba(244, 63, 94, 0.7); }
+      to { box-shadow: 0 0 50px rgba(244, 63, 94, 1); }
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
 
-    /* SUBTITLE VOICE BAR */
+    /* FOOTER VOZ FALADA (LEGENDA EM FONTE GRANDE) */
     footer {
-      height: 70px;
-      margin: 0 20px 12px;
+      height: 68px;
+      margin: 0 20px 10px;
       background: #071324;
       border: 2px solid var(--cyan);
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 22px;
+      padding: 6px 20px;
       text-align: center;
-      font-size: 1.12rem;
-      font-weight: 700;
+      font-size: 1.18rem;
+      font-weight: 800;
       color: #f0f9ff;
     }
 
-    /* FULLSCREEN ACTIVITY MODAL */
+    /* MODAL DE ATIVIDADE FULLSCREEN */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -248,7 +274,7 @@
     }
     .modal-overlay.open { display: flex; }
     .modal-header {
-      height: 56px;
+      height: 58px;
       background: #071120;
       border-bottom: 2px solid var(--cyan);
       display: flex;
@@ -260,25 +286,25 @@
       background: var(--red);
       color: #fff;
       border: none;
-      border-radius: 8px;
-      padding: 8px 18px;
-      font-size: 1rem;
-      font-weight: 800;
+      border-radius: 10px;
+      padding: 10px 22px;
+      font-size: 1.1rem;
+      font-weight: 900;
       cursor: pointer;
     }
     .modal-body {
       flex: 1;
-      padding: 18px 26px;
+      padding: 16px 24px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
     }
 
-    /* PARENTS MATH GATE DIALOG (SUBSTITUI PROMPT BLOQUEADO PELO NAVEGADOR) */
+    /* DESAFIO MATEMÁTICO DOS PAIS (100% HTML) */
     .gate-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(2, 6, 23, 0.85);
+      background: rgba(2, 6, 23, 0.88);
       backdrop-filter: blur(6px);
       z-index: 250;
       display: none;
@@ -288,12 +314,12 @@
     .gate-backdrop.open { display: flex; }
     .gate-card {
       background: #0f172a;
-      border: 2px solid var(--cyan);
-      border-radius: 20px;
+      border: 3px solid var(--cyan);
+      border-radius: 22px;
       padding: 26px 30px;
-      width: 420px;
+      width: 440px;
       max-width: 94vw;
-      box-shadow: 0 0 45px rgba(0, 240, 255, 0.25);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.3);
       text-align: center;
     }
     .gate-keypad {
@@ -306,15 +332,15 @@
       background: #1e293b;
       color: #f8fafc;
       border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 12px 0;
-      font-size: 1.25rem;
-      font-weight: 800;
+      border-radius: 12px;
+      padding: 14px 0;
+      font-size: 1.35rem;
+      font-weight: 900;
       cursor: pointer;
     }
     .gate-key:hover { background: #334155; border-color: var(--cyan); }
 
-    /* TOAST BANNER IN-PAGE */
+    /* TOAST DE AVISO */
     .toast-banner {
       position: fixed;
       bottom: 24px;
@@ -332,163 +358,208 @@
       max-width: 460px;
     }
 
+    /* BOTÕES GERAIS */
     .big-btn {
       border: none;
-      border-radius: 12px;
-      padding: 13px 20px;
-      font-size: 1.05rem;
-      font-weight: 800;
+      border-radius: 14px;
+      padding: 14px 22px;
+      font-size: 1.1rem;
+      font-weight: 900;
       color: #fff;
       cursor: pointer;
       transition: transform 0.12s;
     }
     .big-btn:hover { transform: scale(1.03); }
 
-    /* KEYBOARD TRAINER */
-    .kb-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
+    /* DIAGRAMA DE MÃOS E DEDOS */
+    .hands-svg {
+      width: 100%;
+      max-width: 580px;
+      height: 190px;
+      margin: 0 auto;
+      display: block;
+    }
+    .finger-highlight {
+      filter: drop-shadow(0 0 12px #fff) !important;
+      stroke-width: 4 !important;
+      stroke: #ffffff !important;
+      animation: pulseFinger 0.7s infinite alternate;
+    }
+    @keyframes pulseFinger {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+
+    /* TECLADO VIRTUAL */
+    .kb-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 7px; }
     .kb-key {
-      width: 56px;
-      height: 56px;
+      width: 54px;
+      height: 54px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.35rem;
-      font-weight: 800;
+      font-weight: 900;
       color: #fff;
       border: 2px solid rgba(255,255,255,0.25);
       cursor: pointer;
+      transition: all 0.1s;
     }
-    .kb-left { background: #0369a1; }
-    .kb-right { background: #a16207; }
     .kb-active {
-      background: #22c55e !important;
-      color: #040914 !important;
-      transform: scale(1.14);
-      box-shadow: 0 0 22px #22c55e;
-      border-color: #fff;
+      transform: scale(1.18);
+      box-shadow: 0 0 24px #fff, 0 0 35px #22c55e;
+      border-color: #fff !important;
     }
+
+    /* ESCUDO DE BLOQUEIO DO CINEMA */
+    .lockdown-shield {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, #7f1d1d 0%, #040914 85%);
+      z-index: 500;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+    .lockdown-shield.open { display: flex; }
   </style>
 </head>
 <body>
   <header>
     <div class="hud-brand">
-      <span class="hud-title">◈ J.A.R.V.I.S. KIDS OS v2.1</span>
+      <span class="hud-title">◈ J.A.R.V.I.S. KIDS OS v2.2</span>
       <span class="badge-stars" id="stars-badge">★ 0 Estrelas</span>
       <span class="badge-books" id="books-badge">📖 Livros hoje: 0</span>
     </div>
     <div class="hud-right">
       <span class="mode-tag" id="mode-badge">CARREGANDO...</span>
-      <button type="button" class="btn-parents" id="btn-open-parents" onclick="openParentsGate()">⚙ PAIS</button>
+      <button type="button" class="btn-parents" onclick="openParentsGate()">⚙ PAIS</button>
     </div>
   </header>
 
   <main>
     <!-- COLUNA ESQUERDA: OS 4 PILARES PRINCIPAIS -->
     <div class="col">
-      <div class="module-card" style="border-color: var(--gold);" onclick="openBooksLibrary()" onmouseenter="previewHint('Biblioteca de Livros! Nossa base principal de aventuras e sabedoria!')">
-        <div class="module-icon">📚</div>
-        <div class="module-info">
-          <h3>LER LIVROS (BASE)</h3>
-          <p>Histórias Ilustradas, Voz Neural & Palavras</p>
+      <div class="toy-card" style="border-color: var(--gold);" onclick="openBooksLibrary()" onmouseenter="speakCardHint('Biblioteca de Livros! Nossas histórias mágicas com figuras e sons!')">
+        <div class="toy-icon">📚</div>
+        <div class="toy-info">
+          <h3>HISTÓRIAS MÁGICAS</h3>
+          <p>Três Porquinhos, Dinos & Fábulas</p>
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="previewHint('Academia de Tecnologia! Aprenda a usar o mouse e digitar com as duas mãozinhas!')">
-        <div class="module-icon">⌨️</div>
-        <div class="module-info">
-          <h3>MOUSE & DIGITAÇÃO</h3>
-          <p>Treino de Mouse e as 2 Mãozinhas</p>
+      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="speakCardHint('Academia das Mãozinhas! Treine o mouse e veja qual dedinho usar no teclado!')">
+        <div class="toy-icon">🖐️</div>
+        <div class="toy-info">
+          <h3>MÃOZINHAS & DEDOS</h3>
+          <p>Qual Dedo Usar no Teclado & Mouse</p>
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--green);" onclick="openEmotionsCenter()" onmouseenter="previewHint('Centro das Emoções e Reator da Calma!')">
-        <div class="module-icon">💚</div>
-        <div class="module-info">
+      <div class="toy-card" style="border-color: var(--green);" onclick="openEmotionsCenter()" onmouseenter="speakCardHint('Centro das Emoções! Conte ao Járvis como você está e respire com o Reator da Calma!')">
+        <div class="toy-icon">💚</div>
+        <div class="toy-info">
           <h3>EMOÇÕES & CALMA</h3>
-          <p>Sentimentos e Respiração Guiada</p>
+          <p>Sentimentos e Florzinha da Calma</p>
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--red);" onclick="openCinemaStark()" onmouseenter="previewHint('Cinema Stark! Netflix e YouTube Kids no horário combinado!')">
-        <div class="module-icon">🎬</div>
-        <div class="module-info">
+      <div class="toy-card" style="border-color: var(--red);" onclick="openCinemaStark()" onmouseenter="speakCardHint('Cinema Stark! Desenhos infantis com horário e tempo controlado!')">
+        <div class="toy-icon">🎬</div>
+        <div class="toy-info">
           <h3>CINEMA NO HORÁRIO</h3>
-          <p>YouTube Kids & Netflix Controlados</p>
+          <p>YouTube Kids & Netflix Infantil</p>
         </div>
       </div>
     </div>
 
-    <!-- CENTRO: REATOR ARC INTERATIVO + BOTÃO DE VOZ DIRETA GEMINI -->
+    <!-- CENTRO: REATOR ARC INTERATIVO + PUSH-TO-TAL (SEGURE PARA FALAR) -->
     <div class="arc-container">
-      <div class="arc-reactor" id="arc-reactor" onclick="clickArcReactor()" title="Toque para ouvir o Járvis!">
+      <div class="arc-reactor" id="arc-reactor" onclick="clickArcToy()" title="Toque para falar comigo!">
         <div class="ring-1"></div>
         <div class="ring-2"></div>
         <div class="arc-core"></div>
       </div>
-      <button type="button" class="btn-quick-mic" id="btn-home-mic" onclick="quickVoiceChatFromHome()">
-        🎙️ FALAR COM O GEMINI
+
+      <!-- BOTÃO TÁTIL PUSH-TO-TAL (SEGURE PARA FALAR E SOLTE PARA OUVIR) -->
+      <button
+        type="button"
+        class="btn-hold-mic"
+        id="btn-voice-push"
+        onmousedown="startPushToTalk(event)"
+        onmouseup="stopPushToTalk(event)"
+        onmouseleave="stopPushToTalk(event)"
+        ontouchstart="startPushToTalk(event)"
+        ontouchend="stopPushToTalk(event)"
+      >
+        <span id="mic-icon" style="font-size: 1.5rem;">🎙️</span>
+        <span id="mic-label">SEGURE PARA FALAR</span>
       </button>
-      <div style="color: #94a3b8; font-size: 0.8rem; text-align: center;">
-        Toque no microfone e fale com sua voz!
+
+      <div style="color: #cbd5e1; font-weight: 700; font-size: 0.88rem; text-align: center;">
+        Segure o botão, fale e solte para ouvir o Járvis!
       </div>
     </div>
 
-    <!-- COLUNA DIREITA: JOGOS, PINTURA, PIANO E CONVERSA GEMINI -->
+    <!-- COLUNA DIREITA: JOGOS, PINTURA, PIANO/MELODIAS E PAPO DE VOZ -->
     <div class="col">
-      <div class="module-card" style="border-color: #22c55e;" onclick="openColorsMission()" onmouseenter="previewHint('Desafio de Cores e Formas do Járvis!')">
-        <div class="module-icon">🌟</div>
-        <div class="module-info">
-          <h3>JOGOS EDUCATIVOS</h3>
-          <p>Desafio de Cores, Formas & GCompris</p>
+      <div class="toy-card" style="border-color: var(--purple);" onclick="openMusicComposer()" onmouseenter="speakCardHint('Música e Melodias! Aprenda canções famosas ou invente sua própria música!')">
+        <div class="toy-icon">🎵</div>
+        <div class="toy-info">
+          <h3>CRIAR MELODIAS</h3>
+          <p>Brilha Estrelinha & Gravador Stark</p>
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--orange);" onclick="openStarkPaint()" onmouseenter="previewHint('Lousa Holográfica de Pintura Mágica!')">
-        <div class="module-icon">🎨</div>
-        <div class="module-info">
+      <div class="toy-card" style="border-color: var(--orange);" onclick="openStarkPaint()" onmouseenter="speakCardHint('Pintura Mágica! Cores neon que brilham para você desenhar com o mouse!')">
+        <div class="toy-icon">🎨</div>
+        <div class="toy-info">
           <h3>PINTURA MÁGICA</h3>
-          <p>Lousa Neon & Tux Paint</p>
+          <p>Lousa Neon que Brilha</p>
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--purple);" onclick="openMusicSynth()" onmouseenter="previewHint('Piano Musical Stark e Chuva de Estrelas!')">
-        <div class="module-icon">🎵</div>
-        <div class="module-info">
-          <h3>PIANO & MÚSICA</h3>
-          <p>Notas Coloridas & Gamine</p>
+      <div class="toy-card" style="border-color: #22c55e;" onclick="openColorsMission()" onmouseenter="speakCardHint('Desafio de Cores e Formas! Encontre as cores que o Járvis pedir!')">
+        <div class="toy-icon">🌟</div>
+        <div class="toy-info">
+          <h3>CORES & FORMAS</h3>
+          <p>Desafio das Cores Brilhantes</p>
         </div>
       </div>
 
-      <div class="module-card" style="border-color: var(--pink); box-shadow: 0 0 16px rgba(236, 72, 153, 0.2);" onclick="openTalkHub()" onmouseenter="previewHint('Bater papo por voz com o Amigo Google Gemini e o Járvis!')">
-        <div class="module-icon">✨</div>
-        <div class="module-info">
-          <h3>CONVERSAR COM GEMINI</h3>
-          <p>Bate-Papo por Voz Natural & Histórias</p>
+      <div class="toy-card" style="border-color: var(--pink);" onclick="openTalkModal()" onmouseenter="speakCardHint('Conversar com o Járvis! Fale sobre dinossauros, planetas e foguetes!')">
+        <div class="toy-icon">✨</div>
+        <div class="toy-info">
+          <h3>FALAR COM JÁRVIS</h3>
+          <p>Dinos, Foguetes & Perguntas</p>
         </div>
       </div>
     </div>
   </main>
 
   <footer id="subtitle-bar">
-    Clique em qualquer módulo, no Reator Arc ou em "🎙️ Falar com o Gemini" para conversar!
+    Toque em qualquer botão colorido ou segure o microfone no centro para falar com o Járvis!
   </footer>
 
-  <!-- JANELA MODAL DE ATIVIDADES -->
+  <!-- MODAL DE ATIVIDADE INFANTIL -->
   <div class="modal-overlay" id="activity-modal">
     <div class="modal-header">
       <button type="button" class="btn-back" onclick="closeModal()">⬅ VOLTAR AO JARVIS</button>
-      <h2 id="modal-title" style="color: var(--cyan); font-size: 1.18rem;">ATIVIDADE</h2>
+      <h2 id="modal-title" style="color: var(--cyan); font-size: 1.3rem;">ATIVIDADE</h2>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 
-  <!-- MODAL DE DESAFIO MATEMÁTICO DOS PAIS (100% HTML — NUNCA BLOQUEIA!) -->
+  <!-- MODAL DE MATEMÁTICA DOS PAIS (100% SEGURO E NUNCA BLOQUEADO) -->
   <div class="gate-backdrop" id="parents-gate-modal">
     <div class="gate-card">
-      <div style="font-size: 2.2rem; margin-bottom: 6px;">🔒</div>
-      <h3 style="color: var(--cyan); font-size: 1.3rem; margin-bottom: 6px;">Acesso Exclusivo dos Pais</h3>
-      <p id="gate-question" style="color: #e2e8f0; font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">
+      <div style="font-size: 2.4rem; margin-bottom: 6px;">🔒</div>
+      <h3 style="color: var(--cyan); font-size: 1.35rem; margin-bottom: 6px;">Área dos Pais</h3>
+      <p id="gate-question" style="color: #e2e8f0; font-size: 1.25rem; font-weight: 800; margin-bottom: 12px;">
         Quanto é 7 + 5?
       </p>
       <input
@@ -496,9 +567,9 @@
         type="text"
         inputmode="numeric"
         placeholder="Resposta"
-        style="width: 100%; text-align: center; font-size: 1.5rem; font-weight: 900; padding: 10px; border-radius: 10px; background: #1e293b; color: #fff; border: 2px solid #38bdf8;"
+        style="width: 100%; text-align: center; font-size: 1.6rem; font-weight: 900; padding: 10px; border-radius: 12px; background: #1e293b; color: #fff; border: 2px solid #38bdf8;"
       />
-      <div id="gate-error" style="color: #fb7185; font-size: 0.92rem; font-weight: 700; min-height: 22px; margin-top: 6px;"></div>
+      <div id="gate-error" style="color: #fb7185; font-size: 0.95rem; font-weight: 700; min-height: 22px; margin-top: 6px;"></div>
       <div class="gate-keypad">
         <button type="button" class="gate-key" onclick="gateAppend('1')">1</button>
         <button type="button" class="gate-key" onclick="gateAppend('2')">2</button>
@@ -513,27 +584,45 @@
         <button type="button" class="gate-key" onclick="gateAppend('0')">0</button>
         <button type="button" class="gate-key" style="background:#10b981; color:#040914; border-color:#10b981;" onclick="verifyParentsGate()">OK</button>
       </div>
-      <button type="button" class="big-btn" style="background:#334155; width:100%; margin-top:12px; padding:10px; font-size:0.95rem;" onclick="closeParentsGate()">
+      <button type="button" class="big-btn" style="background:#334155; width:100%; margin-top:14px; padding:10px;" onclick="closeParentsGate()">
         Cancelar
       </button>
     </div>
   </div>
 
-  <!-- NOTIFICAÇÃO FLUTUANTE -->
+  <!-- ESCUDO DE BLOQUEIO DE CINEMA (QUANDO O TEMPO ACABA) -->
+  <div class="lockdown-shield" id="cinema-shield">
+    <div style="font-size: 5rem; margin-bottom: 12px;">⏰✨</div>
+    <h1 style="color: #fde047; font-size: 2.3rem; margin-bottom: 14px; font-weight: 900;">
+      O TEMPO DO VÍDEO TERMINOU!
+    </h1>
+    <p style="color: #ffffff; font-size: 1.45rem; max-width: 720px; line-height: 1.5; margin-bottom: 24px; font-weight: 700;">
+      Tudo tem o seu tempo, pequeno herói! Você cumpriu o combinado com muita sabedoria. Agora vamos para uma aventura mágica nos livros!
+    </p>
+    <div style="display: flex; gap: 18px;">
+      <button type="button" class="big-btn" style="background: #10b981; font-size: 1.3rem; padding: 16px 28px;" onclick="closeShieldAndGoBooks()">
+        📚 ABRIR LIVRO MÁGICO!
+      </button>
+      <button type="button" class="big-btn" style="background: #a855f7; font-size: 1.3rem; padding: 16px 28px;" onclick="closeShieldAndGoMusic()">
+        🎵 CRIAR UMA MELODIA
+      </button>
+    </div>
+  </div>
+
   <div class="toast-banner" id="toast-banner"></div>
 
   <script>
     let appState = {
       config: {
         child_name: 'Pequeno Inventor',
-        mode: 'gemini',
+        active_provider: 'gemini',
         voice_profile: 'jarvis_antonio',
-        has_gemini_key: false,
         voice_enabled: true,
         media_start_time: '16:00',
         media_end_time: '17:00',
         media_daily_minutes: 25,
-        require_book_before_media: true
+        netflix_url: 'https://www.netflix.com/Kids',
+        youtube_url: 'https://www.youtubekids.com'
       },
       voice_profiles: {},
       books: [],
@@ -545,9 +634,11 @@
     let keyHandler = null;
     let currentAudio = null;
     let ttsAbortCtrl = null;
-    let activeRecognition = null;
-    let isListening = false;
+    let recognitionObj = null;
+    let isRecordingPush = false;
+    let pushTranscript = '';
     let gateExpectedAnswer = 12;
+    let lastSpokenHint = '';
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -581,8 +672,6 @@
     function setSpeakingVisual(speaking) {
       const arc = document.getElementById('arc-reactor');
       if (arc) arc.classList.toggle('speaking', speaking);
-      const orb = document.getElementById('gemini-voice-orb');
-      if (orb) orb.classList.toggle('speaking', speaking);
     }
 
     function stopCurrentSpeech() {
@@ -603,9 +692,6 @@
       setSpeakingVisual(false);
     }
 
-    // =========================================================================
-    // VOZ HUMANA NEURAL PT-BR (GEMINI 3.8 TTS / EDGE NEURAL + FALLBACK OFFLINE)
-    // =========================================================================
     async function speak(text, options = {}) {
       document.getElementById('subtitle-bar').textContent = text;
       if (!appState.config.voice_enabled || !text) {
@@ -657,8 +743,6 @@
       } catch (err) {
         if (err && err.name === 'AbortError') return;
       }
-
-      // Fallback local caso esteja 100% sem internet
       speakBrowserFallback(text, options.onEnd);
     }
 
@@ -684,101 +768,12 @@
       window.speechSynthesis.speak(utter);
     }
 
-    // =========================================================================
-    // MICROFONE INFANTIL PT-BR (RECONHECIMENTO DE FALA PARA CONVERSAR COM GEMINI)
-    // =========================================================================
-    function startVoiceListening(onTranscript, onStateChange) {
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRec) {
-        showToast('Este navegador não suporta microfone nativo. Use o Google Chrome ou Microsoft Edge para falar por voz!', true);
-        return;
-      }
-
-      if (isListening && activeRecognition) {
-        try { activeRecognition.stop(); } catch (e) {}
-        return;
-      }
-
-      stopCurrentSpeech();
-      playTone(587, 90);
-      setTimeout(() => playTone(880, 110), 90);
-
-      const rec = new SpeechRec();
-      rec.lang = 'pt-BR';
-      rec.interimResults = true;
-      rec.maxAlternatives = 1;
-      activeRecognition = rec;
-
-      const setListenUI = (val) => {
-        isListening = val;
-        const arc = document.getElementById('arc-reactor');
-        const homeBtn = document.getElementById('btn-home-mic');
-        if (arc) arc.classList.toggle('listening', val);
-        if (homeBtn) {
-          homeBtn.classList.toggle('listening', val);
-          homeBtn.innerHTML = val ? '🛑 OUVINDO VOCÊ...' : '🎙️ FALAR COM O GEMINI';
-        }
-        if (onStateChange) onStateChange(val);
-      };
-
-      let finalTranscript = '';
-
-      rec.onstart = () => {
-        setListenUI(true);
-        document.getElementById('subtitle-bar').textContent = '🎧 Estou ouvindo! Pode falar comigo em Português...';
-      };
-
-      rec.onresult = (event) => {
-        let interim = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const txt = event.results[i][0].transcript;
-          if (event.results[i].isFinal) finalTranscript += txt;
-          else interim += txt;
-        }
-        const liveText = (finalTranscript || interim).trim();
-        if (liveText) {
-          document.getElementById('subtitle-bar').textContent = `👦 Você: "${liveText}"`;
-          const childBubble = document.getElementById('child-said-box');
-          if (childBubble) childBubble.textContent = `👦 Você falou: "${liveText}"`;
-        }
-      };
-
-      rec.onerror = (ev) => {
-        setListenUI(false);
-        if (ev.error === 'not-allowed') {
-          showToast('Permita o uso do Microfone no topo do navegador para a criança conversar por voz!', true);
-        } else if (ev.error !== 'aborted') {
-          document.getElementById('subtitle-bar').textContent = 'Não consegui ouvir direitinho. Aperte o microfone e fale novamente!';
-        }
-      };
-
-      rec.onend = () => {
-        setListenUI(false);
-        const spoken = finalTranscript.trim();
-        if (spoken && onTranscript) {
-          onTranscript(spoken);
-        }
-      };
-
-      rec.start();
-    }
-
-    function quickVoiceChatFromHome() {
-      startVoiceListening(async (spokenText) => {
-        document.getElementById('subtitle-bar').textContent = `✨ Pensando na resposta para "${spokenText}"...`;
-        const res = await fetch('/api/ask', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: spokenText })
-        });
-        const data = await res.json();
-        speak(data.reply);
-      });
-    }
-
-    function previewHint(txt) {
-      if (!isListening) {
-        document.getElementById('subtitle-bar').textContent = txt;
+    function speakCardHint(text) {
+      if (isRecordingPush) return;
+      document.getElementById('subtitle-bar').textContent = text;
+      // Fala apenas se não estiver falando agora
+      if (!currentAudio && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
+        speak(text);
       }
     }
 
@@ -800,29 +795,124 @@
       appState.media_permission = data.media_permission;
 
       document.getElementById('books-badge').textContent = `📖 Livros hoje: ${data.books_read_today}`;
-      let engineLabel = data.config.mode.toUpperCase();
-      if (data.config.mode === 'gemini') {
-        engineLabel = data.config.has_gemini_key ? '✨ GEMINI 3.8 ATIVO' : '✨ GEMINI (FALLBACK LOCAL)';
-      } else if (data.config.mode === 'ollama') {
-        engineLabel = '🏠 IA LOCAL OLLAMA';
-      }
+      const provMap = {
+        gemini: data.config.has_gemini_key ? '✨ GEMINI 3.8 ATIVO' : '✨ GEMINI (LOCAL)',
+        openai: '🤖 OPENAI CHATGPT',
+        groq: '⚡ GROQ LLAMA 3.3',
+        ollama: '🏠 IA LOCAL OLLAMA',
+        offline: '🛡️ 100% OFFLINE'
+      };
       document.getElementById('mode-badge').textContent =
-        `${engineLabel} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
+        `${provMap[data.config.active_provider] || 'JARVIS'} • CINEMA: ${data.config.media_start_time}-${data.config.media_end_time}`;
 
       if (greet) {
-        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Reator ou no Microfone!)';
+        document.getElementById('subtitle-bar').textContent = data.greeting + ' (Toque no Reator ou segure o Microfone!)';
       }
     }
     loadState(true);
 
-    async function clickArcReactor() {
-      playTone(784, 130);
-      const topics = ['heroi', 'elogio', 'espaco', 'animais', 'adivinha'];
-      const chosen = topics[Math.floor(Math.random() * topics.length)];
+    function clickArcToy() {
+      playTone(784, 120);
+      const jokes = [
+        `Eu sou o Járvis, seu melhor amigo robô! Seus propulsores estão em cem por cento, ${appState.config.child_name}!`,
+        `Bip bop! Meus sensores indicam que você tem o maior sorriso do mundo hoje!`,
+        `Sabia que o Tiranossauro Rex tinha bracinhos bem curtinhos? Uááár! Vamos brincar!`,
+        `Que tal abrir um livrinho mágico na estante para ganharmos medalhas de herói?`
+      ];
+      const joke = jokes[Math.floor(Math.random() * jokes.length)];
+      speak(joke);
+    }
+
+    // =========================================================================
+    // PUSH-TO-TALK ROBUSTO PARA CRIANÇA (SEGURE PARA FALAR, SOLTE PARA OUVIR)
+    // =========================================================================
+    function startPushToTalk(e) {
+      if (e) e.preventDefault();
+      if (isRecordingPush) return;
+      isRecordingPush = true;
+      pushTranscript = '';
+      stopCurrentSpeech();
+
+      playTone(587, 80);
+      setTimeout(() => playTone(880, 120), 80);
+
+      const btn = document.getElementById('btn-voice-push');
+      const arc = document.getElementById('arc-reactor');
+      if (btn) {
+        btn.classList.add('listening');
+        document.getElementById('mic-label').textContent = 'FALE AGORA!';
+        document.getElementById('mic-icon').textContent = '🛑';
+      }
+      if (arc) arc.classList.add('listening');
+      document.getElementById('subtitle-bar').textContent = '🎧 Ouvindo você falar em Português...';
+
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        showToast('Navegador sem suporte a microfone. Use o Google Chrome ou Edge!', true);
+        isRecordingPush = false;
+        return;
+      }
+
+      const rec = new SpeechRec();
+      rec.lang = 'pt-BR';
+      rec.interimResults = true;
+      rec.continuous = true;
+      recognitionObj = rec;
+
+      rec.onresult = (ev) => {
+        let text = '';
+        for (let i = 0; i < ev.results.length; i++) {
+          text += ev.results[i][0].transcript + ' ';
+        }
+        pushTranscript = text.trim();
+        if (pushTranscript) {
+          document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
+        }
+      };
+
+      rec.onerror = (ev) => {
+        if (ev.error === 'not-allowed') {
+          showToast('Permita o uso do Microfone no navegador para a criança conversar por voz!', true);
+        }
+      };
+
+      try {
+        rec.start();
+      } catch (err) {}
+    }
+
+    async function stopPushToTalk(e) {
+      if (e) e.preventDefault();
+      if (!isRecordingPush) return;
+      isRecordingPush = false;
+
+      const btn = document.getElementById('btn-voice-push');
+      const arc = document.getElementById('arc-reactor');
+      if (btn) {
+        btn.classList.remove('listening');
+        document.getElementById('mic-label').textContent = 'SEGURE PARA FALAR';
+        document.getElementById('mic-icon').textContent = '🎙️';
+      }
+      if (arc) arc.classList.remove('listening');
+
+      if (recognitionObj) {
+        try { recognitionObj.stop(); } catch (err) {}
+        recognitionObj = null;
+      }
+
+      const spoken = pushTranscript.trim();
+      if (!spoken) {
+        document.getElementById('subtitle-bar').textContent = 'Segure o botão com o dedinho e fale comigo!';
+        return;
+      }
+
+      document.getElementById('subtitle-bar').textContent = `✨ O Járvis está pensando na resposta...`;
+      playTone(659, 100);
+
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: chosen })
+        body: JSON.stringify({ question: spoken })
       });
       const data = await res.json();
       speak(data.reply);
@@ -839,8 +929,9 @@
     function closeModal(restoreVoice = true) {
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
-      if (isListening && activeRecognition) {
-        try { activeRecognition.stop(); } catch (e) {}
+      if (isRecordingPush && recognitionObj) {
+        try { recognitionObj.stop(); } catch (e) {}
+        isRecordingPush = false;
       }
       document.getElementById('activity-modal').classList.remove('open');
       document.getElementById('modal-body').innerHTML = '';
@@ -848,71 +939,80 @@
     }
 
     // =========================================================================
-    // 1. BIBLIOTECA DE LIVROS (A BASE PRINCIPAL)
+    // 1. BIBLIOTECA DE HISTÓRIAS INFANTIS (CLÁSSICOS + ELEMENTOS INTERATIVOS)
     // =========================================================================
     function openBooksLibrary() {
-      const body = openModal('📚 BIBLIOTECA HOLOGRÁFICA STARK (HÁBITO DE LER)');
+      const body = openModal('📚 BIBLIOTECA DE HISTÓRIAS MÁGICAS');
       renderBooksShelf(body);
     }
 
     function renderBooksShelf(body) {
-      speak(`Bem-vindo à Biblioteca Stark, ${appState.config.child_name}! Escolha um livro colorido para lermos juntos!`);
+      speak(`Bem-vindo à Biblioteca de Histórias, ${appState.config.child_name}! Toque em qualquer capa colorida para ouvir e brincar!`);
       body.innerHTML = `
-        <div style="background:#0c1e35; border:2px solid #38bdf8; border-radius:12px; padding:12px 18px; margin-bottom:16px; text-align:center; font-size:1.1rem; font-weight:700;">
+        <div style="background:#0c1e35; border:2px solid #38bdf8; border-radius:14px; padding:12px 18px; margin-bottom:14px; text-align:center; font-size:1.15rem; font-weight:800;">
           📖 Livros lidos hoje: ${appState.books_read_today} &nbsp;|&nbsp; Ler pelo menos 1 livro por dia libera superpoderes e o Cinema Stark!
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; flex:1;" id="shelf-grid"></div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; flex:1;" id="shelf-grid"></div>
       `;
       const grid = document.getElementById('shelf-grid');
       appState.books.forEach((b, idx) => {
         const card = document.createElement('div');
-        card.style.cssText = `background:${b.theme_color}; border:3px solid #e0f2fe; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; cursor:pointer;`;
+        card.style.cssText = `background:${b.theme_color}; border:3px solid #e0f2fe; border-radius:18px; padding:18px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.4);`;
         card.innerHTML = `
-          <div style="font-size:3rem; margin-bottom:8px;">📘</div>
-          <h3 style="font-size:1.45rem; margin-bottom:8px;">${b.title}</h3>
-          <p style="font-size:1rem; opacity:0.9;">${b.pages.length} páginas ilustradas • Toque para ler!</p>
+          <div style="font-size:3.5rem; margin-bottom:6px;">${b.cover_emoji || '📘'}</div>
+          <h3 style="font-size:1.3rem; font-weight:900; margin-bottom:6px; color:#fff;">${b.title}</h3>
+          <p style="font-size:0.95rem; font-weight:700; color:#f0f9ff; opacity:0.95;">${b.pages.length} páginas • Toque para abrir!</p>
         `;
         card.onclick = () => openBookPage(body, idx, 0);
         grid.appendChild(card);
       });
     }
 
-    const SCENE_EMOJIS = {
-      book_glow: '📖✨', rocket: '🚀🌌', castle: '🏰🐉', heart: '💖🌟',
-      sun: '☀️🌻', clock: '⏰⭐', star: '🌟🦸', fire: '🐲🔥',
-      cloud: '☁️💙', flower: '🌸🌬️', smile: '😊🌈', tree: '🌳🐰', gift: '🎁🤝'
+    const SCENE_ICONS = {
+      pig_straw: '🐷🌾', pig_wood: '🐷🪵', pig_brick: '🐷🧱', wolf_blow: '🐺💨',
+      basket_flowers: '👧🧺', tree_birds: '🌳🐦', wolf_friendly: '🐺🌸', grandma_tea: '👵🍵',
+      lion_sleep: '🦁💤', mouse_small: '🐭🧀', lion_net: '🦁🪢', friends_smile: '🦁🐭',
+      tito_dino: '🦖💚', tall_neck: '🦕🌿', pterodactyl: '🦅☁️', dino_party: '🦖🎉',
+      rocket_launch: '🚀✨', moon_cheese: '🌙⭐', star_friend: '🌟😊', earth_bed: '🌍🛏️',
+      fire_tower: '🐲🧱', mom_dragon: '🐲💖', flower_candle: '🌸🕯️', peace_dragon: '🐲🌈'
     };
 
     function openBookPage(body, bookIdx, pageIdx) {
       const book = appState.books[bookIdx];
       const page = book.pages[pageIdx];
-      playTone(587, 110);
+      playTone(587, 100);
       speak(page.text);
 
       body.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <button class="big-btn" style="background:#334155; padding:8px 16px; font-size:0.95rem;" id="btn-shelf">📚 Outros Livros</button>
-          <span style="color:#38bdf8; font-weight:800; font-size:1.1rem;">${book.title} — Página ${pageIdx + 1} de ${book.pages.length}</span>
+          <button type="button" class="big-btn" style="background:#334155; padding:8px 16px; font-size:0.95rem;" id="btn-shelf">📚 Outras Histórias</button>
+          <span style="color:#38bdf8; font-weight:900; font-size:1.2rem;">${book.title} — Página ${pageIdx + 1} de ${book.pages.length}</span>
         </div>
-        <div style="flex:1; background:#0b192c; border:3px solid ${book.theme_color}; border-radius:16px; display:grid; grid-template-columns:320px 1fr; gap:24px; padding:24px; align-items:center;">
-          <div style="background:#081221; border-radius:14px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px; gap:16px;">
-            <div style="font-size:5.2rem;">${SCENE_EMOJIS[page.scene] || '🌟'}</div>
-            <button class="big-btn" style="background:#facc15; color:#0f172a; font-size:1.6rem;" id="btn-spell">🔤 ${page.word}</button>
-            <small style="color:#94a3b8;">Toque na palavra amarela para soletrar!</small>
+        <div style="flex:1; background:#0b192c; border:3px solid ${book.theme_color}; border-radius:18px; display:grid; grid-template-columns:340px 1fr; gap:24px; padding:20px; align-items:center;">
+          <div style="background:#081221; border-radius:16px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:18px; gap:14px; text-align:center;">
+            <div id="interactive-scene" style="font-size:5.5rem; cursor:pointer; filter:drop-shadow(0 0 16px ${book.theme_color}); transition:transform 0.15s;" title="Toque no desenho para fuçar!">
+              ${SCENE_ICONS[page.scene] || '🌟'}
+            </div>
+            <div style="color:#38bdf8; font-weight:800; font-size:0.95rem;">
+              👉 ${page.tap_hint || 'Toque no desenho para fuçar!'}
+            </div>
+            <button type="button" class="big-btn" style="background:#facc15; color:#0f172a; font-size:1.6rem; padding:10px 22px;" id="btn-spell">
+              🔤 ${page.word}
+            </button>
           </div>
-          <div style="font-size:1.75rem; font-weight:700; line-height:1.5;">
+          <div style="font-size:1.85rem; font-weight:800; line-height:1.55; color:#ffffff;">
             ${page.text}
           </div>
         </div>
         <div style="display:flex; justify-content:space-between; margin-top:16px;">
           <div>
-            ${pageIdx > 0 ? '<button class="big-btn" style="background:#475569; margin-right:10px;" id="btn-prev">⬅ Página Anterior</button>' : ''}
-            <button class="big-btn" style="background:#0284c7;" id="btn-repeat">🔊 Ouvir de Novo</button>
+            ${pageIdx > 0 ? '<button type="button" class="big-btn" style="background:#475569; margin-right:10px;" id="btn-prev">⬅ Anterior</button>' : ''}
+            <button type="button" class="big-btn" style="background:#0284c7;" id="btn-repeat">🔊 Ouvir História</button>
           </div>
           <div>
             ${pageIdx < book.pages.length - 1
-              ? '<button class="big-btn" style="background:#10b981;" id="btn-next">Próxima Página ➡</button>'
-              : '<button class="big-btn" style="background:#eab308; color:#0f172a;" id="btn-finish">🏆 Concluir Livro e Ganhar Medalha!</button>'}
+              ? '<button type="button" class="big-btn" style="background:#10b981; font-size:1.2rem; padding:14px 26px;" id="btn-next">Próxima Página ➡</button>'
+              : '<button type="button" class="big-btn" style="background:#eab308; color:#0f172a; font-size:1.2rem; padding:14px 26px;" id="btn-finish">🏆 Concluir Livro e Ganhar Medalha!</button>'}
           </div>
         </div>
       `;
@@ -924,6 +1024,21 @@
         const spelled = page.word.replace(/\s+/g, '').split('').join(', ');
         speak(`A palavra é ${page.word}! Vamos soletrar: ${spelled}. ${page.word}!`);
       };
+
+      const sceneEl = document.getElementById('interactive-scene');
+      sceneEl.onclick = () => {
+        playTone(784, 150);
+        sceneEl.style.transform = 'scale(1.25) rotate(8deg)';
+        setTimeout(() => { sceneEl.style.transform = 'scale(1) rotate(0deg)'; }, 280);
+        const snd = page.tap_sound;
+        if (snd === 'oink') speak('Oinc oinc! O porquinho está alegre e seguro!');
+        else if (snd === 'roar_cute') speak('Ruaaaar! Eu sou o Tito, o dinossauro dos abraços quentinhos!');
+        else if (snd === 'rocket_boost') speak('Propulsores ligados! Três, dois, um, Zuuuum!');
+        else if (snd === 'blow') speak('Fuuuuuu! O lobo assoprou bem forte!');
+        else if (snd === 'squeak') speak('Queek queek! O ratinho valente veio ajudar!');
+        else speak(page.tap_hint || 'Você tocou no desenho mágico!');
+      };
+
       if (pageIdx > 0) document.getElementById('btn-prev').onclick = () => openBookPage(body, bookIdx, pageIdx - 1);
       if (pageIdx < book.pages.length - 1) {
         document.getElementById('btn-next').onclick = () => openBookPage(body, bookIdx, pageIdx + 1);
@@ -945,40 +1060,111 @@
     }
 
     // =========================================================================
-    // 2. ACADEMIA DE MOUSE & DIGITAÇÃO CORRETA (AS DUAS MÃOZINHAS)
+    // 2. ACADEMIA DE DIGITAÇÃO: MOSTRANDO EXATAMENTE QUAL DEDO USAR!
     // =========================================================================
-    const LEFT_KEYS = new Set('QWERTASDFGZXCVB'.split(''));
+    const FINGER_MAP = {
+      // MÃO ESQUERDA
+      'Q': { hand: 'left', finger: 'pinky', label: 'DEDINHO MINDINHO da Mão Esquerda', color: '#c084fc' },
+      'A': { hand: 'left', finger: 'pinky', label: 'DEDINHO MINDINHO da Mão Esquerda', color: '#c084fc' },
+      'Z': { hand: 'left', finger: 'pinky', label: 'DEDINHO MINDINHO da Mão Esquerda', color: '#c084fc' },
+      'W': { hand: 'left', finger: 'ring', label: 'DEDO ANELAR da Mão Esquerda', color: '#fb923c' },
+      'S': { hand: 'left', finger: 'ring', label: 'DEDO ANELAR da Mão Esquerda', color: '#fb923c' },
+      'X': { hand: 'left', finger: 'ring', label: 'DEDO ANELAR da Mão Esquerda', color: '#fb923c' },
+      'E': { hand: 'left', finger: 'middle', label: 'DEDO MÉDIO da Mão Esquerda', color: '#4ade80' },
+      'D': { hand: 'left', finger: 'middle', label: 'DEDO MÉDIO da Mão Esquerda', color: '#4ade80' },
+      'C': { hand: 'left', finger: 'middle', label: 'DEDO MÉDIO da Mão Esquerda', color: '#4ade80' },
+      'R': { hand: 'left', finger: 'index', label: 'DEDINHO INDICADOR da Mão Esquerda', color: '#38bdf8' },
+      'T': { hand: 'left', finger: 'index', label: 'DEDINHO INDICADOR da Mão Esquerda', color: '#38bdf8' },
+      'F': { hand: 'left', finger: 'index', label: 'DEDINHO INDICADOR da Mão Esquerda (F•)', color: '#38bdf8' },
+      'G': { hand: 'left', finger: 'index', label: 'DEDINHO INDICADOR da Mão Esquerda', color: '#38bdf8' },
+      'V': { hand: 'left', finger: 'index', label: 'DEDINHO INDICADOR da Mão Esquerda', color: '#38bdf8' },
+      'B': { hand: 'left', finger: 'index', label: 'DEDINHO INDICADOR da Mão Esquerda', color: '#38bdf8' },
+      // POLEGAR
+      ' ': { hand: 'both', finger: 'thumb', label: 'DEDÃO (POLEGAR) na Barra de Espaço', color: '#facc15' },
+      // MÃO DIREITA
+      'Y': { hand: 'right', finger: 'index', label: 'DEDINHO INDICADOR da Mão Direita', color: '#38bdf8' },
+      'U': { hand: 'right', finger: 'index', label: 'DEDINHO INDICADOR da Mão Direita', color: '#38bdf8' },
+      'H': { hand: 'right', finger: 'index', label: 'DEDINHO INDICADOR da Mão Direita', color: '#38bdf8' },
+      'J': { hand: 'right', finger: 'index', label: 'DEDINHO INDICADOR da Mão Direita (J•)', color: '#38bdf8' },
+      'N': { hand: 'right', finger: 'index', label: 'DEDINHO INDICADOR da Mão Direita', color: '#38bdf8' },
+      'M': { hand: 'right', finger: 'index', label: 'DEDINHO INDICADOR da Mão Direita', color: '#38bdf8' },
+      'I': { hand: 'right', finger: 'middle', label: 'DEDO MÉDIO da Mão Direita', color: '#4ade80' },
+      'K': { hand: 'right', finger: 'middle', label: 'DEDO MÉDIO da Mão Direita', color: '#4ade80' },
+      'O': { hand: 'right', finger: 'ring', label: 'DEDO ANELAR da Mão Direita', color: '#fb923c' },
+      'L': { hand: 'right', finger: 'ring', label: 'DEDO ANELAR da Mão Direita', color: '#fb923c' },
+      'P': { hand: 'right', finger: 'pinky', label: 'DEDINHO MINDINHO da Mão Direita', color: '#c084fc' }
+    };
+
     const KB_ROWS = [
       ['Q','W','E','R','T','Y','U','I','O','P'],
       ['A','S','D','F','G','H','J','K','L'],
       ['Z','X','C','V','B','N','M']
     ];
-    const WORDS_POOL = ['LIVRO', 'SOL', 'LUA', 'AMOR', 'CALMA', 'CASA', 'BOLA', 'VIDA'];
+    const WORDS_POOL = ['SOL', 'LUA', 'DINO', 'CASA', 'LIVRO', 'AMOR', 'BOLA', 'VIDA'];
 
     function openTechAcademy() {
-      const body = openModal('⌨️ ACADEMIA DE MOUSE & DIGITAÇÃO CORRETA');
+      const body = openModal('🖐️ ACADEMIA DAS MÃOZINHAS & DEDOS CORRETOS');
       body.innerHTML = `
-        <div style="display:flex; gap:12px; margin-bottom:14px;">
-          <button class="big-btn" style="background:#eab308; color:#0f172a; padding:10px 18px; font-size:1rem;" id="tab-kb">⌨️ Digitação das Duas Mãozinhas</button>
-          <button class="big-btn" style="background:#0284c7; padding:10px 18px; font-size:1rem;" id="tab-mouse">🖱️ Treino de Mouse (Mover, Clicar e Arrastar)</button>
+        <div style="display:flex; gap:12px; margin-bottom:12px;">
+          <button type="button" class="big-btn" style="background:#eab308; color:#0f172a; padding:10px 18px; font-size:1.05rem;" id="tab-kb">⌨️ Qual Dedinho Usar no Teclado</button>
+          <button type="button" class="big-btn" style="background:#0284c7; padding:10px 18px; font-size:1.05rem;" id="tab-mouse">🖱️ Treino do Mouse (Mover, Clicar e Arrastar)</button>
         </div>
         <div id="tech-stage" style="flex:1; display:flex; flex-direction:column;"></div>
       `;
-      document.getElementById('tab-kb').onclick = renderTypingStage;
+      document.getElementById('tab-kb').onclick = renderFingerTypingStage;
       document.getElementById('tab-mouse').onclick = renderMouseStage;
-      renderTypingStage();
+      renderFingerTypingStage();
     }
 
-    function renderTypingStage() {
+    function renderFingerTypingStage() {
       if (keyHandler) window.removeEventListener('keydown', keyHandler);
       const stage = document.getElementById('tech-stage');
+
       stage.innerHTML = `
-        <div style="display:flex; justify-content:space-between; background:#0b192c; border:1px solid #38bdf8; border-radius:10px; padding:10px 18px; margin-bottom:10px; font-weight:700;">
-          <span style="color:#38bdf8;">🖐 MÃO ESQUERDA = Teclas Azuis (Indicador no F•)</span>
-          <span style="color:#facc15;">🤚 MÃO DIREITA = Teclas Amarelas (Indicador no J•)</span>
+        <!-- DIAGRAMA VISUAL DAS DUAS MÃOS COM DEDOS COLORIDOS -->
+        <div style="background:#0b192c; border:2px solid #38bdf8; border-radius:16px; padding:12px; margin-bottom:12px; text-align:center;">
+          <div id="finger-instruction" style="font-size:1.35rem; font-weight:900; color:#facc15; margin-bottom:8px;">
+            Aperte a tecla indicada pelo dedinho brilhante!
+          </div>
+
+          <svg class="hands-svg" viewBox="0 0 600 200">
+            <!-- MÃO ESQUERDA -->
+            <g id="hand-left" transform="translate(40, 10)">
+              <!-- Palma -->
+              <path d="M 60 120 C 60 80, 120 80, 120 120 C 120 160, 60 160, 60 120 Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+              <!-- Mindinho -->
+              <rect id="left-pinky" x="42" y="55" width="16" height="50" rx="8" fill="#a855f7" stroke="#334155" stroke-width="2" />
+              <!-- Anelar -->
+              <rect id="left-ring" x="64" y="35" width="16" height="68" rx="8" fill="#f97316" stroke="#334155" stroke-width="2" />
+              <!-- Médio -->
+              <rect id="left-middle" x="86" y="20" width="17" height="82" rx="8" fill="#22c55e" stroke="#334155" stroke-width="2" />
+              <!-- Indicador -->
+              <rect id="left-index" x="109" y="32" width="17" height="70" rx="8" fill="#0284c7" stroke="#334155" stroke-width="2" />
+              <!-- Polegar (Dedão) -->
+              <rect id="left-thumb" x="130" y="85" width="18" height="45" rx="8" transform="rotate(30, 130, 85)" fill="#eab308" stroke="#334155" stroke-width="2" />
+              <text x="90" y="150" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">MÃO ESQUERDA</text>
+            </g>
+
+            <!-- MÃO DIREITA -->
+            <g id="hand-right" transform="translate(360, 10)">
+              <!-- Palma -->
+              <path d="M 60 120 C 60 80, 120 80, 120 120 C 120 160, 60 160, 60 120 Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+              <!-- Polegar (Dedão) -->
+              <rect id="right-thumb" x="35" y="85" width="18" height="45" rx="8" transform="rotate(-30, 35, 85)" fill="#eab308" stroke="#334155" stroke-width="2" />
+              <!-- Indicador -->
+              <rect id="right-index" x="58" y="32" width="17" height="70" rx="8" fill="#0284c7" stroke="#334155" stroke-width="2" />
+              <!-- Médio -->
+              <rect id="right-middle" x="81" y="20" width="17" height="82" rx="8" fill="#22c55e" stroke="#334155" stroke-width="2" />
+              <!-- Anelar -->
+              <rect id="right-ring" x="104" y="35" width="16" height="68" rx="8" fill="#f97316" stroke="#334155" stroke-width="2" />
+              <!-- Mindinho -->
+              <rect id="right-pinky" x="126" y="55" width="16" height="50" rx="8" fill="#a855f7" stroke="#334155" stroke-width="2" />
+              <text x="90" y="150" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">MÃO DIREITA</text>
+            </g>
+          </svg>
         </div>
-        <div id="typing-word" style="text-align:center; font-family:Consolas,monospace; font-size:2.6rem; font-weight:900; margin:6px 0;"></div>
-        <div id="typing-hint" style="text-align:center; color:#4ade80; font-size:1.25rem; font-weight:700; margin-bottom:14px;"></div>
+
+        <div id="typing-word" style="text-align:center; font-family:Consolas,monospace; font-size:2.8rem; font-weight:900; margin:4px 0;"></div>
         <div id="kb-container" style="margin:auto;"></div>
       `;
 
@@ -989,7 +1175,9 @@
         rDiv.className = 'kb-row';
         row.forEach(k => {
           const btn = document.createElement('div');
-          btn.className = 'kb-key ' + (LEFT_KEYS.has(k) ? 'kb-left' : 'kb-right');
+          const fInfo = FINGER_MAP[k] || { color: '#0284c7' };
+          btn.className = 'kb-key';
+          btn.style.background = fInfo.color;
           btn.textContent = (k === 'F' || k === 'J') ? `${k}•` : k;
           btn.onclick = () => handleKey(k);
           rDiv.appendChild(btn);
@@ -997,26 +1185,37 @@
         });
         kb.appendChild(rDiv);
       });
-      const sp = document.createElement('div');
-      sp.style.cssText = 'background:#15803d; text-align:center; padding:10px; border-radius:10px; font-weight:800; width:360px; margin:8px auto 0;';
-      sp.textContent = '👍 BARRA DE ESPAÇO (DEDÕES)';
-      kb.appendChild(sp);
 
       let word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
       let idx = 0;
 
-      function refreshUI(announceWord) {
+      function highlightFinger(targetChar) {
+        document.querySelectorAll('.hands-svg rect').forEach(r => r.classList.remove('finger-highlight'));
+        const f = FINGER_MAP[targetChar];
+        if (!f) return;
+
+        let elId = '';
+        if (f.hand === 'left') elId = `left-${f.finger}`;
+        else if (f.hand === 'right') elId = `right-${f.finger}`;
+        else if (f.hand === 'both') elId = 'left-thumb';
+
+        const el = document.getElementById(elId);
+        if (el) el.classList.add('finger-highlight');
+
+        const inst = document.getElementById('finger-instruction');
+        if (inst) {
+          inst.innerHTML = `Use o <span style="color:#ffffff; text-decoration:underline;">${f.label}</span> na tecla <strong>"${targetChar}"</strong>!`;
+        }
+        speak(`Use o ${f.label} para apertar a tecla ${targetChar}!`);
+      }
+
+      function refreshUI() {
         Object.values(keyEls).forEach(el => el.classList.remove('kb-active'));
         const target = word[idx];
-        document.getElementById('typing-word').textContent = `${word.slice(0, idx)} [ ${target} ] ${word.slice(idx + 1)}`;
-        const isLeft = LEFT_KEYS.has(target);
-        document.getElementById('typing-hint').textContent =
-          `Aperte a letra "${target}" usando a ${isLeft ? '🖐 MÃOZINHA ESQUERDA (Azul)' : '🤚 MÃOZINHA DIREITA (Amarela)'}!`;
+        document.getElementById('typing-word').innerHTML =
+          `${word.slice(0, idx)}<span style="color:#22c55e; border:3px solid #22c55e; padding:2px 10px; border-radius:10px; background:#042f2e;">${target}</span>${word.slice(idx + 1)}`;
         if (keyEls[target]) keyEls[target].classList.add('kb-active');
-
-        const handSpeech = isLeft ? 'mãozinha esquerda' : 'mãozinha direita';
-        if (announceWord) speak(`Vamos escrever a palavra ${word}! Aperte a letra ${target} com a ${handSpeech}!`);
-        else speak(`Letra ${target}, com a ${handSpeech}!`);
+        highlightFinger(target);
       }
 
       function handleKey(ch) {
@@ -1026,19 +1225,20 @@
           idx++;
           if (idx >= word.length) {
             addStar(1);
-            document.getElementById('typing-word').textContent = `🌟 ${word} 🌟`;
-            speak(`Parabéns! Você digitou ${word} usando as duas mãozinhas!`);
+            document.getElementById('typing-word').innerHTML = `🌟 ${word} 🌟`;
+            speak(`Parabéns! Você digitou a palavra ${word} usando os dedinhos certos!`);
             setTimeout(() => {
               word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
               idx = 0;
-              refreshUI(true);
-            }, 2300);
+              refreshUI();
+            }, 2400);
           } else {
-            refreshUI(false);
+            refreshUI();
           }
-        } else if (keyEls[ch]) {
-          playTone(220, 140);
-          speak(`Procure a tecla verde brilhante da letra ${target}!`);
+        } else {
+          playTone(220, 150);
+          const f = FINGER_MAP[target];
+          if (f) speak(`Procure a tecla com o ${f.label}!`);
         }
       }
 
@@ -1046,9 +1246,12 @@
         if (e.key && e.key.length === 1) handleKey(e.key.toUpperCase());
       };
       window.addEventListener('keydown', keyHandler);
-      refreshUI(true);
+      refreshUI();
     }
 
+    // =========================================================================
+    // TREINO DE MOUSE EM 3 FASES (MOVER, CLICAR, ARRASTAR)
+    // =========================================================================
     function renderMouseStage() {
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       const stage = document.getElementById('tech-stage');
@@ -1056,10 +1259,10 @@
       let hits = 0;
 
       stage.innerHTML = `
-        <div id="mouse-instruction" style="text-align:center; font-size:1.3rem; font-weight:800; color:#38bdf8; margin-bottom:10px;">
+        <div id="mouse-instruction" style="text-align:center; font-size:1.35rem; font-weight:900; color:#38bdf8; margin-bottom:10px;">
           Fase 1: Passeie com o mouse e encoste na bola azul!
         </div>
-        <div id="mouse-arena" style="flex:1; background:#06101f; border:2px solid #0284c7; border-radius:14px; position:relative; overflow:hidden;"></div>
+        <div id="mouse-arena" style="flex:1; background:#06101f; border:3px solid #0284c7; border-radius:18px; position:relative; overflow:hidden;"></div>
       `;
       speak('Fase um do mouse: leve a setinha até encostar na bola azul brilhante!');
 
@@ -1072,26 +1275,26 @@
 
         if (phase === 1) {
           const orb = document.createElement('div');
-          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:90px; height:90px; border-radius:50%; background:#00f0ff; color:#040914; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff;`;
+          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:95px; height:95px; border-radius:50%; background:#00f0ff; color:#040914; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:pointer; font-size:1.1rem;`;
           orb.textContent = 'ENCOSTE';
           orb.onmouseenter = advance;
           arena.appendChild(orb);
         } else if (phase === 2) {
           const orb = document.createElement('div');
-          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:95px; height:95px; border-radius:50%; background:#22c55e; color:#fff; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:pointer;`;
+          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:100px; height:100px; border-radius:50%; background:#22c55e; color:#fff; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:pointer; font-size:1.2rem;`;
           orb.textContent = 'CLIQUE!';
           orb.onclick = advance;
           arena.appendChild(orb);
         } else {
           const reactor = document.createElement('div');
-          reactor.style.cssText = `position:absolute; right:50px; top:35%; width:130px; height:130px; border-radius:50%; background:#0c4a6e; border:4px dashed #00f0ff; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:800;`;
-          reactor.textContent = 'SOLTE AQUI\nNO REATOR';
+          reactor.style.cssText = `position:absolute; right:50px; top:35%; width:140px; height:140px; border-radius:50%; background:#0c4a6e; border:4px dashed #00f0ff; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:900; font-size:1rem;`;
+          reactor.textContent = 'SOLTE NO\nREATOR';
           reactor.ondragover = (e) => e.preventDefault();
           reactor.ondrop = () => advance();
 
           const battery = document.createElement('div');
           battery.draggable = true;
-          battery.style.cssText = `position:absolute; left:60px; top:40%; width:95px; height:95px; border-radius:50%; background:#facc15; color:#0f172a; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:grab;`;
+          battery.style.cssText = `position:absolute; left:60px; top:40%; width:100px; height:100px; border-radius:50%; background:#facc15; color:#0f172a; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:grab; font-size:1.1rem;`;
           battery.textContent = 'ARRASTE';
 
           arena.appendChild(reactor);
@@ -1123,97 +1326,181 @@
     }
 
     // =========================================================================
-    // 3. GESTÃO DAS EMOÇÕES & REATOR DA CALMA
+    // 3. ATIVIDADE DE MÚSICA: ENSINAR A CRIAR MELODIAS (MAESTRO & GRAVADOR)
     // =========================================================================
-    function openEmotionsCenter() {
-      const body = openModal('💚 GESTÃO DAS EMOÇÕES & REATOR DA CALMA');
-      const n = appState.config.child_name;
-      speak(`Como o seu coração está se sentindo agora, ${n}? Toque em um rostinho!`);
+    const MELODIES = {
+      estrelinha: {
+        title: 'Brilha, Brilha, Estrelinha',
+        notes: [
+          ['DÓ', 262, '#ef4444'], ['DÓ', 262, '#ef4444'],
+          ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
+          ['LÁ', 440, '#3b82f6'], ['LÁ', 440, '#3b82f6'],
+          ['SOL', 392, '#06b6d4']
+        ]
+      },
+      aranha: {
+        title: 'A Dona Aranha',
+        notes: [
+          ['DÓ', 262, '#ef4444'], ['MI', 330, '#facc15'],
+          ['SOL', 392, '#06b6d4'], ['SOL', 392, '#06b6d4'],
+          ['LÁ', 440, '#3b82f6'], ['SOL', 392, '#06b6d4']
+        ]
+      },
+      balao: {
+        title: 'Cai, Cai, Balão',
+        notes: [
+          ['DÓ', 262, '#ef4444'], ['DÓ', 262, '#ef4444'],
+          ['RÉ', 294, '#f97316'], ['RÉ', 294, '#f97316'],
+          ['MI', 330, '#facc15'], ['DÓ', 262, '#ef4444']
+        ]
+      }
+    };
 
-      const emotions = [
-        { e: '😊', t: 'FELIZ', c: '#16a34a', m: `Que maravilha que você está feliz, ${n}! Espalhe esse sorriso lindo pela casa!` },
-        { e: '😠', t: 'BRAVO', c: '#dc2626', m: `Tudo bem ficar bravo quando algo dá errado, ${n}. Vamos respirar com o Reator da Calma para esfriar esse vulcão?` },
-        { e: '😢', t: 'TRISTE', c: '#2563eb', m: `Quando estamos tristes, um abraço bem apertado na família e respirar devagar ajudam o coração!` },
-        { e: '😨', t: 'COM MEDO', c: '#7c3aed', m: `Você está seguro e protegido, ${n}! Todo herói respira fundo para ganhar coragem!` },
-        { e: '⚡', t: 'AGITADO', c: '#d97706', m: `Seus propulsores estão super rápidos! Vamos acalmar a armadura respirando juntos?` }
-      ];
+    const PIANO_KEYS = [
+      ['DÓ', 262, '#ef4444'], ['RÉ', 294, '#f97316'], ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
+      ['SOL', 392, '#06b6d4'], ['LÁ', 440, '#3b82f6'], ['SI', 494, '#a855f7'], ['DÓ+', 523, '#ec4899']
+    ];
+
+    function openMusicComposer() {
+      const body = openModal('🎵 ACADEMIA DE MÚSICA & CRIAÇÃO DE MELODIAS');
+      speak('Bem-vindo ao Laboratório Musical! Escolha uma música para aprender ou crie sua própria melodia no gravador!');
 
       body.innerHTML = `
-        <h3 style="text-align:center; font-size:1.5rem; margin-bottom:16px;">Como o seu coração está se sentindo agora?</h3>
-        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px;" id="emo-grid"></div>
-        <div id="emo-msg" style="background:#0b192c; border:2px solid #38bdf8; border-radius:14px; padding:20px; margin:20px 0; font-size:1.3rem; font-weight:700; text-align:center;">
-          Toque em um dos rostinhos acima!
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; gap:10px;">
+            <button type="button" class="big-btn" style="background:#7c3aed;" id="btn-song-estrela">⭐ Brilha Estrelinha</button>
+            <button type="button" class="big-btn" style="background:#0284c7;" id="btn-song-aranha">🕷️ Dona Aranha</button>
+            <button type="button" class="big-btn" style="background:#059669;" id="btn-song-balao">🎈 Cai Cai Balão</button>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button type="button" class="big-btn" style="background:#e11d48;" id="btn-rec-start">🔴 Gravar Minha Música</button>
+            <button type="button" class="big-btn" style="background:#10b981;" id="btn-rec-play">▶ Tocar Minha Música</button>
+          </div>
         </div>
-        <div style="text-align:center;">
-          <button class="big-btn" style="background:#0284c7;" id="btn-breath">🌬️ LIGAR REATOR DA CALMA (RESPIRAÇÃO GUIADA)</button>
+
+        <div id="music-sky" style="flex:1; background:#050b18; border:3px solid var(--cyan); border-radius:18px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px;">
+          <div id="music-prompt" style="font-size:2rem; font-weight:900; color:#fde047; text-align:center;">
+            Toque nas teclas coloridas abaixo para começar!
+          </div>
+          <div id="music-stars-area" style="position:absolute; inset:0; pointer-events:none;"></div>
         </div>
+
+        <div style="display:grid; grid-template-columns:repeat(8, 1fr); gap:10px; height:180px; margin-top:14px;" id="piano-keys-row"></div>
       `;
 
-      const grid = document.getElementById('emo-grid');
-      emotions.forEach(item => {
-        const btn = document.createElement('button');
-        btn.className = 'big-btn';
-        btn.style.cssText = `background:${item.c}; padding:20px 10px; font-size:1.3rem;`;
-        btn.innerHTML = `<div style="font-size:2.8rem; margin-bottom:6px;">${item.e}</div>${item.t}`;
-        btn.onclick = () => {
-          playTone(523, 120);
-          document.getElementById('emo-msg').textContent = item.m;
-          speak(item.m);
-        };
-        grid.appendChild(btn);
+      let activeMelody = null;
+      let melodyIdx = 0;
+      let recordedNotes = [];
+      let isRecording = false;
+
+      const row = document.getElementById('piano-keys-row');
+      const keyButtons = {};
+
+      PIANO_KEYS.forEach(([name, freq, col]) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'big-btn';
+        b.style.cssText = `background:${col}; font-size:1.7rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;`;
+        b.innerHTML = `<span>${name}</span><span style="font-size:1.1rem; opacity:0.8;">★</span>`;
+        b.onclick = () => onPianoKeyTouch(name, freq, col);
+        row.appendChild(b);
+        keyButtons[name] = b;
       });
 
-      document.getElementById('btn-breath').onclick = () => startBreathingUI(body);
-    }
+      function spawnStarInSky(col, text) {
+        const area = document.getElementById('music-stars-area');
+        if (!area) return;
+        const s = document.createElement('div');
+        s.style.cssText = `position:absolute; left:${Math.random()*80 + 10}%; top:${Math.random()*70 + 10}%; font-size:2.8rem; color:${col}; font-weight:900; filter:drop-shadow(0 0 12px ${col}); animation:pulseMic 0.5s ease-out;`;
+        s.textContent = `★ ${text}`;
+        area.appendChild(s);
+        if (area.children.length > 20) area.removeChild(area.firstChild);
+      }
 
-    function startBreathingUI(body) {
-      if (activeInterval) clearInterval(activeInterval);
-      body.innerHTML = `
-        <h2 id="breath-text" style="text-align:center; color:#34d399; font-size:1.8rem; margin-bottom:20px;">🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)</h2>
-        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-          <div id="breath-orb" style="width:110px; height:110px; border-radius:50%; background:#10b981; border:5px solid #fff; box-shadow:0 0 40px #10b981; transition:all 4s ease-in-out; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.3rem; color:#040914;">AR</div>
-        </div>
-      `;
-      let inhale = true;
-      let count = 0;
+      function onPianoKeyTouch(name, freq, col) {
+        playTone(freq, 280);
+        spawnStarInSky(col, name);
 
-      function cycle() {
-        const orb = document.getElementById('breath-orb');
-        const txt = document.getElementById('breath-text');
-        if (!orb) return;
-        if (count >= 6) {
-          clearInterval(activeInterval);
-          addStar(1);
-          txt.textContent = '🌟 Coração calmo e mente brilhante! (+1 Estrela)';
-          speak(`Parabéns, ${appState.config.child_name}! Seu Reator da Calma está completo!`);
+        if (isRecording) {
+          recordedNotes.push([name, freq, col]);
+          document.getElementById('music-prompt').textContent = `Gravando: ${recordedNotes.length} notas gravadas!`;
+        }
+
+        if (activeMelody) {
+          const expected = activeMelody.notes[melodyIdx];
+          if (expected && expected[0] === name) {
+            melodyIdx++;
+            if (melodyIdx >= activeMelody.notes.length) {
+              addStar(1);
+              document.getElementById('music-prompt').textContent = `🏆 Parabéns! Você tocou a melodia "${activeMelody.title}"!`;
+              speak(`Muito bem, ${appState.config.child_name}! Você tocou a música todinha como um verdadeiro maestro!`);
+              activeMelody = null;
+              highlightNextMelodyKey(null);
+            } else {
+              highlightNextMelodyKey(activeMelody.notes[melodyIdx][0]);
+            }
+          }
+        }
+      }
+
+      function highlightNextMelodyKey(expectedName) {
+        Object.values(keyButtons).forEach(b => {
+          b.style.transform = 'scale(1)';
+          b.style.boxShadow = 'none';
+          b.style.border = 'none';
+        });
+        if (expectedName && keyButtons[expectedName]) {
+          const b = keyButtons[expectedName];
+          b.style.transform = 'scale(1.12)';
+          b.style.boxShadow = '0 0 30px #ffffff, 0 0 45px #facc15';
+          b.style.border = '4px solid #ffffff';
+          document.getElementById('music-prompt').innerHTML = `Toque na nota brilhante: <span style="color:#ffffff;">${expectedName}</span>!`;
+        }
+      }
+
+      function startSongTraining(key) {
+        activeMelody = MELODIES[key];
+        melodyIdx = 0;
+        speak(`Vamos aprender a tocar ${activeMelody.title}! Siga a tecla brilhante!`);
+        highlightNextMelodyKey(activeMelody.notes[0][0]);
+      }
+
+      document.getElementById('btn-song-estrela').onclick = () => startSongTraining('estrelinha');
+      document.getElementById('btn-song-aranha').onclick = () => startSongTraining('aranha');
+      document.getElementById('btn-song-balao').onclick = () => startSongTraining('balao');
+
+      document.getElementById('btn-rec-start').onclick = () => {
+        isRecording = true;
+        recordedNotes = [];
+        activeMelody = null;
+        highlightNextMelodyKey(null);
+        document.getElementById('music-prompt').textContent = '🔴 Gravador ligado! Toque suas notas favoritas!';
+        speak('Gravador ligado! Toque as notas no piano para criar sua música!');
+      };
+
+      document.getElementById('btn-rec-play').onclick = () => {
+        if (!recordedNotes.length) {
+          speak('Grave algumas notas primeiro apertando o botão vermelho!');
           return;
         }
-        if (inhale) {
-          txt.textContent = '🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)';
-          txt.style.color = '#34d399';
-          orb.style.transform = 'scale(2.3)';
-          orb.style.background = '#10b981';
-          orb.textContent = 'INSPIRAR';
-          playTone(440, 200);
-          speak('Puxe o ar cheirando a florzinha...');
-        } else {
-          txt.textContent = '🕯️ SOLTE O AR PELA BOCA (Sopre a velinha devagar...)';
-          txt.style.color = '#fbbf24';
-          orb.style.transform = 'scale(1.0)';
-          orb.style.background = '#38bdf8';
-          orb.textContent = 'CALMA';
-          playTone(330, 200);
-          speak('Agora sopre a velinha bem devagar...');
-        }
-        inhale = !inhale;
-        count++;
-      }
-      setTimeout(cycle, 100);
-      activeInterval = setInterval(cycle, 4400);
+        isRecording = false;
+        speak('Ouvindo a sua melodia!');
+        document.getElementById('music-prompt').textContent = '🎶 Tocando a música que você criou!';
+        recordedNotes.forEach(([n, f, c], i) => {
+          setTimeout(() => {
+            playTone(f, 320);
+            spawnStarInSky(c, n);
+          }, i * 400);
+        });
+        setTimeout(() => {
+          addStar(1);
+          speak(`Que melodia linda você inventou, ${appState.config.child_name}! Você é um verdadeiro artista!`);
+        }, recordedNotes.length * 400 + 400);
+      };
     }
 
     // =========================================================================
-    // 4. CINEMA STARK (NETFLIX & YOUTUBE KIDS COM EDUCAÇÃO DO TEMPO)
+    // 4. CINEMA STARK: JANELA CONTROLADA + ESCUDO DE BLOQUEIO INFALÍVEL
     // =========================================================================
     async function openCinemaStark() {
       const body = openModal('🎬 CINEMA STARK — TUDO TEM O SEU TEMPO');
@@ -1223,13 +1510,12 @@
       if (!perm.allowed) {
         speak(perm.message);
         body.innerHTML = `
-          <div style="margin:auto; background:#0f172a; border:3px solid #f59e0b; border-radius:18px; padding:36px; max-width:820px; text-align:center;">
-            <div style="font-size:4.5rem; margin-bottom:12px;">${perm.reason === 'need_book' ? '📚' : '⏰'}</div>
-            <h3 style="font-size:1.55rem; line-height:1.45; margin-bottom:24px;">${perm.message}</h3>
+          <div style="margin:auto; background:#0f172a; border:3px solid #f59e0b; border-radius:20px; padding:36px; max-width:820px; text-align:center;">
+            <div style="font-size:5rem; margin-bottom:14px;">${perm.reason === 'need_book' ? '📚' : '⏰'}</div>
+            <h3 style="font-size:1.6rem; line-height:1.5; margin-bottom:24px;">${perm.message}</h3>
             <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
-              <button class="big-btn" style="background:#10b981;" onclick="openBooksLibrary()">📚 IR PARA A BIBLIOTECA DE LIVROS!</button>
-              <button class="big-btn" style="background:#a855f7;" onclick="openTalkHub()">✨ CONVERSAR COM O GEMINI</button>
-              <button class="big-btn" style="background:#f97316;" onclick="openStarkPaint()">🎨 PINTURA MÁGICA</button>
+              <button type="button" class="big-btn" style="background:#10b981; font-size:1.2rem;" onclick="openBooksLibrary()">📚 LER UM LIVRO MÁGICO AGORA</button>
+              <button type="button" class="big-btn" style="background:#a855f7; font-size:1.2rem;" onclick="openMusicComposer()">🎵 CRIAR MELODIAS</button>
             </div>
           </div>
         `;
@@ -1241,20 +1527,21 @@
       speak(`Horário liberado, ${appState.config.child_name}! Escolha YouTube Kids ou Netflix Infantil. Quando o tempo acabar, faremos uma nova atividade!`);
 
       body.innerHTML = `
-        <div id="cinema-timer" style="text-align:center; font-size:2rem; font-weight:900; color:#34d399; margin-bottom:18px;">
+        <div id="cinema-timer" style="text-align:center; font-size:2.2rem; font-weight:900; color:#34d399; margin-bottom:20px;">
           ⏱ Tempo disponível hoje: ${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:22px; flex:1;">
-          <button class="big-btn" style="background:#dc2626; font-size:1.8rem;" id="btn-yt">▶ YOUTUBE KIDS<br><span style="font-size:1rem; font-weight:400;">Abrir com Cronômetro Stark</span></button>
-          <button class="big-btn" style="background:#991b1b; font-size:1.8rem;" id="btn-nf">🎬 NETFLIX INFANTIL<br><span style="font-size:1rem; font-weight:400;">Abrir com Cronômetro Stark</span></button>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; flex:1;">
+          <button type="button" class="big-btn" style="background:#dc2626; font-size:1.9rem;" id="btn-yt">▶ YOUTUBE KIDS<br><span style="font-size:1.05rem; font-weight:600;">Com Cronômetro Stark</span></button>
+          <button type="button" class="big-btn" style="background:#991b1b; font-size:1.9rem;" id="btn-nf">🎬 NETFLIX INFANTIL<br><span style="font-size:1.05rem; font-weight:600;">Com Cronômetro Stark</span></button>
         </div>
       `;
 
       let popupWin = null;
       function launchControlledVideo(url, label) {
         speak(`Abrindo ${label}! Eu aviso você dois minutinhos antes de terminar!`);
-        popupWin = window.open(url, 'StarkCinemaWindow', 'width=980,height=580');
+        popupWin = window.open(url, 'StarkCinemaWindow', 'width=1000,height=600');
         if (activeInterval) clearInterval(activeInterval);
+
         activeInterval = setInterval(async () => {
           const res = await fetch('/api/media/tick', {
             method: 'POST',
@@ -1268,27 +1555,79 @@
 
           if (rem <= 120 && rem >= 114 && !warned) {
             warned = true;
-            speak(`Atenção, ${appState.config.child_name}! Faltam dois minutinhos para terminar o vídeo!`);
+            speak(`Atenção, ${appState.config.child_name}! Faltam dois minutinhos para terminar o filminho!`);
           }
           if (rem <= 0) {
             clearInterval(activeInterval);
             if (popupWin && !popupWin.closed) popupWin.close();
-            addStar(1);
-            speak(`O tempo de vídeo terminou, ${appState.config.child_name}! Parabéns por cumprir o combinado! Agora vamos para uma nova aventura na Biblioteca de Livros!`);
-            openBooksLibrary();
+            closeModal(false);
+            triggerCinemaLockdown();
           }
         }, 5000);
       }
 
-      document.getElementById('btn-yt').onclick = () => launchControlledVideo('https://www.youtubekids.com', 'YouTube Kids');
-      document.getElementById('btn-nf').onclick = () => launchControlledVideo('https://www.netflix.com/Kids', 'Netflix Infantil');
+      document.getElementById('btn-yt').onclick = () => launchControlledVideo(appState.config.youtube_url || 'https://www.youtubekids.com', 'YouTube Kids');
+      document.getElementById('btn-nf').onclick = () => launchControlledVideo(appState.config.netflix_url || 'https://www.netflix.com/Kids', 'Netflix Infantil');
+    }
+
+    function triggerCinemaLockdown() {
+      playTone(330, 250);
+      setTimeout(() => playTone(220, 350), 280);
+      document.getElementById('cinema-shield').classList.add('open');
+      speak(`O tempo do filminho terminou por hoje, ${appState.config.child_name}! Parabéns por cumprir o combinado com sabedoria!`);
+    }
+
+    function closeShieldAndGoBooks() {
+      document.getElementById('cinema-shield').classList.remove('open');
+      openBooksLibrary();
+    }
+
+    function closeShieldAndGoMusic() {
+      document.getElementById('cinema-shield').classList.remove('open');
+      openMusicComposer();
     }
 
     // =========================================================================
-    // 5. CORES, LOUSA NEON & PIANO MUSICAL
+    // 5. LOUSA NEON & DESAFIO DE CORES
     // =========================================================================
+    function openStarkPaint() {
+      const body = openModal('🎨 LOUSA HOLOGRÁFICA NEON');
+      speak('Escolha uma cor neon e desenhe à vontade com o mouse!');
+      body.innerHTML = `
+        <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;" id="paint-bar"></div>
+        <canvas id="paint-canvas" width="940" height="400" style="background:#030712; border:3px solid var(--cyan); border-radius:14px; cursor:crosshair; align-self:center;"></canvas>
+      `;
+      let color = '#00f0ff';
+      const bar = document.getElementById('paint-bar');
+      ['#00f0ff','#ef4444','#facc15','#22c55e','#fb923c','#f472b6','#ffffff'].forEach(c => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.style.cssText = `width:46px; height:46px; border-radius:50%; background:${c}; border:3px solid #fff; cursor:pointer;`;
+        b.onclick = () => { color = c; playTone(587, 80); };
+        bar.appendChild(b);
+      });
+      const clr = document.createElement('button');
+      clr.type = 'button';
+      clr.className = 'big-btn';
+      clr.style.cssText = 'background:#a855f7; margin-left:auto; padding:8px 18px; font-size:0.95rem;';
+      clr.textContent = '✨ Limpar Tela';
+      bar.appendChild(clr);
+
+      const cv = document.getElementById('paint-canvas');
+      const ctx = cv.getContext('2d');
+      let drawing = false;
+      cv.onmousedown = (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+      cv.onmousemove = (e) => {
+        if (!drawing) return;
+        ctx.strokeStyle = color; ctx.lineWidth = 10; ctx.lineCap = 'round';
+        ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke();
+      };
+      window.onmouseup = () => { drawing = false; };
+      clr.onclick = () => { ctx.clearRect(0, 0, cv.width, cv.height); speak('Tela limpinha!'); };
+    }
+
     function openColorsMission() {
-      const body = openModal('🌟 DESAFIO DE CORES E FORMAS');
+      const body = openModal('🌟 DESAFIO DAS CORES E FORMAS');
       const items = [
         { name: 'VERMELHO', color: '#ef4444', shape: '● CÍRCULO' },
         { name: 'AZUL', color: '#3b82f6', shape: '■ QUADRADO' },
@@ -1301,14 +1640,15 @@
         const msg = `${appState.config.child_name}, toque no ${target.name}!`;
         speak(msg);
         body.innerHTML = `
-          <h2 style="text-align:center; font-size:1.8rem; margin-bottom:20px;">${msg}</h2>
+          <h2 style="text-align:center; font-size:1.9rem; margin-bottom:20px;">${msg}</h2>
           <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; flex:1;" id="colors-grid"></div>
         `;
         const g = document.getElementById('colors-grid');
         [...items].sort(() => Math.random() - 0.5).forEach(it => {
           const b = document.createElement('button');
+          b.type = 'button';
           b.className = 'big-btn';
-          b.style.cssText = `background:${it.color}; font-size:1.5rem;`;
+          b.style.cssText = `background:${it.color}; font-size:1.6rem;`;
           b.innerHTML = `${it.shape}<br><br>${it.name}`;
           b.onclick = () => {
             if (it.name === target.name) {
@@ -1326,179 +1666,100 @@
       nextRound();
     }
 
-    function openStarkPaint() {
-      const body = openModal('🎨 LOUSA HOLOGRÁFICA STARK');
-      speak('Escolha uma cor brilhante e desenhe à vontade!');
-      body.innerHTML = `
-        <div style="display:flex; gap:10px; margin-bottom:10px; align-items:center;" id="paint-bar"></div>
-        <canvas id="paint-canvas" width="940" height="400" style="background:#030712; border:2px solid var(--cyan); border-radius:12px; cursor:crosshair; align-self:center;"></canvas>
-      `;
-      let color = '#00f0ff';
-      const bar = document.getElementById('paint-bar');
-      ['#00f0ff','#ef4444','#facc15','#22c55e','#fb923c','#f472b6','#ffffff'].forEach(c => {
-        const b = document.createElement('button');
-        b.style.cssText = `width:44px; height:44px; border-radius:50%; background:${c}; border:3px solid #fff; cursor:pointer;`;
-        b.onclick = () => { color = c; playTone(587, 80); };
-        bar.appendChild(b);
-      });
-      const clr = document.createElement('button');
-      clr.className = 'big-btn';
-      clr.style.cssText = 'background:#a855f7; margin-left:auto; padding:8px 18px; font-size:0.95rem;';
-      clr.textContent = '✨ Limpar Tela';
-      bar.appendChild(clr);
+    function openEmotionsCenter() {
+      const body = openModal('💚 CENTRO DAS EMOÇÕES & REATOR DA CALMA');
+      const n = appState.config.child_name;
+      speak(`Como o seu coração está se sentindo agora, ${n}? Toque em um rostinho!`);
 
-      const cv = document.getElementById('paint-canvas');
-      const ctx = cv.getContext('2d');
-      let drawing = false;
-      cv.onmousedown = (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
-      cv.onmousemove = (e) => {
-        if (!drawing) return;
-        ctx.strokeStyle = color; ctx.lineWidth = 9; ctx.lineCap = 'round';
-        ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke();
-      };
-      window.onmouseup = () => { drawing = false; };
-      clr.onclick = () => { ctx.clearRect(0, 0, cv.width, cv.height); speak('Tela limpinha!'); };
-    }
-
-    function openMusicSynth() {
-      const body = openModal('🎵 SINTETIZADOR MUSICAL STARK');
-      speak('Toque nas teclas coloridas para criar música e estrelas!');
-      const notes = [
-        ['DÓ', 262, '#ef4444'], ['RÉ', 294, '#f97316'], ['MI', 330, '#facc15'], ['FÁ', 349, '#22c55e'],
-        ['SOL', 392, '#06b6d4'], ['LÁ', 440, '#3b82f6'], ['SI', 494, '#a855f7'], ['DÓ+', 523, '#ec4899']
+      const emotions = [
+        { e: '😊', t: 'FELIZ', c: '#16a34a', m: `Que maravilha que você está feliz, ${n}! Espalhe esse sorriso lindo pela casa!` },
+        { e: '😠', t: 'BRAVO', c: '#dc2626', m: `Tudo bem ficar bravo quando algo dá errado, ${n}. Vamos respirar com o Reator da Calma para esfriar esse vulcão?` },
+        { e: '😢', t: 'TRISTE', c: '#2563eb', m: `Quando estamos tristes, um abraço bem apertado na família e respirar devagar ajudam o coração!` },
+        { e: '😨', t: 'COM MEDO', c: '#7c3aed', m: `Você está seguro e protegido, ${n}! Todo herói respira fundo para ganhar coragem!` },
+        { e: '⚡', t: 'AGITADO', c: '#d97706', m: `Seus propulsores estão super rápidos! Vamos acalmar a armadura respirando juntos?` }
       ];
+
       body.innerHTML = `
-        <div id="star-sky" style="flex:1; background:#050b18; border-radius:14px; position:relative; overflow:hidden; margin-bottom:14px;"></div>
-        <div style="display:grid; grid-template-columns:repeat(8, 1fr); gap:10px; height:170px;" id="piano-row"></div>
+        <h3 style="text-align:center; font-size:1.6rem; margin-bottom:16px;">Como o seu coração está se sentindo agora?</h3>
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px;" id="emo-grid"></div>
+        <div id="emo-msg" style="background:#0b192c; border:2px solid #38bdf8; border-radius:16px; padding:20px; margin:20px 0; font-size:1.35rem; font-weight:800; text-align:center;">
+          Toque em um dos rostinhos acima!
+        </div>
+        <div style="text-align:center;">
+          <button type="button" class="big-btn" style="background:#0284c7;" id="btn-breath">🌬️ RESPIRAR COM A FLORZINHA DA CALMA</button>
+        </div>
       `;
-      const sky = document.getElementById('star-sky');
-      const row = document.getElementById('piano-row');
-      notes.forEach(([n, f, c]) => {
-        const b = document.createElement('button');
-        b.className = 'big-btn';
-        b.style.cssText = `background:${c}; font-size:1.5rem;`;
-        b.textContent = n;
-        b.onclick = () => {
-          playTone(f, 260);
-          const s = document.createElement('div');
-          s.style.cssText = `position:absolute; left:${Math.random()*85 + 5}%; top:${Math.random()*70 + 10}%; font-size:2.4rem; color:${c}; font-weight:900;`;
-          s.textContent = `★ ${n}`;
-          sky.appendChild(s);
-          if (sky.children.length > 24) sky.removeChild(sky.firstChild);
+
+      const grid = document.getElementById('emo-grid');
+      emotions.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'big-btn';
+        btn.style.cssText = `background:${item.c}; padding:20px 10px; font-size:1.3rem;`;
+        btn.innerHTML = `<div style="font-size:3rem; margin-bottom:6px;">${item.e}</div>${item.t}`;
+        btn.onclick = () => {
+          playTone(523, 120);
+          document.getElementById('emo-msg').textContent = item.m;
+          speak(item.m);
         };
-        row.appendChild(b);
+        grid.appendChild(btn);
       });
+
+      document.getElementById('btn-breath').onclick = () => {
+        body.innerHTML = `
+          <h2 id="breath-text" style="text-align:center; color:#34d399; font-size:1.85rem; margin-bottom:20px;">🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)</h2>
+          <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+            <div id="breath-orb" style="width:110px; height:110px; border-radius:50%; background:#10b981; border:5px solid #fff; box-shadow:0 0 40px #10b981; transition:all 4s ease-in-out; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.3rem; color:#040914;">AR</div>
+          </div>
+        `;
+        let inhale = true;
+        let count = 0;
+        function cycle() {
+          const orb = document.getElementById('breath-orb');
+          const txt = document.getElementById('breath-text');
+          if (!orb) return;
+          if (count >= 6) {
+            addStar(1);
+            txt.textContent = '🌟 Coração calmo e mente brilhante! (+1 Estrela)';
+            speak(`Parabéns, ${appState.config.child_name}! Seu Reator da Calma está completo!`);
+            return;
+          }
+          if (inhale) {
+            txt.textContent = '🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)';
+            txt.style.color = '#34d399';
+            orb.style.transform = 'scale(2.3)';
+            orb.style.background = '#10b981';
+            orb.textContent = 'INSPIRAR';
+            playTone(440, 200);
+            speak('Puxe o ar cheirando a florzinha...');
+          } else {
+            txt.textContent = '🕯️ SOLTE O AR PELA BOCA (Sopre a velinha devagar...)';
+            txt.style.color = '#fbbf24';
+            orb.style.transform = 'scale(1.0)';
+            orb.style.background = '#38bdf8';
+            orb.textContent = 'CALMA';
+            playTone(330, 200);
+            speak('Agora sopre a velinha bem devagar...');
+          }
+          inhale = !inhale;
+          count++;
+          setTimeout(cycle, 4300);
+        }
+        cycle();
+      };
     }
 
-    // =========================================================================
-    // 6. CENTRAL DE CONVERSA POR VOZ COM GOOGLE GEMINI & J.A.R.V.I.S.
-    // =========================================================================
-    function openTalkHub() {
-      const body = openModal('✨ CONVERSAR POR VOZ COM O GOOGLE GEMINI & J.A.R.V.I.S.');
-      let lastReplyText = `Oi, ${appState.config.child_name}! Aperte o botão grande do microfone para falar comigo com a sua voz, ou escolha uma brincadeira abaixo!`;
-      speak(lastReplyText);
-
-      const statusBadge = appState.config.has_gemini_key
-        ? '<span style="background:#065f46; border:1px solid #34d399; color:#a7f3d0; padding:4px 12px; border-radius:999px; font-size:0.85rem; font-weight:800;">✨ Google Gemini 3.8 Conectado</span>'
-        : '<span style="background:#1e3a8a; border:1px solid #60a5fa; color:#dbeafe; padding:4px 12px; border-radius:999px; font-size:0.85rem; font-weight:700;">🏠 Voz Neural Ativa • Para conectar o Gemini oficial, cole sua chave gratuita em ⚙ PAIS</span>';
+    function openTalkModal() {
+      const body = openModal('✨ CONVERSAR POR VOZ COM O J.A.R.V.I.S.');
+      speak(`Sobre o que você quer conversar, ${appState.config.child_name}? Toque em um tema ou segure o botão do microfone para falar com sua voz!`);
 
       body.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-          ${statusBadge}
-          <div style="display:flex; align-items:center; gap:12px;">
-            <label style="display:flex; align-items:center; gap:6px; font-weight:700; color:#fde047; cursor:pointer; font-size:0.92rem;">
-              <input type="checkbox" id="chk-continuous-voice" />
-              🔄 Ouvir automaticamente após resposta
-            </label>
-            <button type="button" class="big-btn" style="background:#334155; padding:7px 14px; font-size:0.85rem;" id="btn-reset-chat">🧹 Nova Conversa</button>
-          </div>
+        <div style="background:#0a192f; border:3px solid var(--cyan); border-radius:18px; padding:20px; font-size:1.45rem; font-weight:800; text-align:center; margin-bottom:18px;" id="jarvis-talk-reply">
+          Toque em uma brincadeira abaixo ou segure o botão do microfone no centro para falar!
         </div>
 
-        <div style="display:grid; grid-template-columns:250px 1fr; gap:18px; margin-bottom:14px; align-items:stretch;">
-          <button type="button" id="btn-big-mic" style="background:linear-gradient(145deg, #2563eb, #9333ea, #ec4899); border:3px solid #f0abfc; border-radius:18px; color:#fff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; gap:8px; box-shadow:0 0 28px rgba(168,85,247,0.45);">
-            <span id="mic-big-icon" style="font-size:3.3rem;">🎙️</span>
-            <span id="mic-big-label" style="font-size:1.15rem; font-weight:900;">APERTE E FALE!</span>
-            <span style="font-size:0.82rem; opacity:0.9;">Conversa por Voz PT-BR</span>
-          </button>
-
-          <div style="background:#0a192f; border:2px solid var(--cyan); border-radius:18px; padding:16px 20px; display:flex; flex-direction:column; justify-content:space-between; gap:10px;">
-            <div id="child-said-box" style="color:#93c5fd; font-size:1rem; font-weight:700; min-height:22px;">
-              👦 Aperte o microfone ao lado e faça qualquer pergunta!
-            </div>
-            <div id="jarvis-reply" style="font-size:1.35rem; font-weight:800; color:#ffffff; line-height:1.45;">
-              ${lastReplyText}
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span id="reply-engine-tag" style="font-size:0.8rem; color:#38bdf8; font-family:Consolas,monospace;">VOZ NEURAL PT-BR PRONTA</span>
-              <button type="button" class="big-btn" style="background:#0284c7; padding:7px 14px; font-size:0.88rem;" id="btn-replay-voice">🔊 Ouvir de Novo</button>
-            </div>
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; flex:1;" id="talk-grid"></div>
-
-        <div style="display:flex; gap:10px; margin-top:12px;">
-          <input id="custom-q" placeholder="Ou digite aqui uma pergunta / história para conversar com o Gemini..." style="flex:1; background:#1e293b; color:#fff; border:1px solid #38bdf8; border-radius:10px; padding:11px 14px; font-size:1rem;" />
-          <button type="button" class="big-btn" style="background:var(--cyan); color:#040914;" id="btn-send-q">Enviar</button>
-        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; flex:1;" id="talk-topics-grid"></div>
       `;
-
-      async function askAndSpeak(payload) {
-        const replyEl = document.getElementById('jarvis-reply');
-        const engineTag = document.getElementById('reply-engine-tag');
-        if (replyEl) replyEl.textContent = '✨ Pensando numa resposta bem legal...';
-
-        const r = await fetch('/api/ask', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const d = await r.json();
-        lastReplyText = d.reply;
-        if (replyEl) replyEl.textContent = d.reply;
-        if (engineTag) {
-          const map = {
-            gemini: '✨ RESPONDIDO PELO GOOGLE GEMINI 3.8',
-            ollama: '🏠 RESPONDIDO PELA IA LOCAL (OLLAMA)',
-            offline: '🛡️ MODO EDUCATIVO OFFLINE',
-            cloud: '☁️ RESPONDIDO PELA NUVEM'
-          };
-          engineTag.textContent = map[d.engine_used] || 'VOZ NEURAL ATIVA';
-        }
-
-        speak(d.reply, {
-          onEnd: () => {
-            const cont = document.getElementById('chk-continuous-voice');
-            if (cont && cont.checked && document.getElementById('btn-big-mic')) {
-              setTimeout(() => triggerHubMic(), 450);
-            }
-          }
-        });
-      }
-
-      function triggerHubMic() {
-        const bigBtn = document.getElementById('btn-big-mic');
-        const bigLbl = document.getElementById('mic-big-label');
-        const bigIco = document.getElementById('mic-big-icon');
-        startVoiceListening(
-          (spokenText) => askAndSpeak({ question: spokenText }),
-          (listening) => {
-            if (!bigBtn) return;
-            bigBtn.style.background = listening
-              ? 'linear-gradient(145deg, #e11d48, #f97316)'
-              : 'linear-gradient(145deg, #2563eb, #9333ea, #ec4899)';
-            if (bigLbl) bigLbl.textContent = listening ? 'OUVINDO VOCÊ...' : 'APERTE E FALE!';
-            if (bigIco) bigIco.textContent = listening ? '🎧' : '🎙️';
-          }
-        );
-      }
-
-      document.getElementById('btn-big-mic').onclick = triggerHubMic;
-      document.getElementById('btn-replay-voice').onclick = () => speak(lastReplyText);
-      document.getElementById('btn-reset-chat').onclick = async () => {
-        await fetch('/api/gemini/reset', { method: 'POST' });
-        showToast('Memória da conversa reiniciada para um novo assunto!');
-      };
 
       const topics = [
         ['🚀 PLANETAS E FOGUETES', 'espaco', '#0284c7'],
@@ -1508,38 +1769,27 @@
         ['🦸 MISSÃO DE HERÓI', 'heroi', '#dc2626'],
         ['🔢 CONTAR DE 1 A 10', 'numeros', '#9333ea']
       ];
-      const g = document.getElementById('talk-grid');
+      const g = document.getElementById('talk-topics-grid');
       topics.forEach(([lbl, key, col]) => {
         const b = document.createElement('button');
+        b.type = 'button';
         b.className = 'big-btn';
-        b.style.background = col;
+        b.style.cssText = `background:${col}; font-size:1.35rem; font-weight:900;`;
         b.textContent = lbl;
-        b.onclick = () => {
+        b.onclick = async () => {
           playTone(659, 90);
-          const cb = document.getElementById('child-said-box');
-          if (cb) cb.textContent = `👦 Tema escolhido: ${lbl}`;
-          askAndSpeak({ topic: key });
+          document.getElementById('jarvis-talk-reply').textContent = '✨ O Járvis está pensando...';
+          const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic: key }) });
+          const d = await r.json();
+          document.getElementById('jarvis-talk-reply').textContent = d.reply;
+          speak(d.reply);
         };
         g.appendChild(b);
       });
-
-      const sendTyped = () => {
-        const inp = document.getElementById('custom-q');
-        const q = inp.value.trim();
-        if (!q) return;
-        inp.value = '';
-        const cb = document.getElementById('child-said-box');
-        if (cb) cb.textContent = `👦 Pergunta: "${q}"`;
-        askAndSpeak({ question: q });
-      };
-      document.getElementById('btn-send-q').onclick = sendTyped;
-      document.getElementById('custom-q').onkeydown = (e) => {
-        if (e.key === 'Enter') sendTyped();
-      };
     }
 
     // =========================================================================
-    // 7. PAINEL DOS PAIS (MODAL PRÓPRIO SEM PROMPT + GEMINI + VOZ NEURAL)
+    // 6. PAINEL DOS PAIS (SELETOR DINÂMICO DE PROVEDOR + CHAVES + NETFLIX)
     // =========================================================================
     function openParentsGate() {
       playTone(523, 90);
@@ -1589,177 +1839,217 @@
 
     async function openParentsPanel() {
       await loadState(false);
-      const body = openModal('⚙ PAINEL DOS PAIS — GOOGLE GEMINI, VOZ HUMANA NEURAL & ROTINA');
+      const body = openModal('⚙ PAINEL DOS PAIS — PROVEDORES DE IA, VOZ & NETFLIX KIDS');
       const c = appState.config;
+      let selectedProvider = c.active_provider || 'gemini';
 
       const voiceOptionsHtml = Object.entries(appState.voice_profiles).map(([k, label]) =>
         `<option value="${k}" ${c.voice_profile === k ? 'selected' : ''}>${label}</option>`
       ).join('');
 
       body.innerHTML = `
-        <div style="max-width:840px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:14px; background:#0f172a; padding:22px 26px; border-radius:16px; border:1px solid #334155;">
+        <div style="max-width:860px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:14px; background:#0f172a; padding:22px 26px; border-radius:18px; border:1px solid #334155;">
 
-          <div id="parents-status-box" style="display:none; padding:12px 16px; border-radius:10px; font-weight:700;"></div>
+          <div id="parents-status-box" style="display:none; padding:12px 16px; border-radius:10px; font-weight:800;"></div>
 
-          <!-- BLOCO 1: CONVERSA COM GOOGLE GEMINI & VOZ NEURAL -->
-          <div style="background:#091326; border:1px solid #3b82f6; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-              <h3 style="color:#60a5fa; font-size:1.1rem;">✨ Conversa Inteligente (Google Gemini 3.8) & Voz Neural</h3>
-              <span id="gemini-key-pill" style="font-size:0.82rem; font-weight:800; padding:4px 10px; border-radius:999px; background:${c.has_gemini_key ? '#065f46' : '#334155'}; color:${c.has_gemini_key ? '#a7f3d0' : '#cbd5e1'};">
-                ${c.has_gemini_key ? '✅ Chave Google Gemini Salva e Ativa' : 'ℹ️ Sem chave Gemini salva (usando IA Local / Offline)'}
-              </span>
+          <!-- SELETOR DINÂMICO DE PROVEDORES DE IA -->
+          <div style="background:#091326; border:2px solid #3b82f6; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="color:#60a5fa; font-size:1.15rem; font-weight:900;">🤖 Escolha o Motor de Inteligência Artificial:</h3>
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;" id="ai-provider-tabs">
+              <button type="button" class="big-btn" style="background:#2563eb;" id="tab-gemini">✨ Google Gemini</button>
+              <button type="button" class="big-btn" style="background:#059669;" id="tab-openai">🤖 OpenAI ChatGPT</button>
+              <button type="button" class="big-btn" style="background:#f97316;" id="tab-groq">⚡ Groq Cloud</button>
+              <button type="button" class="big-btn" style="background:#475569;" id="tab-ollama">🏠 IA Local (Ollama)</button>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <div>
-                <label style="font-size:0.9rem; color:#cbd5e1;">Motor Principal de Conversa:</label>
-                <select id="cfg-mode" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px; font-weight:700;">
-                  <option value="gemini" ${c.mode==='gemini'?'selected':''}>✨ Google Gemini 3.8 Flash (Conversa Infantil)</option>
-                  <option value="ollama" ${c.mode==='ollama'?'selected':''}>🏠 IA Local / OpenCode + Ollama (100% Localhost)</option>
-                  <option value="offline" ${c.mode==='offline'?'selected':''}>🛡️ 100% Offline (Sem Wi-Fi p/ Aspire One 532)</option>
-                  <option value="cloud" ${c.mode==='cloud'?'selected':''}>☁️ Outra Nuvem (Groq / OpenAI)</option>
-                </select>
-              </div>
-              <div>
-                <label style="font-size:0.9rem; color:#cbd5e1;">Voz Humana do Sistema (TTS Neural PT-BR):</label>
-                <div style="display:flex; gap:8px; margin-top:4px;">
-                  <select id="cfg-voice-profile" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
-                    ${voiceOptionsHtml}
-                  </select>
-                  <button type="button" class="big-btn" style="background:#7c3aed; padding:8px 14px; font-size:0.9rem;" id="btn-test-voice">🔊 Ouvir</button>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <label style="font-size:0.9rem; color:#93c5fd; font-weight:700;">Chave Gratuita do Google Gemini (GEMINI_API_KEY):</label>
-                <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#38bdf8; font-size:0.85rem; font-weight:700;">🔑 Gerar chave grátis no Google AI Studio ↗</a>
-              </div>
-              <div style="display:flex; gap:8px; margin-top:5px;">
-                <input id="cfg-gemini-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave já salva — cole outra apenas se quiser trocar)' : 'Cole aqui sua chave AIzaSy... do Google AI Studio'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-                <button type="button" class="big-btn" style="background:#334155; padding:8px 12px; font-size:0.88rem;" id="btn-toggle-key">👁</button>
-                <button type="button" class="big-btn" style="background:#2563eb; padding:8px 16px; font-size:0.9rem;" id="btn-test-gemini">✨ Testar & Conectar Gemini</button>
-              </div>
-            </div>
+            <!-- CONTAINER DINÂMICO PARA CADA PROVEDOR -->
+            <div id="provider-details-box" style="background:#0f172a; border:1px solid #334155; border-radius:12px; padding:14px;"></div>
           </div>
 
-          <!-- BLOCO 2: DADOS DA CRIANÇA & CONTROLE DE TEMPO NETFLIX / YOUTUBE KIDS -->
-          <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+          <!-- DADOS DA CRIANÇA E VOZ -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div>
-              <label style="font-size:0.9rem; color:#cbd5e1;">Nome do seu Filho(a) (falado pelo Gemini e JARVIS):</label>
+              <label style="font-size:0.92rem; color:#cbd5e1; font-weight:700;">Nome da Criança (falado pelo JARVIS):</label>
               <input id="cfg-name" value="${c.child_name}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
             </div>
             <div>
-              <label style="font-size:0.9rem; color:#cbd5e1;">URL Servidor Local Ollama (opcional):</label>
-              <input id="cfg-ollama" value="${c.ollama_url}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+              <label style="font-size:0.92rem; color:#cbd5e1; font-weight:700;">Perfil de Voz Neural PT-BR:</label>
+              <div style="display:flex; gap:8px; margin-top:4px;">
+                <select id="cfg-voice-profile" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
+                  ${voiceOptionsHtml}
+                </select>
+                <button type="button" class="big-btn" style="background:#7c3aed; padding:8px 14px;" id="btn-test-voice">🔊</button>
+              </div>
             </div>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-            <div>
-              <label style="color:#fde047; font-size:0.9rem; font-weight:700;">Início Cinema (HH:MM):</label>
-              <input id="cfg-start" value="${c.media_start_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
+          <!-- CONTROLE DE HORÁRIO NETFLIX & YOUTUBE KIDS -->
+          <div style="background:#131d31; border:1px solid #475569; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px;">
+            <h4 style="color:#fde047; font-size:1.05rem; font-weight:800;">🎬 Cinema Stark (Controle de Vídeos Infantis):</h4>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:0.88rem; color:#cbd5e1;">Link Direto YouTube Kids:</label>
+                <input id="cfg-yt-url" value="${c.youtube_url || 'https://www.youtubekids.com'}" style="width:100%; padding:8px 10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
+              </div>
+              <div>
+                <label style="font-size:0.88rem; color:#cbd5e1;">Link Direto Perfil Netflix Kids:</label>
+                <input id="cfg-nf-url" value="${c.netflix_url || 'https://www.netflix.com/Kids'}" style="width:100%; padding:8px 10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
+              </div>
             </div>
-            <div>
-              <label style="color:#fde047; font-size:0.9rem; font-weight:700;">Fim Cinema (HH:MM):</label>
-              <input id="cfg-end" value="${c.media_end_time}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
-            </div>
-            <div>
-              <label style="color:#fde047; font-size:0.9rem; font-weight:700;">Limite Diário (min):</label>
-              <input id="cfg-mins" type="number" value="${c.media_daily_minutes}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
-            </div>
-          </div>
 
-          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+              <div>
+                <label style="color:#fde047; font-size:0.88rem; font-weight:700;">Início Cinema (HH:MM):</label>
+                <input id="cfg-start" value="${c.media_start_time}" style="width:100%; padding:8px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
+              </div>
+              <div>
+                <label style="color:#fde047; font-size:0.88rem; font-weight:700;">Fim Cinema (HH:MM):</label>
+                <input id="cfg-end" value="${c.media_end_time}" style="width:100%; padding:8px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
+              </div>
+              <div>
+                <label style="color:#fde047; font-size:0.88rem; font-weight:700;">Limite Diário (minutos):</label>
+                <input id="cfg-mins" type="number" value="${c.media_daily_minutes}" style="width:100%; padding:8px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
+              </div>
+            </div>
+
             <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
               <input type="checkbox" id="cfg-req-book" ${c.require_book_before_media ? 'checked' : ''} />
-              📚 Exigir leitura de pelo menos 1 Livro no dia antes de liberar Netflix / YouTube Kids
-            </label>
-            <label style="color:#e2e8f0; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
-              <input type="checkbox" id="cfg-voice-enabled" ${c.voice_enabled ? 'checked' : ''} />
-              🔊 Ativar Voz Falada e Efeitos Sonoros do Sistema
+              📚 Exigir ler pelo menos 1 livro antes de liberar YouTube / Netflix
             </label>
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; flex-wrap:wrap; gap:10px;">
             <button type="button" class="big-btn" style="background:#0284c7; font-size:0.95rem;" id="btn-bonus">🎁 Liberar +15 min de Cinema Agora</button>
-            <button type="button" class="big-btn" style="background:#10b981; font-size:1.05rem;" id="btn-save-cfg">💾 Salvar Todas as Configurações</button>
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.1rem; padding:12px 26px;" id="btn-save-cfg">💾 Salvar Configurações</button>
           </div>
         </div>
       `;
 
-      const setPanelStatus = (msg, ok = true) => {
-        const box = document.getElementById('parents-status-box');
-        box.style.display = 'block';
-        box.style.background = ok ? '#064e3b' : '#7f1d1d';
-        box.style.border = `1px solid ${ok ? '#34d399' : '#f87171'}`;
-        box.style.color = '#ffffff';
-        box.textContent = msg;
-      };
+      function renderProviderDetails(prov) {
+        selectedProvider = prov;
+        const box = document.getElementById('provider-details-box');
+        document.querySelectorAll('#ai-provider-tabs button').forEach(b => b.style.opacity = '0.5');
 
-      document.getElementById('btn-toggle-key').onclick = () => {
-        const k = document.getElementById('cfg-gemini-key');
-        k.type = k.type === 'password' ? 'text' : 'password';
-      };
+        if (prov === 'gemini') {
+          document.getElementById('tab-gemini').style.opacity = '1';
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:800; color:#60a5fa;">Chave Google Gemini (GEMINI_API_KEY):</span>
+              <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#38bdf8; font-size:0.85rem; font-weight:700;">🔑 Obter chave grátis no Google AI Studio ↗</a>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input id="prov-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave AIzaSy... do Gemini'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+              <button type="button" class="big-btn" style="background:#2563eb;" id="btn-test-prov">✨ Testar Gemini</button>
+            </div>
+          `;
+        } else if (prov === 'openai') {
+          document.getElementById('tab-openai').style.opacity = '1';
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:800; color:#34d399;">Chave OpenAI ChatGPT (sk-...):</span>
+              <a href="https://platform.openai.com/api-keys" target="_blank" style="color:#34d399; font-size:0.85rem; font-weight:700;">🔑 Obter chave OpenAI ↗</a>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input id="prov-key" type="password" placeholder="${c.has_openai_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave sk-... da OpenAI'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+              <button type="button" class="big-btn" style="background:#059669;" id="btn-test-prov">🤖 Testar ChatGPT</button>
+            </div>
+          `;
+        } else if (prov === 'groq') {
+          document.getElementById('tab-groq').style.opacity = '1';
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:800; color:#fb923c;">Chave Groq Cloud (gsk_...):</span>
+              <a href="https://console.groq.com/keys" target="_blank" style="color:#fb923c; font-size:0.85rem; font-weight:700;">🔑 Obter chave Groq grátis ↗</a>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input id="prov-key" type="password" placeholder="${c.has_groq_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave gsk_... da Groq'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+              <button type="button" class="big-btn" style="background:#ea580c;" id="btn-test-prov">⚡ Testar Groq</button>
+            </div>
+          `;
+        } else if (prov === 'ollama') {
+          document.getElementById('tab-ollama').style.opacity = '1';
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:800; color:#94a3b8;">Servidor Ollama Local (100% sem custos / localhost):</span>
+              <span style="color:#38bdf8; font-size:0.85rem; font-weight:700;">Sem internet necessária!</span>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <input id="prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+              <button type="button" class="big-btn" style="background:#475569;" id="btn-test-prov">🏠 Testar Ollama</button>
+            </div>
+          `;
+        }
+
+        document.getElementById('btn-test-prov').onclick = async () => {
+          const keyInput = document.getElementById('prov-key');
+          const urlInput = document.getElementById('prov-url');
+          const payload = {
+            provider: prov,
+            api_key: keyInput ? keyInput.value.trim() : '',
+            ollama_url: urlInput ? urlInput.value.trim() : ''
+          };
+
+          const sBox = document.getElementById('parents-status-box');
+          sBox.style.display = 'block';
+          sBox.style.background = '#1e293b';
+          sBox.textContent = `⏳ Testando conexão com ${prov.toUpperCase()}...`;
+
+          const r = await fetch('/api/provider/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const d = await r.json();
+
+          sBox.style.background = d.ok ? '#065f46' : '#7f1d1d';
+          sBox.style.color = '#fff';
+          sBox.textContent = d.ok ? `✅ Conectado com sucesso! Resposta: "${d.message}"` : `⚠️ ${d.message}`;
+          if (d.ok) {
+            speak(d.message);
+          }
+        };
+      }
+
+      document.getElementById('tab-gemini').onclick = () => renderProviderDetails('gemini');
+      document.getElementById('tab-openai').onclick = () => renderProviderDetails('openai');
+      document.getElementById('tab-groq').onclick = () => renderProviderDetails('groq');
+      document.getElementById('tab-ollama').onclick = () => renderProviderDetails('ollama');
+
+      renderProviderDetails(selectedProvider);
 
       document.getElementById('btn-test-voice').onclick = () => {
         const prof = document.getElementById('cfg-voice-profile').value;
-        const childName = document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor';
-        const typedKey = document.getElementById('cfg-gemini-key').value.trim();
-        setPanelStatus('🔊 Reproduzindo amostra da nova voz neural...', true);
-        speak(`Olá, ${childName}! Agora a minha voz está muito mais natural, carinhosa e pronta para conversarmos bastante!`, {
-          voiceProfile: prof,
-          geminiApiKey: typedKey
+        const n = document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor';
+        speak(`Olá, ${n}! Minha nova voz neural está muito mais bonita e pronta para conversar com você!`, {
+          voiceProfile: prof
         });
-      };
-
-      document.getElementById('btn-test-gemini').onclick = async () => {
-        const typedKey = document.getElementById('cfg-gemini-key').value.trim();
-        setPanelStatus('⏳ Testando conexão ao vivo com o Google Gemini 3.8...', true);
-        const res = await fetch('/api/gemini/test', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ gemini_api_key: typedKey })
-        });
-        const d = await res.json();
-        setPanelStatus(d.ok ? `✅ Conectado! Gemini disse: "${d.message}"` : `⚠️ ${d.message}`, d.ok);
-        if (d.ok) {
-          document.getElementById('cfg-mode').value = 'gemini';
-          const pill = document.getElementById('gemini-key-pill');
-          pill.textContent = '✅ Chave Google Gemini Salva e Ativa';
-          pill.style.background = '#065f46';
-          speak(d.message, {
-            voiceProfile: document.getElementById('cfg-voice-profile').value,
-            geminiApiKey: typedKey
-          });
-        }
       };
 
       document.getElementById('btn-bonus').onclick = async () => {
-        await fetch('/api/media/bonus', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ minutes: 15 })
-        });
-        setPanelStatus('🎁 Foram liberados +15 minutos imediatos de Cinema Stark para hoje!', true);
-        showToast('🎁 +15 minutos de Cinema Stark liberados!');
+        await fetch('/api/media/bonus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ minutes: 15 }) });
+        showToast('🎁 +15 minutos de Cinema Stark liberados para hoje!');
       };
 
       document.getElementById('btn-save-cfg').onclick = async () => {
         const payload = {
           child_name: document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor',
+          active_provider: selectedProvider,
+          voice_profile: document.getElementById('cfg-voice-profile').value,
+          youtube_url: document.getElementById('cfg-yt-url').value.trim(),
+          netflix_url: document.getElementById('cfg-nf-url').value.trim(),
           media_start_time: document.getElementById('cfg-start').value.trim() || '16:00',
           media_end_time: document.getElementById('cfg-end').value.trim() || '17:00',
           media_daily_minutes: parseInt(document.getElementById('cfg-mins').value, 10) || 25,
-          require_book_before_media: document.getElementById('cfg-req-book').checked,
-          voice_enabled: document.getElementById('cfg-voice-enabled').checked,
-          mode: document.getElementById('cfg-mode').value,
-          voice_profile: document.getElementById('cfg-voice-profile').value,
-          ollama_url: document.getElementById('cfg-ollama').value.trim()
+          require_book_before_media: document.getElementById('cfg-req-book').checked
         };
-        const gKey = document.getElementById('cfg-gemini-key').value.trim();
-        if (gKey) payload.gemini_api_key = gKey;
+        const keyInp = document.getElementById('prov-key');
+        if (keyInp && keyInp.value.trim()) {
+          if (selectedProvider === 'gemini') payload.gemini_api_key = keyInp.value.trim();
+          else if (selectedProvider === 'openai') payload.openai_api_key = keyInp.value.trim();
+          else if (selectedProvider === 'groq') payload.groq_api_key = keyInp.value.trim();
+        }
+        const urlInp = document.getElementById('prov-url');
+        if (urlInp && urlInp.value.trim()) payload.ollama_url = urlInp.value.trim();
 
         await fetch('/api/config', {
           method: 'POST',
@@ -1768,8 +2058,8 @@
         });
         await loadState(false);
         closeModal();
-        showToast('✅ Configurações salvas com sucesso!');
-        speak(`Configurações atualizadas! Olá, ${payload.child_name}, vamos conversar e brincar!`);
+        showToast('✅ Todas as configurações salvas com sucesso!');
+        speak(`Configurações salvas! Tudo pronto para brincar, ${payload.child_name}!`);
       };
     }
   </script>

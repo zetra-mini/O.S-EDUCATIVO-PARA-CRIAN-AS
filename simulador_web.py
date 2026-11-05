@@ -26,12 +26,17 @@ def api_state():
         {
             "config": {
                 "child_name": brain.config.get("child_name", "Pequeno Inventor"),
-                "mode": brain.config.get("mode", "gemini"),
+                "active_provider": brain.provider,
+                "mode": brain.provider,
                 "voice_profile": brain.config.get("voice_profile", "jarvis_antonio"),
                 "has_gemini_key": bool(brain.get_effective_gemini_key()),
+                "has_openai_key": bool(brain.get_effective_openai_key()),
+                "has_groq_key": bool(brain.get_effective_groq_key()),
+                "gemini_model": brain.config.get("gemini_model", "gemini-3.8-flash"),
+                "openai_model": brain.config.get("openai_model", "gpt-4o-mini"),
+                "groq_model": brain.config.get("groq_model", "llama-3.3-70b-versatile"),
                 "ollama_url": brain.config.get("ollama_url", "http://127.0.0.1:11434"),
-                "cloud_provider": brain.config.get("cloud_provider", "groq"),
-                "has_api_key": bool(brain.config.get("cloud_api_key")),
+                "ollama_model": brain.config.get("ollama_model", "qwen2.5:0.5b"),
                 "voice_enabled": brain.config.get("voice_enabled", True),
                 "media_start_time": brain.config.get("media_start_time", "16:00"),
                 "media_end_time": brain.config.get("media_end_time", "17:00"),
@@ -39,6 +44,8 @@ def api_state():
                 "require_book_before_media": brain.config.get(
                     "require_book_before_media", True
                 ),
+                "netflix_url": brain.config.get("netflix_url", "https://www.netflix.com/Kids"),
+                "youtube_url": brain.config.get("youtube_url", "https://www.youtubekids.com"),
             },
             "voice_profiles": {
                 k: v["label"] for k, v in VOICE_PROFILES.items()
@@ -63,8 +70,7 @@ def api_ask():
     else:
         res = {
             "reply": brain.get_greeting(),
-            "engine_used": brain.config.get("mode", "gemini"),
-            "has_gemini_key": bool(brain.get_effective_gemini_key()),
+            "engine_used": brain.provider,
         }
     return jsonify(res)
 
@@ -93,13 +99,40 @@ def api_tts():
     )
 
 
+@app.route("/api/provider/test", methods=["POST"])
+def api_provider_test():
+    data = request.get_json(silent=True) or {}
+    provider = data.get("provider", "gemini")
+    key = data.get("api_key", "").strip()
+    model = data.get("model", "").strip()
+    url = data.get("ollama_url", "").strip()
+
+    ok, msg = brain.test_provider(provider, key, model, url)
+    if ok:
+        p = provider.lower()
+        if p == "gemini" and key:
+            brain.config["gemini_api_key"] = key
+        elif p == "openai" and key:
+            brain.config["openai_api_key"] = key
+        elif p == "groq" and key:
+            brain.config["groq_api_key"] = key
+        elif p == "ollama" and url:
+            brain.config["ollama_url"] = url
+        brain.config["active_provider"] = p
+        brain.config["mode"] = p
+        brain.save_config()
+
+    return jsonify({"ok": ok, "message": msg, "provider": provider})
+
+
 @app.route("/api/gemini/test", methods=["POST"])
 def api_gemini_test():
     data = request.get_json(silent=True) or {}
     candidate_key = (data.get("gemini_api_key") or "").strip()
-    ok, msg = brain.test_gemini_connection(candidate_key)
+    ok, msg = brain.test_provider("gemini", candidate_key)
     if ok and candidate_key:
         brain.config["gemini_api_key"] = candidate_key
+        brain.config["active_provider"] = "gemini"
         brain.config["mode"] = "gemini"
         brain.save_config()
     return jsonify({"ok": ok, "message": msg, "has_gemini_key": bool(brain.get_effective_gemini_key())})
@@ -140,25 +173,34 @@ def api_save_config():
     data = request.get_json(silent=True) or {}
     for key in (
         "child_name",
+        "active_provider",
         "mode",
         "voice_profile",
         "ollama_url",
-        "cloud_provider",
+        "ollama_model",
+        "gemini_model",
+        "openai_model",
+        "groq_model",
         "voice_enabled",
         "media_start_time",
         "media_end_time",
         "media_daily_minutes",
         "require_book_before_media",
+        "netflix_url",
+        "youtube_url",
     ):
         if key in data:
             brain.config[key] = data[key]
 
     if "gemini_api_key" in data and data["gemini_api_key"].strip():
         brain.config["gemini_api_key"] = data["gemini_api_key"].strip()
-    if data.get("clear_gemini_key"):
-        brain.config["gemini_api_key"] = ""
-    if data.get("cloud_api_key"):
-        brain.config["cloud_api_key"] = data["cloud_api_key"].strip()
+    if "openai_api_key" in data and data["openai_api_key"].strip():
+        brain.config["openai_api_key"] = data["openai_api_key"].strip()
+    if "groq_api_key" in data and data["groq_api_key"].strip():
+        brain.config["groq_api_key"] = data["groq_api_key"].strip()
+
+    if data.get("active_provider"):
+        brain.config["mode"] = data["active_provider"]
 
     brain.reset_conversation()
     brain.save_config()
@@ -166,11 +208,11 @@ def api_save_config():
         {
             "ok": True,
             "permission": media_mgr.check_permission(),
-            "has_gemini_key": bool(brain.get_effective_gemini_key()),
+            "active_provider": brain.provider,
         }
     )
 
 
 if __name__ == "__main__":
-    print("Simulador Web J.A.R.V.I.S. Kids OS v2.1 ativo em http://127.0.0.1:5090")
+    print("Simulador Web J.A.R.V.I.S. Kids OS v2.2 ativo em http://127.0.0.1:5090")
     app.run(host="127.0.0.1", port=5090, debug=False)

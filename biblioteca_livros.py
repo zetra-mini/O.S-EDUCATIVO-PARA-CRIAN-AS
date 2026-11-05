@@ -3,110 +3,218 @@ import tkinter as tk
 
 BOOKS = [
     {
-        "id": "segredo_livros",
-        "title": "O Segredo dos Livros Mágicos",
-        "theme_color": "#0284c7",
+        "id": "tres_porquinhos",
+        "title": "Os Três Porquinhos e a Casa Forte",
+        "theme_color": "#d97706",
+        "cover_emoji": "🐷",
         "pages": [
             {
-                "scene": "book_glow",
-                "word": "LIVRO",
-                "text": "Era uma vez um pequeno inventor que descobriu um objeto mágico na estante: um LIVRO brilhante!",
+                "scene": "pig_straw",
+                "word": "PALHA",
+                "tap_hint": "Toque no porquinho para ouvir o focinho!",
+                "tap_sound": "oink",
+                "text": "O primeiro porquinho fez uma casinha de PALHA fofa. Ele cantava alegre: 'Minha casa ficou pronta rapidinho!'",
             },
             {
-                "scene": "rocket",
-                "word": "VIAGEM",
-                "text": "Sem sair da cadeira, cada página aberta levava ele para uma VIAGEM até as estrelas e planetas distantes!",
+                "scene": "pig_wood",
+                "word": "MADEIRA",
+                "tap_hint": "Toque na casinha para bater na madeira!",
+                "tap_sound": "knock",
+                "text": "O segundo porquinho juntou galhos e fez uma casa de MADEIRA. 'Aqui eu fico seguro para brincar!'",
             },
             {
-                "scene": "castle",
-                "word": "IMAGINAR",
-                "text": "Nos livros moram dragões amigos, florestas encantadas e robôs falantes. Ler faz a nossa mente IMAGINAR!",
+                "scene": "pig_brick",
+                "word": "TIJOLO",
+                "tap_hint": "Toque na parede forte de ferro e tijolo!",
+                "tap_sound": "clang",
+                "text": "O terceiro porquinho trabalhou bastante e construiu uma casa forte de TIJOLO e ferro Stark!",
             },
             {
-                "scene": "heart",
-                "word": "SABER",
-                "text": "Quem lê um pouquinho todos os dias ganha o maior superpoder do universo: o poder de SABER e sonhar!",
+                "scene": "wolf_blow",
+                "word": "SOPRAR",
+                "tap_hint": "Toque no lobinho para respirar fundo com ele!",
+                "tap_sound": "blow",
+                "text": "O lobo assoprou forte, mas a casa de tijolos nem se mexeu! Os porquinhos convidaram o lobo para um lanche e viraram amigos!",
             },
         ],
     },
     {
-        "id": "tudo_tem_hora",
-        "title": "Tudo Tem o Seu Tempo",
-        "theme_color": "#d97706",
+        "id": "chapeuzinho_floresta",
+        "title": "Chapeuzinho e a Floresta dos Amigos",
+        "theme_color": "#dc2626",
+        "cover_emoji": "👧",
         "pages": [
             {
-                "scene": "sun",
-                "word": "TEMPO",
-                "text": "O Sol nasce de manhãzinha e a Lua aparece de noite. Na natureza, tudo respeita o seu TEMPO!",
+                "scene": "basket_flowers",
+                "word": "CESTA",
+                "tap_hint": "Toque na cestinha para ver as frutinhas!",
+                "tap_sound": "twinkle",
+                "text": "Chapeuzinho Vermelho colocou maçãs doces e frutinhas na sua CESTA para levar para a vovó querida.",
             },
             {
-                "scene": "book_glow",
-                "word": "LER",
-                "text": "Existe a hora gostosa de LER histórias, desenhar, correr pela casa e montar brinquedos!",
+                "scene": "tree_birds",
+                "word": "FLORESTA",
+                "tap_hint": "Toque nos passarinhos para ouvi-los cantar!",
+                "tap_sound": "chirp",
+                "text": "Pelo caminho na FLORESTA colorida, os passarinhos cantavam e as borboletas dançavam em volta do capuz vermelho.",
             },
             {
-                "scene": "clock",
-                "word": "COMBINADO",
-                "text": "Também existe um horarinho curto para assistir desenhos. E quando o relógio avisa, cumprimos o COMBINADO!",
+                "scene": "wolf_friendly",
+                "word": "LOBO",
+                "tap_hint": "Toque no lobinho amigo!",
+                "tap_sound": "howl_soft",
+                "text": "Ela encontrou um LOBO amigável que adorava flores. Ele ajudou a colher margaridas amarelas para a vovó!",
             },
             {
-                "scene": "star",
-                "word": "HERÓI",
-                "text": "Desligar a telinha na hora certa com alegria mostra que você já é um verdadeiro HERÓI crescido!",
+                "scene": "grandma_tea",
+                "word": "ABRAÇO",
+                "tap_hint": "Toque no coração do abraço!",
+                "tap_sound": "heartbeat",
+                "text": "Na casa da vovó, todos tomaram chá quentinho e deram um grande ABRAÇO apertado e carinhoso!",
+            },
+        ],
+    },
+    {
+        "id": "leao_ratinho",
+        "title": "O Leão e o Ratinho Valente",
+        "theme_color": "#16a34a",
+        "cover_emoji": "🦁",
+        "pages": [
+            {
+                "scene": "lion_sleep",
+                "word": "LEÃO",
+                "tap_hint": "Toque no leão para ouvir o soninho dele!",
+                "tap_sound": "snore",
+                "text": "O grande LEÃO tirava uma soneca debaixo da árvore. Um ratinho curioso passou correndo perto da sua juba.",
+            },
+            {
+                "scene": "mouse_small",
+                "word": "RATINHO",
+                "tap_hint": "Toque no ratinho para ouvir: 'Queek queek'!",
+                "tap_sound": "squeak",
+                "text": "O leão acordou, mas o pequeno RATINHO pediu com jeitinho: 'Por favor, amigo, um dia eu posso ajudar você!'",
+            },
+            {
+                "scene": "lion_net",
+                "word": "AJUDA",
+                "tap_hint": "Toque nos dentinhos do ratinho roendo!",
+                "tap_sound": "nibble",
+                "text": "Dias depois, o leão ficou preso numa corda. O ratinho ouviu e correu para dar AJUDA, roendo os nós bem rapidinho!",
+            },
+            {
+                "scene": "friends_smile",
+                "word": "AMIGOS",
+                "tap_hint": "Toque nas estrelas da amizade!",
+                "tap_sound": "cheer",
+                "text": "O leão agradeceu de coração: 'Mesmo pequenininho, você é um herói!' E os dois se tornaram grandes AMIGOS!",
+            },
+        ],
+    },
+    {
+        "id": "dino_tito",
+        "title": "O Dinossauro Tito que Adorava Abraços",
+        "theme_color": "#0284c7",
+        "cover_emoji": "🦖",
+        "pages": [
+            {
+                "scene": "tito_dino",
+                "word": "DINO",
+                "tap_hint": "Toque no Tito para ouvir um rugidinho amigável!",
+                "tap_sound": "roar_cute",
+                "text": "Tito era um DINO verde muito forte, mas o que ele mais gostava no mundo inteiro não era rugir: era dar abraços!",
+            },
+            {
+                "scene": "tall_neck",
+                "word": "GIGANTE",
+                "tap_hint": "Toque no pescoço do Braquiossauro!",
+                "tap_sound": "bell",
+                "text": "Quando o Braquiossauro GIGANTE ficava cansado de comer folhinhas no alto, Tito dava um abraço no pé dele para alegrar!",
+            },
+            {
+                "scene": "pterodactyl",
+                "word": "VOAR",
+                "tap_hint": "Toque nas asinhas do pterodáctilo!",
+                "tap_sound": "swoosh",
+                "text": "Até o passarinho pré-histórico que adorava VOAR lá no céu descia na grama para receber o carinho de Tito.",
+            },
+            {
+                "scene": "dino_party",
+                "word": "ALEGRIA",
+                "tap_hint": "Toque na festa para comemorar!",
+                "tap_sound": "party",
+                "text": "Na floresta dos dinossauros, o abraço quentinho de Tito espalhava paz, amor e muita ALEGRIA para todos!",
+            },
+        ],
+    },
+    {
+        "id": "pequeno_astronauta",
+        "title": "O Pequeno Astronauta e a Estrela Dourada",
+        "theme_color": "#7c3aed",
+        "cover_emoji": "🚀",
+        "pages": [
+            {
+                "scene": "rocket_launch",
+                "word": "FOGUETE",
+                "tap_hint": "Toque no foguete para a contagem: 3, 2, 1, Decolar!",
+                "tap_sound": "rocket_boost",
+                "text": "Três, dois, um... FOGUETE ligado! O pequeno astronauta Stark decolou rumbando ao céu azul cheio de estrelas!",
+            },
+            {
+                "scene": "moon_cheese",
+                "word": "LUA",
+                "tap_hint": "Toque na Lua brilhante!",
+                "tap_sound": "moon_glow",
+                "text": "Ele deu uma volta inteira na LUA brilhante e viu que a Terra lá embaixo parece uma bola de gude azul e verde.",
+            },
+            {
+                "scene": "star_friend",
+                "word": "ESTRELA",
+                "tap_hint": "Toque na estrelinha piscando!",
+                "tap_sound": "twinkle_bell",
+                "text": "Uma ESTRELA dourada e sorridente piscou para ele: 'Obrigada pela visita, astronauta! Continue sonhando alto!'",
+            },
+            {
+                "scene": "earth_bed",
+                "word": "DORMIR",
+                "tap_hint": "Toque na caminha quentinha!",
+                "tap_sound": "lullaby",
+                "text": "De volta para casa, era hora de guardar o capacete, abraçar o ursinho e DORMIR para ter sonhos mágicos!",
             },
         ],
     },
     {
         "id": "dragao_calma",
-        "title": "O Dragãozinho que Aprendeu a Respirar",
-        "theme_color": "#16a34a",
+        "title": "Faisquinha: O Dragãozinho que Aprendeu a Soprar",
+        "theme_color": "#059669",
+        "cover_emoji": "🐲",
         "pages": [
             {
-                "scene": "fire",
+                "scene": "fire_tower",
                 "word": "BRAVO",
-                "text": "Faisquinha era um dragãozinho legal, mas quando sua torre de blocos caía, ele ficava muito BRAVO!",
+                "tap_hint": "Toque nos bloquinhos que caíram!",
+                "tap_sound": "tumble",
+                "text": "Faisquinha estava montando uma torre linda, mas quando um bloquinho escorregou, ele ficou muito BRAVO!",
             },
             {
-                "scene": "cloud",
+                "scene": "mom_dragon",
                 "word": "SENTIR",
-                "text": "A mamãe dragoa explicou: Todo mundo pode SENTIR raiva ou frustração, mas não precisamos soltar fogo!",
+                "tap_hint": "Toque no coração da mamãe dragoa!",
+                "tap_sound": "heartbeat",
+                "text": "A mamãe ensinou: 'Todo mundo pode SENTIR raiva, mas podemos respirar como heróis para o fogo não queimar!'",
             },
             {
-                "scene": "flower",
+                "scene": "flower_candle",
                 "word": "RESPIRAR",
-                "text": "Ela ensinou um truque mágico: cheirar uma florzinha bem fundo e soprar uma velinha devagar para RESPIRAR!",
+                "tap_hint": "Toque na flor para cheirar e na vela para soprar!",
+                "tap_sound": "breath_soft",
+                "text": "Puxe o ar pelo nariz cheirando a florzinha, e solte devagar pela boca soprando a vela para RESPIRAR!",
             },
             {
-                "scene": "smile",
+                "scene": "peace_dragon",
                 "word": "CALMA",
-                "text": "Depois de três respirações, a CALMA voltou ao coração de Faisquinha, e ele montou uma torre ainda maior!",
-            },
-        ],
-    },
-    {
-        "id": "amigos_gentis",
-        "title": "As Palavras Mágicas da Floresta",
-        "theme_color": "#9333ea",
-        "pages": [
-            {
-                "scene": "tree",
-                "word": "AMIGOS",
-                "text": "Na floresta iluminada, o coelhinho, a coruja e o ursinho adoravam brincar juntos como grandes AMIGOS.",
-            },
-            {
-                "scene": "gift",
-                "word": "POR FAVOR",
-                "text": "Quando alguém queria um brinquedo emprestado, usava a chave dourada: você me empresta, POR FAVOR?",
-            },
-            {
-                "scene": "heart",
-                "word": "OBRIGADO",
-                "text": "E ao receber ajuda ou carinho, todos sorriam dizendo uma palavra que aquece o peito: muito OBRIGADO!",
-            },
-            {
-                "scene": "star",
-                "word": "AMOR",
-                "text": "Com gentileza, respeito e AMOR, qualquer dia comum vira uma grande aventura feliz!",
+                "tap_hint": "Toque na estrela da calma!",
+                "tap_sound": "zen_chime",
+                "text": "Com a CALMA de volta no peito, Faisquinha deu uma gargalhada gostosa e construiu um castelo ainda mais alto!",
             },
         ],
     },
@@ -114,67 +222,49 @@ BOOKS = [
 
 
 def draw_book_illustration(canvas: tk.Canvas, scene: str):
-    """Desenha ilustrações vetoriais leves (< 1ms CPU no Atom N450) para cada página do livro."""
+    """Desenha ilustrações vetoriais vibrantes para cada página no Tkinter (Acer Aspire One)."""
     canvas.delete("all")
     w = int(canvas["width"])
     h = int(canvas["height"])
     cx, cy = w // 2, h // 2
 
-    # Fundo estrelado suave
-    for sx, sy in [(40, 35), (w - 50, 45), (75, h - 40), (w - 70, h - 35), (140, 28), (w - 140, 32)]:
-        canvas.create_oval(sx - 2, sy - 2, sx + 2, sy + 2, fill="#bae6fd", outline="")
+    # Fundo estrelado
+    for sx, sy in [(30, 25), (w - 40, 30), (50, h - 30), (w - 50, h - 35), (cx - 70, 20), (cx + 80, 25)]:
+        canvas.create_oval(sx - 3, sy - 3, sx + 3, sy + 3, fill="#fef08a", outline="")
 
-    if scene == "book_glow":
-        canvas.create_oval(cx - 75, cy - 75, cx + 75, cy + 75, fill="#0c4a6e", outline="#38bdf8", width=2)
-        canvas.create_rectangle(cx - 55, cy - 35, cx - 3, cy + 40, fill="#f8fafc", outline="#0284c7", width=3)
-        canvas.create_rectangle(cx + 3, cy - 35, cx + 55, cy + 40, fill="#f1f5f9", outline="#0284c7", width=3)
-        for dy in (-18, -4, 10, 24):
-            canvas.create_line(cx - 45, cy + dy, cx - 12, cy + dy, fill="#64748b", width=3)
-            canvas.create_line(cx + 12, cy + dy, cx + 45, cy + dy, fill="#64748b", width=3)
-    elif scene == "rocket":
-        canvas.create_oval(cx - 60, cy - 60, cx + 60, cy + 60, fill="#1e1b4b", outline="#818cf8", width=2)
-        canvas.create_polygon(cx, cy - 55, cx - 26, cy + 20, cx + 26, cy + 20, fill="#ef4444", outline="#ffffff", width=2)
-        canvas.create_oval(cx - 12, cy - 22, cx + 12, cy + 2, fill="#38bdf8", outline="#ffffff", width=2)
-        canvas.create_polygon(cx - 16, cy + 22, cx, cy + 58, cx + 16, cy + 22, fill="#facc15", outline="")
-    elif scene == "sun":
-        for ang in range(0, 360, 30):
-            import math
-            r1, r2 = 52, 74
-            x1, y1 = cx + r1 * math.cos(math.radians(ang)), cy + r1 * math.sin(math.radians(ang))
-            x2, y2 = cx + r2 * math.cos(math.radians(ang)), cy + r2 * math.sin(math.radians(ang))
-            canvas.create_line(x1, y1, x2, y2, fill="#fde047", width=5)
-        canvas.create_oval(cx - 45, cy - 45, cx + 45, cy + 45, fill="#facc15", outline="#fef08a", width=3)
-    elif scene == "clock":
-        canvas.create_oval(cx - 58, cy - 58, cx + 58, cy + 58, fill="#fef3c7", outline="#f59e0b", width=6)
-        canvas.create_line(cx, cy, cx, cy - 36, fill="#1e293b", width=5)
-        canvas.create_line(cx, cy, cx + 28, cy + 10, fill="#dc2626", width=4)
-        canvas.create_oval(cx - 5, cy - 5, cx + 5, cy + 5, fill="#1e293b")
-    elif scene == "flower":
-        canvas.create_line(cx, cy + 10, cx, cy + 68, fill="#22c55e", width=7)
-        for dx, dy in [(-26, -15), (26, -15), (0, -36), (-22, 16), (22, 16)]:
-            canvas.create_oval(cx + dx - 20, cy + dy - 20, cx + dx + 20, cy + dy + 20, fill="#f472b6", outline="#fbcfe8", width=2)
-        canvas.create_oval(cx - 18, cy - 18, cx + 18, cy + 18, fill="#facc15", outline="#fef08a", width=2)
-    elif scene in ("heart", "gift"):
-        canvas.create_oval(cx - 48, cy - 42, cx + 2, cy + 8, fill="#ec4899", outline="")
-        canvas.create_oval(cx - 2, cy - 42, cx + 48, cy + 8, fill="#ec4899", outline="")
-        canvas.create_polygon(cx - 48, cy - 10, cx + 48, cy - 10, cx, cy + 52, fill="#ec4899", outline="")
-    elif scene in ("fire", "cloud"):
-        color = "#f97316" if scene == "fire" else "#60a5fa"
-        canvas.create_oval(cx - 50, cy - 35, cx + 50, cy + 45, fill=color, outline="#ffffff", width=2)
-        canvas.create_oval(cx - 25, cy - 52, cx + 25, cy + 10, fill="#fbbf24" if scene == "fire" else "#93c5fd", outline="")
-    elif scene in ("smile", "star", "castle", "tree"):
-        canvas.create_oval(cx - 54, cy - 54, cx + 54, cy + 54, fill="#22c55e" if scene == "tree" else "#eab308", outline="#fef08a", width=4)
-        canvas.create_oval(cx - 22, cy - 20, cx - 10, cy - 8, fill="#0f172a")
-        canvas.create_oval(cx + 10, cy - 20, cx + 22, cy - 8, fill="#0f172a")
-        canvas.create_arc(cx - 28, cy - 10, cx + 28, cy + 32, start=200, extent=140, style="arc", outline="#0f172a", width=5)
+    if "pig" in scene or scene == "wolf_blow":
+        canvas.create_oval(cx - 50, cy - 40, cx + 50, cy + 50, fill="#f472b6", outline="#ffffff", width=3)
+        canvas.create_oval(cx - 24, cy - 6, cx + 24, cy + 24, fill="#ec4899", outline="#ffffff", width=2)
+        canvas.create_oval(cx - 12, cy + 4, cx - 4, cy + 14, fill="#040914")
+        canvas.create_oval(cx + 4, cy + 4, cx + 12, cy + 14, fill="#040914")
+        canvas.create_oval(cx - 22, cy - 24, cx - 12, cy - 14, fill="#040914")
+        canvas.create_oval(cx + 12, cy - 24, cx + 22, cy - 14, fill="#040914")
+    elif "lion" in scene:
+        canvas.create_oval(cx - 65, cy - 65, cx + 65, cy + 65, fill="#d97706", outline="#fbbf24", width=4)
+        canvas.create_oval(cx - 42, cy - 42, cx + 42, cy + 42, fill="#facc15", outline="#ffffff", width=2)
+        canvas.create_polygon(cx - 8, cy + 6, cx + 8, cy + 6, cx, cy + 16, fill="#78350f")
+    elif "dino" in scene or scene == "tito_dino":
+        canvas.create_oval(cx - 52, cy - 50, cx + 52, cy + 52, fill="#22c55e", outline="#ffffff", width=4)
+        canvas.create_oval(cx - 22, cy - 20, cx - 10, cy - 8, fill="#040914")
+        canvas.create_oval(cx + 10, cy - 20, cx + 22, cy - 8, fill="#040914")
+        canvas.create_arc(cx - 25, cy - 6, cx + 25, cy + 34, start=200, extent=140, style="arc", outline="#040914", width=4)
+    elif "rocket" in scene or "moon" in scene or "star" in scene:
+        canvas.create_polygon(cx, cy - 58, cx - 28, cy + 24, cx + 28, cy + 24, fill="#ef4444", outline="#ffffff", width=3)
+        canvas.create_oval(cx - 14, cy - 18, cx + 14, cy + 10, fill="#38bdf8", outline="#ffffff", width=2)
+        canvas.create_polygon(cx - 16, cy + 26, cx, cy + 64, cx + 16, cy + 26, fill="#facc15", outline="")
+    else:
+        canvas.create_oval(cx - 50, cy - 50, cx + 50, cy + 50, fill="#ec4899", outline="#ffffff", width=3)
+        canvas.create_oval(cx - 20, cy - 18, cx - 8, cy - 6, fill="#040914")
+        canvas.create_oval(cx + 8, cy - 18, cx + 20, cy - 6, fill="#040914")
+        canvas.create_arc(cx - 24, cy - 6, cx + 24, cy + 28, start=200, extent=140, style="arc", outline="#040914", width=4)
 
 
 class BookLibraryModal:
-    """Modal interativo da Biblioteca Stark — Base Principal de Leitura Diária."""
+    """Modal da Biblioteca Stark com histórias clássicas enriquecidas e efeitos sonoros."""
 
     def __init__(self, os_app):
         self.os_app = os_app
-        self.win = os_app._create_activity_window("📚 BIBLIOTECA HOLOGRÁFICA STARK (HÁBITO DE LER)")
+        self.win = os_app._create_activity_window("📚 BIBLIOTECA HOLOGRÁFICA STARK (HISTÓRIAS INFANTIS)")
         self.current_book = None
         self.page_idx = 0
 
@@ -191,24 +281,22 @@ class BookLibraryModal:
         self._clear_body()
         read_today = self.os_app.media_mgr.get_books_read_today()
 
-        banner = tk.Frame(self.body, bg="#0c1e35", highlightthickness=2, highlightbackground="#38bdf8", pady=10, padx=16)
-        banner.pack(fill="x", pady=(0, 14))
+        banner = tk.Frame(self.body, bg="#0c1e35", highlightthickness=2, highlightbackground="#38bdf8", pady=8, padx=14)
+        banner.pack(fill="x", pady=(0, 10))
 
         tk.Label(
             banner,
-            text=f"📖 Livros lidos hoje: {read_today}   |   Escolha uma história para ouvir, ver as palavras e ganhar Medalhas de Leitor!",
+            text=f"📖 Livros lidos hoje: {read_today}   |   Toque em uma capa colorida para ouvir e fuçar a história!",
             fg="#f0f9ff",
             bg="#0c1e35",
-            font=("Arial", 13, "bold"),
+            font=("Arial", 12, "bold"),
         ).pack()
 
         shelf = tk.Frame(self.body, bg=self.os_app.BG_DARK)
         shelf.pack(fill="both", expand=True)
 
-        all_books = list(BOOKS) + self.os_app.brain.config.get("custom_books", [])
-
-        for idx, book in enumerate(all_books):
-            r, c = divmod(idx, 2)
+        for idx, book in enumerate(BOOKS):
+            r, c = divmod(idx, 3)
             shelf.columnconfigure(c, weight=1)
             shelf.rowconfigure(r, weight=1)
 
@@ -217,37 +305,46 @@ class BookLibraryModal:
                 bg=book.get("theme_color", "#0284c7"),
                 highlightthickness=3,
                 highlightbackground="#e0f2fe",
-                padx=18,
-                pady=16,
+                padx=12,
+                pady=12,
                 cursor="hand2",
             )
-            card.grid(row=r, column=c, sticky="nsew", padx=10, pady=10)
+            card.grid(row=r, column=c, sticky="nsew", padx=8, pady=8)
+
+            ico = tk.Label(
+                card,
+                text=book.get("cover_emoji", "📘"),
+                fg="#ffffff",
+                bg=book.get("theme_color", "#0284c7"),
+                font=("Arial", 36),
+            )
+            ico.pack()
 
             lbl = tk.Label(
                 card,
-                text=f"📘 {book['title']}",
+                text=book["title"],
                 fg="#ffffff",
                 bg=book.get("theme_color", "#0284c7"),
-                font=("Arial", 17, "bold"),
-                wraplength=400,
+                font=("Arial", 13, "bold"),
+                wraplength=260,
                 justify="center",
             )
             lbl.pack(expand=True)
 
             sub = tk.Label(
                 card,
-                text=f"{len(book['pages'])} páginas ilustradas • Toque para abrir!",
+                text=f"{len(book['pages'])} páginas • Toque para ler!",
                 fg="#f0f9ff",
                 bg=book.get("theme_color", "#0284c7"),
-                font=("Arial", 11),
+                font=("Arial", 10),
             )
             sub.pack()
 
-            for w in (card, lbl, sub):
+            for w in (card, ico, lbl, sub):
                 w.bind("<Button-1>", lambda _e, b=book: self._open_book(b))
 
         self.os_app.say(
-            f"Bem-vindo à Biblioteca Stark, {self.os_app.brain.name}! Escolha um livro colorido para lermos juntos!"
+            f"Biblioteca de Histórias, {self.os_app.brain.name}! Toque em qualquer livrinho colorido para ouvir!"
         )
 
     def _open_book(self, book: dict):
@@ -284,7 +381,6 @@ class BookLibraryModal:
             font=("Arial", 13, "bold"),
         ).pack(side="right")
 
-        # Área principal do livro aberto
         book_frame = tk.Frame(
             self.body, bg="#0b192c", highlightthickness=3, highlightbackground=book.get("theme_color", "#0284c7")
         )
@@ -293,11 +389,13 @@ class BookLibraryModal:
         left_art = tk.Frame(book_frame, bg="#081221", width=330)
         left_art.pack(side="left", fill="y", padx=12, pady=12)
 
-        art_canvas = tk.Canvas(left_art, width=300, height=220, bg="#081221", highlightthickness=0)
-        art_canvas.pack(pady=10)
+        art_canvas = tk.Canvas(left_art, width=300, height=220, bg="#081221", highlightthickness=0, cursor="hand2")
+        art_canvas.pack(pady=6)
         draw_book_illustration(art_canvas, page.get("scene", "star"))
 
-        # Palavra-chave gigante para pré-alfabetização!
+        art_canvas.bind("<Button-1>", lambda _e: self._trigger_tap_spot(page))
+
+        # Palavra-chave gigante para tocar e soletrar
         word_btn = tk.Button(
             left_art,
             text=f"🔤 {page['word']}",
@@ -311,17 +409,18 @@ class BookLibraryModal:
             cursor="hand2",
             command=lambda w=page["word"]: self._spell_word(w),
         )
-        word_btn.pack(pady=6)
+        word_btn.pack(pady=4)
 
         tk.Label(
             left_art,
-            text="Toque na palavra amarela para soletrar!",
-            fg="#94a3b8",
+            text=page.get("tap_hint", "Toque no desenho para fuçar!"),
+            fg="#38bdf8",
             bg="#081221",
-            font=("Arial", 9),
-        ).pack()
+            font=("Arial", 10, "bold"),
+            wraplength=280,
+            justify="center",
+        ).pack(pady=2)
 
-        # Texto da história em letras grandes e confortáveis
         right_txt = tk.Frame(book_frame, bg="#0b192c")
         right_txt.pack(side="left", fill="both", expand=True, padx=18, pady=18)
 
@@ -330,23 +429,22 @@ class BookLibraryModal:
             text=page["text"],
             fg="#ffffff",
             bg="#0b192c",
-            font=("Arial", 20, "bold"),
+            font=("Arial", 21, "bold"),
             wraplength=540,
             justify="left",
         ).pack(expand=True, fill="both")
 
-        # Controles de navegação da história
         nav = tk.Frame(self.body, bg=self.os_app.BG_DARK)
         nav.pack(fill="x", pady=(8, 0))
 
         if self.page_idx > 0:
             tk.Button(
                 nav,
-                text="⬅ Página Anterior",
+                text="⬅ Anterior",
                 bg="#334155",
                 fg="#ffffff",
                 font=("Arial", 13, "bold"),
-                padx=18,
+                padx=16,
                 pady=10,
                 command=self._prev_page,
             ).pack(side="left")
@@ -360,7 +458,7 @@ class BookLibraryModal:
             padx=18,
             pady=10,
             command=lambda: self.os_app.say(page["text"]),
-        ).pack(side="left", padx=12)
+        ).pack(side="left", padx=10)
 
         if self.page_idx < len(pages) - 1:
             tk.Button(
@@ -369,7 +467,7 @@ class BookLibraryModal:
                 bg="#10b981",
                 fg="#ffffff",
                 font=("Arial", 14, "bold"),
-                padx=24,
+                padx=22,
                 pady=10,
                 command=self._next_page,
             ).pack(side="right")
@@ -380,7 +478,7 @@ class BookLibraryModal:
                 bg="#eab308",
                 fg="#0f172a",
                 font=("Arial", 14, "bold"),
-                padx=22,
+                padx=20,
                 pady=10,
                 command=self._finish_book,
             ).pack(side="right")
@@ -388,10 +486,26 @@ class BookLibraryModal:
         self.os_app.voice.play_tone(587, 110)
         self.os_app.say(page["text"])
 
+    def _trigger_tap_spot(self, page: dict):
+        self.os_app.voice.play_tone(784, 140)
+        sound = page.get("tap_sound", "")
+        if sound == "oink":
+            self.os_app.say("Oinc oinc! O porquinho está alegre e seguro!")
+        elif sound == "roar_cute":
+            self.os_app.say("Ruaaaar! Eu sou o Tito, o dinossauro dos abraços!")
+        elif sound == "rocket_boost":
+            self.os_app.say("Propulsores ligados! Zuuuuuuum!")
+        elif sound == "blow":
+            self.os_app.say("Fuuuuuu! O vento soprou bem forte!")
+        elif sound == "squeak":
+            self.os_app.say("Queek queek! O ratinho valente correu para ajudar!")
+        else:
+            self.os_app.say(page.get("tap_hint", "Você tocou no desenho mágico!"))
+
     def _spell_word(self, word: str):
         letters = " ... ".join(list(word.replace(" ", "")))
         self.os_app.voice.play_tone(659, 100)
-        self.os_app.say(f"A palavra é {word}! Vamos ouvir as letrinhas: {letters}. {word}!")
+        self.os_app.say(f"A palavra é {word}! Letrinhas: {letters}. {word}!")
 
     def _prev_page(self):
         if self.page_idx > 0:

@@ -810,17 +810,25 @@ class JarvisKidsOS:
             font=("Arial", 10, "bold"),
         ).grid(row=3, column=0, columnspan=2, sticky="w", pady=6)
 
-        tk.Label(form, text="Motor de IA (gemini / ollama / offline / cloud):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=4, column=0, sticky="w", pady=5)
-        mode_var = tk.StringVar(value=self.brain.config.get("mode", "gemini"))
-        tk.OptionMenu(form, mode_var, "gemini", "ollama", "offline", "cloud").grid(row=4, column=1, sticky="w", pady=5)
+        tk.Label(form, text="Motor de IA:", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=4, column=0, sticky="w", pady=4)
+        mode_var = tk.StringVar(value=self.brain.provider)
+        tk.OptionMenu(form, mode_var, "gemini", "openai", "groq", "ollama", "offline").grid(row=4, column=1, sticky="w", pady=4)
 
-        tk.Label(form, text="URL Ollama na Rede (se 'ollama'):", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=5, column=0, sticky="w", pady=5)
-        ollama_url_var = tk.StringVar(value=self.brain.config.get("ollama_url", "http://127.0.0.1:11434"))
-        tk.Entry(form, textvariable=ollama_url_var, width=32, font=("Arial", 10)).grid(row=5, column=1, sticky="w", pady=5)
-
-        tk.Label(form, text="Chave Google Gemini (GEMINI_API_KEY):", fg="#60a5fa", bg=self.PANEL_BG, font=("Arial", 10, "bold")).grid(row=6, column=0, sticky="w", pady=5)
+        tk.Label(form, text="Chave Google Gemini (GEMINI_API_KEY):", fg="#60a5fa", bg=self.PANEL_BG, font=("Arial", 9, "bold")).grid(row=5, column=0, sticky="w", pady=3)
         gemini_key_var = tk.StringVar(value=self.brain.config.get("gemini_api_key", ""))
-        tk.Entry(form, textvariable=gemini_key_var, show="*", width=32, font=("Arial", 10)).grid(row=6, column=1, sticky="w", pady=5)
+        tk.Entry(form, textvariable=gemini_key_var, show="*", width=32, font=("Arial", 10)).grid(row=5, column=1, sticky="w", pady=3)
+
+        tk.Label(form, text="Chave OpenAI ChatGPT (sk-...):", fg="#34d399", bg=self.PANEL_BG, font=("Arial", 9, "bold")).grid(row=6, column=0, sticky="w", pady=3)
+        openai_key_var = tk.StringVar(value=self.brain.config.get("openai_api_key", ""))
+        tk.Entry(form, textvariable=openai_key_var, show="*", width=32, font=("Arial", 10)).grid(row=6, column=1, sticky="w", pady=3)
+
+        tk.Label(form, text="Chave Groq Cloud (gsk_...):", fg="#fb923c", bg=self.PANEL_BG, font=("Arial", 9, "bold")).grid(row=7, column=0, sticky="w", pady=3)
+        groq_key_var = tk.StringVar(value=self.brain.config.get("groq_api_key", ""))
+        tk.Entry(form, textvariable=groq_key_var, show="*", width=32, font=("Arial", 10)).grid(row=7, column=1, sticky="w", pady=3)
+
+        tk.Label(form, text="URL Ollama Local:", fg="#cbd5e1", bg=self.PANEL_BG).grid(row=8, column=0, sticky="w", pady=3)
+        ollama_url_var = tk.StringVar(value=self.brain.config.get("ollama_url", "http://127.0.0.1:11434"))
+        tk.Entry(form, textvariable=ollama_url_var, width=32, font=("Arial", 10)).grid(row=8, column=1, sticky="w", pady=3)
 
         voice_var = tk.BooleanVar(value=self.brain.config.get("voice_enabled", True))
         tk.Checkbutton(
@@ -830,7 +838,7 @@ class JarvisKidsOS:
             bg=self.PANEL_BG,
             fg="#ffffff",
             selectcolor="#0f172a",
-        ).grid(row=7, column=0, columnspan=2, sticky="w", pady=6)
+        ).grid(row=9, column=0, columnspan=2, sticky="w", pady=4)
 
         def grant_now():
             self.media_mgr.grant_bonus_minutes(15)
@@ -861,8 +869,11 @@ class JarvisKidsOS:
                 self.brain.config["media_daily_minutes"] = 25
             self.brain.config["require_book_before_media"] = req_book_var.get()
             self.brain.config["mode"] = mode_var.get()
+            self.brain.config["active_provider"] = mode_var.get()
             self.brain.config["ollama_url"] = ollama_url_var.get().strip()
             self.brain.config["gemini_api_key"] = gemini_key_var.get().strip()
+            self.brain.config["openai_api_key"] = openai_key_var.get().strip()
+            self.brain.config["groq_api_key"] = groq_key_var.get().strip()
             self.brain.config["voice_enabled"] = voice_var.get()
             self.brain.reset_conversation()
             self.brain.save_config()

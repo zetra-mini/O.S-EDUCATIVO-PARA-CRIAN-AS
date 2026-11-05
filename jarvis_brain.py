@@ -10,33 +10,38 @@ CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 DEFAULT_CONFIG = {
     "child_name": "Pequeno Inventor",
-    "mode": "gemini",  # 'gemini' (Google Gemini 3.8), 'ollama' (IA Local), 'offline' (100% sem Wi-Fi), 'cloud'
+    "active_provider": "gemini",  # 'gemini', 'openai', 'groq', 'ollama', 'offline'
+    "mode": "gemini",  # Mantido para retrocompatibilidade
     "gemini_api_key": "",
     "gemini_model": "gemini-3.8-flash",
+    "openai_api_key": "",
+    "openai_model": "gpt-4o-mini",
+    "groq_api_key": "",
+    "groq_model": "llama-3.3-70b-versatile",
     "voice_profile": "jarvis_antonio",  # 'jarvis_antonio', 'amiga_thalita', 'amiga_francisca', 'gemini_puck', 'gemini_sulafat'
     "prefer_neural_voice": True,
     "ollama_url": "http://127.0.0.1:11434",
     "ollama_model": "qwen2.5:0.5b",
-    "cloud_provider": "groq",  # 'groq', 'openai'
-    "cloud_api_key": "",
-    "cloud_model": "llama-3.3-70b-versatile",
     "voice_enabled": True,
     "media_start_time": "16:00",
     "media_end_time": "17:00",
     "media_daily_minutes": 25,
     "require_book_before_media": True,
+    "netflix_url": "https://www.netflix.com/Kids",
+    "youtube_url": "https://www.youtubekids.com",
     "custom_books": [],
 }
 
 
 class JarvisBrain:
     """
-    Cérebro híbrido do JARVIS Kids OS v2.1:
-    1. Modo Google Gemini (gemini-3.8-flash): Conversa natural multi-turno segura para crianças de 4 anos via google-genai Interactions API.
-    2. Modo IA Local (Ollama / OpenCode): Conecta a http://127.0.0.1:11434 sem custo e 100% local.
-    3. Modo Offline (Acer Aspire One 532 sem Wi-Fi): Zero latência e < 5 MB RAM.
-    4. Modo Cloud Adicional: Conecta a Groq / OpenAI.
-    Todos os modos possuem fallback automático em cascata para nunca deixar a criança sem resposta!
+    Cérebro híbrido do JARVIS Kids OS v2.2:
+    Suporta seleção dinâmica de provedores no Painel dos Pais:
+    1. Google Gemini (gemini-3.8-flash) via google-genai Interactions API oficial.
+    2. OpenAI ChatGPT (gpt-4o-mini / gpt-4o).
+    3. Groq Cloud (llama-3.3-70b-versatile ultrarrápido).
+    4. IA Local / Ollama (100% Localhost sem internet).
+    5. Modo 100% Offline (sem Wi-Fi e < 5 MB RAM para Acer Aspire One 532).
     """
 
     def __init__(self):
@@ -72,26 +77,39 @@ class JarvisBrain:
     def name(self) -> str:
         return self.config.get("child_name", "Pequeno Inventor").strip() or "Pequeno Inventor"
 
+    @property
+    def provider(self) -> str:
+        p = self.config.get("active_provider") or self.config.get("mode") or "gemini"
+        return p.lower()
+
     def get_effective_gemini_key(self) -> str:
-        k = (
+        return (
             self.config.get("gemini_api_key", "").strip()
             or os.environ.get("GEMINI_API_KEY", "").strip()
             or os.environ.get("GOOGLE_API_KEY", "").strip()
         )
-        if not k and self.config.get("cloud_provider") == "gemini":
-            k = self.config.get("cloud_api_key", "").strip()
-        return k
+
+    def get_effective_openai_key(self) -> str:
+        return (
+            self.config.get("openai_api_key", "").strip()
+            or os.environ.get("OPENAI_API_KEY", "").strip()
+        )
+
+    def get_effective_groq_key(self) -> str:
+        return (
+            self.config.get("groq_api_key", "").strip()
+            or os.environ.get("GROQ_API_KEY", "").strip()
+        )
 
     def _child_system_instruction(self) -> str:
         return (
-            f"Você é o Járvis junto com o Amigo Google Gemini, o melhor amigo robô carinhoso, alegre e curioso "
-            f"de uma criança brasileira de 4 anos chamada {self.name}. "
-            f"REGRAS OBRIGATÓRIAS PARA VOZ INFANTIL:\n"
-            f"1. Fale sempre em Português do Brasil bem natural, afetuoso, lúdico e fácil para 4 anos.\n"
-            f"2. Responda em NO MÁXIMO 2 ou 3 frases curtas, pois sua resposta será lida em voz alta.\n"
-            f"3. NUNCA use asteriscos (*), hashtags (#), listas ou formatação markdown — escreva texto puro pronto para fala.\n"
-            f"4. Incentive sempre a curiosidade, a gentileza, acalmar as emoções respirando fundo e o amor por ler livros.\n"
-            f"5. Sempre que fizer sentido, termine com uma perguntinha divertida e simples para continuar a conversa com {self.name}!"
+            f"Você é o JÁRVIS, o amigo robô amável, protetor e animado do pequeno {self.name} (criança de 4 anos). "
+            f"REGRAS INFANTIS INDISPENSÁVEIS:\n"
+            f"1. Fale sempre em Português do Brasil com carinho, alegria e vocabulário simples e lúdico.\n"
+            f"2. A criança NÃO SABE LER NEM ESCREVER! Sua resposta será lida em voz alta. Responda em no máximo 2 ou 3 frases curtas!\n"
+            f"3. NUNCA use formatação markdown como asteriscos (*), hashtags (#), hifens (-) ou tópicos.\n"
+            f"4. Incentive o hábito de ler livrinhos, respirar fundo quando ficar agitado e a imaginação.\n"
+            f"5. Termine com uma perguntinha divertida e simples para ele responder pelo microfone!"
         )
 
     def _clean_llm_reply(self, text: str) -> str:
@@ -145,15 +163,14 @@ class JarvisBrain:
 
     def get_greeting(self) -> str:
         greetings = [
-            f"Olá, {self.name}! Eu sou o Járvis com sua nova voz! Todos os sistemas e o modo conversa estão prontos!",
-            f"Bem-vindo de volta, {self.name}! Reator Arc ligado. Quer ler um livro mágico ou conversar comigo pelo microfone?",
-            f"Sistemas prontos, {self.name}! Escolha uma missão na tela ou aperte o microfone para batermos um papo!",
+            f"Olá, {self.name}! Eu sou o Járvis! Todos os sistemas educativos estão prontos para brincar!",
+            f"Reator Arc ligado, {self.name}! Quer abrir um livro mágico ou segurar o botão para conversar comigo?",
+            f"Sistemas prontos, {self.name}! Escolha um botão colorido na tela para começarmos a aventura!",
         ]
         return random.choice(greetings)
 
     def ask_topic(self, topic: str) -> str:
-        res = self.ask_topic_detailed(topic)
-        return res["reply"]
+        return self.ask_topic_detailed(topic)["reply"]
 
     def ask_topic_detailed(self, topic: str) -> dict:
         prompts_map = {
@@ -161,45 +178,35 @@ class JarvisBrain:
             "dinossauros": f"Conte uma curiosidade divertida e amigável sobre dinossauros para {self.name} (4 anos) e pergunte qual dinossauro ele gosta.",
             "numeros": f"Faça uma brincadeira curta e animada contando números com {self.name} (4 anos).",
             "animais": f"Conte uma curiosidade fofa sobre um animal da natureza para {self.name} (4 anos) e convide para imitar o som do bichinho.",
-            "heroi": f"Dê uma mensagem carinhosa estilo JARVIS e Google Gemini para o pequeno herói {self.name} (4 anos), elogiando a bondade e a leitura de livros.",
+            "heroi": f"Dê uma mensagem carinhosa estilo JARVIS para o pequeno herói {self.name} (4 anos), elogiando a bondade e a leitura de livros.",
             "elogio": f"Faça um elogio super carinhoso e animado para {self.name} (4 anos).",
             "adivinha": f"Faça uma brincadeira fácil e divertida de 'O que é, o que é?' sobre animais ou natureza para {self.name} (4 anos) adivinhar!",
         }
 
-        if topic in prompts_map and self.config.get("mode", "gemini") != "offline":
+        if topic in prompts_map and self.provider != "offline":
             ans, engine = self._try_smart_conversation(prompts_map[topic])
             if ans:
-                return {
-                    "reply": ans,
-                    "engine_used": engine,
-                    "has_gemini_key": bool(self.get_effective_gemini_key()),
-                }
+                return {"reply": ans, "engine_used": engine}
 
         options = self.topics.get(topic, self.topics["elogio"])
         chosen = random.choice(options)
         return {
             "reply": f"{self.name}, {chosen[0].lower()}{chosen[1:]}",
             "engine_used": "offline",
-            "has_gemini_key": bool(self.get_effective_gemini_key()),
         }
 
     def ask_custom(self, question: str) -> str:
         return self.ask_custom_detailed(question)["reply"]
 
     def ask_custom_detailed(self, question: str) -> dict:
-        if self.config.get("mode", "gemini") != "offline":
+        if self.provider != "offline":
             ans, engine = self._try_smart_conversation(question)
             if ans:
-                return {
-                    "reply": ans,
-                    "engine_used": engine,
-                    "has_gemini_key": bool(self.get_effective_gemini_key()),
-                }
+                return {"reply": ans, "engine_used": engine}
 
         return {
             "reply": self._offline_conversational_fallback(question),
             "engine_used": "offline",
-            "has_gemini_key": bool(self.get_effective_gemini_key()),
         }
 
     def _offline_conversational_fallback(self, question: str) -> str:
@@ -215,44 +222,47 @@ class JarvisBrain:
         if any(w in q_low for w in ["bicho", "animal", "leão", "leao", "cachorro", "gato", "elefante", "macaco"]):
             return self.ask_topic("animais")
         if any(w in q_low for w in ["história", "historia", "livro", "era uma vez"]):
-            return f"Eu adoro histórias, {self.name}! Era uma vez um pequeno inventor muito corajoso que tinha um amigo robô brilhante. Vamos abrir nossa Biblioteca de Livros para ver as figuras?"
+            return f"Eu adoro histórias, {self.name}! Que tal abrirmos a Biblioteca de Histórias para ver os Três Porquinhos ou o Tito Dinossauro?"
         if any(w in q_low for w in ["adivinha", "brincar", "jogo", "charada"]):
             return self.ask_topic("adivinha")
-        return f"Que legal o que você falou, {self.name}! Me conta mais um pouquinho sobre isso ou escolha um tema divertido para explorarmos juntos!"
+        return f"Que legal o que você falou, {self.name}! Segure o botão para me contar mais ou toque num desenho colorido para brincarmos juntos!"
 
     def _try_smart_conversation(self, user_input: str) -> tuple[str, str]:
-        mode = self.config.get("mode", "gemini")
+        prov = self.provider
 
-        # 1. Google Gemini 3.8 Flash (Prioridade quando selecionado ou como provedor cloud)
-        if mode == "gemini" or (mode == "cloud" and self.config.get("cloud_provider") == "gemini"):
+        if prov == "gemini":
             ans = self._call_gemini_interactions(user_input)
             if ans:
                 return ans, "gemini"
-            # Se ainda não há chave Gemini configurada, tenta IA Local (Ollama) automaticamente!
+            # Fallback para Ollama se disponível localmente
             ans_local = self._call_ollama(user_input)
             if ans_local:
                 return ans_local, "ollama"
-            return "", ""
 
-        # 2. IA Local (Ollama / OpenCode Localhost)
-        if mode == "ollama":
+        elif prov == "openai":
+            ans = self._call_openai(user_input)
+            if ans:
+                return ans, "openai"
+            ans_local = self._call_ollama(user_input)
+            if ans_local:
+                return ans_local, "ollama"
+
+        elif prov == "groq":
+            ans = self._call_groq(user_input)
+            if ans:
+                return ans, "groq"
+            ans_local = self._call_ollama(user_input)
+            if ans_local:
+                return ans_local, "ollama"
+
+        elif prov == "ollama":
             ans_local = self._call_ollama(user_input)
             if ans_local:
                 return ans_local, "ollama"
             if self.get_effective_gemini_key():
-                ans = self._call_gemini_interactions(user_input)
-                if ans:
-                    return ans, "gemini"
-            return "", ""
-
-        # 3. Outras Nuvens (Groq / OpenAI)
-        if mode == "cloud":
-            ans_cloud = self._call_openai_compatible(user_input)
-            if ans_cloud:
-                return ans_cloud, "cloud"
-            ans_local = self._call_ollama(user_input)
-            if ans_local:
-                return ans_local, "ollama"
+                ans_gem = self._call_gemini_interactions(user_input)
+                if ans_gem:
+                    return ans_gem, "gemini"
 
         return "", ""
 
@@ -265,7 +275,6 @@ class JarvisBrain:
 
             client = genai.Client(api_key=api_key)
             model_name = self.config.get("gemini_model", "gemini-3.8-flash") or "gemini-3.8-flash"
-            # Garante uso de modelos Gemini atuais (nunca legados 1.5/2.0/2.5)
             if any(old in model_name for old in ("1.5", "2.0", "2.5")):
                 model_name = "gemini-3.8-flash"
 
@@ -281,7 +290,6 @@ class JarvisBrain:
             try:
                 interaction = client.interactions.create(**kwargs)
             except Exception:
-                # Se o previous_interaction_id expirou, inicia nova sessão limpa
                 kwargs.pop("previous_interaction_id", None)
                 interaction = client.interactions.create(**kwargs)
 
@@ -293,30 +301,67 @@ class JarvisBrain:
         except Exception:
             return ""
 
-    def test_gemini_connection(self, candidate_key: str = "") -> tuple[bool, str]:
-        """Valida a chave do Google Gemini ao vivo para o Painel dos Pais."""
-        key = candidate_key.strip() or self.get_effective_gemini_key()
+    def _call_openai(self, user_input: str, override_key: str = "") -> str:
+        key = override_key.strip() or self.get_effective_openai_key()
         if not key:
-            return (
-                False,
-                "Cole sua chave gratuita do Google AI Studio (GEMINI_API_KEY) no campo acima para ativar o Google Gemini oficial!",
-            )
+            return ""
         try:
-            from google import genai
+            model = self.config.get("openai_model", "gpt-4o-mini")
+            messages = [{"role": "system", "content": self._child_system_instruction()}]
+            messages.extend(self.local_history[-6:])
+            messages.append({"role": "user", "content": user_input})
 
-            client = genai.Client(api_key=key)
-            interaction = client.interactions.create(
-                model="gemini-3.8-flash",
-                system_instruction=self._child_system_instruction(),
-                input=f"Dê um oi bem alegre e curtinho dizendo que o Google Gemini agora está conectado no JARVIS para conversar com {self.name}!",
-                generation_config={"max_output_tokens": 120},
+            payload = json.dumps({
+                "model": model,
+                "messages": messages,
+                "max_tokens": 140,
+                "temperature": 0.6,
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                "https://api.openai.com/v1/chat/completions",
+                data=payload,
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
             )
-            txt = self._clean_llm_reply(getattr(interaction, "output_text", "") or "")
-            if txt:
-                return True, txt
-            return False, "Conectou ao Gemini, mas a resposta veio vazia. Tente novamente."
-        except Exception as exc:
-            return False, f"Não foi possível autenticar a chave no Google Gemini: {str(exc)[:140]}"
+            with urllib.request.urlopen(req, timeout=10) as res:
+                data = json.loads(res.read().decode("utf-8"))
+                reply = self._clean_llm_reply(data["choices"][0]["message"]["content"])
+                if reply:
+                    self.local_history.append({"role": "user", "content": user_input})
+                    self.local_history.append({"role": "assistant", "content": reply})
+                return reply
+        except Exception:
+            return ""
+
+    def _call_groq(self, user_input: str, override_key: str = "") -> str:
+        key = override_key.strip() or self.get_effective_groq_key()
+        if not key:
+            return ""
+        try:
+            model = self.config.get("groq_model", "llama-3.3-70b-versatile")
+            messages = [{"role": "system", "content": self._child_system_instruction()}]
+            messages.extend(self.local_history[-6:])
+            messages.append({"role": "user", "content": user_input})
+
+            payload = json.dumps({
+                "model": model,
+                "messages": messages,
+                "max_tokens": 140,
+                "temperature": 0.6,
+            }).encode("utf-8")
+            req = urllib.request.Request(
+                "https://api.groq.com/openai/v1/chat/completions",
+                data=payload,
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+            )
+            with urllib.request.urlopen(req, timeout=8) as res:
+                data = json.loads(res.read().decode("utf-8"))
+                reply = self._clean_llm_reply(data["choices"][0]["message"]["content"])
+                if reply:
+                    self.local_history.append({"role": "user", "content": user_input})
+                    self.local_history.append({"role": "assistant", "content": reply})
+                return reply
+        except Exception:
+            return ""
 
     def _call_ollama(self, user_input: str) -> str:
         try:
@@ -325,22 +370,16 @@ class JarvisBrain:
             messages.extend(self.local_history[-6:])
             messages.append({"role": "user", "content": user_input})
 
-            payload = json.dumps(
-                {
-                    "model": self.config.get("ollama_model", "qwen2.5:0.5b"),
-                    "messages": messages,
-                    "stream": False,
-                    "options": {"temperature": 0.55, "num_predict": 110},
-                }
-            ).encode("utf-8")
-            req = urllib.request.Request(
-                url, data=payload, headers={"Content-Type": "application/json"}
-            )
+            payload = json.dumps({
+                "model": self.config.get("ollama_model", "qwen2.5:0.5b"),
+                "messages": messages,
+                "stream": False,
+                "options": {"temperature": 0.55, "num_predict": 110},
+            }).encode("utf-8")
+            req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
             with urllib.request.urlopen(req, timeout=12) as res:
                 data = json.loads(res.read().decode("utf-8"))
-                ans = self._clean_llm_reply(
-                    (data.get("message") or {}).get("content", "")
-                )
+                ans = self._clean_llm_reply((data.get("message") or {}).get("content", ""))
                 if ans:
                     self.local_history.append({"role": "user", "content": user_input})
                     self.local_history.append({"role": "assistant", "content": ans})
@@ -349,40 +388,94 @@ class JarvisBrain:
             pass
         return ""
 
-    def _call_openai_compatible(self, user_input: str) -> str:
-        try:
-            provider = self.config.get("cloud_provider", "groq")
-            key = self.config.get("cloud_api_key", "").strip()
-            model = self.config.get("cloud_model", "llama-3.3-70b-versatile")
+    def test_provider(self, provider: str, candidate_key: str = "", model: str = "", ollama_url: str = "") -> tuple[bool, str]:
+        """Testa e valida ao vivo qualquer um dos 4 provedores no Painel dos Pais."""
+        p = provider.lower()
+        test_prompt = f"Dê um oi bem alegre de 1 frase dizendo que você está pronto para ser o melhor amigo robô de {self.name}!"
+
+        if p == "gemini":
+            key = candidate_key.strip() or self.get_effective_gemini_key()
             if not key:
-                return ""
-            base = (
-                "https://api.groq.com/openai/v1"
-                if provider == "groq"
-                else "https://api.openai.com/v1"
-            )
-            payload = json.dumps(
-                {
-                    "model": model,
+                return False, "Cole a chave do Google Gemini (obtida em aistudio.google.com/apikey) para testar."
+            try:
+                from google import genai
+
+                client = genai.Client(api_key=key)
+                m = model.strip() or self.config.get("gemini_model", "gemini-3.8-flash")
+                interaction = client.interactions.create(
+                    model=m,
+                    system_instruction=self._child_system_instruction(),
+                    input=test_prompt,
+                    generation_config={"max_output_tokens": 90},
+                )
+                txt = self._clean_llm_reply(getattr(interaction, "output_text", "") or "")
+                if txt:
+                    return True, txt
+                return False, "Conectou ao Gemini, mas não houve texto retornado."
+            except Exception as exc:
+                return False, f"Erro Gemini: {str(exc)[:130]}"
+
+        elif p == "openai":
+            key = candidate_key.strip() or self.get_effective_openai_key()
+            if not key:
+                return False, "Cole sua chave da OpenAI (sk-...) para testar o ChatGPT."
+            try:
+                m = model.strip() or self.config.get("openai_model", "gpt-4o-mini")
+                payload = json.dumps({
+                    "model": m,
                     "messages": [
                         {"role": "system", "content": self._child_system_instruction()},
-                        {"role": "user", "content": user_input},
+                        {"role": "user", "content": test_prompt},
                     ],
-                    "max_tokens": 140,
-                }
-            ).encode("utf-8")
-            req = urllib.request.Request(
-                f"{base}/chat/completions",
-                data=payload,
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {key}",
-                },
-            )
-            with urllib.request.urlopen(req, timeout=10) as res:
-                data = json.loads(res.read().decode("utf-8"))
-                return self._clean_llm_reply(
-                    data["choices"][0]["message"]["content"]
+                    "max_tokens": 90,
+                }).encode("utf-8")
+                req = urllib.request.Request(
+                    "https://api.openai.com/v1/chat/completions",
+                    data=payload,
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
                 )
-        except Exception:
-            return ""
+                with urllib.request.urlopen(req, timeout=10) as res:
+                    data = json.loads(res.read().decode("utf-8"))
+                    txt = self._clean_llm_reply(data["choices"][0]["message"]["content"])
+                    return True, txt
+            except Exception as exc:
+                return False, f"Erro OpenAI: {str(exc)[:130]}"
+
+        elif p == "groq":
+            key = candidate_key.strip() or self.get_effective_groq_key()
+            if not key:
+                return False, "Cole sua chave Groq (gsk_...) para testar."
+            try:
+                m = model.strip() or self.config.get("groq_model", "llama-3.3-70b-versatile")
+                payload = json.dumps({
+                    "model": m,
+                    "messages": [
+                        {"role": "system", "content": self._child_system_instruction()},
+                        {"role": "user", "content": test_prompt},
+                    ],
+                    "max_tokens": 90,
+                }).encode("utf-8")
+                req = urllib.request.Request(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    data=payload,
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+                )
+                with urllib.request.urlopen(req, timeout=10) as res:
+                    data = json.loads(res.read().decode("utf-8"))
+                    txt = self._clean_llm_reply(data["choices"][0]["message"]["content"])
+                    return True, txt
+            except Exception as exc:
+                return False, f"Erro Groq: {str(exc)[:130]}"
+
+        elif p == "ollama":
+            url = (ollama_url.strip() or self.config.get("ollama_url", "http://127.0.0.1:11434")).rstrip("/")
+            try:
+                with urllib.request.urlopen(f"{url}/api/tags", timeout=5) as res:
+                    data = json.loads(res.read().decode("utf-8"))
+                    models = [m.get("name", "") for m in data.get("models", [])]
+                    models_str = ", ".join(models) if models else "Nenhum modelo baixado"
+                    return True, f"Ollama Local online em {url}! Modelos detectados: {models_str}"
+            except Exception as exc:
+                return False, f"Ollama não respondeu em {url}: {str(exc)[:120]}"
+
+        return False, "Provedor desconhecido."

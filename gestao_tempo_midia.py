@@ -175,9 +175,22 @@ class MediaTimeManager:
         if self.browser_proc and self.browser_proc.poll() is None:
             try:
                 self.browser_proc.terminate()
+                self.browser_proc.wait(timeout=2)
+            except Exception:
+                try:
+                    self.browser_proc.kill()
+                except Exception:
+                    pass
+        self.browser_proc = None
+        if platform.system().lower() == "linux":
+            try:
+                subprocess.run(
+                    ["pkill", "-f", "firefox|chromium|falkon"],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
             except Exception:
                 pass
-        self.browser_proc = None
 
 
 class CinemaStarkModal:

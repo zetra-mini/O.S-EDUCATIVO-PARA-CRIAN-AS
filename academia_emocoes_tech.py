@@ -5,6 +5,35 @@ import tkinter as tk
 LEFT_HAND_KEYS = set("QWERTASDFGZXCVB")
 RIGHT_HAND_KEYS = set("YUIOPHJKLNM")
 
+FINGER_ASSIGNMENTS = {
+    "Q": "Dedinho Mindinho da Mão Esquerda",
+    "A": "Dedinho Mindinho da Mão Esquerda",
+    "Z": "Dedinho Mindinho da Mão Esquerda",
+    "W": "Dedo Anelar da Mão Esquerda",
+    "S": "Dedo Anelar da Mão Esquerda",
+    "X": "Dedo Anelar da Mão Esquerda",
+    "E": "Dedo Médio da Mão Esquerda",
+    "D": "Dedo Médio da Mão Esquerda",
+    "C": "Dedo Médio da Mão Esquerda",
+    "R": "Dedinho Indicador da Mão Esquerda",
+    "T": "Dedinho Indicador da Mão Esquerda",
+    "F": "Dedinho Indicador da Mão Esquerda (F•)",
+    "G": "Dedinho Indicador da Mão Esquerda",
+    "V": "Dedinho Indicador da Mão Esquerda",
+    "B": "Dedinho Indicador da Mão Esquerda",
+    "Y": "Dedinho Indicador da Mão Direita",
+    "U": "Dedinho Indicador da Mão Direita",
+    "H": "Dedinho Indicador da Mão Direita",
+    "J": "Dedinho Indicador da Mão Direita (J•)",
+    "N": "Dedinho Indicador da Mão Direita",
+    "M": "Dedinho Indicador da Mão Direita",
+    "I": "Dedo Médio da Mão Direita",
+    "K": "Dedo Médio da Mão Direita",
+    "O": "Dedo Anelar da Mão Direita",
+    "L": "Dedo Anelar da Mão Direita",
+    "P": "Dedinho Mindinho da Mão Direita",
+}
+
 
 class EmotionsCenterModal:
     """Centro Stark de Gestão das Emoções e Reator da Calma (Respiração Guiada)."""
@@ -469,9 +498,8 @@ class TechAcademyModal:
         rem_part = self.current_word[self.char_idx + 1 :]
         self.word_lbl.configure(text=f"{typed_part} [ {target_char} ] {rem_part}")
 
-        hand_txt = "🖐 MÃOZINHA ESQUERDA (Lado Azul)" if target_char in LEFT_HAND_KEYS else "🤚 MÃOZINHA DIREITA (Lado Amarelo)"
-        hand_speech = "mãozinha esquerda" if target_char in LEFT_HAND_KEYS else "mãozinha direita"
-        self.hand_hint_lbl.configure(text=f"Aperte a letra '{target_char}' usando a {hand_txt}!")
+        finger_txt = FINGER_ASSIGNMENTS.get(target_char, "dedinho indicado")
+        self.hand_hint_lbl.configure(text=f"👉 Use o {finger_txt} para apertar a tecla '{target_char}'!")
 
         if target_char in self.key_widgets:
             w, _ = self.key_widgets[target_char]
@@ -479,10 +507,10 @@ class TechAcademyModal:
 
         if announce_word:
             self.os_app.say(
-                f"Vamos escrever a palavra {self.current_word}! Comece apertando a letra {target_char} com a {hand_speech}!"
+                f"Vamos escrever a palavra {self.current_word}! Use o {finger_txt} na tecla {target_char}!"
             )
         else:
-            self.os_app.say(f"Letra {target_char}, com a {hand_speech}!")
+            self.os_app.say(f"Use o {finger_txt} na tecla {target_char}!")
 
     def _process_typed_char(self, ch: str):
         if not ch or not self.current_word:
