@@ -1170,7 +1170,7 @@
     loadState(true);
 
     // =========================================================================
-    // VOZ INTELIGENTE INFANTIL: CLIQUE ÚNICO OU SEGURAR (NÃO DESLIGA SOZINHO)
+    // VOZ INTELIGENTE INFANTIL: GRAVAÇÃO REAL COM BACKEND STT + FALLBACK WEB
     // =========================================================================
     let voiceState = 'idle'; // 'idle' | 'listening' | 'processing' | 'speaking'
     let silenceTimer = null;
@@ -1179,36 +1179,11 @@
     let micPointerDownTime = 0;
     let isMicHolding = false;
     let mediaStreamObj = null;
+    let mediaRecorderObj = null;
+    let recordedAudioChunks = [];
     let audioAnalyserNode = null;
     let visualizerAnimFrame = null;
-
-    async function startMicVisualizer() {
-      try {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-        mediaStreamObj = await navigator.mediaDevices.getUserMedia({ audio: true });
-        if (audioCtx.state === 'suspended') await audioCtx.resume();
-        const source = audioCtx.createMediaStreamSource(mediaStreamObj);
-        audioAnalyserNode = audioCtx.createAnalyser();
-        audioAnalyserNode.fftSize = 32;
-        source.connect(audioAnalyserNode);
-
-        const dataArray = new Uint8Array(audioAnalyserNode.frequencyBinCount);
-        function drawWave() {
-          if (voiceState !== 'listening') return;
-          audioAnalyserNode.getByteFrequencyData(dataArray);
-          const bars = document.querySelectorAll('.sound-wave-bar');
-          bars.forEach((bar, idx) => {
-            const val = dataArray[idx % dataArray.length] || 12;
-            const h = Math.max(6, Math.min(32, Math.round((val / 255) * 36)));
-            bar.style.height = `${h}px`;
-          });
-          visualizerAnimFrame = requestAnimationFrame(drawWave);
-        }
-        drawWave();
-      } catch (e) {
-        console.warn('Visualizer status:', e);
-      }
-    }
+    let recognitionObj = null;
 
     function stopMicVisualizer() {
       if (visualizerAnimFrame) {
@@ -1306,7 +1281,7 @@
     function onMicClick(e) {
       const elapsed = Date.now() - micPointerDownTime;
       if (elapsed <= 550) {
-        if (voiceState === 'listening' && Date.now() - listeningSessionStart > 800) {
+        if (voiceState === 'listening' && Date.now() - listeningSessionStart > 600) {
           finishVoiceListeningAndProcess();
         } else if (voiceState === 'speaking') {
           stopCurrentSpeech();
@@ -1319,6 +1294,10 @@
       stopMicVisualizer();
       clearTimeout(silenceTimer);
       silenceTimer = null;
+      if (mediaRecorderObj && mediaRecorderObj.state !== 'inactive') {
+        try { mediaRecorderObj.stop(); } catch (e) {}
+      }
+      mediaRecorderObj = null;
       if (recognitionObj) {
         try { recognitionObj.stop(); } catch (e) {}
         recognitionObj = null;
@@ -1326,109 +1305,221 @@
       setVoiceVisualState('idle');
     }
 
-    function startVoiceListening() {
+    async function startVoiceListening() {
+      if (voiceState === 'listening' || voiceState === 'processing') return;
       stopCurrentSpeech();
       pushTranscript = '';
+      recordedAudioChunks = [];
       clearTimeout(silenceTimer);
       silenceTimer = null;
       listeningSessionStart = Date.now();
 
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRec) {
-        showToast('Navegador sem suporte ao microfone. Use Google Chrome ou Edge!', true);
+      // 1. SOLICITA ACESSO AO MICROFONE FÍSICO REAL DO APARELHO
+      try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('Navegador sem suporte a getUserMedia');
+        }
+        mediaStreamObj = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        });
+      } catch (err) {
+        console.warn('Acesso ao microfone negado ou indisponível:', err);
+        showToast('⚠️ Microfone não liberado! Clique no cadeado do navegador e permita o microfone.', true);
+        speak('Por favor, autorize o microfone no navegador para conversarmos!');
+        resetVoiceToIdle();
         return;
       }
 
       setVoiceVisualState('listening');
-      startMicVisualizer();
       playTone(587, 80);
       setTimeout(() => playTone(880, 120), 80);
-      document.getElementById('subtitle-bar').textContent = '🎧 Estou ouvindo você falar em Português... Pode falar!';
+      document.getElementById('subtitle-bar').textContent = '🎧 JÁRVIS OUVINDO VOCÊ... FALE PERTINHO DO MICROFONE!';
 
-      let rec;
+      // 2. CONECTA O ANALISADOR DE ÁUDIO REAL (MEDIDOR VISUAL DE DECIBÉIS)
       try {
-        rec = new SpeechRec();
-      } catch (e) {
-        resetVoiceToIdle();
-        showToast('Erro ao iniciar microfone: ' + e.message, true);
-        return;
-      }
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        const source = audioCtx.createMediaStreamSource(mediaStreamObj);
+        audioAnalyserNode = audioCtx.createAnalyser();
+        audioAnalyserNode.fftSize = 64;
+        source.connect(audioAnalyserNode);
 
-      rec.lang = 'pt-BR';
-      rec.interimResults = true;
-      rec.continuous = true;
-      recognitionObj = rec;
+        const dataArray = new Uint8Array(audioAnalyserNode.frequencyBinCount);
+        function drawWave() {
+          if (voiceState !== 'listening') return;
+          audioAnalyserNode.getByteFrequencyData(dataArray);
+          const bars = document.querySelectorAll('.sound-wave-bar');
+          let sum = 0;
+          bars.forEach((bar, idx) => {
+            const val = dataArray[idx % dataArray.length] || 10;
+            sum += val;
+            const h = Math.max(6, Math.min(32, Math.round((val / 255) * 36)));
+            bar.style.height = `${h}px`;
+          });
 
-      rec.onresult = (ev) => {
-        let text = '';
-        let hasFinal = false;
-        for (let i = 0; i < ev.results.length; i++) {
-          text += ev.results[i][0].transcript + ' ';
-          if (ev.results[i].isFinal) hasFinal = true;
-        }
-        pushTranscript = text.trim();
-        if (pushTranscript) {
-          document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
-
-          // DETECÇÃO AUTOMÁTICA DE SILÊNCIO APÓS A FALA
-          clearTimeout(silenceTimer);
-          const silenceWaitMs = hasFinal ? 1500 : 2500;
-          silenceTimer = setTimeout(() => {
-            finishVoiceListeningAndProcess();
-          }, silenceWaitMs);
-        }
-      };
-
-      rec.onerror = (ev) => {
-        console.warn('SpeechRecognition error:', ev.error);
-        if (ev.error === 'not-allowed') {
-          showToast('Permita o microfone no navegador para conversar com o Járvis!', true);
-          resetVoiceToIdle();
-        } else if (ev.error === 'network') {
-          showToast('Reconhecimento online indisponível. Toque nos temas rápidos!', true);
-        }
-      };
-
-      rec.onend = () => {
-        if (voiceState === 'listening') {
-          if (pushTranscript.trim()) {
-            finishVoiceListeningAndProcess();
-          } else {
-            // SE AINDA NÃO DEU 15 SEGUNDOS, RE-ARMA PARA NÃO CAIR SOZINHO!
-            const elapsed = Date.now() - listeningSessionStart;
-            if (elapsed < 15000) {
-              try {
-                rec.start();
-                return;
-              } catch (e) {}
-            }
-            // Apenas após 15 segundos inteiros sem som:
-            resetVoiceToIdle();
-            document.getElementById('subtitle-bar').textContent = 'Pronto! Clique no microfone quando quiser falar com o Járvis!';
+          // Se detectou voz ativa com volume suficiente:
+          if (sum > 70 && pushTranscript) {
+            clearTimeout(silenceTimer);
+            silenceTimer = setTimeout(() => {
+              if (voiceState === 'listening') {
+                finishVoiceListeningAndProcess();
+              }
+            }, 1800);
           }
-        }
-      };
 
-      try {
-        rec.start();
-      } catch (err) {
-        console.error('Erro ao acionar reconhecimento:', err);
-        resetVoiceToIdle();
+          visualizerAnimFrame = requestAnimationFrame(drawWave);
+        }
+        drawWave();
+      } catch (e) {
+        console.warn('Erro ao inicializar analisador de áudio:', e);
       }
+
+      // 3. INICIA A GRAVAÇÃO DE ÁUDIO FÍSICA (MEDIA RECORDER) PARA FALLBACK ROBUSTO
+      try {
+        let mime = '';
+        if (typeof MediaRecorder !== 'undefined') {
+          if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime = 'audio/webm;codecs=opus';
+          else if (MediaRecorder.isTypeSupported('audio/webm')) mime = 'audio/webm';
+          else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mime = 'audio/ogg;codecs=opus';
+          
+          mediaRecorderObj = mime ? new MediaRecorder(mediaStreamObj, { mimeType: mime }) : new MediaRecorder(mediaStreamObj);
+          mediaRecorderObj.ondataavailable = (ev) => {
+            if (ev.data && ev.data.size > 0) {
+              recordedAudioChunks.push(ev.data);
+            }
+          };
+          mediaRecorderObj.start(100);
+        }
+      } catch (recErr) {
+        console.warn('Aviso MediaRecorder:', recErr);
+      }
+
+      // 4. ATIVA PARALELAMENTE O RECONHECIMENTO WEB SPEECH SE DISPONÍVEL NO CHROME/EDGE
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) {
+        try {
+          const rec = new SpeechRec();
+          rec.lang = 'pt-BR';
+          rec.interimResults = true;
+          rec.continuous = true;
+          recognitionObj = rec;
+
+          rec.onresult = (ev) => {
+            let text = '';
+            let hasFinal = false;
+            for (let i = 0; i < ev.results.length; i++) {
+              text += ev.results[i][0].transcript + ' ';
+              if (ev.results[i].isFinal) hasFinal = true;
+            }
+            pushTranscript = text.trim();
+            if (pushTranscript) {
+              document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
+              clearTimeout(silenceTimer);
+              const silenceWaitMs = hasFinal ? 1500 : 2500;
+              silenceTimer = setTimeout(() => {
+                if (voiceState === 'listening') {
+                  finishVoiceListeningAndProcess();
+                }
+              }, silenceWaitMs);
+            }
+          };
+
+          rec.onerror = (ev) => {
+            console.warn('SpeechRecognition notice:', ev.error);
+            // NÃO reseta para idle se for network/no-speech, pois temos o MediaRecorder gravando!
+            if (ev.error === 'not-allowed') {
+              showToast('Permita o microfone no navegador!', true);
+              resetVoiceToIdle();
+            }
+          };
+
+          rec.onend = () => {
+            if (voiceState === 'listening') {
+              if (pushTranscript.trim()) {
+                finishVoiceListeningAndProcess();
+              } else {
+                const elapsed = Date.now() - listeningSessionStart;
+                if (elapsed < 14000) {
+                  try { rec.start(); } catch (e) {}
+                }
+              }
+            }
+          };
+
+          rec.start();
+        } catch (e) {
+          console.warn('SpeechRec start warning:', e);
+        }
+      }
+
+      // Limite máximo de segurança: 16 segundos
+      setTimeout(() => {
+        if (voiceState === 'listening') {
+          finishVoiceListeningAndProcess();
+        }
+      }, 16000);
     }
 
     async function finishVoiceListeningAndProcess() {
       if (voiceState !== 'listening') return;
-      stopMicVisualizer();
       clearTimeout(silenceTimer);
       silenceTimer = null;
 
+      // Altera visual para pensando
+      setVoiceVisualState('processing');
+      document.getElementById('subtitle-bar').textContent = '🧠 Járvis ouvindo e processando o que você falou...';
+
+      // 1. Encerra e coleta a gravação física
+      let recordedBlob = null;
+      if (mediaRecorderObj && mediaRecorderObj.state !== 'inactive') {
+        await new Promise((resolve) => {
+          mediaRecorderObj.onstop = () => {
+            if (recordedAudioChunks.length > 0) {
+              const mime = mediaRecorderObj.mimeType || 'audio/webm';
+              recordedBlob = new Blob(recordedAudioChunks, { type: mime });
+            }
+            resolve();
+          };
+          try {
+            mediaRecorderObj.stop();
+          } catch (e) {
+            resolve();
+          }
+        });
+      }
+
+      // Encerra microfone físico e reconhecimento web
+      stopMicVisualizer();
       if (recognitionObj) {
         try { recognitionObj.stop(); } catch (err) {}
         recognitionObj = null;
       }
 
-      const spoken = pushTranscript.trim();
+      let spoken = pushTranscript.trim();
+
+      // 2. FALLBACK INTELIGENTE: Se o SpeechRecognition do Chrome falhou ou deu erro de rede,
+      // envia o áudio gravado diretamente para a API STT no backend (/api/stt)!
+      if (!spoken && recordedBlob && recordedBlob.size > 800) {
+        document.getElementById('subtitle-bar').textContent = '🧠 Járvis transcrevendo voz pelo microfone...';
+        try {
+          const sttRes = await fetch('/api/stt', {
+            method: 'POST',
+            headers: { 'Content-Type': recordedBlob.type || 'audio/webm' },
+            body: recordedBlob
+          });
+          const sttData = await sttRes.json();
+          if (sttData.ok && sttData.text) {
+            spoken = sttData.text.trim();
+          }
+        } catch (sttErr) {
+          console.warn('Falha no fallback de STT:', sttErr);
+        }
+      }
+
+      // Se após todas as camadas nada foi dito
       if (!spoken) {
         resetVoiceToIdle();
         document.getElementById('subtitle-bar').textContent = 'Não ouvi sua voz. Toque no microfone e fale pertinho!';
@@ -1436,9 +1527,8 @@
         return;
       }
 
-      // ESTADO: PENSANDO / PROCESSANDO!
-      setVoiceVisualState('processing');
-      document.getElementById('subtitle-bar').textContent = `🧠 Processando o que você falou: "${spoken}"...`;
+      // 3. COM O TEXTO RECONHECIDO, ENVIA PARA O CÉREBRO DO JÁRVIS
+      document.getElementById('subtitle-bar').textContent = `👦 Você: "${spoken}"`;
       playTone(659, 100);
       setTimeout(() => playTone(784, 120), 100);
 
@@ -3292,14 +3382,25 @@
 
     function openTalkModal() {
       const body = openModal('✨ CONVERSAR POR VOZ COM O J.A.R.V.I.S.');
-      speak(`Sobre o que você quer conversar, ${appState.config.child_name}? Toque em um tema ou segure o botão do microfone para falar com sua voz!`);
+      speak(`Sobre o que você quer conversar, ${appState.config.child_name}? Toque no microfone para falar comigo ou escolha uma brincadeira!`);
 
       body.innerHTML = `
-        <div style="background:#0a192f; border:3px solid var(--cyan); border-radius:18px; padding:20px; font-size:1.45rem; font-weight:800; text-align:center; margin-bottom:18px;" id="jarvis-talk-reply">
-          Toque em uma brincadeira abaixo ou segure o botão do microfone no centro para falar!
+        <div style="background:#0a192f; border:3px solid var(--cyan); border-radius:18px; padding:18px; font-size:1.35rem; font-weight:800; text-align:center; margin-bottom:14px; min-height:60px; display:flex; align-items:center; justify-content:center;" id="jarvis-talk-reply">
+          Toque no botão verde abaixo para falar no microfone ou escolha um tema!
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; flex:1;" id="talk-topics-grid"></div>
+        <!-- BARRA DIRETA DE MICROFONE E DIGITAÇÃO -->
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap;">
+          <button type="button" class="big-btn" style="background:#10b981; font-size:1.15rem; font-weight:900; padding:12px 20px; flex:1; min-width:200px;" id="modal-mic-btn" onclick="startModalVoiceTalk()">
+            🎙️ FALAR NO MICROFONE AGORA
+          </button>
+          <div style="display:flex; gap:8px; flex:2; min-width:260px;">
+            <input type="text" id="modal-talk-input" placeholder="Ou digite sua pergunta aqui..." style="flex:1; background:#0f172a; border:2px solid #38bdf8; border-radius:12px; color:#ffffff; padding:10px 14px; font-size:1.1rem; outline:none;" onkeydown="if(event.key==='Enter') sendModalCustomTalk()">
+            <button type="button" class="big-btn" style="background:#2563eb; padding:10px 18px; font-size:1.1rem;" onclick="sendModalCustomTalk()">🚀 ENVIAR</button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; flex:1;" id="talk-topics-grid"></div>
       `;
 
       const topics = [
@@ -3315,7 +3416,7 @@
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'big-btn';
-        b.style.cssText = `background:${col}; font-size:1.35rem; font-weight:900;`;
+        b.style.cssText = `background:${col}; font-size:1.2rem; font-weight:900;`;
         b.textContent = lbl;
         b.onclick = async () => {
           playTone(659, 90);
@@ -3327,6 +3428,32 @@
         };
         g.appendChild(b);
       });
+    }
+
+    async function sendModalCustomTalk() {
+      const inp = document.getElementById('modal-talk-input');
+      if (!inp) return;
+      const q = inp.value.trim();
+      if (!q) return;
+      inp.value = '';
+      playTone(659, 90);
+      document.getElementById('jarvis-talk-reply').textContent = `👦 Você: "${q}"\n\n🧠 Járvis pensando...`;
+      try {
+        const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q }) });
+        const d = await r.json();
+        document.getElementById('jarvis-talk-reply').textContent = `🤖 Járvis: ${d.reply}`;
+        speak(d.reply);
+      } catch (err) {
+        document.getElementById('jarvis-talk-reply').textContent = 'Erro ao conectar ao cérebro do Járvis.';
+      }
+    }
+
+    function startModalVoiceTalk() {
+      const repBox = document.getElementById('jarvis-talk-reply');
+      if (repBox) repBox.textContent = '🎧 Ouvindo no microfone... Fale com o Járvis!';
+      // Fecha o modal e ativa a escuta principal para visualizar as ondas no centro do HUD
+      closeModal();
+      startVoiceListening();
     }
 
     // =========================================================================

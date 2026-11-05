@@ -100,6 +100,9 @@ if [ -d "$HOME/.desktop-session" ]; then
 # --- JARVIS KIDS OS AUTOSTART & PROTEÇÃO INFANTIL ---
 xset s off -dpms &
 amixer set Master 75% unmute >/dev/null 2>&1 &
+amixer set Capture 85% cap unmute >/dev/null 2>&1 &
+amixer set 'Internal Mic' 85% unmute >/dev/null 2>&1 &
+amixer set 'Mic Boost' 65% unmute >/dev/null 2>&1 &
 python3 "$APP_DIR/jarvis_os.py" --kiosk &
 EOF
   fi

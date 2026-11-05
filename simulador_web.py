@@ -134,6 +134,64 @@ def api_ask():
     return jsonify(res)
 
 
+def transcribe_audio_bytes(audio_bytes: bytes, mime_type: str = "audio/webm") -> str:
+    """Converte áudio gravado do microfone em texto em Português do Brasil."""
+    if not audio_bytes or len(audio_bytes) < 400:
+        return ""
+
+    # Camada 1: Se chave do Gemini estiver configurada, usa transcrição do Gemini
+    gemini_key = brain.get_effective_gemini_key()
+    if gemini_key:
+        try:
+            from google import genai
+            from google.genai import types
+            client = genai.Client(api_key=gemini_key)
+            res = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=[
+                    types.Part.from_bytes(data=audio_bytes, mime_type=mime_type or "audio/webm"),
+                    "Transcreva com exatidão o que foi falado em português do Brasil neste áudio. Retorne apenas as palavras ouvidas sem introdução."
+                ]
+            )
+            txt = (res.text or "").strip()
+            if txt:
+                return txt
+        except Exception as e:
+            print(f"Gemini STT notice: {e}")
+
+    # Camada 2: SpeechRecognition com Google STT nativo em pt-BR (gratuito)
+    try:
+        import io
+        from pydub import AudioSegment
+        import speech_recognition as sr
+
+        seg = AudioSegment.from_file(io.BytesIO(audio_bytes))
+        seg = seg.set_channels(1).set_frame_rate(16000)
+        wav_buf = io.BytesIO()
+        seg.export(wav_buf, format="wav")
+        wav_buf.seek(0)
+
+        r = sr.Recognizer()
+        with sr.AudioFile(wav_buf) as source:
+            audio_data = r.record(source)
+            text = r.recognize_google(audio_data, language="pt-BR")
+            return text.strip()
+    except Exception as e:
+        print(f"SpeechRecognition STT notice: {e}")
+
+    return ""
+
+
+@app.route("/api/stt", methods=["POST"])
+def api_stt():
+    audio_bytes = request.get_data()
+    mime = request.content_type or "audio/webm"
+    text = transcribe_audio_bytes(audio_bytes, mime)
+    if text:
+        return jsonify({"ok": True, "text": text})
+    return jsonify({"ok": False, "error": "Não foi possível transcrever o áudio", "text": ""})
+
+
 @app.route("/api/tts", methods=["POST"])
 def api_tts():
     try:

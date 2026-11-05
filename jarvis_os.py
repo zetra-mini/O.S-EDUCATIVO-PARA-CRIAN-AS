@@ -4,6 +4,7 @@ import random
 import shutil
 import subprocess
 import sys
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
@@ -387,9 +388,40 @@ class JarvisKidsOS:
         self.root.after(70, self._animate_arc_reactor)
 
     def _on_arc_clicked(self):
-        self.voice.play_tone(784, 130)
-        msg = self.brain.ask_topic(random.choice(["heroi", "elogio", "espaco", "animais"]))
-        self.say(msg)
+        if getattr(self, "_is_listening", False):
+            return
+        self._is_listening = True
+        self.subtitle_var.set("🎧 JÁRVIS OUVINDO... PODE FALAR NO MICROFONE!")
+        self.voice.play_tone(587, 80)
+        self.root.after(80, lambda: self.voice.play_tone(880, 120))
+        threading.Thread(target=self._listen_mic_worker, daemon=True).start()
+
+    def _listen_mic_worker(self):
+        recognized_text = ""
+        try:
+            import speech_recognition as sr
+            r = sr.Recognizer()
+            r.energy_threshold = 280
+            r.dynamic_energy_threshold = True
+            with sr.Microphone() as source:
+                r.adjust_for_ambient_noise(source, duration=0.5)
+                audio = r.listen(source, timeout=6, phrase_time_limit=10)
+                self.root.after(0, lambda: self.subtitle_var.set("🧠 Járvis processando sua voz..."))
+                recognized_text = r.recognize_google(audio, language="pt-BR")
+        except Exception as e:
+            print(f"Aviso de captura local: {e}")
+
+        def _finish_speech():
+            self._is_listening = False
+            if recognized_text:
+                self.subtitle_var.set(f"👦 Você: \"{recognized_text}\"")
+                ans = self.brain.ask_custom(recognized_text)
+                self.say(ans)
+            else:
+                self.subtitle_var.set("Não consegui ouvir sua voz. Toque no Reator e fale pertinho!")
+                self.say("Não consegui te ouvir! Toque no Reator e fale pertinho do microfone!")
+
+        self.root.after(0, _finish_speech)
 
     def _add_star(self):
         self.stars_earned += 1
@@ -702,6 +734,44 @@ class JarvisKidsOS:
 
         ask_bar = tk.Frame(win, bg=self.BG_DARK)
         ask_bar.pack(fill="x", padx=24, pady=(4, 14))
+
+        def listen_in_talk_hub():
+            ans_box.configure(text="🎧 Ouvindo você falar no microfone... Pode falar!")
+            self.voice.play_tone(587, 80)
+            self.root.after(80, lambda: self.voice.play_tone(880, 120))
+            def _worker():
+                text = ""
+                try:
+                    import speech_recognition as sr
+                    r = sr.Recognizer()
+                    with sr.Microphone() as source:
+                        r.adjust_for_ambient_noise(source, duration=0.5)
+                        audio = r.listen(source, timeout=6, phrase_time_limit=10)
+                        self.root.after(0, lambda: ans_box.configure(text="🧠 Processando sua fala..."))
+                        text = r.recognize_google(audio, language="pt-BR")
+                except Exception:
+                    pass
+                def _done():
+                    if text:
+                        q_entry.delete(0, "end")
+                        q_entry.insert(0, text)
+                        send_custom()
+                    else:
+                        ans_box.configure(text="Não ouvi sua voz. Fale pertinho do microfone ou digite abaixo!")
+                        self.say("Não consegui ouvir sua voz. Fale mais pertinho!")
+                self.root.after(0, _done)
+            threading.Thread(target=_worker, daemon=True).start()
+
+        tk.Button(
+            ask_bar,
+            text="🎙️ FALAR NO MICROFONE",
+            bg="#10b981",
+            fg="#ffffff",
+            font=("Arial", 12, "bold"),
+            padx=14,
+            pady=6,
+            command=listen_in_talk_hub,
+        ).pack(side="left", padx=(0, 10))
 
         q_entry = tk.Entry(ask_bar, font=("Arial", 13), bg="#1e293b", fg="#ffffff", insertbackground="#ffffff")
         q_entry.pack(side="left", fill="x", expand=True, ipady=6, padx=(0, 10))
