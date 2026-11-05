@@ -741,6 +741,40 @@
       background: #160a05 !important;
       border-color: #ea580c !important;
     }
+
+    /* CONTAR COM AS MÃOS E DEDINHOS */
+    .counting-finger {
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .counting-finger:hover {
+      filter: brightness(1.25);
+    }
+    .num-pill-btn {
+      flex: 1;
+      min-width: 44px;
+      height: 52px;
+      border-radius: 14px;
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #fff;
+      border: 3px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .num-pill-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 16px currentColor;
+    }
+    .num-pill-btn.active {
+      transform: scale(1.15);
+      border-color: #ffffff !important;
+      box-shadow: 0 0 25px currentColor;
+    }
   </style>
 </head>
 <body>
@@ -756,7 +790,7 @@
   </header>
 
   <main>
-    <!-- COLUNA ESQUERDA: HISTÓRIAS, LER & ESCREVER, TECLADO, MOUSE -->
+    <!-- COLUNA ESQUERDA: HISTÓRIAS, LER & ESCREVER, NÚMEROS & MÃOS, TECLADO & MOUSE -->
     <div class="col">
       <div class="toy-card" style="border-color: var(--blue);" onclick="openBooksLibrary()" onmouseenter="speakCardHint('Histórias mágicas com contos infantis e sons divertidos!')">
         <div class="toy-icon">📚</div>
@@ -768,14 +802,14 @@
         <div class="toy-title">LER & ESCREVER</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="speakCardHint('Teclado e mãozinhas! Treine qual dedinho usar no teclado!')">
-        <div class="toy-icon">⌨️</div>
-        <div class="toy-title">TECLADO</div>
+      <div class="toy-card" style="border-color: #f59e0b;" onclick="openFingerCounting()" onmouseenter="speakCardHint('Números e contar com os dedinhos das mãos de um até dez!')">
+        <div class="toy-icon">🖐️</div>
+        <div class="toy-title">NÚMEROS & MÃOS</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--orange);" onclick="openMouseTraining()" onmouseenter="speakCardHint('Treino do mouse! Mira, clique e arraste com o Járvis!')">
-        <div class="toy-icon">🖱️</div>
-        <div class="toy-title">MOUSE</div>
+      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="speakCardHint('Academia de Tecnologia! Treino do teclado e mouse com o Járvis!')">
+        <div class="toy-icon">⌨️</div>
+        <div class="toy-title">TECLADO & MOUSE</div>
       </div>
     </div>
 
@@ -2175,6 +2209,407 @@
       ['Z','X','C','V','B','N','M']
     ];
     const WORDS_POOL = ['SOL', 'LUA', 'DINO', 'CASA', 'LIVRO', 'AMOR', 'BOLA', 'VIDA'];
+
+    // =========================================================================
+    // NÚMEROS & MÃOZINHAS: ENSINAR A CONTAR DE 1 A 10 COM OS DEDOS
+    // =========================================================================
+    const FINGER_COUNT_DATA = {
+      0: { word: 'ZERO', emoji: '✊', items: 'Mãozinhas fechadas! Nenhum dedinho levantado.', hint: 'Zero dedinhos levantados! Mãozinhas fechadas como duas rochinhas de energia!', fingers: [] },
+      1: { word: 'UM', emoji: '☝️', items: '🚀 (1 Foguete voando pro espaço!)', hint: 'Número 1! Um dedinho levantado! Mostre o número um com sua mãozinha!', fingers: [2] },
+      2: { word: 'DOIS', emoji: '✌️', items: '🚀 🚀 (2 Foguetes velozes!)', hint: 'Número 2! Dois dedinhos levantados! O sinal da vitória do herói Stark!', fingers: [2, 3] },
+      3: { word: 'TRÊS', emoji: '🤟', items: '🚀 🚀 🚀 (3 Foguetes mágicos!)', hint: 'Número 3! Três dedinhos! Um, dois, três porquinhos!', fingers: [1, 2, 3] },
+      4: { word: 'QUATRO', emoji: '🖖', items: '🐾 🐾 🐾 🐾 (4 Patinhas de leãozinho!)', hint: 'Número 4! Quatro dedinhos levantados! Quatro patinhas de leãozinho!', fingers: [2, 3, 4, 5] },
+      5: { word: 'CINCO', emoji: '🖐️', items: '⭐ ⭐ ⭐ ⭐ ⭐ (5 Estrelas brilhantes!)', hint: 'Número 5! Uma mãozinha inteira aberta, dando tchauzinho com todos os cinco dedos!', fingers: [1, 2, 3, 4, 5] },
+      6: { word: 'SEIS', emoji: '🖐️☝️', items: '🍎 🍎 🍎 🍎 🍎 🍎 (6 Maçãs docinhas!)', hint: 'Número 6! Uma mão cheia mais um dedinho da outra mão! Cinco mais um dá seis!', fingers: [1, 2, 3, 4, 5, 7] },
+      7: { word: 'SETE', emoji: '🖐️✌️', items: '🌈 🌈 🌈 🌈 🌈 🌈 🌈 (7 Cores do arco-íris!)', hint: 'Número 7! Cinco dedinhos em uma mão e dois na outra! Sete cores do arco-íris!', fingers: [1, 2, 3, 4, 5, 7, 8] },
+      8: { word: 'OITO', emoji: '🖐️🤟', items: '🐙 🐙 🐙 🐙 🐙 🐙 🐙 🐙 (8 Patinhas de polvo!)', hint: 'Número 8! Cinco mais três! Oito patinhas do polvo e da aranha!', fingers: [1, 2, 3, 4, 5, 6, 7, 8] },
+      9: { word: 'NOVE', emoji: '🖐️🖖', items: '🎈 🎈 🎈 🎈 🎈 🎈 🎈 🎈 🎈 (9 Balões voando!)', hint: 'Número 9! Quase duas mãos cheias! Falta só um dedinho para dez!', fingers: [1, 2, 3, 4, 5, 7, 8, 9, 10] },
+      10: { word: 'DEZ', emoji: '🙌', items: '🌟 🌟 🌟 🌟 🌟 🌟 🌟 🌟 🌟 🌟 (10 Estrelas Stark!)', hint: 'DEZ! Duas mãozinhas cheias abertas! Todos os dez dedinhos! Parabéns, você é um herói dos números!', fingers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+    };
+
+    const FINGER_SPECS = [
+      { id: 5, hand: 'left', name: 'Mindinho', x: 42, y: 55, w: 17, h: 58, col: '#a855f7' },
+      { id: 4, hand: 'left', name: 'Anelar', x: 65, y: 32, w: 17, h: 80, col: '#f97316' },
+      { id: 3, hand: 'left', name: 'Médio', x: 88, y: 16, w: 18, h: 95, col: '#22c55e' },
+      { id: 2, hand: 'left', name: 'Indicador', x: 112, y: 28, w: 18, h: 84, col: '#0284c7' },
+      { id: 1, hand: 'left', name: 'Polegar', x: 135, y: 85, w: 19, h: 52, rot: 28, col: '#eab308' },
+      { id: 6, hand: 'right', name: 'Polegar', x: 35, y: 85, w: 19, h: 52, rot: -28, col: '#eab308' },
+      { id: 7, hand: 'right', name: 'Indicador', x: 58, y: 28, w: 18, h: 84, col: '#0284c7' },
+      { id: 8, hand: 'right', name: 'Médio', x: 82, y: 16, w: 18, h: 95, col: '#22c55e' },
+      { id: 9, hand: 'right', name: 'Anelar', x: 105, y: 32, w: 17, h: 80, col: '#f97316' },
+      { id: 10, hand: 'right', name: 'Mindinho', x: 128, y: 55, w: 17, h: 58, col: '#a855f7' }
+    ];
+
+    const FINGER_TONES = [262, 294, 330, 349, 392, 440, 494, 523, 587, 659];
+
+    let currentFingerStates = { 1:false, 2:false, 3:false, 4:false, 5:false, 6:false, 7:false, 8:false, 9:false, 10:false };
+    let countingSongTimer = null;
+    let quizTargetNumber = 0;
+
+    function openFingerCounting() {
+      const body = openModal('🖐️ CONTAR DE 1 A 10 COM AS MÃOZINHAS');
+      speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name}! Toque em um número ou nos dedinhos para levantar!`);
+
+      body.innerHTML = `
+        <!-- SELETOR DE MODOS -->
+        <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+          <button type="button" class="music-tab-btn active" id="tab-fc-free" onclick="switchFingerCountingMode('free')">🖐️ Mãos Livres & Números</button>
+          <button type="button" class="music-tab-btn" id="tab-fc-quiz" onclick="switchFingerCountingMode('quiz')">🎮 Jogo: Quantos Dedinhos?</button>
+          <button type="button" class="music-tab-btn" id="tab-fc-song" onclick="playCountingSong()">▶️ Canção de Contar (1 ao 10)</button>
+        </div>
+
+        <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
+        <div style="background:#0a192f; border:3px solid #38bdf8; border-radius:18px; padding:12px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div id="fc-big-num" style="font-size:3.6rem; font-weight:900; color:#facc15; text-shadow:0 0 20px rgba(250, 204, 21, 0.6); line-height:1; min-width:65px; text-align:center;">0</div>
+            <div>
+              <div id="fc-word-title" style="font-size:1.6rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
+              <div id="fc-concrete-items" style="font-size:1.15rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
+            </div>
+          </div>
+          <button type="button" class="big-btn" style="background:#059669; font-size:1rem; padding:8px 16px;" onclick="speakCurrentNumberHint()">🔊 Ouvir Járvis</button>
+        </div>
+
+        <!-- CONTAINER DO DIAGRAMA DAS MÃOS -->
+        <div style="background:#071224; border:2px solid #1e293b; border-radius:18px; padding:10px 14px; margin-bottom:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
+          <svg viewBox="0 0 620 210" style="width:100%; max-width:600px; height:195px;" id="fc-hands-svg">
+            <!-- MÃO ESQUERDA -->
+            <g id="fc-hand-left" transform="translate(30, 10)">
+              <!-- Palma -->
+              <path d="M 55 125 C 55 85, 125 85, 125 125 C 125 168, 55 168, 55 125 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+              <text x="90" y="148" fill="#94a3b8" font-size="11" font-weight="900" text-anchor="middle">MÃO ESQUERDA</text>
+            </g>
+
+            <!-- MÃO DIREITA -->
+            <g id="fc-hand-right" transform="translate(370, 10)">
+              <!-- Palma -->
+              <path d="M 55 125 C 55 85, 125 85, 125 125 C 125 168, 55 168, 55 125 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+              <text x="90" y="148" fill="#94a3b8" font-size="11" font-weight="900" text-anchor="middle">MÃO DIREITA</text>
+            </g>
+          </svg>
+
+          <!-- DICA FLUTUANTE INFORMATIVA -->
+          <div id="fc-feedback-bar" style="font-size:1.15rem; font-weight:800; color:#fef08a; text-align:center; min-height:28px;">
+            Toque nos dedinhos para levantar ou escolha um número abaixo!
+          </div>
+        </div>
+
+        <!-- RÉGUA COLORIDA DOS NÚMEROS DE 1 A 10 -->
+        <div style="display:flex; gap:6px; justify-content:center;" id="fc-num-bar"></div>
+
+        <!-- ÁREA DO QUIZ (OCULTA INICIALMENTE) -->
+        <div id="fc-quiz-box" style="display:none; margin-top:10px; gap:12px; justify-content:center;"></div>
+      `;
+
+      renderHandsSvgElements();
+      renderNumberPillsBar();
+      setCountingNumber(3, false); // Começa mostrando o número 3 de forma alegre
+    }
+
+    function renderHandsSvgElements() {
+      const leftG = document.getElementById('fc-hand-left');
+      const rightG = document.getElementById('fc-hand-right');
+      if (!leftG || !rightG) return;
+
+      FINGER_SPECS.forEach(spec => {
+        const parent = spec.hand === 'left' ? leftG : rightG;
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'counting-finger');
+        g.setAttribute('id', `finger-group-${spec.id}`);
+        g.onclick = () => toggleSingleFinger(spec.id);
+
+        // Retângulo do dedo
+        const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        r.setAttribute('id', `finger-rect-${spec.id}`);
+        r.setAttribute('x', spec.x);
+        r.setAttribute('y', spec.y);
+        r.setAttribute('width', spec.w);
+        r.setAttribute('height', spec.h);
+        r.setAttribute('rx', 8);
+        r.setAttribute('fill', '#1e293b');
+        r.setAttribute('stroke', '#475569');
+        r.setAttribute('stroke-width', 2);
+        if (spec.rot) {
+          r.setAttribute('transform', `rotate(${spec.rot}, ${spec.x}, ${spec.y})`);
+        }
+        g.appendChild(r);
+
+        // Crachá circular com o número no topo do dedo
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('id', `finger-circ-${spec.id}`);
+        const cx = spec.x + spec.w / 2;
+        const cy = spec.y - 10;
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 11);
+        circle.setAttribute('fill', '#0f172a');
+        circle.setAttribute('stroke', spec.col);
+        circle.setAttribute('stroke-width', 2);
+        g.appendChild(circle);
+
+        // Texto com o número (1..10)
+        const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        t.setAttribute('id', `finger-text-${spec.id}`);
+        t.setAttribute('x', cx);
+        t.setAttribute('y', cy + 4);
+        t.setAttribute('fill', '#ffffff');
+        t.setAttribute('font-size', '10');
+        t.setAttribute('font-weight', '900');
+        t.setAttribute('text-anchor', 'middle');
+        t.textContent = spec.id;
+        g.appendChild(t);
+
+        parent.appendChild(g);
+      });
+    }
+
+    function renderNumberPillsBar() {
+      const bar = document.getElementById('fc-num-bar');
+      if (!bar) return;
+      bar.innerHTML = '';
+
+      const colors = ['#64748b', '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899', '#e11d48'];
+
+      for (let i = 0; i <= 10; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'num-pill-btn';
+        btn.id = `pill-num-${i}`;
+        btn.style.background = colors[i];
+        btn.textContent = i;
+        btn.onclick = () => {
+          stopCountingSong();
+          setCountingNumber(i, true);
+        };
+        bar.appendChild(btn);
+      }
+    }
+
+    function toggleSingleFinger(fingerId) {
+      stopCountingSong();
+      currentFingerStates[fingerId] = !currentFingerStates[fingerId];
+
+      // Toca a nota correspondente ao dedo
+      const toneFreq = FINGER_TONES[fingerId - 1] || 440;
+      playTone(toneFreq, 180);
+
+      // Atualiza visual do dedo
+      updateFingerVisuals();
+
+      // Conta quantos dedos estão levantados no total
+      const count = Object.values(currentFingerStates).filter(Boolean).length;
+      updateHeaderNumberDisplay(count);
+
+      // Frase curta
+      const rep = document.getElementById('fc-feedback-bar');
+      if (rep) {
+        rep.textContent = `${count} dedinho${count !== 1 ? 's' : ''} levantado${count !== 1 ? 's' : ''}!`;
+      }
+    }
+
+    function setCountingNumber(num, shouldSpeak = true) {
+      // Ajusta o array de dedos para o número escolhido
+      for (let i = 1; i <= 10; i++) {
+        currentFingerStates[i] = i <= num;
+      }
+      updateFingerVisuals();
+      updateHeaderNumberDisplay(num);
+
+      // Destaque na régua de botões
+      document.querySelectorAll('.num-pill-btn').forEach(b => b.classList.remove('active'));
+      const activePill = document.getElementById(`pill-num-${num}`);
+      if (activePill) activePill.classList.add('active');
+
+      // Toca som de acorde suave
+      const freq = FINGER_TONES[Math.min(9, Math.max(0, num - 1))] || 440;
+      playTone(freq, 220);
+
+      if (num === 10) {
+        // Fanfarra triunfal do 10!
+        setTimeout(() => playTone(659, 120), 120);
+        setTimeout(() => playTone(880, 250), 240);
+        addStarReward();
+      }
+
+      if (shouldSpeak) {
+        speakCurrentNumberHint();
+      }
+    }
+
+    function updateFingerVisuals() {
+      FINGER_SPECS.forEach(spec => {
+        const isUp = !!currentFingerStates[spec.id];
+        const rect = document.getElementById(`finger-rect-${spec.id}`);
+        const circ = document.getElementById(`finger-circ-${spec.id}`);
+        const text = document.getElementById(`finger-text-${spec.id}`);
+
+        if (rect) {
+          if (isUp) {
+            rect.setAttribute('fill', spec.col);
+            rect.setAttribute('stroke', '#ffffff');
+            rect.setAttribute('stroke-width', '3');
+            rect.setAttribute('y', spec.y);
+            rect.setAttribute('height', spec.h);
+            rect.style.filter = `drop-shadow(0 0 10px ${spec.col})`;
+          } else {
+            rect.setAttribute('fill', '#1e293b');
+            rect.setAttribute('stroke', '#334155');
+            rect.setAttribute('stroke-width', '2');
+            rect.setAttribute('y', spec.y + spec.h - 22);
+            rect.setAttribute('height', '22');
+            rect.style.filter = 'none';
+          }
+        }
+        if (circ) {
+          circ.setAttribute('fill', isUp ? spec.col : '#0f172a');
+          circ.setAttribute('stroke', isUp ? '#ffffff' : '#334155');
+        }
+        if (text) {
+          text.setAttribute('fill', isUp ? '#ffffff' : '#64748b');
+        }
+      });
+    }
+
+    function updateHeaderNumberDisplay(num) {
+      const data = FINGER_COUNT_DATA[num] || FINGER_COUNT_DATA[0];
+      const bigNum = document.getElementById('fc-big-num');
+      const wordTitle = document.getElementById('fc-word-title');
+      const concrete = document.getElementById('fc-concrete-items');
+      const feedback = document.getElementById('fc-feedback-bar');
+
+      if (bigNum) bigNum.textContent = num;
+      if (wordTitle) wordTitle.textContent = data.word;
+      if (concrete) concrete.textContent = data.items;
+      if (feedback) feedback.textContent = data.hint;
+    }
+
+    function speakCurrentNumberHint() {
+      const count = Object.values(currentFingerStates).filter(Boolean).length;
+      const data = FINGER_COUNT_DATA[count] || FINGER_COUNT_DATA[0];
+      speak(data.hint);
+    }
+
+    function switchFingerCountingMode(mode) {
+      stopCountingSong();
+      document.querySelectorAll('#activity-modal .music-tab-btn').forEach(b => b.classList.remove('active'));
+      const activeTab = document.getElementById(`tab-fc-${mode}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      const quizBox = document.getElementById('fc-quiz-box');
+      const numBar = document.getElementById('fc-num-bar');
+
+      if (mode === 'quiz') {
+        if (numBar) numBar.style.display = 'none';
+        if (quizBox) {
+          quizBox.style.display = 'flex';
+          startFingerQuizRound();
+        }
+      } else {
+        if (numBar) numBar.style.display = 'flex';
+        if (quizBox) quizBox.style.display = 'none';
+        setCountingNumber(3, true);
+      }
+    }
+
+    function startFingerQuizRound() {
+      // Sorteia um número de 1 a 10
+      quizTargetNumber = Math.floor(Math.random() * 10) + 1;
+      
+      // Levanta os dedos sem falar o número
+      for (let i = 1; i <= 10; i++) {
+        currentFingerStates[i] = i <= quizTargetNumber;
+      }
+      updateFingerVisuals();
+
+      // Esconde o número no topo para ser o desafio
+      const bigNum = document.getElementById('fc-big-num');
+      const wordTitle = document.getElementById('fc-word-title');
+      const concrete = document.getElementById('fc-concrete-items');
+      const feedback = document.getElementById('fc-feedback-bar');
+
+      if (bigNum) bigNum.textContent = '❓';
+      if (wordTitle) wordTitle.textContent = 'QUANTOS DEDINHOS?';
+      if (concrete) concrete.textContent = 'Conte os dedinhos levantados na tela!';
+      if (feedback) feedback.textContent = `Quantos dedinhos o Járvis está mostrando, ${appState.config.child_name}?`;
+
+      speak(`Quantos dedinhos o Járvis está levantando nas mãos, ${appState.config.child_name}? Conte com sua mãozinha e toque no número certo!`);
+
+      // Gera 3 opções com o número correto e 2 incorretos
+      const options = new Set([quizTargetNumber]);
+      while (options.size < 3) {
+        const rand = Math.floor(Math.random() * 10) + 1;
+        options.add(rand);
+      }
+      const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
+
+      const quizBox = document.getElementById('fc-quiz-box');
+      if (!quizBox) return;
+      quizBox.innerHTML = '';
+
+      shuffled.forEach(opt => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'big-btn';
+        b.style.cssText = 'background:#2563eb; font-size:1.8rem; font-weight:900; padding:12px 28px; min-width:80px;';
+        b.textContent = opt;
+        b.onclick = () => checkQuizAnswer(opt);
+        quizBox.appendChild(b);
+      });
+    }
+
+    function checkQuizAnswer(picked) {
+      if (picked === quizTargetNumber) {
+        playTone(659, 120);
+        setTimeout(() => playTone(880, 220), 120);
+        addStarReward();
+        setCountingNumber(quizTargetNumber, false);
+        const feedback = document.getElementById('fc-feedback-bar');
+        if (feedback) feedback.textContent = `🎉 PARABÉNS! Você acertou: são ${quizTargetNumber} dedinhos! Ganhou uma estrela!`;
+        speak(`Isso mesmo, ${appState.config.child_name}! São exatamente ${quizTargetNumber} dedinhos! Você é nota dez!`);
+        setTimeout(() => {
+          const quizBox = document.getElementById('fc-quiz-box');
+          if (quizBox && quizBox.style.display !== 'none') {
+            startFingerQuizRound();
+          }
+        }, 3200);
+      } else {
+        playTone(220, 180);
+        const feedback = document.getElementById('fc-feedback-bar');
+        if (feedback) feedback.textContent = `Quase! Vamos contar juntos: são ${quizTargetNumber} dedinhos! Tente de novo!`;
+        speak(`Quase lá! Vamos contar juntos os dedinhos levantados! Tente tocar no número certo!`);
+      }
+    }
+
+    function playCountingSong() {
+      stopCountingSong();
+      document.querySelectorAll('#activity-modal .music-tab-btn').forEach(b => b.classList.remove('active'));
+      const songTab = document.getElementById('tab-fc-song');
+      if (songTab) songTab.classList.add('active');
+
+      speak(`Vamos cantar e contar de um até dez levantando os dedinhos, ${appState.config.child_name}!`);
+
+      let currentStep = 1;
+      setCountingNumber(1, false);
+
+      function nextStep() {
+        if (currentStep > 10) {
+          stopCountingSong();
+          return;
+        }
+        setCountingNumber(currentStep, true);
+        currentStep++;
+        countingSongTimer = setTimeout(nextStep, 3400);
+      }
+
+      countingSongTimer = setTimeout(nextStep, 2200);
+    }
+
+    function stopCountingSong() {
+      if (countingSongTimer) {
+        clearTimeout(countingSongTimer);
+        countingSongTimer = null;
+      }
+    }
 
     function openTechAcademy() {
       const body = openModal('🖐️ ACADEMIA DAS MÃOZINHAS & DEDOS CORRETOS');

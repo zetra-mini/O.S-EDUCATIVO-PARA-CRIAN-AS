@@ -531,3 +531,308 @@ class TechAcademyModal:
             self.os_app.voice.play_tone(240, 140)
             hand_speech = "mãozinha esquerda, no lado azul" if target_char in LEFT_HAND_KEYS else "mãozinha direita, no lado amarelo"
             self.os_app.say(f"Quase! Procure a tecla verde com a letra {target_char}, usando a {hand_speech}!")
+
+
+class FingerCountingModal:
+    """Atividade Pedagógica de Contagem com as Mãos (1 a 10) para Crianças de 4 Anos."""
+
+    FINGER_DATA = {
+        0: ("ZERO", "Mãozinhas fechadas! Zero dedinhos!", "✊ Mãozinhas Fechadas"),
+        1: ("UM", "Número 1! Um dedinho apontando pro céu! Mostre o número um com sua mãozinha!", "🚀 1 Foguete voando!"),
+        2: ("DOIS", "Número 2! Dois dedinhos levantados! Sinal da vitória do herói!", "🚀 🚀 2 Foguetes velozes!"),
+        3: ("TRÊS", "Número 3! Três dedinhos! Um, dois, três porquinhos da história!", "🚀 🚀 🚀 3 Foguetes mágicos!"),
+        4: ("QUATRO", "Número 4! Quatro dedinhos levantados! Quatro patinhas de leãozinho!", "🐾 🐾 🐾 🐾 4 Patinhas!"),
+        5: ("CINCO", "Número 5! Uma mãozinha inteira aberta, dando tchauzinho com todos os cinco dedos!", "⭐ ⭐ ⭐ ⭐ ⭐ 5 Estrelas!"),
+        6: ("SEIS", "Número 6! Uma mão cheia mais um dedinho da outra mão! Cinco mais um dá seis!", "🍎 🍎 🍎 🍎 🍎 🍎 6 Maçãs!"),
+        7: ("SETE", "Número 7! Cinco dedinhos em uma mão e dois na outra! Sete cores do arco-íris!", "🌈 🌈 🌈 🌈 🌈 🌈 🌈 7 Cores!"),
+        8: ("OITO", "Número 8! Cinco mais três! Oito patinhas do polvo marinheiro!", "🐙 🐙 🐙 🐙 🐙 🐙 🐙 🐙 8 Patinhas!"),
+        9: ("NOVE", "Número 9! Quase duas mãos cheias! Falta só um dedinho para dez!", "🎈 🎈 🎈 🎈 🎈 🎈 🎈 🎈 🎈 9 Balões!"),
+        10: ("DEZ", "DEZ! Duas mãozinhas cheias abertas! Todos os dez dedinhos! Parabéns herói!", "🌟 🌟 🌟 🌟 🌟 🌟 🌟 🌟 🌟 🌟 10 Estrelas!"),
+    }
+
+    TONES = [262, 294, 330, 349, 392, 440, 494, 523, 587, 659]
+
+    def __init__(self, os_app):
+        self.os_app = os_app
+        self.win = os_app._create_activity_window("🖐️ CONTAR DE 1 A 10 COM AS MÃOZINHAS")
+        self.win.protocol("WM_DELETE_WINDOW", self._on_close)
+        self.fingers = [False] * 10
+        self.song_job = None
+        self.quiz_target = None
+
+        # Topo: Número Gigante e Itens
+        top_frame = tk.Frame(self.win, bg="#0a192f", padx=16, pady=8, highlightthickness=2, highlightbackground="#38bdf8")
+        top_frame.pack(fill="x", padx=16, pady=(10, 6))
+
+        self.num_lbl = tk.Label(top_frame, text="3", font=("Arial", 38, "bold"), fg="#facc15", bg="#0a192f", width=3)
+        self.num_lbl.pack(side="left", padx=8)
+
+        text_sub = tk.Frame(top_frame, bg="#0a192f")
+        text_sub.pack(side="left", fill="both", expand=True)
+
+        self.title_lbl = tk.Label(text_sub, text="TRÊS", font=("Arial", 18, "bold"), fg="#ffffff", bg="#0a192f", anchor="w")
+        self.title_lbl.pack(fill="x")
+
+        self.items_lbl = tk.Label(text_sub, text="🚀 🚀 🚀 3 Foguetes mágicos!", font=("Arial", 13, "bold"), fg="#38bdf8", bg="#0a192f", anchor="w")
+        self.items_lbl.pack(fill="x")
+
+        tk.Button(
+            top_frame,
+            text="🔊 Ouvir Járvis",
+            bg="#059669",
+            fg="#ffffff",
+            font=("Arial", 12, "bold"),
+            padx=12,
+            pady=6,
+            command=self._speak_current,
+        ).pack(side="right", padx=8)
+
+        # Centro: Canvas Gráfico das Mãozinhas
+        self.canvas = tk.Canvas(self.win, bg="#071224", height=230, highlightthickness=1, highlightbackground="#1e293b")
+        self.canvas.pack(fill="both", expand=True, padx=16, pady=4)
+        self.canvas.bind("<Button-1>", self._on_canvas_click)
+
+        # Barra de feedback
+        self.feedback_lbl = tk.Label(
+            self.win,
+            text="Toque nos dedinhos para levantar ou escolha um número na régua abaixo!",
+            font=("Arial", 12, "bold"),
+            fg="#fef08a",
+            bg=os_app.BG_DARK,
+        )
+        self.feedback_lbl.pack(pady=2)
+
+        # Barra de Botões 0 a 10
+        btn_bar = tk.Frame(self.win, bg=os_app.BG_DARK)
+        btn_bar.pack(fill="x", padx=16, pady=(4, 6))
+
+        colors = ["#64748b", "#ef4444", "#f97316", "#f59e0b", "#10b981", "#06b6d4", "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#e11d48"]
+        self.pill_btns = []
+        for i in range(11):
+            b = tk.Button(
+                btn_bar,
+                text=str(i),
+                bg=colors[i],
+                fg="#ffffff",
+                font=("Arial", 14, "bold"),
+                relief="raised",
+                bd=3,
+                cursor="hand2",
+                command=lambda val=i: self.set_number(val, speak=True),
+            )
+            b.pack(side="left", fill="both", expand=True, padx=2)
+            self.pill_btns.append(b)
+
+        # Botões de Ação Extras (Quiz e Canção)
+        action_bar = tk.Frame(self.win, bg=os_app.BG_DARK)
+        action_bar.pack(fill="x", padx=16, pady=(2, 10))
+
+        tk.Button(
+            action_bar,
+            text="🎮 Jogo: Quantos Dedinhos?",
+            bg="#2563eb",
+            fg="#ffffff",
+            font=("Arial", 12, "bold"),
+            padx=14,
+            pady=6,
+            command=self._start_quiz,
+        ).pack(side="left", padx=4)
+
+        tk.Button(
+            action_bar,
+            text="▶️ Canção de Contar (1 ao 10)",
+            bg="#7c3aed",
+            fg="#ffffff",
+            font=("Arial", 12, "bold"),
+            padx=14,
+            pady=6,
+            command=self._play_song,
+        ).pack(side="left", padx=4)
+
+        self.quiz_frame = tk.Frame(action_bar, bg=os_app.BG_DARK)
+        self.quiz_frame.pack(side="right", padx=4)
+
+        self.finger_boxes = []
+        self._init_hands_geometry()
+        self.set_number(3, speak=False)
+        self.os_app.say(f"Vamos contar com as mãozinhas de um até dez, {self.os_app.brain.name}!")
+
+    def _init_hands_geometry(self):
+        # 10 dedos: 5 na esquerda e 5 na direita
+        # [x, y, w, h, cor, nome, id]
+        self.finger_specs = [
+            (50, 70, 24, 70, "#a855f7", "Mindinho E", 0),
+            (82, 40, 24, 100, "#f97316", "Anelar E", 1),
+            (114, 20, 26, 120, "#22c55e", "Médio E", 2),
+            (148, 35, 26, 105, "#0284c7", "Indicador E", 3),
+            (182, 90, 28, 65, "#eab308", "Polegar E", 4),
+            (320, 90, 28, 65, "#eab308", "Polegar D", 5),
+            (354, 35, 26, 105, "#0284c7", "Indicador D", 6),
+            (388, 20, 26, 120, "#22c55e", "Médio D", 7),
+            (420, 40, 24, 100, "#f97316", "Anelar D", 8),
+            (452, 70, 24, 70, "#a855f7", "Mindinho D", 9),
+        ]
+
+    def _draw_hands(self):
+        self.canvas.delete("all")
+        w = self.canvas.winfo_width() or 540
+        h = self.canvas.winfo_height() or 230
+
+        # Offset para centralizar no canvas
+        offset_x = max(10, (w - 530) // 2)
+
+        # Palmas das Mãos
+        # Mão Esquerda
+        self.canvas.create_oval(offset_x + 50, 130, offset_x + 200, 220, fill="#1e293b", outline="#38bdf8", width=3)
+        self.canvas.create_text(offset_x + 125, 175, text="MÃO ESQUERDA", fill="#94a3b8", font=("Arial", 9, "bold"))
+
+        # Mão Direita
+        self.canvas.create_oval(offset_x + 320, 130, offset_x + 470, 220, fill="#1e293b", outline="#38bdf8", width=3)
+        self.canvas.create_text(offset_x + 395, 175, text="MÃO DIREITA", fill="#94a3b8", font=("Arial", 9, "bold"))
+
+        # Desenhar Dedos
+        self.finger_boxes = []
+        for x, y, fw, fh, col, name, idx in self.finger_specs:
+            bx = offset_x + x
+            is_up = self.fingers[idx]
+            if is_up:
+                dy = y
+                dh = fh
+                f_fill = col
+                f_out = "#ffffff"
+                f_w = 3
+            else:
+                dy = y + fh - 24
+                dh = 24
+                f_fill = "#1e293b"
+                f_out = "#334155"
+                f_w = 2
+
+            tag_id = self.canvas.create_rectangle(bx, dy, bx + fw, dy + dh, fill=f_fill, outline=f_out, width=f_w)
+            
+            # Círculo com o número do dedo no topo
+            cx = bx + fw // 2
+            cy = dy - 12 if is_up else dy - 8
+            self.canvas.create_oval(cx - 10, cy - 10, cx + 10, cy + 10, fill=col if is_up else "#0f172a", outline="#ffffff" if is_up else "#334155", width=2)
+            self.canvas.create_text(cx, cy, text=str(idx + 1), fill="#ffffff" if is_up else "#64748b", font=("Arial", 9, "bold"))
+
+            self.finger_boxes.append((bx, dy, bx + fw, dy + dh, idx))
+
+    def _on_canvas_click(self, e):
+        self._stop_song()
+        for x1, y1, x2, y2, idx in self.finger_boxes:
+            if x1 - 8 <= e.x <= x2 + 8 and y1 - 25 <= e.y <= y2 + 10:
+                self.fingers[idx] = not self.fingers[idx]
+                tone = self.TONES[idx]
+                self.os_app.voice.play_tone(tone, 180)
+                count = sum(self.fingers)
+                self.set_number(count, speak=False)
+                self.feedback_lbl.configure(text=f"{count} dedinho{'s' if count != 1 else ''} levantado{'s' if count != 1 else ''}!")
+                return
+
+    def set_number(self, num: int, speak: bool = True):
+        self._stop_song()
+        num = max(0, min(10, num))
+        for i in range(10):
+            self.fingers[i] = i < num
+
+        self.num_lbl.configure(text=str(num))
+        title, hint, items = self.FINGER_DATA.get(num, self.FINGER_DATA[0])
+        self.title_lbl.configure(text=title)
+        self.items_lbl.configure(text=items)
+        self.feedback_lbl.configure(text=hint)
+
+        self._draw_hands()
+
+        # Destaque no botão
+        for idx, btn in enumerate(self.pill_btns):
+            if idx == num:
+                btn.configure(relief="sunken", bd=5)
+            else:
+                btn.configure(relief="raised", bd=3)
+
+        if num == 10:
+            self.os_app._add_star()
+            self.os_app.voice.play_tone(659, 120)
+            self.win.after(120, lambda: self.os_app.voice.play_tone(880, 240))
+
+        if speak:
+            self.os_app.say(hint)
+
+    def _speak_current(self):
+        count = sum(self.fingers)
+        _, hint, _ = self.FINGER_DATA.get(count, self.FINGER_DATA[0])
+        self.os_app.say(hint)
+
+    def _start_quiz(self):
+        self._stop_song()
+        for w in self.quiz_frame.winfo_children():
+            w.destroy()
+
+        self.quiz_target = random.randint(1, 10)
+        for i in range(10):
+            self.fingers[i] = i < self.quiz_target
+
+        self.num_lbl.configure(text="?")
+        self.title_lbl.configure(text="QUANTOS DEDINHOS?")
+        self.items_lbl.configure(text="Conte os dedinhos levantados na tela!")
+        msg = f"Quantos dedinhos o Járvis está levantando, {self.os_app.brain.name}?"
+        self.feedback_lbl.configure(text=msg)
+        self.os_app.say(f"Quantos dedinhos o Járvis está mostrando? Conte com a sua mãozinha e toque no número certo!")
+        self._draw_hands()
+
+        opts = {self.quiz_target}
+        while len(opts) < 3:
+            opts.add(random.randint(1, 10))
+        shuffled = sorted(list(opts))
+
+        for opt in shuffled:
+            tk.Button(
+                self.quiz_frame,
+                text=str(opt),
+                bg="#2563eb",
+                fg="#ffffff",
+                font=("Arial", 16, "bold"),
+                width=3,
+                command=lambda val=opt: self._check_quiz(val),
+            ).pack(side="left", padx=4)
+
+    def _check_quiz(self, picked: int):
+        if picked == self.quiz_target:
+            self.os_app._add_star()
+            self.os_app.voice.play_tone(659, 120)
+            self.win.after(120, lambda: self.os_app.voice.play_tone(880, 220))
+            self.set_number(self.quiz_target, speak=False)
+            self.feedback_lbl.configure(text=f"🎉 PARABÉNS! Você acertou: são {self.quiz_target} dedinhos! Ganhou uma estrela!")
+            self.os_app.say(f"Parabéns, {self.os_app.brain.name}! São exatamente {self.quiz_target} dedinhos! Você é nota dez!")
+            for w in self.quiz_frame.winfo_children():
+                w.destroy()
+        else:
+            self.os_app.voice.play_tone(220, 180)
+            self.feedback_lbl.configure(text=f"Quase! Vamos contar juntos: são {self.quiz_target} dedinhos!")
+            self.os_app.say(f"Quase! Vamos contar juntos os dedinhos levantados! Tente tocar no número certo!")
+
+    def _play_song(self):
+        self._stop_song()
+        self.os_app.say(f"Vamos cantar e contar de um até dez levantando os dedinhos, {self.os_app.brain.name}!")
+        step = 1
+
+        def next_num():
+            nonlocal step
+            if step > 10:
+                self._stop_song()
+                return
+            self.set_number(step, speak=True)
+            step += 1
+            self.song_job = self.win.after(3500, next_num)
+
+        self.song_job = self.win.after(2200, next_num)
+
+    def _stop_song(self):
+        if self.song_job:
+            self.win.after_cancel(self.song_job)
+            self.song_job = None
+
+    def _on_close(self):
+        self._stop_song()
+        self.win.destroy()

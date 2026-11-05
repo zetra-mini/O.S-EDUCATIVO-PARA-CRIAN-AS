@@ -8,7 +8,7 @@ import threading
 import tkinter as tk
 from tkinter import messagebox
 
-from academia_emocoes_tech import EmotionsCenterModal, TechAcademyModal
+from academia_emocoes_tech import EmotionsCenterModal, FingerCountingModal, TechAcademyModal
 from biblioteca_livros import BookLibraryModal
 from gestao_tempo_midia import CinemaStarkModal, MediaTimeManager
 from jarvis_brain import JarvisBrain
@@ -197,8 +197,17 @@ class JarvisKidsOS:
         )
         self._make_big_module_btn(
             left_col,
+            icon="🖐️",
+            title="NÚMEROS & MÃOS",
+            subtitle="Contar de 1 a 10 nos Dedinhos",
+            color="#f59e0b",
+            voice_hint="Números e dedinhos das mãos! Aprenda a contar de um até dez!",
+            command=self._open_finger_counting,
+        )
+        self._make_big_module_btn(
+            left_col,
             icon="⌨",
-            title="MOUSE & DIGITAÇÃO",
+            title="MOUSE & TECLADO",
             subtitle="Usar Mouse e as 2 Mãozinhas",
             color=self.CYAN,
             voice_hint="Academia de Tecnologia! Aprenda a usar o mouse e digitar com as duas mãozinhas!",
@@ -435,6 +444,9 @@ class JarvisKidsOS:
     # ==========================================================================
     def _open_book_library(self):
         BookLibraryModal(self)
+
+    def _open_finger_counting(self):
+        FingerCountingModal(self)
 
     def _open_tech_academy(self):
         TechAcademyModal(self)
@@ -715,6 +727,8 @@ class JarvisKidsOS:
             reply = self.brain.ask_topic(t_key)
             ans_box.configure(text=reply)
             self.say(reply)
+            if t_key == "numeros":
+                self.root.after(1200, lambda: FingerCountingModal(self))
 
         for idx, (label, key, col) in enumerate(topics):
             r, c = divmod(idx, 3)

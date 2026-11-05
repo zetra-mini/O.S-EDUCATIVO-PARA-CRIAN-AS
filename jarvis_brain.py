@@ -134,9 +134,11 @@ class JarvisBrain:
                 "Sabia que muitos passarinhos que cantam hoje na janela são primos distantes dos dinossauros?",
             ],
             "numeros": [
-                "Vamos contar juntos nos propulsores! Um, dois, três, quatro, cinco, seis, sete, oito, nove, dez! Decolar!",
-                "Você tem cinco dedinhos em uma mão e cinco na outra! Juntando as duas mãos, temos dez dedinhos super espertos!",
-                "Um olhinho, dois olhinhos! Uma orelhinha, duas orelhinhas! Você conta super bem!",
+                "Vamos contar nas mãozinhas! Levante um dedinho: um! Mais um: dois! Mais um: três! Mais um: quatro! E a mãozinha cheia dando tchauzinho: cinco! Você é nota dez!",
+                "Você tem cinco dedinhos em uma mão e cinco na outra! Juntando as duas mãos abertas, temos dez dedinhos de herói Stark!",
+                "Olhe para sua mãozinha! Cada dedinho tem um superpoder: polegar, indicador, médio, anelar e mindinho! Conte com o Járvis de um até dez!",
+                "Cinco dedinhos na mão esquerda mais cinco na mão direita! Cinco mais cinco é igual a dez! Parabéns, pequeno gênio!",
+                "Um foguete voando, dois coelhinhos pulando, três porquinhos cantando! Contar com os dedinhos é pura diversão!",
             ],
             "animais": [
                 "O leão é o rei da selva e faz um rugido bem forte: Uááár! Qual bichinho você mais gosta?",
