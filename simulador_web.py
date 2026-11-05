@@ -231,7 +231,12 @@ def api_provider_test():
     ok, msg = brain.test_provider(provider, key, model, url)
     if ok:
         p = provider.lower()
-        if p == "gemini" and key:
+        if p == "opencode":
+            if model:
+                brain.config["opencode_model"] = model
+            if key:
+                brain.config["opencode_server"] = key
+        elif p == "gemini" and key:
             brain.config["gemini_api_key"] = key
         elif p == "openai" and key:
             brain.config["openai_api_key"] = key
@@ -303,6 +308,9 @@ def api_save_config():
         "active_provider",
         "mode",
         "voice_profile",
+        "opencode_model",
+        "opencode_server",
+        "opencode_cli_path",
         "ollama_url",
         "ollama_model",
         "gemini_model",

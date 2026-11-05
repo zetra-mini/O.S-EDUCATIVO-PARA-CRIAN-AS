@@ -1193,6 +1193,7 @@
       const mBadge = document.getElementById('mode-badge');
       if (mBadge) {
         const provMap = {
+          opencode: '⚡ OPENCODE ATIVO',
           gemini: data.config.has_gemini_key ? '✨ GEMINI 3.8 ATIVO' : '✨ GEMINI (LOCAL)',
           openai: '🤖 OPENAI CHATGPT',
           groq: '⚡ GROQ LLAMA 3.3',
@@ -4157,11 +4158,12 @@
           <!-- SELETOR DINÂMICO DE PROVEDORES DE IA -->
           <div style="background:#091326; border:2px solid #3b82f6; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;">
             <h3 style="color:#60a5fa; font-size:1.15rem; font-weight:900;">🤖 Escolha o Motor de Inteligência Artificial:</h3>
-            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;" id="ai-provider-tabs">
-              <button type="button" class="big-btn" style="background:#2563eb;" id="tab-gemini">✨ Google Gemini</button>
-              <button type="button" class="big-btn" style="background:#059669;" id="tab-openai">🤖 OpenAI ChatGPT</button>
-              <button type="button" class="big-btn" style="background:#f97316;" id="tab-groq">⚡ Groq Cloud</button>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;" id="ai-provider-tabs">
+              <button type="button" class="big-btn" style="background:#7c3aed;" id="tab-opencode">⚡ OpenCode CLI (Prioritário)</button>
               <button type="button" class="big-btn" style="background:#475569;" id="tab-ollama">🏠 IA Local (Ollama)</button>
+              <button type="button" class="big-btn" style="background:#2563eb;" id="tab-gemini">✨ Google Gemini</button>
+              <button type="button" class="big-btn" style="background:#ea580c;" id="tab-groq">⚡ Groq Cloud</button>
+              <button type="button" class="big-btn" style="background:#059669;" id="tab-openai">🤖 OpenAI ChatGPT</button>
             </div>
 
             <!-- CONTAINER DINÂMICO PARA CADA PROVEDOR -->
@@ -4232,7 +4234,23 @@
         const box = document.getElementById('provider-details-box');
         document.querySelectorAll('#ai-provider-tabs button').forEach(b => b.style.opacity = '0.5');
 
-        if (prov === 'gemini') {
+        if (prov === 'opencode') {
+          document.getElementById('tab-opencode').style.opacity = '1';
+          box.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-weight:800; color:#c084fc;">⚡ OpenCode CLI (Localhost & LAN):</span>
+              <span style="color:#a855f7; font-size:0.85rem; font-weight:700;">Motor Prioritário Recomendado</span>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+              <input id="prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="Modelo (ex: google/gemini-2.0-flash ou opencode/mimo-v2.6-flash-free)" style="flex:1; min-width:200px; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+              <input id="prov-key" value="${c.opencode_server || ''}" placeholder="Servidor LAN (opcional: http://192.168.1.X:4096)" style="flex:1; min-width:200px; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
+              <button type="button" class="big-btn" style="background:#7c3aed;" id="btn-test-prov">⚡ Testar OpenCode</button>
+            </div>
+            <div style="font-size:0.82rem; color:#94a3b8;">
+              💡 Executa o utilitário <code>opencode run</code>. Pode rodar 100% no netbook ou conectar ao OpenCode de um PC mais potente na mesma rede Wi-Fi via servidor LAN!
+            </div>
+          `;
+        } else if (prov === 'gemini') {
           document.getElementById('tab-gemini').style.opacity = '1';
           box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -4285,9 +4303,11 @@
         document.getElementById('btn-test-prov').onclick = async () => {
           const keyInput = document.getElementById('prov-key');
           const urlInput = document.getElementById('prov-url');
+          const modInput = document.getElementById('prov-model');
           const payload = {
             provider: prov,
             api_key: keyInput ? keyInput.value.trim() : '',
+            model: modInput ? modInput.value.trim() : '',
             ollama_url: urlInput ? urlInput.value.trim() : ''
           };
 
@@ -4312,6 +4332,7 @@
         };
       }
 
+      document.getElementById('tab-opencode').onclick = () => renderProviderDetails('opencode');
       document.getElementById('tab-gemini').onclick = () => renderProviderDetails('gemini');
       document.getElementById('tab-openai').onclick = () => renderProviderDetails('openai');
       document.getElementById('tab-groq').onclick = () => renderProviderDetails('groq');
@@ -4346,9 +4367,14 @@
         };
         const keyInp = document.getElementById('prov-key');
         if (keyInp && keyInp.value.trim()) {
-          if (selectedProvider === 'gemini') payload.gemini_api_key = keyInp.value.trim();
+          if (selectedProvider === 'opencode') payload.opencode_server = keyInp.value.trim();
+          else if (selectedProvider === 'gemini') payload.gemini_api_key = keyInp.value.trim();
           else if (selectedProvider === 'openai') payload.openai_api_key = keyInp.value.trim();
           else if (selectedProvider === 'groq') payload.groq_api_key = keyInp.value.trim();
+        }
+        const modInp = document.getElementById('prov-model');
+        if (modInp && modInp.value.trim() && selectedProvider === 'opencode') {
+          payload.opencode_model = modInp.value.trim();
         }
         const urlInp = document.getElementById('prov-url');
         if (urlInp && urlInp.value.trim()) payload.ollama_url = urlInp.value.trim();

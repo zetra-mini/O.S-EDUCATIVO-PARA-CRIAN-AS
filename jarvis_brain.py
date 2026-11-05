@@ -2,6 +2,8 @@ import json
 import os
 import random
 import re
+import subprocess
+import sys
 import urllib.error
 import urllib.request
 
@@ -10,8 +12,11 @@ CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 DEFAULT_CONFIG = {
     "child_name": "Pequeno Inventor",
-    "active_provider": "gemini",  # 'gemini', 'openai', 'groq', 'ollama', 'offline'
-    "mode": "gemini",  # Mantido para retrocompatibilidade
+    "active_provider": "opencode",  # 'opencode', 'ollama', 'gemini', 'openai', 'groq', 'offline'
+    "mode": "opencode",  # Mantido para retrocompatibilidade
+    "opencode_model": "google/gemini-2.0-flash",
+    "opencode_server": "",
+    "opencode_cli_path": "opencode",
     "gemini_api_key": "",
     "gemini_model": "gemini-3.8-flash",
     "openai_api_key": "",
@@ -259,7 +264,16 @@ class JarvisBrain:
     def _try_smart_conversation(self, user_input: str) -> tuple[str, str]:
         prov = self.provider
 
-        if prov == "gemini":
+        if prov == "opencode":
+            ans = self._call_opencode(user_input)
+            if ans:
+                return ans, "opencode"
+            # Fallback para Ollama se disponível localmente
+            ans_local = self._call_ollama(user_input)
+            if ans_local:
+                return ans_local, "ollama"
+
+        elif prov == "gemini":
             ans = self._call_gemini_interactions(user_input)
             if ans:
                 return ans, "gemini"
@@ -294,6 +308,43 @@ class JarvisBrain:
                     return ans_gem, "gemini"
 
         return "", ""
+
+    def _call_opencode(self, user_input: str) -> str:
+        """Executa o OpenCode CLI ou orquestra via servidor OpenCode LAN."""
+        try:
+            cli = self.config.get("opencode_cli_path", "opencode")
+            model = self.config.get("opencode_model", "google/gemini-2.0-flash")
+            server = self.config.get("opencode_server", "").strip()
+
+            prompt = (
+                f"{self._child_system_instruction()}\n\n"
+                f"Mensagem da criança {self.name}: {user_input}\n"
+                f"Responda diretamente em no máximo 1 ou 2 frases carinhosas e alegres."
+            )
+
+            cmd = [cli, "run", prompt, "--format", "default"]
+            if model:
+                cmd.extend(["--model", model])
+            if server:
+                cmd.extend(["--server", server])
+
+            res = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=18,
+                shell=(sys.platform == "win32"),
+            )
+            out = (res.stdout or "").strip()
+            if out:
+                ans = self._clean_llm_reply(out)
+                if ans:
+                    self.local_history.append({"role": "user", "content": user_input})
+                    self.local_history.append({"role": "assistant", "content": ans})
+                    return ans
+        except Exception:
+            pass
+        return ""
 
     def _call_gemini_interactions(self, user_input: str, override_key: str = "") -> str:
         api_key = override_key.strip() or self.get_effective_gemini_key()
@@ -418,11 +469,29 @@ class JarvisBrain:
         return ""
 
     def test_provider(self, provider: str, candidate_key: str = "", model: str = "", ollama_url: str = "") -> tuple[bool, str]:
-        """Testa e valida ao vivo qualquer um dos 4 provedores no Painel dos Pais."""
+        """Testa e valida ao vivo qualquer um dos provedores no Painel dos Pais."""
         p = provider.lower()
         test_prompt = f"Dê um oi bem alegre de 1 frase dizendo que você está pronto para ser o melhor amigo robô de {self.name}!"
 
-        if p == "gemini":
+        if p == "opencode":
+            cli = self.config.get("opencode_cli_path", "opencode")
+            try:
+                res = subprocess.run(
+                    [cli, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    shell=(sys.platform == "win32"),
+                )
+                ver = (res.stdout or "").strip()
+                if "opencode" in ver.lower():
+                    m = model.strip() or self.config.get("opencode_model", "google/gemini-2.0-flash")
+                    return True, f"OpenCode CLI detectado com sucesso ({ver})! Pronto para orquestrar com o modelo: {m}."
+                return False, f"OpenCode executou, mas resposta foi: {ver[:90]}"
+            except Exception as exc:
+                return False, f"OpenCode CLI não encontrado no PATH: {str(exc)[:120]}"
+
+        elif p == "gemini":
             key = candidate_key.strip() or self.get_effective_gemini_key()
             if not key:
                 return False, "Cole a chave do Google Gemini (obtida em aistudio.google.com/apikey) para testar."
