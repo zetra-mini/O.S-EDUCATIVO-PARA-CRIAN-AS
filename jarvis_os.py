@@ -53,6 +53,11 @@ class JarvisKidsOS:
         if self.kiosk:
             self.root.attributes("-fullscreen", True)
             self.root.protocol("WM_DELETE_WINDOW", lambda: None)
+        else:
+            self.root.lift()
+            self.root.attributes("-topmost", True)
+            self.root.after(1000, lambda: self.root.attributes("-topmost", False))
+            self.root.focus_force()
 
         self.angle = 0
         self.pulse = 0
