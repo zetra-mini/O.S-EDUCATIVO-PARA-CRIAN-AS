@@ -419,21 +419,28 @@
       filter: brightness(1.35);
     }
 
-    /* FOOTER VOZ FALADA (LEGENDA EM FONTE GRANDE) */
+    /* FOOTER VOZ FALADA (LEGENDA EM FONTE RESPONSIVA E ROLAGEM SUAVE) */
     footer {
-      height: 68px;
-      margin: 0 20px 10px;
+      min-height: 52px;
+      max-height: 74px;
+      margin: 0 20px 8px;
       background: #071324;
       border: 2px solid var(--cyan);
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6px 20px;
+      padding: 6px 18px;
       text-align: center;
-      font-size: 1.18rem;
+      font-size: clamp(0.92rem, 1.7vw, 1.18rem);
       font-weight: 800;
+      line-height: 1.35;
       color: #f0f9ff;
+      overflow-y: auto;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      scrollbar-width: thin;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
     }
 
     /* MODAL DE ATIVIDADE FULLSCREEN */
@@ -681,8 +688,11 @@
         padding: 10px 14px;
       }
       #subtitle-bar {
-        font-size: 0.92rem;
-        padding: 4px 10px;
+        font-size: clamp(0.82rem, 1.4vw, 0.95rem);
+        max-height: 52px;
+        min-height: 40px;
+        padding: 3px 10px;
+        line-height: 1.25;
       }
     }
 
@@ -792,22 +802,22 @@
   <main>
     <!-- COLUNA ESQUERDA: HISTÓRIAS, LER & ESCREVER, NÚMEROS & MÃOS, TECLADO & MOUSE -->
     <div class="col">
-      <div class="toy-card" style="border-color: var(--blue);" onclick="openBooksLibrary()" onmouseenter="speakCardHint('Histórias mágicas com contos infantis e sons divertidos!')">
+      <div class="toy-card" style="border-color: var(--blue);" onclick="openBooksLibrary()">
         <div class="toy-icon">📚</div>
         <div class="toy-title">HISTÓRIAS</div>
       </div>
 
-      <div class="toy-card" style="border-color: #10b981;" onclick="openLiteracyAcademy()" onmouseenter="speakCardHint('Aprender a ler e escrever! Sons das letras e primeiras palavras!')">
+      <div class="toy-card" style="border-color: #10b981;" onclick="openLiteracyAcademy()">
         <div class="toy-icon">🔤</div>
         <div class="toy-title">LER & ESCREVER</div>
       </div>
 
-      <div class="toy-card" style="border-color: #f59e0b;" onclick="openFingerCounting()" onmouseenter="speakCardHint('Números e contar com os dedinhos das mãos de um até dez!')">
+      <div class="toy-card" style="border-color: #f59e0b;" onclick="openFingerCounting()">
         <div class="toy-icon">🖐️</div>
         <div class="toy-title">NÚMEROS & MÃOS</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()" onmouseenter="speakCardHint('Academia de Tecnologia! Treino do teclado e mouse com o Járvis!')">
+      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()">
         <div class="toy-icon">⌨️</div>
         <div class="toy-title">TECLADO & MOUSE</div>
       </div>
@@ -859,22 +869,22 @@
 
     <!-- COLUNA DIREITA: MÚSICA, PINTAR, VÍDEOS, EMOÇÕES -->
     <div class="col">
-      <div class="toy-card" style="border-color: var(--purple);" onclick="openMusicComposer()" onmouseenter="speakCardHint('Música e instrumentos! Piano, bateria e canções infantis!')">
+      <div class="toy-card" style="border-color: var(--purple);" onclick="openMusicComposer()">
         <div class="toy-icon">🎵</div>
         <div class="toy-title">MÚSICA</div>
       </div>
 
-      <div class="toy-card" style="border-color: #ec4899;" onclick="openStarkPaint()" onmouseenter="speakCardHint('Pintura mágica com cores neon e brilhantes!')">
+      <div class="toy-card" style="border-color: #ec4899;" onclick="openStarkPaint()">
         <div class="toy-icon">🎨</div>
         <div class="toy-title">PINTAR</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--red);" onclick="openCinemaStark()" onmouseenter="speakCardHint('Cinema no horário! YouTube Kids e Netflix!')">
+      <div class="toy-card" style="border-color: var(--red);" onclick="openCinemaStark()">
         <div class="toy-icon">🎬</div>
         <div class="toy-title">VÍDEOS</div>
       </div>
 
-      <div class="toy-card" style="border-color: var(--green);" onclick="openEmotionsCenter()" onmouseenter="speakCardHint('Centro das emoções e florzinha da calma!')">
+      <div class="toy-card" style="border-color: var(--green);" onclick="openEmotionsCenter()">
         <div class="toy-icon">💚</div>
         <div class="toy-title">EMOÇÕES</div>
       </div>
@@ -1114,11 +1124,8 @@
 
     function speakCardHint(text) {
       if (voiceState !== 'idle') return;
-      document.getElementById('subtitle-bar').textContent = text;
-      // Fala apenas se não estiver falando agora
-      if (!currentAudio && (!window.speechSynthesis || !window.speechSynthesis.speaking)) {
-        speak(text);
-      }
+      const sub = document.getElementById('subtitle-bar');
+      if (sub) sub.textContent = text;
     }
 
     let armorCelebrated = false;
@@ -3698,87 +3705,297 @@
       nextRound();
     }
 
-    function openEmotionsCenter() {
-      const body = openModal('💚 CENTRO DAS EMOÇÕES & REATOR DA CALMA');
-      const n = appState.config.child_name;
-      speak(`Como o seu coração está se sentindo agora, ${n}? Toque em um rostinho!`);
+    // =========================================================================
+    // JOGO DAS EMOÇÕES & REATOR DA CALMA REFORMULADO (INTELIGÊNCIA EMOCIONAL)
+    // =========================================================================
+    const EMOTION_SITUATIONS = [
+      {
+        story: '🦖 O Tito Dinossauro ganhou um carrinho novo super veloz! Como o Tito está se sentindo?',
+        correct: 'FELIZ',
+        options: [
+          { emo: '😊', label: 'FELIZ', col: '#16a34a' },
+          { emo: '😢', label: 'TRISTE', col: '#2563eb' },
+          { emo: '😠', label: 'BRAVO', col: '#dc2626' }
+        ],
+        lesson: 'Isso mesmo! O Tito está super FELIZ! Quando estamos alegres, o sorriso brilha e dá vontade de dançar!'
+      },
+      {
+        story: '🏰 A torre de blocos do robô caiu no chão e desmanchou... Ele ficou chateado. Como ele se sente?',
+        correct: 'BRAVO',
+        options: [
+          { emo: '😠', label: 'BRAVO', col: '#dc2626' },
+          { emo: '😊', label: 'FELIZ', col: '#16a34a' },
+          { emo: '😴', label: 'COM SONO', col: '#64748b' }
+        ],
+        lesson: 'Você acertou! Ele ficou BRAVO! Tudo bem ficar chateado: a gente respira fundo e constrói de novo ainda mais forte!'
+      },
+      {
+        story: '⚡ Cabrum! Deu um trovão bem alto na chuva escura! O cachorrinho correu pro colo do papai. O que ele sente?',
+        correct: 'COM MEDO',
+        options: [
+          { emo: '😨', label: 'COM MEDO', col: '#7c3aed' },
+          { emo: '😊', label: 'FELIZ', col: '#16a34a' },
+          { emo: '😋', label: 'COM FOME', col: '#f59e0b' }
+        ],
+        lesson: 'Exatamente! Ele está COM MEDO! O medo avisa pra gente se proteger. Um abraço apertado faz o medo passar!'
+      },
+      {
+        story: '🧸 O ursinho perdeu o balão dele que voou bem alto pro céu... Ele ficou com os olhinhos cheios de água.',
+        correct: 'TRISTE',
+        options: [
+          { emo: '😢', label: 'TRISTE', col: '#2563eb' },
+          { emo: '😊', label: 'FELIZ', col: '#16a34a' },
+          { emo: '😎', label: 'RADICAL', col: '#0284c7' }
+        ],
+        lesson: 'Muito bem! Ele está TRISTE! Quando estamos tristes, um carinho da família e um abraço fofinho curam o coração!'
+      },
+      {
+        story: '❤️ A mamãe deu um abraço bem quentinho com cobertor macio e contou uma história gostosa de ninar!',
+        correct: 'AMOR / CALMO',
+        options: [
+          { emo: '❤️', label: 'AMOR / CALMO', col: '#ec4899' },
+          { emo: '😠', label: 'BRAVO', col: '#dc2626' },
+          { emo: '😨', label: 'COM MEDO', col: '#7c3aed' }
+        ],
+        lesson: 'Perfeito! O coração fica cheio de AMOR e PAZ! O amor da família é o maior superpoder do mundo!'
+      }
+    ];
 
-      const emotions = [
-        { e: '😊', t: 'FELIZ', c: '#16a34a', m: `Que maravilha que você está feliz, ${n}! Espalhe esse sorriso lindo pela casa!` },
-        { e: '😠', t: 'BRAVO', c: '#dc2626', m: `Tudo bem ficar bravo quando algo dá errado, ${n}. Vamos respirar com o Reator da Calma para esfriar esse vulcão?` },
-        { e: '😢', t: 'TRISTE', c: '#2563eb', m: `Quando estamos tristes, um abraço bem apertado na família e respirar devagar ajudam o coração!` },
-        { e: '😨', t: 'COM MEDO', c: '#7c3aed', m: `Você está seguro e protegido, ${n}! Todo herói respira fundo para ganhar coragem!` },
-        { e: '⚡', t: 'AGITADO', c: '#d97706', m: `Seus propulsores estão super rápidos! Vamos acalmar a armadura respirando juntos?` }
-      ];
+    let emoCurrentRound = 0;
+    let breathCycleTimer = null;
+
+    function openEmotionsCenter() {
+      const body = openModal('💚 JOGO DAS EMOÇÕES & REATOR DA CALMA');
+      const n = appState.config.child_name;
+      speak(`Bem-vindo ao Jogo das Emoções, ${n}! Vamos descobrir como o coração funciona e aprender a respirar com a Florzinha da Calma!`);
 
       body.innerHTML = `
-        <h3 style="text-align:center; font-size:1.6rem; margin-bottom:16px;">Como o seu coração está se sentindo agora?</h3>
-        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:12px;" id="emo-grid"></div>
-        <div id="emo-msg" style="background:#0b192c; border:2px solid #38bdf8; border-radius:16px; padding:20px; margin:20px 0; font-size:1.35rem; font-weight:800; text-align:center;">
-          Toque em um dos rostinhos acima!
+        <!-- ABAS DO JOGO DAS EMOÇÕES -->
+        <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+          <button type="button" class="music-tab-btn active" id="tab-emo-game" onclick="switchEmotionsTab('game')">🎮 Jogo: Como o Amigo se Sente?</button>
+          <button type="button" class="music-tab-btn" id="tab-emo-wheel" onclick="switchEmotionsTab('wheel')">🎭 Meu Coração & Sentimentos</button>
+          <button type="button" class="music-tab-btn" id="tab-emo-breath" onclick="switchEmotionsTab('breath')">🌸 Florzinha da Calma (Respiração)</button>
         </div>
-        <div style="text-align:center;">
-          <button type="button" class="big-btn" style="background:#0284c7;" id="btn-breath">🌬️ RESPIRAR COM A FLORZINHA DA CALMA</button>
+
+        <div id="emotions-main-stage" style="flex:1; display:flex; flex-direction:column;"></div>
+      `;
+
+      switchEmotionsTab('game');
+    }
+
+    function switchEmotionsTab(tabKey) {
+      if (breathCycleTimer) {
+        clearTimeout(breathCycleTimer);
+        breathCycleTimer = null;
+      }
+      document.querySelectorAll('#activity-modal .music-tab-btn').forEach(b => b.classList.remove('active'));
+      const activeTab = document.getElementById(`tab-emo-${tabKey}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      const stage = document.getElementById('emotions-main-stage');
+      if (!stage) return;
+
+      if (tabKey === 'game') {
+        renderEmotionsGameStage(stage);
+      } else if (tabKey === 'wheel') {
+        renderEmotionsFeelingsStage(stage);
+      } else if (tabKey === 'breath') {
+        renderEmotionsBreathingStage(stage);
+      }
+    }
+
+    function renderEmotionsGameStage(stage) {
+      const sit = EMOTION_SITUATIONS[emoCurrentRound % EMOTION_SITUATIONS.length];
+
+      stage.innerHTML = `
+        <div style="background:#0a192f; border:3px solid #10b981; border-radius:18px; padding:18px; margin-bottom:14px; text-align:center;">
+          <div style="font-size:1.15rem; color:#38bdf8; font-weight:800; margin-bottom:6px;">🌟 DESAFIO DAS EMOÇÕES (Fase ${(emoCurrentRound % EMOTION_SITUATIONS.length) + 1} de ${EMOTION_SITUATIONS.length})</div>
+          <div style="font-size:1.45rem; font-weight:900; color:#ffffff; line-height:1.4;" id="emo-story-text">
+            ${sit.story}
+          </div>
+        </div>
+
+        <div style="font-size:1.25rem; font-weight:900; color:#facc15; text-align:center; margin-bottom:14px;" id="emo-prompt-text">
+          Toque no rostinho que mostra o que ele está sentindo:
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:14px;" id="emo-quiz-options"></div>
+
+        <div id="emo-game-feedback" style="background:#071224; border:2px solid #334155; border-radius:14px; padding:12px; font-size:1.2rem; font-weight:800; color:#f0f9ff; text-align:center; min-height:48px; display:flex; align-items:center; justify-content:center;">
+          Escolha uma carinha acima!
         </div>
       `;
 
-      const grid = document.getElementById('emo-grid');
-      emotions.forEach(item => {
+      speak(sit.story);
+
+      const optGrid = document.getElementById('emo-quiz-options');
+      sit.options.forEach(opt => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'big-btn';
-        btn.style.cssText = `background:${item.c}; padding:20px 10px; font-size:1.3rem;`;
-        btn.innerHTML = `<div style="font-size:3rem; margin-bottom:6px;">${item.e}</div>${item.t}`;
+        btn.style.cssText = `background:${opt.col}; padding:18px 12px; font-size:1.35rem; font-weight:900; display:flex; flex-direction:column; align-items:center; gap:8px;`;
+        btn.innerHTML = `<span style="font-size:3.2rem;">${opt.emo}</span><span>${opt.label}</span>`;
+        btn.onclick = () => checkEmotionAnswer(opt.label, sit);
+        optGrid.appendChild(btn);
+      });
+    }
+
+    function checkEmotionAnswer(selectedLabel, sit) {
+      const fb = document.getElementById('emo-game-feedback');
+      if (selectedLabel === sit.correct) {
+        playTone(659, 120);
+        setTimeout(() => playTone(880, 220), 120);
+        addStarReward();
+        if (fb) {
+          fb.style.borderColor = '#10b981';
+          fb.style.color = '#4ade80';
+          fb.textContent = `🎉 ${sit.lesson} (+1 Estrela!)`;
+        }
+        speak(sit.lesson);
+        setTimeout(() => {
+          emoCurrentRound++;
+          const stage = document.getElementById('emotions-main-stage');
+          if (stage) renderEmotionsGameStage(stage);
+        }, 4000);
+      } else {
+        playTone(240, 180);
+        if (fb) {
+          fb.style.borderColor = '#ef4444';
+          fb.style.color = '#fca5a5';
+          fb.textContent = `Quase! Olhe com carinho para a história e tente outro rostinho!`;
+        }
+        speak('Quase! Pense no que aconteceu na história e escolha a carinha certa!');
+      }
+    }
+
+    function renderEmotionsFeelingsStage(stage) {
+      const n = appState.config.child_name;
+      const emotionsList = [
+        { e: '😊', t: 'ALEGRIA', c: '#eab308', m: `A alegria brilha como o Sol, ${n}! Dá vontade de pular, rir e dançar com a família!` },
+        { e: '😠', t: 'RAIVA', c: '#dc2626', m: `A raiva é como um vulcão quente que quer explodir. Quando ela vier, respiramos fundo três vezes para esfriar o vulcão!` },
+        { e: '😢', t: 'TRISTEZA', c: '#2563eb', m: `A tristeza é como um dia de chuva calma. Um abraço bem apertado e um carinho ajudam o coração a sarar!` },
+        { e: '😨', t: 'MEDO', c: '#7c3aed', m: `O medo faz a gente se esconder. Mas você é corajoso, ${n}! Segure a mão do papai ou da mamãe e respire!` },
+        { e: '😌', t: 'CALMA', c: '#10b981', m: `A calma é tranquila como uma folha flutuando na água fresca. O corpinho relaxa e a mente descansa!` },
+        { e: '❤️', t: 'AMOR', c: '#ec4899', m: `O amor é quentinho e doce como um abraço de urso! É o beijinho da família e o carinho no coração!` }
+      ];
+
+      stage.innerHTML = `
+        <div style="background:#0a192f; border:2px solid #38bdf8; border-radius:16px; padding:12px; margin-bottom:12px; text-align:center;">
+          <div style="font-size:1.35rem; font-weight:900; color:#facc15;">Como o seu coração está se sentindo agora, ${n}?</div>
+          <div style="font-size:1.05rem; color:#94a3b8; margin-top:2px;">Toque na carinha para ouvir o segredo mágico de cada emoção!</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:12px;" id="emo-feelings-grid"></div>
+
+        <div id="emo-feeling-detail" style="background:#071224; border:2px solid #38bdf8; border-radius:14px; padding:14px; font-size:1.25rem; font-weight:800; color:#ffffff; text-align:center; min-height:55px; display:flex; align-items:center; justify-content:center;">
+          Toque em uma emoção acima para ver a magia dela!
+        </div>
+      `;
+
+      speak(`Como o seu coração está se sentindo agora, ${n}? Toque em uma das carinhas para o Járvis te ajudar!`);
+
+      const grid = document.getElementById('emo-feelings-grid');
+      emotionsList.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'big-btn';
+        btn.style.cssText = `background:${item.c}; padding:14px 10px; font-size:1.2rem; font-weight:900; display:flex; align-items:center; justify-content:center; gap:10px;`;
+        btn.innerHTML = `<span style="font-size:2.4rem;">${item.e}</span><span>${item.t}</span>`;
         btn.onclick = () => {
           playTone(523, 120);
-          document.getElementById('emo-msg').textContent = item.m;
+          const det = document.getElementById('emo-feeling-detail');
+          if (det) {
+            det.style.borderColor = item.c;
+            det.textContent = item.m;
+          }
           speak(item.m);
         };
         grid.appendChild(btn);
       });
+    }
 
-      document.getElementById('btn-breath').onclick = () => {
-        body.innerHTML = `
-          <h2 id="breath-text" style="text-align:center; color:#34d399; font-size:1.85rem; margin-bottom:20px;">🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)</h2>
-          <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-            <div id="breath-orb" style="width:110px; height:110px; border-radius:50%; background:#10b981; border:5px solid #fff; box-shadow:0 0 40px #10b981; transition:all 4s ease-in-out; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.3rem; color:#040914;">AR</div>
+    function renderEmotionsBreathingStage(stage) {
+      stage.innerHTML = `
+        <div style="text-align:center; margin-bottom:10px;">
+          <h2 id="breath-text" style="color:#34d399; font-size:1.6rem; font-weight:900; margin:0 0 4px 0;">🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)</h2>
+          <div id="breath-count" style="font-size:2rem; font-weight:900; color:#facc15;">4</div>
+        </div>
+
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; min-height:160px; position:relative;">
+          <div id="breath-orb" style="width:105px; height:105px; border-radius:50%; background:#10b981; border:6px solid #ffffff; box-shadow:0 0 45px #10b981; transition:all 3.8s ease-in-out; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.35rem; color:#040914; user-select:none;">
+            INSPIRAR
           </div>
-        `;
-        let inhale = true;
-        let count = 0;
-        function cycle() {
-          const orb = document.getElementById('breath-orb');
-          const txt = document.getElementById('breath-text');
-          if (!orb) return;
-          if (count >= 6) {
-            addStar(1);
-            txt.textContent = '🌟 Coração calmo e mente brilhante! (+1 Estrela)';
-            speak(`Parabéns, ${appState.config.child_name}! Seu Reator da Calma está completo!`);
-            return;
-          }
-          if (inhale) {
-            txt.textContent = '🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)';
-            txt.style.color = '#34d399';
-            orb.style.transform = 'scale(2.3)';
-            orb.style.background = '#10b981';
-            orb.textContent = 'INSPIRAR';
-            playTone(440, 200);
-            speak('Puxe o ar cheirando a florzinha...');
-          } else {
+        </div>
+
+        <div style="text-align:center; margin-top:8px;">
+          <button type="button" class="big-btn" style="background:#0284c7; padding:10px 24px; font-size:1.15rem;" onclick="switchEmotionsTab('breath')">🔄 Reiniciar Respiração</button>
+        </div>
+      `;
+
+      let phase = 'inhale'; // 'inhale' | 'exhale'
+      let rounds = 0;
+      let secondsLeft = 4;
+
+      function breathStep() {
+        const orb = document.getElementById('breath-orb');
+        const txt = document.getElementById('breath-text');
+        const cnt = document.getElementById('breath-count');
+        if (!orb || !txt || !cnt) return;
+
+        cnt.textContent = secondsLeft;
+
+        if (secondsLeft <= 0) {
+          if (phase === 'inhale') {
+            phase = 'exhale';
+            secondsLeft = 4;
             txt.textContent = '🕯️ SOLTE O AR PELA BOCA (Sopre a velinha devagar...)';
             txt.style.color = '#fbbf24';
             orb.style.transform = 'scale(1.0)';
             orb.style.background = '#38bdf8';
-            orb.textContent = 'CALMA';
+            orb.style.boxShadow = '0 0 35px #38bdf8';
+            orb.textContent = 'SOPRAR';
             playTone(330, 200);
-            speak('Agora sopre a velinha bem devagar...');
+            speak('Agora sopre a velinha bem devagarzinho...');
+          } else {
+            rounds++;
+            if (rounds >= 3) {
+              addStarReward();
+              txt.textContent = '🌟 Coração calmo e mente brilhante! (+1 Estrela Stark)';
+              cnt.textContent = '★';
+              orb.style.transform = 'scale(1.3)';
+              orb.style.background = '#facc15';
+              orb.textContent = 'PAZ';
+              playTone(659, 120);
+              setTimeout(() => playTone(880, 240), 120);
+              speak(`Parabéns, ${appState.config.child_name}! Seu Reator da Calma está recarregado!`);
+              return;
+            }
+            phase = 'inhale';
+            secondsLeft = 4;
+            txt.textContent = '🌸 PUXE O AR PELO NARIZ (Cheire a florzinha...)';
+            txt.style.color = '#34d399';
+            orb.style.transform = 'scale(2.1)';
+            orb.style.background = '#10b981';
+            orb.style.boxShadow = '0 0 50px #10b981';
+            orb.textContent = 'INSPIRAR';
+            playTone(440, 200);
+            speak('Puxe o ar cheirando a florzinha...');
           }
-          inhale = !inhale;
-          count++;
-          setTimeout(cycle, 4300);
+        } else {
+          secondsLeft--;
         }
-        cycle();
-      };
+
+        breathCycleTimer = setTimeout(breathStep, 1000);
+      }
+
+      // Inicia imediatamente a primeira inspiração
+      const initialOrb = document.getElementById('breath-orb');
+      if (initialOrb) {
+        initialOrb.style.transform = 'scale(2.1)';
+      }
+      playTone(440, 200);
+      speak('Puxe o ar pelo nariz cheirando a florzinha...');
+      breathCycleTimer = setTimeout(breathStep, 1000);
     }
 
     function openTalkModal() {
@@ -3786,7 +4003,7 @@
       speak(`Sobre o que você quer conversar, ${appState.config.child_name}? Toque no microfone para falar comigo ou escolha uma brincadeira!`);
 
       body.innerHTML = `
-        <div style="background:#0a192f; border:3px solid var(--cyan); border-radius:18px; padding:18px; font-size:1.35rem; font-weight:800; text-align:center; margin-bottom:14px; min-height:60px; display:flex; align-items:center; justify-content:center;" id="jarvis-talk-reply">
+        <div style="background:#0a192f; border:3px solid var(--cyan); border-radius:18px; padding:12px 18px; font-size:clamp(0.98rem, 1.8vw, 1.25rem); font-weight:800; text-align:center; margin-bottom:12px; min-height:48px; max-height:105px; overflow-y:auto; word-break:break-word; line-height:1.35; display:flex; align-items:center; justify-content:center; scrollbar-width:thin;" id="jarvis-talk-reply">
           Toque no botão verde abaixo para falar no microfone ou escolha um tema!
         </div>
 

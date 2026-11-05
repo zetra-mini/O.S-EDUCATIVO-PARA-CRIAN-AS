@@ -117,6 +117,19 @@ class JarvisBrain:
             return ""
         cleaned = re.sub(r"[*_#`~>]", "", text)
         cleaned = re.sub(r"\s+", " ", cleaned).strip()
+        # Garante que respostas para criança de 4 anos sejam sempre curtas e nunca desproporcionais
+        if len(cleaned) > 200:
+            sentences = re.split(r"([.!?]+)", cleaned)
+            rebuilt = ""
+            for i in range(0, len(sentences) - 1, 2):
+                piece = sentences[i] + sentences[i + 1]
+                if len(rebuilt + piece) <= 220 or not rebuilt:
+                    rebuilt += piece
+                else:
+                    break
+            if rebuilt.strip():
+                cleaned = rebuilt.strip()
+        return cleaned
         return cleaned
 
     def _build_offline_knowledge(self):

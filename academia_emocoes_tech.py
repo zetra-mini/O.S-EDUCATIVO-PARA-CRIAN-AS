@@ -5,6 +5,34 @@ import tkinter as tk
 LEFT_HAND_KEYS = set("QWERTASDFGZXCVB")
 RIGHT_HAND_KEYS = set("YUIOPHJKLNM")
 
+EMOTION_SITUATIONS = [
+    {
+        "story": "🦖 O amiguinho Dino ganhou uma caixa cheia de brinquedos novos e coloridos!",
+        "options": [("😊", "FELIZ", True), ("😠", "BRAVO", False), ("😢", "TRISTE", False)],
+        "praise": "Muito bem! Ele ficou radiante e com um sorrisão super feliz!",
+    },
+    {
+        "story": "🧱 A torre de blocos gigantes caiu no chão quando o amiguinho ia terminar...",
+        "options": [("😢", "TRISTE", True), ("😊", "FELIZ", False), ("😨", "COM MEDO", False)],
+        "praise": "Isso mesmo! Dá uma tristeza quando cai, mas logo podemos reconstruir juntos com calma!",
+    },
+    {
+        "story": "⚡ O céu escureceu, fez um barulhão de trovão e começou uma chuva forte lá fora!",
+        "options": [("😨", "COM MEDO", True), ("😊", "FELIZ", False), ("😠", "BRAVO", False)],
+        "praise": "Perfeito! O trovão assusta e dá medo, mas em casa com a família estamos seguros!",
+    },
+    {
+        "story": "🖍️ Um amiguinho puxou o giz de cera da mão sem pedir licença...",
+        "options": [("😠", "BRAVO", True), ("😊", "FELIZ", False), ("😨", "COM MEDO", False)],
+        "praise": "Exato! Ficamos bravos, mas conversar com carinho e pedir ajuda resolve tudo!",
+    },
+    {
+        "story": "🥛 Hora de tomar leite quentinho, cheirar o travesseiro e deitar no cobertor macio...",
+        "options": [("🌸", "CALMO", True), ("😠", "BRAVO", False), ("😨", "COM MEDO", False)],
+        "praise": "Que delícia! Uma paz suave e calma no coração para descansar!",
+    },
+]
+
 FINGER_ASSIGNMENTS = {
     "Q": "Dedinho Mindinho da Mão Esquerda",
     "A": "Dedinho Mindinho da Mão Esquerda",
@@ -42,12 +70,72 @@ class EmotionsCenterModal:
         self.os_app = os_app
         self.win = os_app._create_activity_window("💚 GESTÃO DAS EMOÇÕES & REATOR DA CALMA")
         self.breath_job = None
+        self.quiz_idx = 0
         self.win.protocol("WM_DELETE_WINDOW", self._on_close)
 
-        self.body = tk.Frame(self.win, bg=os_app.BG_DARK)
-        self.body.pack(fill="both", expand=True, padx=20, pady=12)
+        # Barra de Navegação por Abas
+        nav_bar = tk.Frame(self.win, bg="#081528", pady=6)
+        nav_bar.pack(fill="x")
 
-        self._render_emotions_wheel()
+        self.btn_tab_quiz = tk.Button(
+            nav_bar,
+            text="🎮 1. JOGO: COMO O AMIGO SE SENTE?",
+            bg="#0284c7",
+            fg="#ffffff",
+            font=("Arial", 11, "bold"),
+            padx=12,
+            pady=6,
+            relief="flat",
+            cursor="hand2",
+            command=self._render_quiz,
+        )
+        self.btn_tab_quiz.pack(side="left", padx=8)
+
+        self.btn_tab_wheel = tk.Button(
+            nav_bar,
+            text="🎭 2. MEU CORAÇÃO & SENTIMENTOS",
+            bg="#1e293b",
+            fg="#cbd5e1",
+            font=("Arial", 11, "bold"),
+            padx=12,
+            pady=6,
+            relief="flat",
+            cursor="hand2",
+            command=self._render_emotions_wheel,
+        )
+        self.btn_tab_wheel.pack(side="left", padx=8)
+
+        self.btn_tab_breath = tk.Button(
+            nav_bar,
+            text="🌸 3. REATOR DA CALMA (RESPIRAÇÃO)",
+            bg="#1e293b",
+            fg="#cbd5e1",
+            font=("Arial", 11, "bold"),
+            padx=12,
+            pady=6,
+            relief="flat",
+            cursor="hand2",
+            command=self._start_breathing_exercise,
+        )
+        self.btn_tab_breath.pack(side="left", padx=8)
+
+        self.body = tk.Frame(self.win, bg=os_app.BG_DARK)
+        self.body.pack(fill="both", expand=True, padx=20, pady=10)
+
+        # Inicia direto no jogo interativo de situações
+        self._render_quiz()
+
+    def _set_active_tab(self, active_tab: str):
+        tabs = {
+            "quiz": self.btn_tab_quiz,
+            "wheel": self.btn_tab_wheel,
+            "breath": self.btn_tab_breath,
+        }
+        for key, btn in tabs.items():
+            if key == active_tab:
+                btn.configure(bg="#0284c7", fg="#ffffff")
+            else:
+                btn.configure(bg="#1e293b", fg="#cbd5e1")
 
     def _on_close(self):
         if self.breath_job:
@@ -61,8 +149,104 @@ class EmotionsCenterModal:
         for w in self.body.winfo_children():
             w.destroy()
 
+    def _render_quiz(self):
+        self._clear()
+        self._set_active_tab("quiz")
+        name = self.os_app.brain.name
+        sit = EMOTION_SITUATIONS[self.quiz_idx % len(EMOTION_SITUATIONS)]
+
+        tk.Label(
+            self.body,
+            text=f"🎮 Jogo das Emoções: Como o amigo está se sentindo, {name}?",
+            fg="#38bdf8",
+            bg=self.os_app.BG_DARK,
+            font=("Arial", 18, "bold"),
+        ).pack(pady=(4, 8))
+
+        # História em destaque
+        story_box = tk.Label(
+            self.body,
+            text=sit["story"],
+            fg="#f8fafc",
+            bg="#0f172a",
+            font=("Arial", 16, "bold"),
+            wraplength=880,
+            padx=20,
+            pady=16,
+            relief="groove",
+            bd=3,
+        )
+        story_box.pack(fill="x", pady=8)
+
+        # Botões de escolha
+        opts_frame = tk.Frame(self.body, bg=self.os_app.BG_DARK)
+        opts_frame.pack(fill="x", pady=10)
+
+        colors = ["#16a34a", "#dc2626", "#2563eb", "#7c3aed"]
+        for idx, (emoji, title, is_correct) in enumerate(sit["options"]):
+            opts_frame.columnconfigure(idx, weight=1)
+            btn = tk.Button(
+                opts_frame,
+                text=f"{emoji}\n{title}",
+                bg=colors[idx % len(colors)],
+                fg="#ffffff",
+                font=("Arial", 17, "bold"),
+                pady=16,
+                relief="raised",
+                bd=5,
+                cursor="hand2",
+                command=lambda ic=is_correct, pr=sit["praise"]: self._answer_quiz(ic, pr),
+            )
+            btn.grid(row=0, column=idx, sticky="nsew", padx=10)
+
+        self.quiz_feedback = tk.Label(
+            self.body,
+            text="Ouça a historinha e toque no rostinho certo para ganhar estrelas!",
+            fg="#e0f2fe",
+            bg="#0b192c",
+            font=("Arial", 14, "bold"),
+            wraplength=880,
+            height=3,
+            padx=16,
+            pady=8,
+            highlightthickness=2,
+            highlightbackground="#38bdf8",
+        )
+        self.quiz_feedback.pack(fill="x", pady=10)
+
+        # Narração da situação
+        clean_story = sit["story"].replace("🦖", "").replace("🧱", "").replace("⚡", "").replace("🖍️", "").replace("🥛", "")
+        self.os_app.say(f"{name}, como o amigo se sente? {clean_story}")
+
+    def _answer_quiz(self, is_correct: bool, praise: str):
+        if is_correct:
+            self.os_app._add_star()
+            self.os_app.voice.play_tone(587, 120)
+            self.os_app.voice.play_tone(880, 180)
+            self.quiz_feedback.configure(
+                text=f"⭐ PARABÉNS! {praise} (+1 Estrela Stark!)",
+                fg="#34d399",
+                highlightbackground="#10b981",
+            )
+            self.os_app.say(praise)
+            # Próxima situação após 3 segundos
+            self.win.after(3200, self._next_situation)
+        else:
+            self.os_app.voice.play_tone(330, 140)
+            self.quiz_feedback.configure(
+                text="Quase lá! Olhe bem para o rostinho e tente de novo!",
+                fg="#f59e0b",
+                highlightbackground="#f59e0b",
+            )
+            self.os_app.say("Quase lá! Vamos pensar juntos: como ele deve estar se sentindo?")
+
+    def _next_situation(self):
+        self.quiz_idx = (self.quiz_idx + 1) % len(EMOTION_SITUATIONS)
+        self._render_quiz()
+
     def _render_emotions_wheel(self):
         self._clear()
+        self._set_active_tab("wheel")
         name = self.os_app.brain.name
 
         tk.Label(
@@ -168,6 +352,7 @@ class EmotionsCenterModal:
 
     def _start_breathing_exercise(self):
         self._clear()
+        self._set_active_tab("breath")
         tk.Button(
             self.body,
             text="⬅ Voltar aos Sentimentos",
