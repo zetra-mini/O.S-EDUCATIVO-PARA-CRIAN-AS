@@ -1375,51 +1375,66 @@
     .wave-bar-4 { transform-origin: 126px 103px; animation: speechWaveBar2 0.24s ease-in-out infinite alternate 0.02s; }
     .wave-bar-5 { transform-origin: 132px 104px; animation: speechWaveBar3 0.3s ease-in-out infinite alternate 0.06s; }
 
-    /* BOTÃO HERÓI DE CONVERSA COM O JARVIS (100% SOB DEMANDA COM FEEDBACK CLARO) */
+    /* BOTÃO FLUTUANTE DE CONVERSA COM O JARVIS (FLOATING HERO ACTION CAPSULE) */
+    @keyframes heroBtnFloat {
+      0%, 100% { transform: translateX(-50%) translateY(0px); box-shadow: 0 10px 24px rgba(2, 132, 199, 0.45); }
+      50% { transform: translateX(-50%) translateY(-6px); box-shadow: 0 16px 32px rgba(0, 240, 255, 0.6); }
+    }
+
     .jarvis-talk-hero-btn {
-      position: relative;
-      z-index: 20;
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      position: fixed;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 95;
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.95) 0%, rgba(3, 105, 161, 0.95) 100%);
+      backdrop-filter: blur(12px);
       color: #ffffff;
       border: 3px solid #38bdf8;
       border-radius: 999px;
-      padding: 10px 24px;
-      width: clamp(280px, 40vw, 460px);
+      padding: 10px 26px;
+      width: clamp(260px, 36vw, 420px);
       height: 52px;
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 900;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      box-shadow: 0 4px 18px rgba(2, 132, 199, 0.45);
-      transition: all 0.2s ease;
-      margin-top: 14px;
+      box-shadow: 0 10px 24px rgba(2, 132, 199, 0.45);
+      animation: heroBtnFloat 3.2s ease-in-out infinite;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
       letter-spacing: 0.3px;
     }
+    .jarvis-talk-hero-btn:hover {
+      border-color: #00f0ff;
+      box-shadow: 0 12px 28px rgba(0, 240, 255, 0.6);
+    }
     .jarvis-talk-hero-btn:active {
-      transform: scale(0.96);
+      transform: translateX(-50%) scale(0.95) !important;
     }
     .jarvis-talk-hero-btn.is-listening {
       background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
       border-color: #fca5a5 !important;
-      box-shadow: 0 0 28px rgba(239, 68, 68, 0.8) !important;
+      box-shadow: 0 0 32px rgba(239, 68, 68, 0.85) !important;
       animation: heroListeningPulse 1.1s infinite alternate !important;
     }
     @keyframes heroListeningPulse {
-      0% { transform: scale(1); box-shadow: 0 0 14px rgba(239, 68, 68, 0.5); }
-      100% { transform: scale(1.05); box-shadow: 0 0 32px rgba(239, 68, 68, 0.95); }
+      0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 14px rgba(239, 68, 68, 0.5); }
+      100% { transform: translateX(-50%) scale(1.05); box-shadow: 0 0 34px rgba(239, 68, 68, 0.95); }
     }
     .jarvis-talk-hero-btn.is-processing {
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
       border-color: #fde047 !important;
-      box-shadow: 0 0 26px rgba(245, 158, 11, 0.75) !important;
+      box-shadow: 0 0 28px rgba(245, 158, 11, 0.8) !important;
+      animation: none !important;
     }
     .jarvis-talk-hero-btn.is-speaking {
       background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%) !important;
       border-color: #67e8f9 !important;
-      box-shadow: 0 0 26px rgba(6, 182, 212, 0.75) !important;
+      box-shadow: 0 0 28px rgba(6, 182, 212, 0.8) !important;
+      animation: none !important;
     }
 
     /* BANDEJA DE ALIMENTOS INTERATIVA NA COZINHA */
@@ -4570,15 +4585,6 @@
         }
       });
     }
-        if (circ) {
-          circ.setAttribute('fill', isUp ? spec.col : '#0f172a');
-          circ.setAttribute('stroke', isUp ? '#ffffff' : '#334155');
-        }
-        if (text) {
-          text.setAttribute('fill', isUp ? '#ffffff' : '#64748b');
-        }
-      });
-    }
 
     function updateHeaderNumberDisplay(num) {
       const data = FINGER_COUNT_DATA[num] || FINGER_COUNT_DATA[0];
@@ -4946,7 +4952,7 @@
       return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
-    const WORDS_POOL = ['KALEO', 'JARVIS', 'SOL', 'LUA', 'BOLA', 'CASA', 'AMOR', 'HEROI', 'MAMA', 'PAPA'];
+    const TECH_WORDS_POOL = ['KALEO', 'JARVIS', 'SOL', 'LUA', 'BOLA', 'CASA', 'AMOR', 'HEROI', 'MAMA', 'PAPA'];
 
     function openTechAcademy() {
       const body = openModal('🖐️ TREINO DE MOUSE & TECLADO DO JARVIS');
@@ -5028,7 +5034,7 @@
         kb.appendChild(rDiv);
       });
 
-      let word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
+      let word = TECH_WORDS_POOL[Math.floor(Math.random() * TECH_WORDS_POOL.length)];
       let idx = 0;
 
       function highlightFinger(targetChar) {
@@ -5070,7 +5076,7 @@
             document.getElementById('typing-word').innerHTML = `🌟 ${word} 🌟`;
             speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você digitou ${word} certinho!`);
             setTimeout(() => {
-              word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
+              word = TECH_WORDS_POOL[Math.floor(Math.random() * TECH_WORDS_POOL.length)];
               idx = 0;
               refreshUI();
             }, 2200);
@@ -5259,8 +5265,6 @@
         spawn();
       }
 
-      setTimeout(spawn, 100);
-    }
       setTimeout(spawn, 100);
     }
 
