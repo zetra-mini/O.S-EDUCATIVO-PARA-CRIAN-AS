@@ -1027,178 +1027,719 @@
       0% { transform: scale(1); box-shadow: 0 0 6px #facc15; }
       100% { transform: scale(1.08); box-shadow: 0 0 18px #f59e0b; }
     }
+    /* ==============================================================================
+       ESTILO JOGO POU OFICIAL — SALA CENTRAL, MASCOTE E GAVETA LATERAL CLEAN
+       ============================================================================== */
+    :root {
+      --pou-border: #3b2310;
+      --pou-body: #c8965d;
+      --room-wall: #58d672;
+      --room-floor: #22c55e;
+    }
+
+    #pou-app-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      background: var(--room-wall);
+      transition: background-color 0.4s ease;
+    }
+
+    /* 1. TOP BAR IDÊNTICA AO POU */
+    .pou-top-bar {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(10px);
+      padding: 6px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-bottom: 3px solid rgba(0, 0, 0, 0.15);
+      z-index: 100;
+    }
+
+    .pou-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pou-coin-badge {
+      background: #facc15;
+      border: 3px solid #3b2310;
+      border-radius: 20px;
+      padding: 3px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 900;
+      color: #1e1e1e;
+      font-size: 1.05rem;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .pou-coin-badge:active { transform: scale(0.95); }
+
+    .pou-plus-btn {
+      background: #22c55e;
+      border: 1.5px solid #14532d;
+      color: #ffffff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 900;
+      margin-left: 2px;
+    }
+
+    /* OS 4 QUADRADINHOS DE STATUS */
+    .pou-status-meters {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pou-meter-box {
+      background: #22c55e;
+      border: 2.5px solid #14532d;
+      border-radius: 8px;
+      width: 48px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 3px 0 rgba(0,0,0,0.25);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.1s;
+    }
+    .pou-meter-box:active { transform: scale(0.92); }
+
+    .pou-meter-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.3);
+      transition: height 0.4s;
+    }
+
+    .pou-level-badge {
+      background: #ffffff;
+      border: 3px solid #3b2310;
+      border-radius: 50% 50% 45% 45%;
+      padding: 4px 12px;
+      font-weight: 900;
+      color: #3b2310;
+      font-size: 1.05rem;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+    }
+
+    /* NAVEGADOR DE CÔMODOS */
+    .pou-room-nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      position: relative;
+    }
+
+    .btn-room-arrow {
+      background: #ffffff;
+      border: 3px solid #3b2310;
+      border-radius: 10px;
+      width: 36px;
+      height: 30px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #3b2310;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+      transition: transform 0.1s;
+    }
+    .btn-room-arrow:active { transform: scale(0.9); }
+
+    .pou-room-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: -2px -2px 0 #3b2310, 2px -2px 0 #3b2310, -2px 2px 0 #3b2310, 2px 2px 0 #3b2310, 0 4px 0 rgba(0,0,0,0.35);
+      letter-spacing: 0.5px;
+      min-width: 160px;
+      text-align: center;
+    }
+
+    /* 2. O PALCO CENTRAL (SALA DO POU) */
+    .pou-room-stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      transition: filter 0.4s;
+    }
+
+    /* Chão horizontal estilo Pou */
+    .pou-room-floor {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20%;
+      background: var(--room-floor);
+      border-top: 4px solid rgba(0,0,0,0.15);
+      z-index: 1;
+      transition: background-color 0.4s;
+    }
+
+    /* Cordinha do Abajur (Quarto) */
+    .pou-lamp-container {
+      position: absolute;
+      top: 0;
+      left: 78%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 15;
+      cursor: pointer;
+    }
+    .lamp-cord {
+      width: 4px;
+      height: 70px;
+      background: #3b2310;
+    }
+    .lamp-knob {
+      width: 22px;
+      height: 22px;
+      background: #facc15;
+      border: 3px solid #3b2310;
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(250,204,21,0.6);
+      transition: transform 0.15s;
+    }
+    .lamp-knob:active { transform: scale(1.3); }
+
+    /* O PERSONAGEM POU NO CENTRO */
+    .pou-mascot-box {
+      position: relative;
+      z-index: 10;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.15s ease-out;
+      margin-bottom: 2vh;
+    }
+    .pou-mascot-box:active {
+      transform: scale(0.96);
+    }
+    .pou-mascot-box.bob-bounce {
+      animation: pouBob 0.35s ease;
+    }
+    @keyframes pouBob {
+      0% { transform: scale(1, 1); }
+      40% { transform: scale(1.14, 0.86); }
+      75% { transform: scale(0.9, 1.1); }
+      100% { transform: scale(1, 1); }
+    }
+
+    /* BALÃO DE DIÁLOGO FLUTUANTE */
+    .pou-floating-bubble {
+      position: absolute;
+      bottom: 108%;
+      background: #ffffff;
+      border: 3.5px solid #3b2310;
+      border-radius: 20px;
+      padding: 10px 18px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #1e1e1e;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      z-index: 25;
+      animation: bubblePop 0.25s ease-out;
+    }
+    .pou-floating-bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 12px;
+      border-style: solid;
+      border-color: #3b2310 transparent transparent transparent;
+    }
+    @keyframes bubblePop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 3. BARRA INFERIOR IDÊNTICA AO POU */
+    .pou-bottom-bar {
+      height: 76px;
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(10px);
+      border-top: 3px solid rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .pou-bottom-btn {
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+    .pou-bottom-btn:active { transform: scale(0.9); }
+
+    .pou-btn-icon-box {
+      width: 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.1rem;
+      filter: drop-shadow(0 3px 2px rgba(0,0,0,0.3));
+    }
+
+    .pou-btn-label {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: -1.5px -1.5px 0 #3b2310, 1.5px -1.5px 0 #3b2310, -1.5px 1.5px 0 #3b2310, 1.5px 1.5px 0 #3b2310;
+    }
+
+    /* FERRAMENTA CENTRAL DO CÔMODO */
+    .pou-center-tool {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .tool-circle-btn {
+      width: 56px;
+      height: 56px;
+      background: #ffffff;
+      border: 3.5px solid #3b2310;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.25);
+      transition: transform 0.12s;
+    }
+    .tool-circle-btn:active { transform: scale(0.9); }
+
+    /* 4. GAVETA LATERAL RETRÁTIL DE JOGOS & ATIVIDADES (CLEAN) */
+    .activity-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 360px;
+      max-width: 86vw;
+      background: rgba(7, 17, 32, 0.97);
+      backdrop-filter: blur(16px);
+      border-right: 3px solid #38bdf8;
+      z-index: 350;
+      transform: translateX(-100%);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 12px 0 35px rgba(0,0,0,0.7);
+    }
+    .activity-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 16px;
+      background: #0f172a;
+      border-bottom: 2px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .drawer-title {
+      color: #38bdf8;
+      font-size: 1.15rem;
+      font-weight: 900;
+    }
+    .drawer-close-btn {
+      background: #ef4444;
+      border: none;
+      color: #ffffff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .drawer-content {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .drawer-card-item {
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s, background 0.12s;
+    }
+    .drawer-card-item:hover, .drawer-card-item:active {
+      transform: translateX(6px);
+      border-color: #38bdf8;
+      background: #1e293b;
+    }
+    .drawer-card-icon {
+      font-size: 2.2rem;
+      min-width: 44px;
+      text-align: center;
+    }
+    .drawer-card-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+    .drawer-card-desc {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* BACKDROP DA GAVETA */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 340;
+      display: none;
+    }
+    .drawer-backdrop.active {
+      display: block;
+    }
+
+    /* ABA DISCRETA NA BORDA LATERAL */
+    .peek-drawer-tab {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.45);
+      color: #ffffff;
+      border-radius: 0 12px 12px 0;
+      padding: 12px 6px;
+      font-size: 0.75rem;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 80;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      letter-spacing: 2px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+    }
+
+    /* CORAÇÕES FLUTUANTES AO FAZER CARINHO */
+    .floating-heart {
+      position: absolute;
+      font-size: 2rem;
+      pointer-events: none;
+      animation: floatHeart 0.85s ease-out forwards;
+      z-index: 50;
+    }
+    @keyframes floatHeart {
+      0% { transform: translate(0, 0) scale(0.6); opacity: 1; }
+      100% { transform: translate(var(--tx, 0px), -90px) scale(1.3); opacity: 0; }
+    }
   </style>
 </head>
 <body>
-  <!-- TELA INICIAL: MODO MASCOTE PRIMEIRO (STANDBY / DESCANSANDO NO ESPAÇO) -->
-  <div id="standby-mascote-screen" class="standby-screen" onclick="entrarNaDashboard()">
-    <div class="mascote-avatar-box">
-      <div class="mascote-ears">
-        <div class="mascote-ear"></div>
-        <div class="mascote-ear"></div>
-      </div>
-      <div class="mascote-body-2d">
-        <div class="mascote-visor">
-          <div class="mascote-eye"></div>
-          <div class="mascote-eye"></div>
+  <div id="pou-app-container">
+    <!-- 1. TOP BAR DO POU COM MOEDAS, 4 STATUS E NAVEGADOR DE CÔMODOS -->
+    <header class="pou-top-bar">
+      <div class="pou-top-row">
+        <!-- MOEDAS COM BOTÃO PLUS -->
+        <div class="pou-coin-badge" onclick="abrirLojaTesouro()" title="Pote do Tesouro Real">
+          <span>🪙</span>
+          <span id="pote-fichas-val">25</span>
+          <span class="pou-plus-btn">+</span>
         </div>
-        <div class="mascote-heart-chest"></div>
-      </div>
-    </div>
-    <div class="mascote-bubble" id="standby-bubble-text">
-      ✨ Olá, Kaleu! Eu sou o Járvis! Toque em mim para começar a aventura!
-    </div>
-    <div class="mascote-tap-label">👆 Toque na tela para brincar</div>
-  </div>
 
-  <header>
-    <div class="hud-brand">
-      <button type="button" class="btn-home-standby" onclick="voltarAoMascoteCentral()" title="Descanso do Jarvis">🏠</button>
-      <span class="hud-title">◈ J.A.R.V.I.S. KIDS</span>
-      <span class="badge-fichas" id="badge-pote-fichas" onclick="abrirLojaTesouro()" title="Pote do Tesouro Real">🪙 <span id="pote-fichas-val">20</span></span>
-      <span class="badge-stars" id="stars-badge">★ 0</span>
-      <span class="badge-clima" id="badge-clima-top" onclick="abrirModalEstacoes()" title="Previsão do Tempo">☀️ <span id="clima-val-top">24°C</span></span>
-      <span class="badge-bateria" id="badge-bateria-top" title="Bateria do Netbook">🔋 <span id="bateria-val-top">88%</span></span>
-    </div>
-    <div class="hud-right">
-      <button type="button" class="btn-secret-envelope" id="btn-secret-msg" onclick="abrirMensagemPais()" style="display:none;" title="Mensagem Secreta da Família!">
+        <!-- 4 QUADRADINHOS DE STATUS IDÊNTICOS AO POU -->
+        <div class="pou-status-meters">
+          <!-- 1. COMIDA (FOME) -->
+          <div class="pou-meter-box" onclick="irParaComodo(1)" title="Fome / Alimentação">
+            <span>🍗</span>
+            <div class="pou-meter-fill" id="meter-fill-food" style="height:0%;"></div>
+          </div>
+          <!-- 2. SAÚDE / LIMPEZA -->
+          <div class="pou-meter-box" onclick="irParaComodo(2)" title="Higiene / Banho">
+            <span>🧼</span>
+            <div class="pou-meter-fill" id="meter-fill-clean" style="height:0%;"></div>
+          </div>
+          <!-- 3. DIVERSÃO -->
+          <div class="pou-meter-box" onclick="toggleActivityDrawer()" title="Diversão / Jogos">
+            <span>🎮</span>
+            <div class="pou-meter-fill" id="meter-fill-fun" style="height:0%;"></div>
+          </div>
+          <!-- 4. ENERGIA / SONO -->
+          <div class="pou-meter-box" onclick="irParaComodo(3)" title="Energia / Sono">
+            <span>⚡</span>
+            <div class="pou-meter-fill" id="meter-fill-energy" style="height:0%;"></div>
+          </div>
+        </div>
+
+        <!-- NÍVEL / ESTRELAS -->
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="pou-level-badge" id="pou-level-box" title="Nível de Conquistas">
+            🥚 <span id="pou-level-val">1</span>
+          </div>
+          <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:4px 8px; font-size:0.85rem;" title="Painel dos Pais">⚙️</button>
+        </div>
+      </div>
+
+      <!-- SEGUNDA LINHA: SELETOR DE CÔMODOS IDÊNTICO AO POU -->
+      <div class="pou-room-nav-row">
+        <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
+        <span id="pou-room-title" class="pou-room-title">Sala de Jogos</span>
+        <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(1)" title="Próximo Cômodo">▶</button>
+        <button type="button" class="btn-pou-mic" onclick="toggleVoiceListening()" style="background:#ffffff; border:2.5px solid #3b2310; border-radius:8px; padding:4px 8px; font-size:1.1rem; cursor:pointer;" title="Falar com o Jarvis">🎙️</button>
+      </div>
+    </header>
+
+    <!-- 2. SALA CENTRAL DO POU (O PERSONAGEM É O HERÓI NO CENTRO DA TELA) -->
+    <div class="pou-room-stage" id="pou-room-stage">
+      <!-- Cordinha do Abajur (Quarto) -->
+      <div class="pou-lamp-container" id="pou-lamp-cord" onclick="alternarAbajurSonoPou()" title="Puxar cordinha para dormir">
+        <div class="lamp-cord"></div>
+        <div class="lamp-knob"></div>
+      </div>
+
+      <!-- O MASCOTE POU NO CENTRO -->
+      <div class="pou-mascot-box" id="pou-mascot" onclick="darCarinhoPou(event)" title="Clique para dar carinho no Pou!">
+        <!-- BALÃO DE DIÁLOGO FLUTUANTE DO JARVIS -->
+        <div id="pou-floating-bubble" class="pou-floating-bubble" style="display:none;">
+          <div id="pou-bubble-text">Olá, Kaleo! Estou pronto para brincar!</div>
+        </div>
+
+        <!-- SVG VETORIAL DO POU IDÊNTICO À IMAGEM DO USUÁRIO -->
+        <svg id="pou-svg" viewBox="0 0 200 200" width="230" height="230" style="filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));">
+          <!-- Sombra no Chão -->
+          <ellipse cx="100" cy="186" rx="66" ry="12" fill="rgba(0,0,0,0.18)" />
+
+          <!-- Corpo Triangular Arredondado (Formato icônico do Pou) -->
+          <path id="pou-body-path" d="M 100,28 C 136,28 162,70 168,110 C 174,150 160,178 100,178 C 40,178 26,150 32,110 C 38,70 64,28 100,28 Z"
+            fill="#c8965d" stroke="#3b2310" stroke-width="5" stroke-linejoin="round" />
+
+          <!-- Olho Esquerdo -->
+          <circle cx="78" cy="74" r="24" fill="#ffffff" stroke="#3b2310" stroke-width="4.5" />
+          <circle id="pou-pupil-left" class="pou-pupil" cx="78" cy="74" r="9.5" fill="#1e1e1e" />
+          <circle cx="75" cy="71" r="3" fill="#ffffff" />
+
+          <!-- Olho Direito -->
+          <circle cx="122" cy="74" r="24" fill="#ffffff" stroke="#3b2310" stroke-width="4.5" />
+          <circle id="pou-pupil-right" class="pou-pupil" cx="122" cy="74" r="9.5" fill="#1e1e1e" />
+          <circle cx="119" cy="71" r="3" fill="#ffffff" />
+
+          <!-- Pálpebras para Piscar -->
+          <path id="pou-eyelid-left" d="M 54,74 A 24,24 0 0,1 102,74 Z" fill="#c8965d" stroke="#3b2310" stroke-width="4" style="display:none;" />
+          <path id="pou-eyelid-right" d="M 98,74 A 24,24 0 0,1 146,74 Z" fill="#c8965d" stroke="#3b2310" stroke-width="4" style="display:none;" />
+
+          <!-- Olhinhos Fechados Dormindo (Quarto) -->
+          <path id="pou-eyes-sleeping" d="M 64,74 Q 78,86 92,74 M 108,74 Q 122,86 136,74" fill="none" stroke="#3b2310" stroke-width="4.5" stroke-linecap="round" style="display:none;" />
+
+          <!-- Boca (Sorriso sutil característico do Pou) -->
+          <path id="pou-mouth-smile" d="M 92,106 Q 102,118 107,110" fill="none" stroke="#3b2310" stroke-width="4.5" stroke-linecap="round" />
+          
+          <!-- Boca Aberta (Comendo ou falando) -->
+          <ellipse id="pou-mouth-open" cx="100" cy="114" rx="11" ry="13" fill="#78350f" stroke="#3b2310" stroke-width="4" style="display:none;" />
+
+          <!-- Touca de Dormir (Quarto) -->
+          <g id="pou-nightcap" style="display:none;">
+            <path d="M 68,36 Q 100,8 132,36 Q 148,8 156,22 Q 130,22 110,30 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="3" />
+            <circle cx="158" cy="24" r="7" fill="#ffffff" stroke="#3b2310" stroke-width="2" />
+            <path d="M 65,34 Q 100,26 135,34" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+          </g>
+        </svg>
+
+        <!-- Bolhas de Sabão (Banheiro) -->
+        <div id="pou-soap-bubbles" style="display:none; position:absolute; inset:0; pointer-events:none; font-size:2rem;">
+          <span style="position:absolute; top:25%; left:20%;">🫧</span>
+          <span style="position:absolute; top:45%; left:65%;">🫧</span>
+          <span style="position:absolute; top:65%; left:30%;">🫧</span>
+        </div>
+
+        <!-- Camada de Corações Flutuantes -->
+        <div id="pou-hearts-layer" style="position:absolute; inset:0; pointer-events:none;"></div>
+      </div>
+
+      <!-- Chão Horizontal da Sala -->
+      <div class="pou-room-floor"></div>
+
+      <!-- Aba Discreta na Esquerda para abrir Jogos & Atividades -->
+      <div class="peek-drawer-tab" onclick="toggleActivityDrawer()" title="Abrir Jogos & Atividades">
+        JOGOS
+      </div>
+
+      <!-- Notificação do Recado Secreto do Papai -->
+      <div id="btn-secret-msg" onclick="abrirMensagemPais()" class="btn-secret-envelope" style="position:absolute; top:12px; right:14px; display:none; z-index:90;" title="Recado Secreto da Família!">
         💌 RECADO DO PAPAI!
+      </div>
+    </div>
+
+    <!-- 3. BARRA INFERIOR IDÊNTICA AO POU -->
+    <footer class="pou-bottom-bar">
+      <!-- BOTÃO JOGOS (ABRE A GAVETA LATERAL DE ATIVIDADES EDUCATIVAS) -->
+      <button type="button" class="pou-bottom-btn" onclick="toggleActivityDrawer()" title="Abrir Jogos & Atividades Educativas">
+        <div class="pou-btn-icon-box">🎮</div>
+        <span class="pou-btn-label">Jogos</span>
       </button>
-      <button type="button" class="btn-parents" onclick="openParentsGate()">⚙ PAIS</button>
-    </div>
-  </header>
 
-  <!-- PAINEL DO BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS) -->
-  <div class="pet-bar-container" id="pet-bar-hud">
-    <div class="pet-need-item" onclick="darBanhoPet()" title="Dar banho de espuma no Jarvis (+5 🪙)">
-      <span class="need-icon">🧼</span>
-      <div class="need-track"><div class="need-fill fill-higiene" id="pet-bar-higiene" style="width:100%;"></div></div>
-      <span class="need-label">HIGIENE</span>
-    </div>
+      <!-- FERRAMENTA DINÂMICA DO CÔMODO (CENTRO) -->
+      <div class="pou-center-tool" id="pou-room-tool-center">
+        <!-- Na Sala de Jogos: Bola de Futebol -->
+        <button type="button" class="tool-circle-btn" id="btn-tool-active" onclick="acionarFerramentaComodo()" title="Brincar com a Bola">
+          ⚽
+        </button>
+      </div>
 
-    <div class="pet-need-item" onclick="abrirPratoColorido()" title="Monte o Prato Colorido (+15 🪙)">
-      <span class="need-icon">🍎</span>
-      <div class="need-track"><div class="need-fill fill-alimentacao" id="pet-bar-alimentacao" style="width:100%;"></div></div>
-      <span class="need-label">COMIDA</span>
-    </div>
-
-    <div class="pet-need-item" onclick="abrirJogosCognitivos()" title="Jogos do cérebro e cognição (+5 🪙)">
-      <span class="need-icon">🎮</span>
-      <div class="need-track"><div class="need-fill fill-diversao" id="pet-bar-diversao" style="width:100%;"></div></div>
-      <span class="need-label">DIVERSÃO</span>
-    </div>
-
-    <div class="pet-need-item" onclick="alternarAbajurSono()" title="Puxar a cordinha do abajur do sono">
-      <span class="need-icon">🌙</span>
-      <div class="need-track"><div class="need-fill fill-energia" id="pet-bar-energia" style="width:100%;"></div></div>
-      <span class="need-label">ABAJUR</span>
-    </div>
-
-    <button type="button" class="btn-pote-tesouro" onclick="abrirLojaTesouro()" title="Ver Pote do Tesouro Real">
-      🪙 LOJA DO TESOURO
-    </button>
+      <!-- BOTÃO LOJA (ABRE O POTE DO TESOURO REAL) -->
+      <button type="button" class="pou-bottom-btn" onclick="abrirLojaTesouro()" title="Abrir Loja do Tesouro Real">
+        <div class="pou-btn-icon-box">🏪</div>
+        <span class="pou-btn-label">Loja</span>
+      </button>
+    </footer>
   </div>
 
-  <main>
-    <!-- COLUNA ESQUERDA: HISTÓRIAS, LER & ESCREVER, NÚMEROS & MÃOS, TECLADO & MOUSE -->
-    <div class="col">
-      <div class="toy-card" style="border-color: var(--blue);" onclick="openBooksLibrary()">
-        <div class="toy-icon">📚</div>
-        <div class="toy-title">HISTÓRIAS</div>
-      </div>
-
-      <div class="toy-card" style="border-color: #10b981;" onclick="openLiteracyAcademy()">
-        <div class="toy-icon">🔤</div>
-        <div class="toy-title">LER & ESCREVER</div>
-      </div>
-
-      <div class="toy-card" style="border-color: #f59e0b;" onclick="openFingerCounting()">
-        <div class="toy-icon">🖐️</div>
-        <div class="toy-title">NÚMEROS & MÃOS</div>
-      </div>
-
-      <div class="toy-card" style="border-color: var(--cyan);" onclick="openTechAcademy()">
-        <div class="toy-icon">⌨️</div>
-        <div class="toy-title">TECLADO & MOUSE</div>
-      </div>
+  <!-- 4. GAVETA LATERAL RETRÁTIL (CLEAN: SÓ APARECE QUANDO FOR CLICADA!) -->
+  <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleActivityDrawer()"></div>
+  <aside class="activity-drawer" id="activity-drawer">
+    <div class="drawer-header">
+      <span class="drawer-title">🎮 JOGOS & ESTUDOS DO KALEO</span>
+      <button type="button" class="drawer-close-btn" onclick="toggleActivityDrawer()">✕</button>
     </div>
-
-    <!-- CENTRO: REATOR ARC + BOTÃO DE VOZ ROBUSTO + ONDAS SONORAS + PERGUNTAS RÁPIDAS -->
-    <div class="arc-container">
-      <!-- ARMADURA STARK POR CONQUISTAS -->
-      <div class="armor-hud" id="armor-hud" title="Conquiste estrelas para desbloquear a Armadura Stark!">
-        <span class="armor-slot" id="armor-helmet" title="Capacete Stark">⛑️</span>
-        <span class="armor-slot" id="armor-gauntlets" title="Luvas Repulsoras">🧤</span>
-        <span class="armor-slot" id="armor-boots" title="Botas a Jato">🥾</span>
-        <span class="armor-slot" id="armor-reactor" title="Reator Arc Dourado">⚡</span>
-      </div>
-
-      <div class="arc-reactor" id="arc-reactor" onclick="clickArcToy()" title="Toque para conversar comigo!">
-        <div class="ring-1"></div>
-        <div class="ring-2"></div>
-        <div class="arc-core"></div>
-      </div>
-
-      <!-- BOTÃO DE VOZ ROBUSTO (CLIQUE ÚNICO PARA FALAR OU ENVIAR) -->
-      <button
-        type="button"
-        class="btn-hold-mic"
-        id="btn-voice-push"
-        onclick="toggleVoiceListening()"
-        title="Clique para falar ou clique de novo para enviar"
-      >
-        <span id="mic-icon" style="font-size: 1.6rem;">🎙️</span>
-        <div id="mic-sound-waves" style="display:none; gap:4px; align-items:center; height:24px;">
-          <span class="sound-wave-bar"></span>
-          <span class="sound-wave-bar"></span>
-          <span class="sound-wave-bar"></span>
-          <span class="sound-wave-bar"></span>
-          <span class="sound-wave-bar"></span>
+    <div class="drawer-content">
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openBooksLibrary)">
+        <div class="drawer-card-icon">📚</div>
+        <div>
+          <div class="drawer-card-name">Histórias Mágicas</div>
+          <div class="drawer-card-desc">Livros ilustrados e decisões divertidas</div>
         </div>
-        <span id="mic-label">FALAR COM JÁRVIS</span>
-      </button>
-
-      <!-- PÍLULAS DE PERGUNTAS RÁPIDAS (TÓPICOS COM 1 TOQUE) -->
-      <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; max-width:320px; margin-top:4px;">
-        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, como você voa com a armadura do Homem de Ferro?')">🚀 Voar</button>
-        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, me conta sobre dinossauros!')">🦖 Dinos</button>
-        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, como são as estrelas do espaço?')">🌟 Estrelas</button>
-        <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, conta uma piada de robô bem engraçada!')">🤖 Piada</button>
       </div>
 
-      <!-- BOTÃO DE IDIOMAS MÁGICOS (ENGLISH & ESPAÑOL) -->
-      <button type="button" class="btn-idiomas-hud" onclick="openLanguagesAcademy()" style="background:linear-gradient(135deg, #1e3a8a, #0284c7); border:2px solid #38bdf8; color:#fff; border-radius:14px; padding:8px 16px; font-weight:900; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; margin-top:8px; box-shadow:0 4px 12px rgba(2,132,199,0.4);" title="Aprenda Inglês e Espanhol brincando!">
-        🌍 IDIOMAS: ENGLISH & ESPAÑOL 🇺🇸 🇪🇸
-      </button>
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openLiteracyAcademy)">
+        <div class="drawer-card-icon">🔤</div>
+        <div>
+          <div class="drawer-card-name">Ler & Escrever (Método Fônico)</div>
+          <div class="drawer-card-desc">Sons das letrinhas e lousa neon</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openFingerCounting)">
+        <div class="drawer-card-icon">🖐️</div>
+        <div>
+          <div class="drawer-card-name">Mãos & Contar de 1 a 10</div>
+          <div class="drawer-card-desc">Aprenda a contar com os dedinhos</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openLanguagesAcademy)">
+        <div class="drawer-card-icon">🌍</div>
+        <div>
+          <div class="drawer-card-name">Idiomas Mágicos (English & Español)</div>
+          <div class="drawer-card-desc">Cards falantes e mini-quiz com moedas</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openStarkPaint)">
+        <div class="drawer-card-icon">🎨</div>
+        <div>
+          <div class="drawer-card-name">Pintura & Lousa Mágica</div>
+          <div class="drawer-card-desc">Desenhe e pinte com cores vibrantes</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openMusicComposer)">
+        <div class="drawer-card-icon">🎵</div>
+        <div>
+          <div class="drawer-card-name">Música & Teclado</div>
+          <div class="drawer-card-desc">Notas coloridas e canções infantis</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openCinemaStark)">
+        <div class="drawer-card-icon">🎬</div>
+        <div>
+          <div class="drawer-card-name">Cinema & Desenhos Stark</div>
+          <div class="drawer-card-desc">Tempo educativo e desenhos aprovados</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openEmotionsCenter)">
+        <div class="drawer-card-icon">💚</div>
+        <div>
+          <div class="drawer-card-name">Jogo das Emoções & Flor da Calma</div>
+          <div class="drawer-card-desc">Respiração guiada e empatia com amigos</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(abrirModalSemaforo)">
+        <div class="drawer-card-icon">🚦</div>
+        <div>
+          <div class="drawer-card-name">Desafio do Semáforo</div>
+          <div class="drawer-card-desc">Treino de atenção e controle inibitório</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(abrirModalLeitner)">
+        <div class="drawer-card-icon">📦</div>
+        <div>
+          <div class="drawer-card-name">Baú do Conhecimento (Leitner)</div>
+          <div class="drawer-card-desc">Repetição espaçada em 3 caixas</div>
+        </div>
+      </div>
+
+      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openTechAcademy)">
+        <div class="drawer-card-icon">⌨️</div>
+        <div>
+          <div class="drawer-card-name">Treino do Mouse & Teclado</div>
+          <div class="drawer-card-desc">Mira, clique e dedinhos corretos</div>
+        </div>
+      </div>
     </div>
-
-    <!-- COLUNA DIREITA: MÚSICA, PINTAR, VÍDEOS, EMOÇÕES -->
-    <div class="col">
-      <div class="toy-card" style="border-color: var(--purple);" onclick="openMusicComposer()">
-        <div class="toy-icon">🎵</div>
-        <div class="toy-title">MÚSICA</div>
-      </div>
-
-      <div class="toy-card" style="border-color: #ec4899;" onclick="openStarkPaint()">
-        <div class="toy-icon">🎨</div>
-        <div class="toy-title">PINTAR</div>
-      </div>
-
-      <div class="toy-card" style="border-color: var(--red);" onclick="openCinemaStark()">
-        <div class="toy-icon">🎬</div>
-        <div class="toy-title">VÍDEOS</div>
-      </div>
-
-      <div class="toy-card" style="border-color: var(--green);" onclick="openEmotionsCenter()">
-        <div class="toy-icon">💚</div>
-        <div class="toy-title">EMOÇÕES</div>
-      </div>
-    </div>
-  </main>
-
-  <footer id="subtitle-bar">
-    Toque em qualquer botão colorido ou fale com o Járvis!
-  </footer>
+  </aside>
 
   <!-- MODAL DE ATIVIDADE INFANTIL -->
   <div class="modal-overlay" id="activity-modal">
@@ -1294,6 +1835,397 @@
     let lastSpokenHint = '';
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // ==============================================================================
+    // CONTROLADOR OFICIAL DO JOGO POU — CÔMODOS, INTERAÇÕES E ANIMAÇÕES
+    // ==============================================================================
+    const COMODOS_POU = [
+      {
+        id: 'jogos',
+        nome: 'Sala de Jogos',
+        wall: '#58d672',
+        floor: '#22c55e',
+        toolIcon: '⚽',
+        toolTitle: 'Brincar com a Bola',
+        toolAcao: brincarBolaPou
+      },
+      {
+        id: 'cozinha',
+        nome: 'Cozinha',
+        wall: '#fde047',
+        floor: '#d97706',
+        toolIcon: '🍎',
+        toolTitle: 'Alimentar com Frutinha',
+        toolAcao: alimentarPouRapido
+      },
+      {
+        id: 'banheiro',
+        nome: 'Banheiro',
+        wall: '#38bdf8',
+        floor: '#0284c7',
+        toolIcon: '🧼',
+        toolTitle: 'Dar Banho de Espuma',
+        toolAcao: darBanhoPouRapido
+      },
+      {
+        id: 'quarto',
+        nome: 'Quarto',
+        wall: '#c084fc',
+        floor: '#7c3aed',
+        toolIcon: '🌙',
+        toolTitle: 'Hora de Dormir (Abajur)',
+        toolAcao: alternarAbajurSonoPou
+      }
+    ];
+
+    let comodoAtualIdx = 0;
+    let pouDormindo = false;
+    let bolhaSabaoAtiva = false;
+
+    function trocarComodoPou(delta) {
+      comodoAtualIdx = (comodoAtualIdx + delta + COMODOS_POU.length) % COMODOS_POU.length;
+      atualizarComodoTela();
+    }
+
+    function irParaComodo(idx) {
+      if (idx >= 0 && idx < COMODOS_POU.length) {
+        comodoAtualIdx = idx;
+        atualizarComodoTela();
+      }
+    }
+
+    function atualizarComodoTela() {
+      const c = COMODOS_POU[comodoAtualIdx];
+      const root = document.documentElement;
+      root.style.setProperty('--room-wall', c.wall);
+      root.style.setProperty('--room-floor', c.floor);
+
+      const titleEl = document.getElementById('pou-room-title');
+      if (titleEl) titleEl.textContent = c.nome;
+
+      const appCont = document.getElementById('pou-app-container');
+      if (appCont) appCont.style.background = c.wall;
+
+      const floorEl = document.querySelector('.pou-room-floor');
+      if (floorEl) floorEl.style.background = c.floor;
+
+      // Lamp cord only in Quarto
+      const lampEl = document.getElementById('pou-lamp-cord');
+      if (lampEl) {
+        lampEl.style.display = c.id === 'quarto' ? 'flex' : 'none';
+      }
+
+      // Center active tool
+      const toolBtn = document.getElementById('btn-tool-active');
+      if (toolBtn) {
+        toolBtn.textContent = c.toolIcon;
+        toolBtn.title = c.toolTitle;
+      }
+
+      // Soap bubbles only in Banheiro if active
+      const soapBubbles = document.getElementById('pou-soap-bubbles');
+      if (soapBubbles) {
+        soapBubbles.style.display = (c.id === 'banheiro' && bolhaSabaoAtiva) ? 'block' : 'none';
+      }
+    }
+
+    function acionarFerramentaComodo() {
+      const c = COMODOS_POU[comodoAtualIdx];
+      if (c && typeof c.toolAcao === 'function') {
+        c.toolAcao();
+      }
+    }
+
+    // CARINHO NO POU (TICKLE)
+    function darCarinhoPou(e) {
+      const pouBox = document.getElementById('pou-mascot');
+      if (pouBox) {
+        pouBox.classList.remove('bob-bounce');
+        void pouBox.offsetWidth;
+        pouBox.classList.add('bob-bounce');
+      }
+
+      tocarSomFofo(520, 680);
+      soltarCoracoes(e ? e.clientX : null, e ? e.clientY : null);
+
+      fetch('/api/pet/carinho', { method: 'POST' })
+        .then(r => r.json())
+        .then(d => {
+          if (d.status) atualizarStatusPou(d.status);
+          mostrarFalaPou(`❤️ Hehehe! Te amo, ${appState.config.child_name || 'amigo'}!`);
+        })
+        .catch(() => {});
+    }
+
+    // ALIMENTAÇÃO RÁPIDA (COZINHA)
+    function alimentarPouRapido() {
+      const mouthSmile = document.getElementById('pou-mouth-smile');
+      const mouthOpen = document.getElementById('pou-mouth-open');
+      if (mouthSmile && mouthOpen) {
+        mouthSmile.style.display = 'none';
+        mouthOpen.style.display = 'block';
+      }
+
+      tocarSomMastigar();
+      mostrarFalaPou('🍎 Nhac! Nhac! Que comidinha gostosa!');
+
+      setTimeout(() => {
+        if (mouthSmile && mouthOpen) {
+          mouthSmile.style.display = 'block';
+          mouthOpen.style.display = 'none';
+        }
+      }, 700);
+
+      soltarCoracoes();
+
+      fetch('/api/pet/alimentar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ alimento: 'fruta' })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.status) atualizarStatusPou(d.status);
+      })
+      .catch(() => {});
+    }
+
+    // BANHO RÁPIDO (BANHEIRO)
+    function darBanhoPouRapido() {
+      const soapBubbles = document.getElementById('pou-soap-bubbles');
+      bolhaSabaoAtiva = true;
+      if (soapBubbles) soapBubbles.style.display = 'block';
+
+      tocarSomBolha();
+      mostrarFalaPou('🧼 Espuminha cheirosa! Ficando limpinho!');
+
+      setTimeout(() => {
+        tocarSomAgua();
+        if (soapBubbles) soapBubbles.style.display = 'none';
+        bolhaSabaoAtiva = false;
+        mostrarFalaPou('✨ Banho tomado! 100% cheiroso e brilhante!');
+      }, 1200);
+
+      fetch('/api/pet/banho', { method: 'POST' })
+        .then(r => r.json())
+        .then(d => {
+          if (d.status) atualizarStatusPou(d.status);
+        })
+        .catch(() => {});
+    }
+
+    // ABAJUR / SONO (QUARTO)
+    function alternarAbajurSonoPou() {
+      pouDormindo = !pouDormindo;
+      const stage = document.getElementById('pou-room-stage');
+      const nightcap = document.getElementById('pou-nightcap');
+      const eyesSleep = document.getElementById('pou-eyes-sleeping');
+      const eyeL = document.getElementById('pou-pupil-left');
+      const eyeR = document.getElementById('pou-pupil-right');
+
+      if (pouDormindo) {
+        if (stage) stage.style.filter = 'brightness(0.35) contrast(1.15)';
+        if (nightcap) nightcap.style.display = 'block';
+        if (eyesSleep) eyesSleep.style.display = 'block';
+        if (eyeL) eyeL.style.display = 'none';
+        if (eyeR) eyeR.style.display = 'none';
+        mostrarFalaPou('🌙 Zzz... Bons sonhos, Kaleo! Recarregando as energias...');
+        tocarSomClick();
+      } else {
+        if (stage) stage.style.filter = 'none';
+        if (nightcap) nightcap.style.display = 'none';
+        if (eyesSleep) eyesSleep.style.display = 'none';
+        if (eyeL) eyeL.style.display = 'block';
+        if (eyeR) eyeR.style.display = 'block';
+        mostrarFalaPou('☀️ Bom dia! Estou 100% acordado para brincar!');
+        tocarSomClick();
+      }
+
+      fetch('/api/pet/abajur', { method: 'POST' })
+        .then(r => r.json())
+        .then(d => {
+          if (d.status) atualizarStatusPou(d.status);
+        })
+        .catch(() => {});
+    }
+
+    // BOLA (SALA DE JOGOS)
+    function brincarBolaPou() {
+      const toolBtn = document.getElementById('btn-tool-active');
+      if (toolBtn) {
+        toolBtn.style.transform = 'translateY(-40px) scale(1.2)';
+        setTimeout(() => {
+          toolBtn.style.transform = 'translateY(0) scale(1)';
+        }, 300);
+      }
+
+      tocarSomFofo(330, 550);
+      const pouBox = document.getElementById('pou-mascot');
+      if (pouBox) {
+        pouBox.classList.remove('bob-bounce');
+        void pouBox.offsetWidth;
+        pouBox.classList.add('bob-bounce');
+      }
+
+      mostrarFalaPou('⚽ Gol do Kaleo! Que chute de herói!');
+      addStar(1);
+    }
+
+    // BALÃO DE FALA DO POU
+    let pouBubbleTimer = null;
+    function mostrarFalaPou(msg) {
+      const bubble = document.getElementById('pou-floating-bubble');
+      const text = document.getElementById('pou-bubble-text');
+      if (!bubble || !text) return;
+
+      text.textContent = msg;
+      bubble.style.display = 'block';
+      clearTimeout(pouBubbleTimer);
+      pouBubbleTimer = setTimeout(() => {
+        bubble.style.display = 'none';
+      }, 4000);
+    }
+
+    // CORAÇÕES AO CLICAR
+    function soltarCoracoes(clientX, clientY) {
+      const layer = document.getElementById('pou-hearts-layer');
+      if (!layer) return;
+
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.textContent = ['❤️', '💖', '✨', '🥰'][Math.floor(Math.random() * 4)];
+      const randomX = (Math.random() - 0.5) * 80;
+      heart.style.setProperty('--tx', `${randomX}px`);
+      heart.style.left = '50%';
+      heart.style.top = '20%';
+      layer.appendChild(heart);
+      setTimeout(() => heart.remove(), 900);
+    }
+
+    // SONS SINTETIZADOS COM WEB AUDIO API
+    function tocarSomFofo(freqInicio, freqFim) {
+      try {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freqInicio || 400, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freqFim || 600, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.18);
+      } catch (e) {}
+    }
+
+    function tocarSomMastigar() {
+      try {
+        if (!audioCtx) return;
+        for (let i = 0; i < 3; i++) {
+          setTimeout(() => tocarSomFofo(240, 160), i * 160);
+        }
+      } catch (e) {}
+    }
+
+    function tocarSomBolha() {
+      try {
+        if (!audioCtx) return;
+        tocarSomFofo(700, 1100);
+      } catch (e) {}
+    }
+
+    function tocarSomAgua() {
+      try {
+        if (!audioCtx) return;
+        tocarSomFofo(500, 300);
+      } catch (e) {}
+    }
+
+    function tocarSomClick() {
+      try {
+        if (!audioCtx) return;
+        tocarSomFofo(800, 400);
+      } catch (e) {}
+    }
+
+    // EYE TRACKING (OLHOS SEGUEM O CURSOR / DEDO)
+    function atualizarOlharPou(clientX, clientY) {
+      if (pouDormindo) return;
+      const pou = document.getElementById('pou-svg');
+      if (!pou) return;
+      const rect = pou.getBoundingClientRect();
+      const pouCenterX = rect.left + rect.width / 2;
+      const pouCenterY = rect.top + rect.height * 0.38;
+
+      const angle = Math.atan2(clientY - pouCenterY, clientX - pouCenterX);
+      const maxDist = 7;
+      const pupilX = Math.cos(angle) * maxDist;
+      const pupilY = Math.sin(angle) * maxDist;
+
+      const pL = document.getElementById('pou-pupil-left');
+      const pR = document.getElementById('pou-pupil-right');
+      if (pL) {
+        pL.setAttribute('cx', 78 + pupilX);
+        pL.setAttribute('cy', 74 + pupilY);
+      }
+      if (pR) {
+        pR.setAttribute('cx', 122 + pupilX);
+        pR.setAttribute('cy', 74 + pupilY);
+      }
+    }
+    window.addEventListener('mousemove', e => atualizarOlharPou(e.clientX, e.clientY));
+    window.addEventListener('touchmove', e => {
+      if (e.touches && e.touches[0]) atualizarOlharPou(e.touches[0].clientX, e.touches[0].clientY);
+    });
+
+    // PISCAR NATURAL (BLINKING)
+    setInterval(() => {
+      if (pouDormindo) return;
+      const eyeLLid = document.getElementById('pou-eyelid-left');
+      const eyeRLid = document.getElementById('pou-eyelid-right');
+      if (eyeLLid && eyeRLid) {
+        eyeLLid.style.display = 'block';
+        eyeRLid.style.display = 'block';
+        setTimeout(() => {
+          eyeLLid.style.display = 'none';
+          eyeRLid.style.display = 'none';
+        }, 140);
+      }
+    }, 4500);
+
+    // CONTROLE DA GAVETA LATERAL DE ATIVIDADES
+    function toggleActivityDrawer() {
+      const drawer = document.getElementById('activity-drawer');
+      const backdrop = document.getElementById('drawer-backdrop');
+      if (drawer && backdrop) {
+        drawer.classList.toggle('open');
+        backdrop.classList.toggle('active');
+      }
+    }
+
+    function abrirAtividadeDrawer(funcaoAbrir) {
+      toggleActivityDrawer();
+      if (typeof funcaoAbrir === 'function') {
+        funcaoAbrir();
+      }
+    }
+
+    // ATUALIZAÇÃO DOS 4 STATUS DO POU
+    function atualizarStatusPou(pet) {
+      if (!pet) return;
+      const fillFood = document.getElementById('meter-fill-food');
+      const fillClean = document.getElementById('meter-fill-clean');
+      const fillFun = document.getElementById('meter-fill-fun');
+      const fillEnergy = document.getElementById('meter-fill-energy');
+
+      const inv = v => Math.max(0, Math.min(100, 100 - (v || 0)));
+      if (fillFood) fillFood.style.height = `${inv(pet.alimentacao)}%`;
+      if (fillClean) fillClean.style.height = `${inv(pet.higiene)}%`;
+      if (fillFun) fillFun.style.height = `${inv(pet.diversao)}%`;
+      if (fillEnergy) fillEnergy.style.height = `${inv(pet.energia)}%`;
+    }
 
     function showToast(msg, isError = false) {
       const el = document.getElementById('toast-banner');
@@ -4983,6 +5915,8 @@
       if (bA) bA.style.width = `${Math.max(8, pet.alimentacao)}%`;
       if (bD) bD.style.width = `${Math.max(8, pet.diversao)}%`;
       if (bE) bE.style.width = `${Math.max(8, pet.energia)}%`;
+
+      atualizarStatusPou(pet);
     }
 
     async function darBanhoPet() {
