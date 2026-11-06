@@ -1255,6 +1255,61 @@
       100% { transform: scale(1, 1); }
     }
 
+    /* ANIMAÇÃO DO RABINHO DO LUCKY */
+    @keyframes tailWag {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(20deg); }
+    }
+    .lucky-tail-wag {
+      transform-origin: 165px 170px;
+      animation: tailWag 0.75s ease-in-out infinite;
+    }
+    .lucky-tail-fast {
+      animation: tailWag 0.22s ease-in-out infinite !important;
+    }
+
+    /* ORELHAS FOFAS DE PELÚCIA */
+    @keyframes earWiggle {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(5deg); }
+    }
+    .lucky-ear-left {
+      transform-origin: 78px 54px;
+      animation: earWiggle 2.2s ease-in-out infinite;
+    }
+    .lucky-ear-right {
+      transform-origin: 162px 54px;
+      animation: earWiggle 2.2s ease-in-out infinite reverse;
+    }
+
+    /* BOTÃO HERÓI DE CONVERSA COM O LUCKY NA PRIMEIRA TELA */
+    .lucky-talk-hero-btn {
+      position: relative;
+      z-index: 20;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: 3.5px solid #ffffff;
+      border-radius: 999px;
+      padding: 10px 24px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      transition: transform 0.15s, box-shadow 0.2s;
+      margin-top: 2px;
+      letter-spacing: 0.3px;
+    }
+    .lucky-talk-hero-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 8px 22px rgba(2, 132, 199, 0.45);
+    }
+    .lucky-talk-hero-btn:active {
+      transform: scale(0.96);
+    }
+
     /* BALÃO DE DIÁLOGO FLUTUANTE */
     .pou-floating-bubble {
       position: absolute;
@@ -1523,23 +1578,23 @@
 
         <!-- NÍVEL / ESTRELAS -->
         <div style="display:flex; align-items:center; gap:6px;">
-          <div class="pou-level-badge" id="pou-level-box" title="Nível de Conquistas">
-            🥚 <span id="pou-level-val">1</span>
+          <div class="pou-level-badge" id="pou-level-box" title="Nível do Lucky">
+            🐶 <span id="pou-level-val">1</span>
           </div>
           <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:4px 8px; font-size:0.85rem;" title="Painel dos Pais">⚙️</button>
         </div>
       </div>
 
-      <!-- SEGUNDA LINHA: SELETOR DE CÔMODOS IDÊNTICO AO POU -->
+      <!-- SEGUNDA LINHA: SELETOR DE CÔMODOS DO LUCKY -->
       <div class="pou-room-nav-row">
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
-        <span id="pou-room-title" class="pou-room-title">Sala de Jogos</span>
+        <span id="pou-room-title" class="pou-room-title">Sala de Brincar</span>
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(1)" title="Próximo Cômodo">▶</button>
-        <button type="button" class="btn-pou-mic" onclick="toggleVoiceListening()" style="background:#ffffff; border:2.5px solid #3b2310; border-radius:8px; padding:4px 8px; font-size:1.1rem; cursor:pointer;" title="Falar com o Jarvis">🎙️</button>
+        <button type="button" class="btn-pou-mic" onclick="iniciarConversaDiretaLucky()" style="background:#0284c7; color:#fff; border:2.5px solid #0369a1; border-radius:10px; padding:6px 12px; font-size:0.95rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px;" title="Conversar com o Lucky (J.A.R.V.I.S.)">🎙️ <span>Conversar</span></button>
       </div>
     </header>
 
-    <!-- 2. SALA CENTRAL DO POU (O PERSONAGEM É O HERÓI NO CENTRO DA TELA) -->
+    <!-- 2. SALA CENTRAL DO LUCKY (O CACHORRINHO DE PELÚCIA NO CENTRO DA TELA) -->
     <div class="pou-room-stage" id="pou-room-stage">
       <!-- Cordinha do Abajur (Quarto) -->
       <div class="pou-lamp-container" id="pou-lamp-cord" onclick="alternarAbajurSonoPou()" title="Puxar cordinha para dormir">
@@ -1547,50 +1602,116 @@
         <div class="lamp-knob"></div>
       </div>
 
-      <!-- O MASCOTE POU NO CENTRO -->
-      <div class="pou-mascot-box" id="pou-mascot" onclick="darCarinhoPou(event)" title="Clique para dar carinho no Pou!">
-        <!-- BALÃO DE DIÁLOGO FLUTUANTE DO JARVIS -->
+      <!-- O MASCOTE LUCKY NO CENTRO -->
+      <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoLucky(event)" title="Clique para dar carinho e conversar com o Lucky!">
+        <!-- BALÃO DE DIÁLOGO FLUTUANTE DO LUCKY / JARVIS -->
         <div id="pou-floating-bubble" class="pou-floating-bubble" style="display:none;">
-          <div id="pou-bubble-text">Olá, Kaleo! Estou pronto para brincar!</div>
+          <div id="pou-bubble-text">🐶 Au au, Kaleo! Eu sou o Lucky! Toque em mim para conversar!</div>
         </div>
 
-        <!-- SVG VETORIAL DO POU IDÊNTICO À IMAGEM DO USUÁRIO -->
-        <svg id="pou-svg" viewBox="0 0 200 200" width="230" height="230" style="filter: drop-shadow(0 10px 14px rgba(0,0,0,0.25));">
+        <!-- SVG VETORIAL DO LUCKY (CACHORRINHO DE PELÚCIA SUPER FOFO) -->
+        <svg id="pou-svg" viewBox="0 0 240 240" width="245" height="245" style="filter: drop-shadow(0 10px 16px rgba(0,0,0,0.28));">
           <!-- Sombra no Chão -->
-          <ellipse cx="100" cy="186" rx="66" ry="12" fill="rgba(0,0,0,0.18)" />
+          <ellipse cx="120" cy="216" rx="76" ry="14" fill="rgba(0,0,0,0.2)" />
 
-          <!-- Corpo Triangular Arredondado (Formato icônico do Pou) -->
-          <path id="pou-body-path" d="M 100,28 C 136,28 162,70 168,110 C 174,150 160,178 100,178 C 40,178 26,150 32,110 C 38,70 64,28 100,28 Z"
-            fill="#c8965d" stroke="#3b2310" stroke-width="5" stroke-linejoin="round" />
+          <!-- Rabinho Peludinho Abanando -->
+          <g class="lucky-tail-wag" id="lucky-tail-group">
+            <path d="M 165,170 C 205,150 215,120 195,110 C 180,105 170,135 155,160 Z" fill="#c97d34" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
+            <circle cx="198" cy="114" r="8" fill="#fff1df" />
+          </g>
 
-          <!-- Olho Esquerdo -->
-          <circle cx="78" cy="74" r="24" fill="#ffffff" stroke="#3b2310" stroke-width="4.5" />
-          <circle id="pou-pupil-left" class="pou-pupil" cx="78" cy="74" r="9.5" fill="#1e1e1e" />
-          <circle cx="75" cy="71" r="3" fill="#ffffff" />
+          <!-- Patinhas Traseiras Sentadas -->
+          <ellipse cx="62" cy="192" rx="22" ry="16" fill="#c97d34" stroke="#8d4b14" stroke-width="4" />
+          <ellipse cx="62" cy="192" rx="14" ry="10" fill="#fff1df" />
+          <ellipse cx="178" cy="192" rx="22" ry="16" fill="#c97d34" stroke="#8d4b14" stroke-width="4" />
+          <ellipse cx="178" cy="192" rx="14" ry="10" fill="#fff1df" />
 
-          <!-- Olho Direito -->
-          <circle cx="122" cy="74" r="24" fill="#ffffff" stroke="#3b2310" stroke-width="4.5" />
-          <circle id="pou-pupil-right" class="pou-pupil" cx="122" cy="74" r="9.5" fill="#1e1e1e" />
-          <circle cx="119" cy="71" r="3" fill="#ffffff" />
+          <!-- Corpo de Pelúcia Macio -->
+          <path id="lucky-body" d="M 75,115 C 60,175 70,205 120,208 C 170,205 180,175 165,115 C 150,110 90,110 75,115 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="4.5" />
+
+          <!-- Barriguinha / Peito de Pelúcia Macia Clara -->
+          <ellipse cx="120" cy="162" rx="34" ry="32" fill="#fff1df" stroke="#d49354" stroke-width="2" />
+
+          <!-- Coleirinha Azul Royal com Medalhinha J.A.R.V.I.S. -->
+          <path d="M 85,128 Q 120,146 155,128 Q 158,135 152,139 Q 120,155 88,139 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="2" />
+          <!-- Medalha de Super-Herói / JARVIS -->
+          <circle cx="120" cy="148" r="10" fill="#facc15" stroke="#ca8a04" stroke-width="2.5" />
+          <circle cx="120" cy="148" r="6.5" fill="#00f0ff" />
+          <text x="120" y="152.5" font-size="10" font-weight="900" fill="#0f172a" text-anchor="middle" font-family="sans-serif">J</text>
+
+          <!-- Patinhas Dianteiras Fofas de Pelúcia -->
+          <g>
+            <path d="M 92,168 C 86,192 88,210 102,210 C 114,210 114,192 110,168 Z" fill="#fff1df" stroke="#8d4b14" stroke-width="3.5" />
+            <circle cx="97" cy="204" r="2.5" fill="#e6a35c" />
+            <circle cx="104" cy="204" r="2.5" fill="#e6a35c" />
+          </g>
+          <g>
+            <path d="M 130,168 C 126,192 126,210 138,210 C 152,210 154,192 148,168 Z" fill="#fff1df" stroke="#8d4b14" stroke-width="3.5" />
+            <circle cx="136" cy="204" r="2.5" fill="#e6a35c" />
+            <circle cx="143" cy="204" r="2.5" fill="#e6a35c" />
+          </g>
+
+          <!-- Orelha Esquerda Caída de Pelúcia -->
+          <g class="lucky-ear-left" id="lucky-ear-left-group">
+            <path d="M 78,54 C 42,56 36,96 46,128 C 52,142 70,140 72,120 C 74,98 80,72 78,54 Z" fill="#c97d34" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
+            <path d="M 52,78 C 46,98 52,122 60,128 C 66,128 68,116 66,102 Z" fill="#fbcfe8" opacity="0.9" />
+          </g>
+
+          <!-- Orelha Direita Caída de Pelúcia -->
+          <g class="lucky-ear-right" id="lucky-ear-right-group">
+            <path d="M 162,54 C 198,56 204,96 194,128 C 188,142 170,140 168,120 C 166,98 160,72 162,54 Z" fill="#c97d34" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
+            <path d="M 188,78 C 194,98 188,122 180,128 C 174,128 172,116 174,102 Z" fill="#fbcfe8" opacity="0.9" />
+          </g>
+
+          <!-- Cabeça Fofinha de Pelúcia -->
+          <path id="lucky-head" d="M 72,82 C 66,42 104,32 120,32 C 136,32 174,42 168,82 C 166,116 146,126 120,126 C 94,126 74,116 72,82 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
+
+          <!-- Mancha Branca Fofa na Testa (estilo pelúcia) -->
+          <path d="M 112,33 C 114,50 115,64 112,74 C 116,76 124,76 128,74 C 125,64 126,50 128,33 Z" fill="#fff1df" opacity="0.8" />
+
+          <!-- Focinho Fofo Peludinho -->
+          <ellipse cx="120" cy="98" rx="27" ry="19" fill="#fff1df" stroke="#8d4b14" stroke-width="3.5" />
+
+          <!-- Narizinho Preto Brilhante em Formato de Coração Suave -->
+          <path d="M 113,89 Q 120,84 127,89 Q 129,97 120,103 Q 111,97 113,89 Z" fill="#1e1e1e" />
+          <ellipse cx="116.5" cy="89.5" rx="3" ry="1.8" fill="#ffffff" />
+
+          <!-- Olho Esquerdo Grande e Carinhoso -->
+          <ellipse cx="94" cy="74" rx="14.5" ry="16.5" fill="#ffffff" stroke="#8d4b14" stroke-width="3.5" />
+          <circle id="pou-pupil-left" class="pou-pupil" cx="95" cy="74" r="9" fill="#2d1a0e" />
+          <circle cx="92" cy="70" r="3.5" fill="#ffffff" />
+          <circle cx="97.5" cy="77" r="1.5" fill="#ffffff" />
+
+          <!-- Olho Direito Grande e Carinhoso -->
+          <ellipse cx="146" cy="74" rx="14.5" ry="16.5" fill="#ffffff" stroke="#8d4b14" stroke-width="3.5" />
+          <circle id="pou-pupil-right" class="pou-pupil" cx="145" cy="74" r="9" fill="#2d1a0e" />
+          <circle cx="142" cy="70" r="3.5" fill="#ffffff" />
+          <circle cx="147.5" cy="77" r="1.5" fill="#ffffff" />
 
           <!-- Pálpebras para Piscar -->
-          <path id="pou-eyelid-left" d="M 54,74 A 24,24 0 0,1 102,74 Z" fill="#c8965d" stroke="#3b2310" stroke-width="4" style="display:none;" />
-          <path id="pou-eyelid-right" d="M 98,74 A 24,24 0 0,1 146,74 Z" fill="#c8965d" stroke="#3b2310" stroke-width="4" style="display:none;" />
+          <path id="pou-eyelid-left" d="M 79.5,74 A 14.5,16.5 0 0,1 108.5,74 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="3.5" style="display:none;" />
+          <path id="pou-eyelid-right" d="M 131.5,74 A 14.5,16.5 0 0,1 160.5,74 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="3.5" style="display:none;" />
 
           <!-- Olhinhos Fechados Dormindo (Quarto) -->
-          <path id="pou-eyes-sleeping" d="M 64,74 Q 78,86 92,74 M 108,74 Q 122,86 136,74" fill="none" stroke="#3b2310" stroke-width="4.5" stroke-linecap="round" style="display:none;" />
+          <path id="pou-eyes-sleeping" d="M 83,75 Q 94,86 105,75 M 135,75 Q 146,86 157,75" fill="none" stroke="#2d1a0e" stroke-width="4.5" stroke-linecap="round" style="display:none;" />
 
-          <!-- Boca (Sorriso sutil característico do Pou) -->
-          <path id="pou-mouth-smile" d="M 92,106 Q 102,118 107,110" fill="none" stroke="#3b2310" stroke-width="4.5" stroke-linecap="round" />
-          
-          <!-- Boca Aberta (Comendo ou falando) -->
-          <ellipse id="pou-mouth-open" cx="100" cy="114" rx="11" ry="13" fill="#78350f" stroke="#3b2310" stroke-width="4" style="display:none;" />
+          <!-- Boquinha Sorrindo -->
+          <path id="pou-mouth-smile" d="M 112,106 Q 120,114 128,106" fill="none" stroke="#2d1a0e" stroke-width="3.5" stroke-linecap="round" />
+          <!-- Linguinha Rosada de Cãozinho Feliz -->
+          <path id="lucky-tongue" d="M 117,108 Q 120,121 123,108 Z" fill="#f43f5e" stroke="#be123c" stroke-width="1.5" />
+
+          <!-- Boquinha Aberta (Comendo ou falando) -->
+          <ellipse id="pou-mouth-open" cx="120" cy="111" rx="9" ry="11" fill="#78350f" stroke="#2d1a0e" stroke-width="3" style="display:none;" />
+
+          <!-- Bochechas Rosadinhas de Pelúcia -->
+          <ellipse cx="80" cy="94" rx="7.5" ry="4.5" fill="#fda4af" opacity="0.65" />
+          <ellipse cx="160" cy="94" rx="7.5" ry="4.5" fill="#fda4af" opacity="0.65" />
 
           <!-- Touca de Dormir (Quarto) -->
           <g id="pou-nightcap" style="display:none;">
-            <path d="M 68,36 Q 100,8 132,36 Q 148,8 156,22 Q 130,22 110,30 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="3" />
-            <circle cx="158" cy="24" r="7" fill="#ffffff" stroke="#3b2310" stroke-width="2" />
-            <path d="M 65,34 Q 100,26 135,34" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+            <path d="M 80,38 Q 120,6 160,38 Q 178,12 186,28 Q 155,24 132,32 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="3" />
+            <circle cx="188" cy="30" r="8" fill="#ffffff" stroke="#1e3a8a" stroke-width="2" />
+            <path d="M 76,36 Q 120,26 164,36" stroke="#ffffff" stroke-width="7" stroke-linecap="round" />
           </g>
         </svg>
 
@@ -1604,6 +1725,11 @@
         <!-- Camada de Corações Flutuantes -->
         <div id="pou-hearts-layer" style="position:absolute; inset:0; pointer-events:none;"></div>
       </div>
+
+      <!-- BOTÃO DE CONVERSA EM DESTAQUE NA PRIMEIRA TELA -->
+      <button type="button" class="lucky-talk-hero-btn" onclick="iniciarConversaDiretaLucky()" title="Falar por voz ou conversar com o Lucky!">
+        🎙️ Conversar com o Lucky (J.A.R.V.I.S.)
+      </button>
 
       <!-- Chão Horizontal da Sala -->
       <div class="pou-room-floor"></div>
@@ -1619,7 +1745,7 @@
       </div>
     </div>
 
-    <!-- 3. BARRA INFERIOR IDÊNTICA AO POU -->
+    <!-- 3. BARRA INFERIOR IDÊNTICA AO POU COM ATALHO DE CONVERSA -->
     <footer class="pou-bottom-bar">
       <!-- BOTÃO JOGOS (ABRE A GAVETA LATERAL DE ATIVIDADES EDUCATIVAS) -->
       <button type="button" class="pou-bottom-btn" onclick="toggleActivityDrawer()" title="Abrir Jogos & Atividades Educativas">
@@ -1629,11 +1755,17 @@
 
       <!-- FERRAMENTA DINÂMICA DO CÔMODO (CENTRO) -->
       <div class="pou-center-tool" id="pou-room-tool-center">
-        <!-- Na Sala de Jogos: Bola de Futebol -->
-        <button type="button" class="tool-circle-btn" id="btn-tool-active" onclick="acionarFerramentaComodo()" title="Brincar com a Bola">
-          ⚽
+        <!-- Na Sala de Brincar: Bolinha -->
+        <button type="button" class="tool-circle-btn" id="btn-tool-active" onclick="acionarFerramentaComodo()" title="Brincar com a Bolinha do Lucky">
+          🎾
         </button>
       </div>
+
+      <!-- BOTÃO CONVERSAR COM O LUCKY (JARVIS) -->
+      <button type="button" class="pou-bottom-btn" onclick="iniciarConversaDiretaLucky()" title="Conversar com o Lucky (J.A.R.V.I.S.)">
+        <div class="pou-btn-icon-box" style="background:#0284c7; color:#fff;">🎙️</div>
+        <span class="pou-btn-label">Conversar</span>
+      </button>
 
       <!-- BOTÃO LOJA (ABRE O POTE DO TESOURO REAL) -->
       <button type="button" class="pou-bottom-btn" onclick="abrirLojaTesouro()" title="Abrir Loja do Tesouro Real">
@@ -1837,43 +1969,43 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     // ==============================================================================
-    // CONTROLADOR OFICIAL DO JOGO POU — CÔMODOS, INTERAÇÕES E ANIMAÇÕES
+    // CONTROLADOR DO LUCKY (J.A.R.V.I.S.) — CÔMODOS, INTERAÇÕES E ANIMAÇÕES
     // ==============================================================================
     const COMODOS_POU = [
       {
         id: 'jogos',
-        nome: 'Sala de Jogos',
+        nome: 'Sala de Brincar',
         wall: '#58d672',
         floor: '#22c55e',
-        toolIcon: '⚽',
-        toolTitle: 'Brincar com a Bola',
+        toolIcon: '🎾',
+        toolTitle: 'Brincar com a Bolinha do Lucky',
         toolAcao: brincarBolaPou
       },
       {
         id: 'cozinha',
-        nome: 'Cozinha',
+        nome: 'Cozinha do Lucky',
         wall: '#fde047',
         floor: '#d97706',
         toolIcon: '🍎',
-        toolTitle: 'Alimentar com Frutinha',
+        toolTitle: 'Alimentar o Lucky com Frutinha',
         toolAcao: alimentarPouRapido
       },
       {
         id: 'banheiro',
-        nome: 'Banheiro',
+        nome: 'Banheiro do Lucky',
         wall: '#38bdf8',
         floor: '#0284c7',
         toolIcon: '🧼',
-        toolTitle: 'Dar Banho de Espuma',
+        toolTitle: 'Dar Banho de Espuma no Lucky',
         toolAcao: darBanhoPouRapido
       },
       {
         id: 'quarto',
-        nome: 'Quarto',
+        nome: 'Quarto do Lucky',
         wall: '#c084fc',
         floor: '#7c3aed',
         toolIcon: '🌙',
-        toolTitle: 'Hora de Dormir (Abajur)',
+        toolTitle: 'Hora de Dormir do Lucky (Abajur)',
         toolAcao: alternarAbajurSonoPou
       }
     ];
@@ -1936,43 +2068,102 @@
       }
     }
 
-    // CARINHO NO POU (TICKLE)
-    function darCarinhoPou(e) {
-      const pouBox = document.getElementById('pou-mascot');
-      if (pouBox) {
-        pouBox.classList.remove('bob-bounce');
-        void pouBox.offsetWidth;
-        pouBox.classList.add('bob-bounce');
+    // LATIDINHO FOFO DO LUCKY (WEB AUDIO SINTETIZADO)
+    function tocarLatidinhoLucky() {
+      try {
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        const osc1 = audioCtx.createOscillator();
+        const g1 = audioCtx.createGain();
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(460, now);
+        osc1.frequency.exponentialRampToValueAtTime(760, now + 0.08);
+        g1.gain.setValueAtTime(0.24, now);
+        g1.gain.linearRampToValueAtTime(0.01, now + 0.1);
+        osc1.connect(g1);
+        g1.connect(audioCtx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.1);
+
+        setTimeout(() => {
+          try {
+            const now2 = audioCtx.currentTime;
+            const osc2 = audioCtx.createOscillator();
+            const g2 = audioCtx.createGain();
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(500, now2);
+            osc2.frequency.exponentialRampToValueAtTime(820, now2 + 0.09);
+            g2.gain.setValueAtTime(0.26, now2);
+            g2.gain.linearRampToValueAtTime(0.01, now2 + 0.11);
+            osc2.connect(g2);
+            g2.connect(audioCtx.destination);
+            osc2.start(now2);
+            osc2.stop(now2 + 0.11);
+          } catch (e) {}
+        }, 110);
+      } catch (e) {}
+    }
+
+    // CLIQUE NO LUCKY (AFETO, LATIDO E ATIVAÇÃO DE CONVERSA DIRETA)
+    function clicarNoLucky(e) {
+      const luckyBox = document.getElementById('pou-mascot');
+      if (luckyBox) {
+        luckyBox.classList.remove('bob-bounce');
+        void luckyBox.offsetWidth;
+        luckyBox.classList.add('bob-bounce');
       }
 
-      tocarSomFofo(520, 680);
+      // Abana o rabinho rápido e feliz!
+      const tail = document.getElementById('lucky-tail-group');
+      if (tail) {
+        tail.classList.add('lucky-tail-fast');
+        setTimeout(() => tail.classList.remove('lucky-tail-fast'), 1600);
+      }
+
+      tocarLatidinhoLucky();
       soltarCoracoes(e ? e.clientX : null, e ? e.clientY : null);
 
       fetch('/api/pet/carinho', { method: 'POST' })
         .then(r => r.json())
         .then(d => {
           if (d.status) atualizarStatusPou(d.status);
-          mostrarFalaPou(`❤️ Hehehe! Te amo, ${appState.config.child_name || 'amigo'}!`);
+          mostrarFalaPou(`🐶 Au au! Te amo, ${appState.config.child_name || 'Kaleo'}! Estou te ouvindo!`);
         })
         .catch(() => {});
+
+      // Inicia o diálogo ou escuta de voz após o latido
+      setTimeout(() => {
+        iniciarConversaDiretaLucky();
+      }, 750);
+    }
+
+    const darCarinhoPou = clicarNoLucky;
+
+    function iniciarConversaDiretaLucky() {
+      openTalkModal();
     }
 
     // ALIMENTAÇÃO RÁPIDA (COZINHA)
     function alimentarPouRapido() {
       const mouthSmile = document.getElementById('pou-mouth-smile');
       const mouthOpen = document.getElementById('pou-mouth-open');
+      const tongue = document.getElementById('lucky-tongue');
       if (mouthSmile && mouthOpen) {
         mouthSmile.style.display = 'none';
         mouthOpen.style.display = 'block';
+        if (tongue) tongue.style.display = 'none';
       }
 
       tocarSomMastigar();
-      mostrarFalaPou('🍎 Nhac! Nhac! Que comidinha gostosa!');
+      mostrarFalaPou('🍎 Nhac! Nhac! Que frutinha gostosa pro Lucky!');
 
       setTimeout(() => {
         if (mouthSmile && mouthOpen) {
           mouthSmile.style.display = 'block';
           mouthOpen.style.display = 'none';
+          if (tongue) tongue.style.display = 'block';
         }
       }, 700);
 
@@ -1997,13 +2188,13 @@
       if (soapBubbles) soapBubbles.style.display = 'block';
 
       tocarSomBolha();
-      mostrarFalaPou('🧼 Espuminha cheirosa! Ficando limpinho!');
+      mostrarFalaPou('🧼 Espuminha quentinha! O Lucky está ficando limpinho e cheiroso!');
 
       setTimeout(() => {
         tocarSomAgua();
         if (soapBubbles) soapBubbles.style.display = 'none';
         bolhaSabaoAtiva = false;
-        mostrarFalaPou('✨ Banho tomado! 100% cheiroso e brilhante!');
+        mostrarFalaPou('✨ Banho tomado! Pêlo fofinho e brilhante!');
       }, 1200);
 
       fetch('/api/pet/banho', { method: 'POST' })
@@ -2029,7 +2220,7 @@
         if (eyesSleep) eyesSleep.style.display = 'block';
         if (eyeL) eyeL.style.display = 'none';
         if (eyeR) eyeR.style.display = 'none';
-        mostrarFalaPou('🌙 Zzz... Bons sonhos, Kaleo! Recarregando as energias...');
+        mostrarFalaPou('🌙 Zzz... Bons sonhos, Kaleo! O Lucky está dormindo quentinho...');
         tocarSomClick();
       } else {
         if (stage) stage.style.filter = 'none';
@@ -2037,7 +2228,7 @@
         if (eyesSleep) eyesSleep.style.display = 'none';
         if (eyeL) eyeL.style.display = 'block';
         if (eyeR) eyeR.style.display = 'block';
-        mostrarFalaPou('☀️ Bom dia! Estou 100% acordado para brincar!');
+        mostrarFalaPou('☀️ Bom dia, Kaleo! O Lucky acordou alegre para brincar!');
         tocarSomClick();
       }
 
@@ -2049,7 +2240,7 @@
         .catch(() => {});
     }
 
-    // BOLA (SALA DE JOGOS)
+    // BOLA (SALA DE BRINCAR)
     function brincarBolaPou() {
       const toolBtn = document.getElementById('btn-tool-active');
       if (toolBtn) {
@@ -2059,15 +2250,15 @@
         }, 300);
       }
 
-      tocarSomFofo(330, 550);
-      const pouBox = document.getElementById('pou-mascot');
-      if (pouBox) {
-        pouBox.classList.remove('bob-bounce');
-        void pouBox.offsetWidth;
-        pouBox.classList.add('bob-bounce');
+      tocarLatidinhoLucky();
+      const luckyBox = document.getElementById('pou-mascot');
+      if (luckyBox) {
+        luckyBox.classList.remove('bob-bounce');
+        void luckyBox.offsetWidth;
+        luckyBox.classList.add('bob-bounce');
       }
 
-      mostrarFalaPou('⚽ Gol do Kaleo! Que chute de herói!');
+      mostrarFalaPou('🎾 Peguei a bolinha, Kaleo! Au au! Que jogada divertida!');
       addStar(1);
     }
 
@@ -2167,11 +2358,11 @@
       const pL = document.getElementById('pou-pupil-left');
       const pR = document.getElementById('pou-pupil-right');
       if (pL) {
-        pL.setAttribute('cx', 78 + pupilX);
+        pL.setAttribute('cx', 95 + pupilX);
         pL.setAttribute('cy', 74 + pupilY);
       }
       if (pR) {
-        pR.setAttribute('cx', 122 + pupilX);
+        pR.setAttribute('cx', 145 + pupilX);
         pR.setAttribute('cy', 74 + pupilY);
       }
     }
@@ -5485,12 +5676,12 @@
     }
 
     function openTalkModal() {
-      const body = openModal('✨ CONVERSAR POR VOZ COM O J.A.R.V.I.S.');
-      speak(`Sobre o que você quer conversar, ${appState.config.child_name}? Toque no microfone para falar comigo ou escolha uma brincadeira!`);
+      const body = openModal('🐶 CONVERSAR COM O LUCKY (J.A.R.V.I.S.)');
+      speak(`Au au! Olá, ${appState.config.child_name || 'Kaleo'}! Eu sou o Lucky, seu cachorrinho robô! Toque no microfone para falar comigo ou escolha uma brincadeira!`);
 
       body.innerHTML = `
-        <div style="background:#0a192f; border:3px solid var(--cyan); border-radius:18px; padding:12px 18px; font-size:clamp(0.98rem, 1.8vw, 1.25rem); font-weight:800; text-align:center; margin-bottom:12px; min-height:48px; max-height:105px; overflow-y:auto; word-break:break-word; line-height:1.35; display:flex; align-items:center; justify-content:center; scrollbar-width:thin;" id="jarvis-talk-reply">
-          Toque no botão verde abaixo para falar no microfone ou escolha um tema!
+        <div style="background:#0a192f; border:3px solid #38bdf8; border-radius:18px; padding:12px 18px; font-size:clamp(0.98rem, 1.8vw, 1.25rem); font-weight:800; text-align:center; margin-bottom:12px; min-height:48px; max-height:105px; overflow-y:auto; word-break:break-word; line-height:1.35; display:flex; align-items:center; justify-content:center; scrollbar-width:thin;" id="jarvis-talk-reply">
+          🐶 Au au! Toque no botão verde abaixo para falar no microfone ou escolha um tema!
         </div>
 
         <!-- BARRA DIRETA DE MICROFONE E DIGITAÇÃO -->
@@ -5524,7 +5715,7 @@
         b.textContent = lbl;
         b.onclick = async () => {
           playTone(659, 90);
-          document.getElementById('jarvis-talk-reply').textContent = '✨ O Járvis está pensando...';
+          document.getElementById('jarvis-talk-reply').textContent = '🐶 O Lucky está pensando...';
           const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic: key }) });
           const d = await r.json();
           document.getElementById('jarvis-talk-reply').textContent = d.reply;
@@ -5541,21 +5732,20 @@
       if (!q) return;
       inp.value = '';
       playTone(659, 90);
-      document.getElementById('jarvis-talk-reply').textContent = `👦 Você: "${q}"\n\n🧠 Járvis pensando...`;
+      document.getElementById('jarvis-talk-reply').textContent = `👦 Você: "${q}"\n\n🐶 Lucky pensando...`;
       try {
         const r = await fetch('/api/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: q }) });
         const d = await r.json();
-        document.getElementById('jarvis-talk-reply').textContent = `🤖 Járvis: ${d.reply}`;
+        document.getElementById('jarvis-talk-reply').textContent = `🐶 Lucky: ${d.reply}`;
         speak(d.reply);
       } catch (err) {
-        document.getElementById('jarvis-talk-reply').textContent = 'Erro ao conectar ao cérebro do Járvis.';
+        document.getElementById('jarvis-talk-reply').textContent = 'Erro ao conectar ao cérebro do Lucky.';
       }
     }
 
     function startModalVoiceTalk() {
       const repBox = document.getElementById('jarvis-talk-reply');
-      if (repBox) repBox.textContent = '🎧 Ouvindo no microfone... Fale com o Járvis!';
-      // Fecha o modal e ativa a escuta principal para visualizar as ondas no centro do HUD
+      if (repBox) repBox.textContent = '🎧 Ouvindo no microfone... Fale com o Lucky!';
       closeModal();
       startVoiceListening();
     }

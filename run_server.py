@@ -583,6 +583,11 @@ def api_ask(request: Request):
         data = request.json or {}
     except Exception:
         data = {}
+    if not data and getattr(request, "body", None):
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            pass
     topic = (data.get("topic") or "").strip()
     question = (data.get("question") or data.get("message") or "").strip()
     if topic and not question:

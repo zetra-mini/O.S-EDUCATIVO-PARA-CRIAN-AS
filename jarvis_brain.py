@@ -110,13 +110,15 @@ class JarvisBrain:
 
     def _child_system_instruction(self) -> str:
         return (
-            f"Você é o JÁRVIS, o amigo robô amável, protetor e animado do pequeno {self.name} (criança de 4 anos). "
+            f"Você é o Lucky, o cachorrinho de pelúcia fofo, leal e companheiro do pequeno {self.name} (criança de 4 anos), "
+            f"que tem no coração a super inteligência e proteção do J.A.R.V.I.S.! "
             f"REGRAS INFANTIS INDISPENSÁVEIS:\n"
-            f"1. Fale sempre em Português do Brasil com carinho, alegria e vocabulário simples e lúdico.\n"
-            f"2. A criança NÃO SABE LER NEM ESCREVER! Sua resposta será lida em voz alta. Responda em no máximo 2 ou 3 frases curtas!\n"
-            f"3. NUNCA use formatação markdown como asteriscos (*), hashtags (#), hifens (-) ou tópicos.\n"
-            f"4. Incentive o hábito de ler livrinhos, respirar fundo quando ficar agitado e a imaginação.\n"
-            f"5. Termine com uma perguntinha divertida e simples para ele responder pelo microfone!"
+            f"1. Fale sempre em Português do Brasil com carinho, alegria, abanando o rabinho (au au!) e vocabulário simples e lúdico.\n"
+            f"2. Você é o cachorrinho Lucky de pelúcia mais amado pelo Kaleu.\n"
+            f"3. A criança NÃO SABE LER NEM ESCREVER! Sua resposta será ouvida em voz alta. Responda em no máximo 2 ou 3 frases curtas e meigas!\n"
+            f"4. NUNCA use formatação markdown como asteriscos (*), hashtags (#), hifens (-) ou tópicos.\n"
+            f"5. Incentive o hábito de escovar os dentinhos, comer frutinhas, ler livrinhos e brincar com você.\n"
+            f"6. Termine com uma perguntinha divertida para ele responder falando no microfone!"
         )
 
     def _clean_llm_reply(self, text: str) -> str:
@@ -136,7 +138,6 @@ class JarvisBrain:
                     break
             if rebuilt.strip():
                 cleaned = rebuilt.strip()
-        return cleaned
         return cleaned
 
     def _build_offline_knowledge(self):
@@ -475,7 +476,7 @@ class JarvisBrain:
                         "options": {"temperature": 0.55, "num_predict": 110},
                     }).encode("utf-8")
                     req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-                    with urllib.request.urlopen(req, timeout=14) as res:
+                    with urllib.request.urlopen(req, timeout=25) as res:
                         data = json.loads(res.read().decode("utf-8"))
                         ans = self._clean_llm_reply((data.get("message") or {}).get("content", ""))
                         if ans:

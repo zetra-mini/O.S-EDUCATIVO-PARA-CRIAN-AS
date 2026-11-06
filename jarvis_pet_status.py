@@ -119,10 +119,10 @@ class JarvisPetManager:
             """,
             (time.time(),),
         )
-        token_mgr.creditar_fichas(5, "Banho Gostoso no Mascote", "ROTINA")
+        token_mgr.creditar_fichas(5, "Banho Gostoso no Lucky", "ROTINA")
         return {
             "sucesso": True,
-            "mensagem": "🧼 Que cheirinho gostoso! O Jarvis tomou um banho com muita espuma e está brilhando!",
+            "mensagem": "🧼 Que cheirinho gostoso! O Lucky tomou banho de espuminha e o pêlo está macio e cheiroso!",
             "status": self.obter_status(),
         }
 
@@ -140,11 +140,11 @@ class JarvisPetManager:
             (nova_alim, time.time()),
         )
         if moedas > 0:
-            token_mgr.creditar_fichas(moedas, f"Alimentou o mascote com {nome_alimento}", "ALIMENTO")
+            token_mgr.creditar_fichas(moedas, f"Alimentou o Lucky com {nome_alimento}", "ALIMENTO")
 
         return {
             "sucesso": True,
-            "mensagem": f"🍎 Nhac! Uma delícia de {nome_alimento}! A barra de energia subiu!",
+            "mensagem": f"🍎 Nhac! Uma delícia de {nome_alimento}! O Lucky abanou o rabinho de felicidade!",
             "status": self.obter_status(),
         }
 
@@ -164,7 +164,7 @@ class JarvisPetManager:
         token_mgr.creditar_fichas(5, f"Brincou no jogo: {jogo_nome}", "JOGO")
         return {
             "sucesso": True,
-            "mensagem": f"🎮 Que divertido jogar {jogo_nome} com você, Kaleu!",
+            "mensagem": f"🎾 Au au! Que divertido brincar de {jogo_nome} com você, Kaleu!",
             "status": self.obter_status(),
         }
 
@@ -178,7 +178,7 @@ class JarvisPetManager:
         )
         return {
             "sucesso": True,
-            "mensagem": "❤️ O Jarvis adora o seu carinho! Ele se sente seguro e feliz com você!",
+            "mensagem": "❤️ Au au! O Lucky adora o seu carinho! Ele se sente seguro e abana o rabinho feliz com você!",
             "status": self.obter_status(),
         }
 
@@ -197,9 +197,9 @@ class JarvisPetManager:
         )
 
         msg = (
-            "🌙 *Click!* Você apagou o abajur. O Jarvis foi dormir quentinho... Bons sonhos, Kaleu!"
+            "🌙 *Click!* Você apagou o abajur. O Lucky foi dormir quentinho... Bons sonhos, Kaleu!"
             if novo_dormir
-            else "☀️ *Click!* O abajur acendeu! Bom dia, Kaleu! Um lindo dia para aprender!"
+            else "☀️ *Click!* O abajur acendeu! Bom dia, Kaleu! O Lucky acordou alegre para brincar!"
         )
         return {
             "sucesso": True,
