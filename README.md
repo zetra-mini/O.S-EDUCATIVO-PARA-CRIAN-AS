@@ -1,8 +1,54 @@
 # 🚀 J.A.R.V.I.S. Kids OS v3.0 — Stark Educational System (Para Kaleo Noah)
 
-Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida para o netbook **Acer Aspire One 532h / Asus EeePC** (`Intel Atom N450 1.66 GHz`, `2 GB RAM`, `SSD`, GPU `Intel GMA 3150`, tela `1024x600`), rodando sobre **antiX Linux** ou **Windows**.
+Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para computadores com recursos restritos, tendo como referência original o netbook **Acer Aspire One / Asus Eee PC** (`Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), rodando sobre **antiX Linux (32/64 bits)** ou **Windows**.
 
-Projetado sob princípios rigorosos de **engenharia de software para hardware ultra-restrito**, consumindo **menos de 15 MB de RAM no backend** e garantindo que o processador Atom de núcleo único nunca trave em 100%.
+---
+
+## 🖥️ Especificações de Hardware & Requisitos do Sistema
+
+O **J.A.R.V.I.S. Kids OS** nasceu com uma premissa de engenharia intransigente: **dar vida útil e propósito nobre a computadores antigos e modestos**, transformando um netbook esquecido em um superassistente educativo com inteligência artificial para o aprendizado e desenvolvimento de uma criança.
+
+### 🎯 Hardware Alvo Original de Desenvolvimento
+O sistema foi concebido, calibrado e testado originalmente para a linha de netbooks ultra-compactos:
+- **Modelo de Referência Principal:** Netbook **Acer Aspire One (532h / D250 / D255)** e **Asus Eee PC (1005 / 1015)**.
+- **Processador (CPU):** Intel Atom N450 / N270 / D2500 (1.60 GHz a 1.66 GHz, 1 Núcleo / 2 Threads, x86/x64).
+- **Memória RAM:** 1 GB a 2 GB DDR2 / DDR3.
+- **Gráficos (GPU):** Intel GMA 3150 / Intel 945GSE integrada (aceleração gráfica 2D básica).
+- **Armazenamento:** HDD ou SSD SATA de 160 GB, ou cartão de memória SD.
+- **Tela e Resolução:** 10.1 polegadas WSVGA (1024 x 600 pixels) com preenchimento total e modo quiosque tela cheia.
+- **Sistema Operacional Recomendado:** **antiX Linux 23/24 (32 bits ou 64 bits)** ou **Windows 7/10 Home**.
+
+---
+
+### 📊 Tabela de Requisitos de Sistema (Mínimos vs. Recomendados)
+
+| Componente | Requisitos Mínimos (Netbook Acer / Asus / PCs Antigos) | Requisitos Recomendados (PCs / Notebooks Modernos) |
+| :--- | :--- | :--- |
+| **Processador (CPU)** | Intel Atom 1.6 GHz, Intel Celeron antigo, AMD E-Series ou qualquer processador x86/x64 de 1 núcleo | Intel Core i3 / i5, AMD Ryzen 3 / 5 ou Celeron moderno quad-core |
+| **Memória RAM** | **1 GB de RAM** *(o backend Microdot consome apenas ~15 a 30 MB de RAM)* | **4 GB a 8 GB de RAM** *(necessário para rodar IA local com Ollama)* |
+| **Armazenamento** | **500 MB livres** em disco ou cartão SD | **4 GB a 10 GB livres** *(para pesos dos modelos locais de IA)* |
+| **Resolução de Tela** | **1024 x 600 pixels** (10.1") com preenchimento total responsivo | **1366 x 768**, **1920 x 1080 (Full HD)** ou superior |
+| **Áudio & Microfone** | Microfone integrado e alto-falantes estéreo / saída P2 | Microfone USB com cancelamento de ruído e caixas de som |
+| **Conexão de Rede** | Wi-Fi 802.11 b/g/n (para síntese de voz neural e APIs na nuvem) | Conexão Wi-Fi ou Ethernet estável |
+| **Sistemas Operacionais** | **antiX Linux** (32/64 bits), **Debian minimal**, **Raspberry Pi OS**, **Windows 7/10/11** | Windows 10/11, Ubuntu/Debian, Fedora, macOS |
+
+---
+
+### ⚙️ Matriz de Modos de Operação Conforme o Hardware
+
+O sistema possui arquitetura adaptativa e se molda perfeitamente à capacidade da máquina hospedeira:
+
+1. **Modo Netbook Atom / Máquinas Modestas (1 GB a 2 GB RAM):**
+   * **Motor de IA:** Nuvem Híbrida (**Google Gemini 3.8 Flash**, **Groq Cloud Llama 3.3 70B** ou **OpenCode CLI em rede local**).
+   * **Voz Neural PT-BR:** **Edge-TTS Neural** com cache em memória e em disco (`voz_jarvis.py`), mantendo a CPU do Intel Atom em **0% de uso em repouso**.
+   * **Microfone Seguro Sob Demanda:** A placa de áudio nunca fica gravando em segundo plano. O microfone abre apenas no instante em que a criança clica no botão de fala ou toca no mascote, liberando imediatamente o hardware de áudio.
+
+2. **Modo Computador Moderno / Desktop (4 GB a 16 GB RAM):**
+   * **Motor de IA Local:** Suporte nativo ao **Ollama** rodando localmente (`http://127.0.0.1:11434`) com modelos como `llama3.2:1b` ou `qwen2.5:0.5b` com **zero custo de API e 100% localhost**.
+   * **Prioridade Estrita de Voz:** A voz selecionada no painel dos pais (`jarvis_antonio`, `amiga_thalita` ou `amiga_francisca`) tem prioridade total e não se altera ao alternar entre modelos de IA locais e na nuvem.
+
+3. **Modo Standalone / 100% Offline (Sem Internet):**
+   * Caso o netbook esteja em uma viagem ou sem Wi-Fi, o Jarvis ativa o modo de contingência offline com banco de respostas educativas pré-programadas no SQLite e síntese nativa do navegador, garantindo que o aprendizado nunca seja interrompido.
 
 ---
 
