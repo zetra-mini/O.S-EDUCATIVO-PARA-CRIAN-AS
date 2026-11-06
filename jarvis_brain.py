@@ -12,9 +12,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 DEFAULT_CONFIG = {
-    "child_name": "Pequeno Inventor",
-    "active_provider": "opencode",  # 'opencode', 'ollama', 'gemini', 'openai', 'groq', 'offline'
-    "mode": "opencode",  # Mantido para retrocompatibilidade
+    "child_name": "Kaleu",
+    "active_provider": "ollama",  # 'ollama', 'opencode', 'gemini', 'openai', 'groq', 'offline'
+    "mode": "ollama",  # Mantido para retrocompatibilidade
     "opencode_model": "google/gemini-2.0-flash",
     "opencode_server": "",
     "opencode_cli_path": "opencode",
@@ -27,7 +27,7 @@ DEFAULT_CONFIG = {
     "voice_profile": "jarvis_antonio",  # 'jarvis_antonio', 'amiga_thalita', 'amiga_francisca', 'gemini_puck', 'gemini_sulafat'
     "prefer_neural_voice": True,
     "ollama_url": "http://127.0.0.1:11434",
-    "ollama_model": "qwen2.5:0.5b",
+    "ollama_model": "llama3.2:1b",
     "voice_enabled": True,
     "media_start_time": "16:00",
     "media_end_time": "17:00",
@@ -230,6 +230,11 @@ class JarvisBrain:
             "reply": self._offline_conversational_fallback(question),
             "engine_used": "offline",
         }
+
+    def ask(self, question: str) -> tuple[str, str]:
+        """Método unificado de consulta ao cérebro do Jarvis (retorna reply, engine_used)."""
+        res = self.ask_custom_detailed(question)
+        return res.get("reply", ""), res.get("engine_used", "offline")
 
     def _offline_conversational_fallback(self, question: str) -> str:
         q_low = question.lower()
@@ -447,25 +452,38 @@ class JarvisBrain:
 
     def _call_ollama(self, user_input: str) -> str:
         try:
-            url = self.config.get("ollama_url", "http://127.0.0.1:11434").rstrip("/") + "/api/chat"
+            base_url = self.config.get("ollama_url", "http://127.0.0.1:11434").rstrip("/")
+            url = f"{base_url}/api/chat"
+            preferred_model = self.config.get("ollama_model", "llama3.2:1b")
+
+            models_to_try = [preferred_model]
+            if preferred_model != "llama3.2:1b":
+                models_to_try.append("llama3.2:1b")
+            if "qwen2.5:0.5b" not in models_to_try:
+                models_to_try.append("qwen2.5:0.5b")
+
             messages = [{"role": "system", "content": self._child_system_instruction()}]
             messages.extend(self.local_history[-6:])
             messages.append({"role": "user", "content": user_input})
 
-            payload = json.dumps({
-                "model": self.config.get("ollama_model", "qwen2.5:0.5b"),
-                "messages": messages,
-                "stream": False,
-                "options": {"temperature": 0.55, "num_predict": 110},
-            }).encode("utf-8")
-            req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=12) as res:
-                data = json.loads(res.read().decode("utf-8"))
-                ans = self._clean_llm_reply((data.get("message") or {}).get("content", ""))
-                if ans:
-                    self.local_history.append({"role": "user", "content": user_input})
-                    self.local_history.append({"role": "assistant", "content": ans})
-                    return ans
+            for m in models_to_try:
+                try:
+                    payload = json.dumps({
+                        "model": m,
+                        "messages": messages,
+                        "stream": False,
+                        "options": {"temperature": 0.55, "num_predict": 110},
+                    }).encode("utf-8")
+                    req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
+                    with urllib.request.urlopen(req, timeout=14) as res:
+                        data = json.loads(res.read().decode("utf-8"))
+                        ans = self._clean_llm_reply((data.get("message") or {}).get("content", ""))
+                        if ans:
+                            self.local_history.append({"role": "user", "content": user_input})
+                            self.local_history.append({"role": "assistant", "content": ans})
+                            return ans
+                except Exception:
+                    continue
         except Exception:
             pass
         return ""
@@ -573,9 +591,26 @@ class JarvisBrain:
                 with urllib.request.urlopen(f"{url}/api/tags", timeout=5) as res:
                     data = json.loads(res.read().decode("utf-8"))
                     models = [m.get("name", "") for m in data.get("models", [])]
-                    models_str = ", ".join(models) if models else "Nenhum modelo baixado"
-                    return True, f"Ollama Local online em {url}! Modelos detectados: {models_str}"
+
+                target_model = model.strip() or self.config.get("ollama_model", "llama3.2:1b")
+                if models and target_model not in models:
+                    target_model = models[0]
+
+                chat_payload = json.dumps({
+                    "model": target_model,
+                    "messages": [
+                        {"role": "system", "content": f"Você é o robô JARVIS, melhor amigo de {self.name}. Dê um oi alegre em uma frase curta."},
+                        {"role": "user", "content": "Oi Jarvis!"}
+                    ],
+                    "stream": False,
+                    "options": {"num_predict": 45}
+                }).encode("utf-8")
+                chat_req = urllib.request.Request(f"{url}/api/chat", data=chat_payload, headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(chat_req, timeout=12) as c_res:
+                    c_data = json.loads(c_res.read().decode("utf-8"))
+                    reply = self._clean_llm_reply((c_data.get("message") or {}).get("content", ""))
+                    return True, f"Ollama Local ({target_model}) respondeu perfeitamente: \"{reply}\""
             except Exception as exc:
-                return False, f"Ollama não respondeu em {url}: {str(exc)[:120]}"
+                return False, f"Ollama em {url}: {str(exc)[:120]}"
 
         return False, "Provedor desconhecido."

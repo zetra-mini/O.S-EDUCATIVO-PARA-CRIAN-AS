@@ -290,6 +290,28 @@
     </div>
   </div>
 
+  <!-- MOTOR DE INTELIGÊNCIA ARTIFICIAL -->
+  <div class="card">
+    <div class="card-title">🤖 Cérebro de IA do Jarvis</div>
+    <div style="font-size:0.85rem; color:#94a3b8;">
+      Selecione qual motor de inteligência artificial o Jarvis utiliza para responder as dúvidas do Kaleu:
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <select id="sel-ia-provider" onchange="alterarProvedorRemoto(this.value)">
+        <option value="ollama">🦙 IA Local Llama 3.2 (100% Grátis no Netbook via Ollama)</option>
+        <option value="gemini">✨ Google Gemini Cloud (Requer chave no HUD)</option>
+        <option value="opencode">⚡ OpenCode CLI (LAN / Localhost)</option>
+        <option value="groq">⚡ Groq Cloud (Llama 3.3 70B gratuito)</option>
+        <option value="openai">🤖 OpenAI ChatGPT (GPT-4o Mini)</option>
+        <option value="offline">🛡️ Modo 100% Offline (Sem Wi-Fi / Respostas prontas)</option>
+      </select>
+      <button type="button" class="btn btn-send" style="padding:10px;" onclick="testarIARemota()">
+        🧪 Testar Conexão de IA
+      </button>
+      <div id="ia-test-result" style="display:none; font-size:0.8rem; padding:8px 12px; border-radius:8px; background:#071120; border:1px solid #1e293b;"></div>
+    </div>
+  </div>
+
   <!-- LOGS DO SISTEMA & DIAGNÓSTICO DE FALHAS -->
   <div class="card" id="card-logs">
     <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
@@ -526,6 +548,40 @@
       }
     }
 
+    async function alterarProvedorRemoto(prov) {
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ active_provider: prov })
+        });
+        showToast('🤖 Provedor de IA alterado para: ' + prov.toUpperCase());
+        executarDiagnostico();
+      } catch (e) {
+        showToast('Erro ao trocar provedor');
+      }
+    }
+
+    async function testarIARemota() {
+      const prov = document.getElementById('sel-ia-provider').value;
+      const resBox = document.getElementById('ia-test-result');
+      resBox.style.display = 'block';
+      resBox.innerHTML = '⏳ Testando conexão com ' + prov + '...';
+      try {
+        const res = await fetch('/api/provider/test', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ provider: prov })
+        });
+        const d = await res.json();
+        resBox.innerHTML = (d.ok ? '✅ ' : '❌ ') + d.message;
+        resBox.style.borderColor = d.ok ? '#10b981' : '#ef4444';
+        executarDiagnostico();
+      } catch (e) {
+        resBox.innerHTML = '❌ Erro ao conectar ao servidor.';
+      }
+    }
+
     let filtroNivelAtual = '';
     let termoBuscaAtual = '';
 
@@ -551,6 +607,10 @@
         const iaEl = document.getElementById('diag-ia-status');
         if (iaEl) {
           iaEl.textContent = (diag.ia.provedor || 'offline').toUpperCase();
+        }
+        const selIa = document.getElementById('sel-ia-provider');
+        if (selIa && diag.ia && diag.ia.provedor) {
+          selIa.value = diag.ia.provedor;
         }
 
         // Bateria

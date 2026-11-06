@@ -198,7 +198,7 @@ def api_state(request: Request):
                 "has_groq_key": bool(brain.get_effective_groq_key()),
                 "has_openai_key": bool(brain.get_effective_openai_key()),
                 "ollama_url": brain.config.get("ollama_url", "http://127.0.0.1:11434"),
-                "ollama_model": brain.config.get("ollama_model", "qwen2.5:0.5b"),
+                "ollama_model": brain.config.get("ollama_model", "llama3.2:1b"),
                 "opencode_model": brain.config.get("opencode_model", "google/gemini-2.0-flash"),
                 "opencode_server": brain.config.get("opencode_server", ""),
                 "media_start_time": brain.config.get("media_start_time", "16:00"),
@@ -579,8 +579,15 @@ def api_idiomas_progresso(request: Request):
 
 @app.route("/api/ask", methods=["POST"])
 def api_ask(request: Request):
-    data = request.json or {}
+    try:
+        data = request.json or {}
+    except Exception:
+        data = {}
+    topic = (data.get("topic") or "").strip()
     question = (data.get("question") or data.get("message") or "").strip()
+    if topic and not question:
+        res = brain.ask_topic_detailed(topic)
+        return json_response(res)
     if not question:
         return json_response({"reply": "Olá! Estou ouvindo você com atenção!", "engine_used": "offline"})
 
@@ -633,8 +640,11 @@ def api_provider_test(request: Request):
             brain.config["openai_api_key"] = key
         elif p == "groq" and key:
             brain.config["groq_api_key"] = key
-        elif p == "ollama" and url:
-            brain.config["ollama_url"] = url
+        elif p == "ollama":
+            if url:
+                brain.config["ollama_url"] = url
+            if model:
+                brain.config["ollama_model"] = model
         brain.config["active_provider"] = p
         brain.config["mode"] = p
         brain.save_config()
