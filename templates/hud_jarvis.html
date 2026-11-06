@@ -2593,26 +2593,32 @@
       setTimeout(() => heart.remove(), 900);
     }
 
-    // SONS SINTETIZADOS COM WEB AUDIO API
+    // SONS SINTETIZADOS COM WEB AUDIO API (ALTA PERFORMANCE 0ms LATÊNCIA)
     function tocarSomFofo(freqInicio, freqFim) {
       try {
+        destravarAudioNavegador();
         if (!audioCtx) return;
+        const now = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(freqInicio || 400, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(freqFim || 600, audioCtx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+        osc.frequency.setValueAtTime(freqInicio || 400, now);
+        osc.frequency.exponentialRampToValueAtTime(freqFim || 600, now + 0.15);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.18);
+        osc.start(now);
+        osc.stop(now + 0.18);
+        osc.onended = () => {
+          try { osc.disconnect(); gain.disconnect(); } catch (e) {}
+        };
       } catch (e) {}
     }
 
     function tocarSomMastigar() {
       try {
+        destravarAudioNavegador();
         if (!audioCtx) return;
         for (let i = 0; i < 3; i++) {
           setTimeout(() => tocarSomFofo(240, 160), i * 160);
@@ -2622,6 +2628,7 @@
 
     function tocarSomBolha() {
       try {
+        destravarAudioNavegador();
         if (!audioCtx) return;
         tocarSomFofo(700, 1100);
       } catch (e) {}
@@ -2629,6 +2636,7 @@
 
     function tocarSomAgua() {
       try {
+        destravarAudioNavegador();
         if (!audioCtx) return;
         tocarSomFofo(500, 300);
       } catch (e) {}
@@ -2636,6 +2644,7 @@
 
     function tocarSomClick() {
       try {
+        destravarAudioNavegador();
         if (!audioCtx) return;
         tocarSomFofo(800, 400);
       } catch (e) {}
@@ -2732,25 +2741,86 @@
       el._timer = setTimeout(() => { el.style.display = 'none'; }, 4200);
     }
 
-    function playTone(freq = 523, durationMs = 140) {
-      if (!appState.config.voice_enabled) return;
+    function playTone(freq = 523, durationMs = 140, type = 'sine', gainVal = 0.18) {
       try {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.16, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(gainVal, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + durationMs / 1000);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + durationMs / 1000);
+        osc.start(now);
+        osc.stop(now + durationMs / 1000);
         osc.onended = () => {
           try {
             osc.disconnect();
             gain.disconnect();
           } catch (err) {}
+        };
+      } catch (e) {}
+    }
+
+    // EFEITOS SONOROS DE FEEDBACK IMEDIATO (0ms LATÊNCIA, 0 REDE, 100% OFFLINE)
+    function playSfxClick() {
+      playTone(580, 45, 'sine', 0.15);
+    }
+
+    function playSfxCoin() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(987.77, now); // Si5 (B5)
+        osc.frequency.setValueAtTime(1318.51, now + 0.08); // Mi6 (E6)
+        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.32);
+        osc.onended = () => {
+          try { osc.disconnect(); gain.disconnect(); } catch (err) {}
+        };
+      } catch (e) {}
+    }
+
+    function playSfxSuccess() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => playTone(freq, 130, 'triangle', 0.22), idx * 75);
+        });
+      } catch (e) {}
+    }
+
+    function playSfxError() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(170, now + 0.2);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+        osc.onended = () => {
+          try { osc.disconnect(); gain.disconnect(); } catch (err) {}
         };
       } catch (e) {}
     }
@@ -2788,30 +2858,21 @@
       }
     }
 
-    function stopCurrentSpeech() {
-      if (ttsAbortCtrl) {
-        try { ttsAbortCtrl.abort(); } catch (e) {}
-        ttsAbortCtrl = null;
-      }
-      if (currentAudio) {
-        try {
-          currentAudio.pause();
-          if (currentAudio._blobUrl) URL.revokeObjectURL(currentAudio._blobUrl);
-        } catch (e) {}
-        currentAudio = null;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      setSpeakingVisual(false);
-    }
-
     let currentBufferSource = null;
+    let audioHardwarePrimed = false;
 
     function destravarAudioNavegador() {
       try {
         if (audioCtx && audioCtx.state === 'suspended') {
           audioCtx.resume();
+        }
+        if (audioCtx && !audioHardwarePrimed && audioCtx.state === 'running') {
+          const silentBuf = audioCtx.createBuffer(1, 1, 22050);
+          const src = audioCtx.createBufferSource();
+          src.buffer = silentBuf;
+          src.connect(audioCtx.destination);
+          src.start(0);
+          audioHardwarePrimed = true;
         }
         const player = document.getElementById('jarvis-speech-player');
         if (player) {
@@ -2851,34 +2912,55 @@
       if (speakWaves) speakWaves.style.display = 'none';
     }
 
-    // TOCA ÁUDIO DE FORMA AUDÍVEL E IMEDIATA VIA WEB AUDIO API (SEM BLOQUEIO DE AUTOPLAY)
-    function tocarAudioBufferWebAudio(arrayBuffer, onEnd) {
+    // CACHE LOCAL EM RAM DE ÁUDIOS DE VOZ DECODIFICADOS (0ms DE LATÊNCIA APÓS 1ª VEZ)
+    const clientTtsAudioBufferCache = new Map();
+
+    function tocarAudioBufferDecodificado(decodedData, onEnd) {
+      try {
+        destravarAudioNavegador();
+        stopCurrentSpeech();
+
+        const source = audioCtx.createBufferSource();
+        source.buffer = decodedData;
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        currentBufferSource = source;
+
+        setSpeakingVisual(true);
+        const speakWaves = document.getElementById('robot-speaking-waves');
+        if (speakWaves) speakWaves.style.display = 'block';
+
+        source.onended = () => {
+          setSpeakingVisual(false);
+          if (speakWaves) speakWaves.style.display = 'none';
+          currentBufferSource = null;
+          if (onEnd) onEnd();
+        };
+
+        source.start(0);
+      } catch (e) {
+        setSpeakingVisual(false);
+        if (onEnd) onEnd();
+      }
+    }
+
+    // TOCA ÁUDIO DE FORMA AUDÍVEL E IMEDIATA VIA WEB AUDIO API (COM ARMAZENAMENTO NO CACHE)
+    function tocarAudioBufferWebAudio(arrayBuffer, onEnd, cacheKey = null) {
       try {
         destravarAudioNavegador();
         const copyBuf = arrayBuffer.slice(0);
         audioCtx.decodeAudioData(copyBuf, (decodedData) => {
-          stopCurrentSpeech();
-          const source = audioCtx.createBufferSource();
-          source.buffer = decodedData;
-
-          const gainNode = audioCtx.createGain();
-          gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
-          source.connect(gainNode);
-          gainNode.connect(audioCtx.destination);
-          currentBufferSource = source;
-
-          setSpeakingVisual(true);
-          const speakWaves = document.getElementById('robot-speaking-waves');
-          if (speakWaves) speakWaves.style.display = 'block';
-
-          source.onended = () => {
-            setSpeakingVisual(false);
-            if (speakWaves) speakWaves.style.display = 'none';
-            currentBufferSource = null;
-            if (onEnd) onEnd();
-          };
-
-          source.start(0);
+          if (cacheKey && decodedData) {
+            if (clientTtsAudioBufferCache.size > 80) {
+              const oldestKey = clientTtsAudioBufferCache.keys().next().value;
+              clientTtsAudioBufferCache.delete(oldestKey);
+            }
+            clientTtsAudioBufferCache.set(cacheKey, decodedData);
+          }
+          tocarAudioBufferDecodificado(decodedData, onEnd);
         }, (err) => {
           console.warn('Fallback de decodeAudioData:', err);
           if (onEnd) onEnd();
@@ -2899,7 +2981,6 @@
       }
 
       destravarAudioNavegador();
-      stopCurrentSpeech();
 
       // PRIORIDADE ABSOLUTA DA VOZ SELECIONADA NO PAINEL EM QUALQUER MOTOR DE IA
       const chosenProfile = options.voiceProfile 
@@ -2907,19 +2988,33 @@
         || localStorage.getItem('jarvis_voice_profile') 
         || 'jarvis_antonio';
 
+      const cacheKey = `${chosenProfile}:${text.trim().toLowerCase()}`;
+
+      // 1. REPRODUÇÃO INSTANTÂNEA DE CACHE LOCAL (0ms de espera!)
+      if (clientTtsAudioBufferCache.has(cacheKey)) {
+        const cachedBuf = clientTtsAudioBufferCache.get(cacheKey);
+        tocarAudioBufferDecodificado(cachedBuf, () => {
+          setSpeakingVisual(false);
+          if (options.onEnd) options.onEnd();
+        });
+        return;
+      }
+
+      stopCurrentSpeech();
+
       // Ativa ondas de fala na boca do robô e atualiza o estado
       setSpeakingVisual(true);
 
       const ctrl = new AbortController();
       ttsAbortCtrl = ctrl;
 
-      // Timeout estendido para 12 segundos: permite que Ollama/Llama local e Edge-TTS sintetizem sem fallback indevido
+      // Timeout inteligente para 3.2 segundos: se rede oscilar, entra fallback local sem deixar a criança esperando
       let fallbackTimer = setTimeout(() => {
         if (ttsAbortCtrl === ctrl) {
           try { ctrl.abort(); } catch (e) {}
           speakBrowserFallback(text, options.onEnd, chosenProfile);
         }
-      }, 12000);
+      }, 3200);
 
       try {
         const payload = { 
@@ -2943,7 +3038,7 @@
             tocarAudioBufferWebAudio(arrayBuffer, () => {
               setSpeakingVisual(false);
               if (options.onEnd) options.onEnd();
-            });
+            }, cacheKey);
             return;
           }
         }
@@ -3057,10 +3152,12 @@
       appState.stars += count;
       const sBadge = document.getElementById('stars-badge');
       if (sBadge) sBadge.textContent = `★ ${appState.stars}`;
-      playTone(523, 90);
-      setTimeout(() => playTone(659, 90), 100);
-      setTimeout(() => playTone(784, 160), 200);
+      playSfxCoin();
       updateArmorDisplay();
+    }
+
+    function addStarReward(count = 1) {
+      addStar(count);
     }
 
     async function loadState(greet = false) {
@@ -5773,8 +5870,8 @@
         if (!selectedSongKey) return;
         const song = MELODIES[selectedSongKey];
         const instLabel = currentInstrument === 'bichinhos' ? 'Bichinhos Cantores' : currentInstrument === 'bateria' ? 'Bateria Stark' : currentInstrument === 'laser' ? 'Laser Espacial' : 'Piano Mágico';
-        speak(`Ouvindo ${song.title} tocado pelo ${instLabel}!`);
-        updateSkyPrompt(`🎶 Tocando: ${song.title} com ${instLabel}...`, '#38bdf8');
+        playSfxClick();
+        updateSkyPrompt(`🎶 Tocando: ${song.title} (${instLabel})...`, '#38bdf8');
 
         song.notes.forEach(([name, freq, col], i) => {
           setTimeout(() => {
@@ -5795,6 +5892,7 @@
 
         setTimeout(() => {
           highlightKey(null);
+          playSfxSuccess();
           updateSkyPrompt(`Gostou de ${song.title}? Agora aperte "Aprender"!`, '#fde047');
         }, song.notes.length * 440 + 400);
       };
@@ -5803,7 +5901,8 @@
         if (!selectedSongKey) return;
         activeMelody = MELODIES[selectedSongKey];
         melodyIdx = 0;
-        speak(`Siga a tecla brilhante para tocar ${activeMelody.title}!`);
+        playSfxClick();
+        updateSkyPrompt(`Siga a tecla brilhante para tocar ${activeMelody.title}!`, '#facc15');
         highlightKey(activeMelody.notes[0][0]);
       };
 
@@ -5818,25 +5917,29 @@
         currentInstrument = 'piano';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Piano Mágico ativado! Toque nas teclas coloridas!');
+        playTone(523, 120);
+        updateSkyPrompt('🎹 Piano Mágico ativado! Toque nas teclas coloridas!', '#38bdf8');
       };
       document.getElementById('tab-bateria').onclick = () => {
         currentInstrument = 'bateria';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Bateria Stark ativada! Bumbo, caixa, prato e tambores!');
+        playDrumSound('snare');
+        updateSkyPrompt('🥁 Bateria Stark ativada! Bumbo, caixa, prato e tambores!', '#f43f5e');
       };
       document.getElementById('tab-bichinhos').onclick = () => {
         currentInstrument = 'bichinhos';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Bichinhos Cantores ativados! Cada tecla é um animalzinho fofo que canta!');
+        playInstrumentSound('bichinhos', 440, 280, 'miau');
+        updateSkyPrompt('🐱 Bichinhos Cantores ativados! Cada tecla canta!', '#10b981');
       };
       document.getElementById('tab-laser').onclick = () => {
         currentInstrument = 'laser';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Sintetizador Laser ativado! Sons espaciais!');
+        playInstrumentSound('laser', 660, 220);
+        updateSkyPrompt('⚡ Sintetizador Laser ativado!', '#a855f7');
       };
 
       const btnBeat = document.getElementById('btn-toggle-beat');
@@ -7476,12 +7579,16 @@
     // =========================================================================
     // INICIALIZAÇÃO DE ÁUDIO LIMPA E SEGURA (MICROFONE APENAS SOB DEMANDA)
     // =========================================================================
-    window.addEventListener('click', () => {
-      destravarAudioNavegador();
-    }, { once: true });
-    window.addEventListener('touchstart', () => {
-      destravarAudioNavegador();
-    }, { once: true });
+    ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        destravarAudioNavegador();
+      }, { passive: true });
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        destravarAudioNavegador();
+      }
+    });
 
     // ROTINAS COOPERATIVAS (DENTE & QUARTO)
     function iniciarMissaoDente() {

@@ -12,4 +12,6 @@ venv/
 *.db
 *.db-wal
 *.db-shm
+.cache/
+temp_check.js
 

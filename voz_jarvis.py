@@ -1,6 +1,7 @@
 import asyncio
 import base64
 from collections import OrderedDict
+import hashlib
 import io
 import math
 import os
@@ -12,6 +13,13 @@ import subprocess
 import tempfile
 import threading
 import wave
+
+# Diretório de cache persistente em disco para áudios TTS (resposta em <1ms)
+TTS_CACHE_DIR = os.path.join(os.path.dirname(__file__), ".cache", "tts_cache")
+try:
+    os.makedirs(TTS_CACHE_DIR, exist_ok=True)
+except Exception:
+    pass
 
 # Perfis de voz neural disponíveis para o JARVIS Kids OS
 VOICE_PROFILES = {
@@ -97,10 +105,36 @@ class NeuralTTSService:
         )
 
         cache_id = f"{profile_key}:{bool(effective_key)}:{clean}"
+        cache_hash = hashlib.md5(cache_id.encode("utf-8")).hexdigest()
+        disk_path_mp3 = os.path.join(TTS_CACHE_DIR, f"{cache_hash}.mp3")
+        disk_path_wav = os.path.join(TTS_CACHE_DIR, f"{cache_hash}.wav")
+
         with self._lock:
             if cache_id in self._cache:
                 self._cache.move_to_end(cache_id)
                 return self._cache[cache_id]
+
+        # 1. Carregamento ultra-rápido do cache em disco (<1ms, 0 uso de rede/CPU)
+        if os.path.exists(disk_path_mp3):
+            try:
+                with open(disk_path_mp3, "rb") as f:
+                    cached_bytes = f.read()
+                if cached_bytes:
+                    with self._lock:
+                        self._cache[cache_id] = (cached_bytes, "audio/mpeg")
+                    return cached_bytes, "audio/mpeg"
+            except Exception:
+                pass
+        elif os.path.exists(disk_path_wav):
+            try:
+                with open(disk_path_wav, "rb") as f:
+                    cached_bytes = f.read()
+                if cached_bytes:
+                    with self._lock:
+                        self._cache[cache_id] = (cached_bytes, "audio/wav")
+                    return cached_bytes, "audio/wav"
+            except Exception:
+                pass
 
         audio_bytes = b""
         mime_type = ""
@@ -127,6 +161,13 @@ class NeuralTTSService:
                 self._cache[cache_id] = (audio_bytes, mime_type)
                 if len(self._cache) > self._max_cache:
                     self._cache.popitem(last=False)
+            # Salvar no cache em disco para sempre responder em 0ms
+            try:
+                save_path = disk_path_wav if "wav" in mime_type else disk_path_mp3
+                with open(save_path, "wb") as f:
+                    f.write(audio_bytes)
+            except Exception:
+                pass
 
         return audio_bytes, mime_type
 

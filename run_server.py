@@ -701,7 +701,13 @@ def api_tts(request: Request):
             registrar_log("ALERTA", "voz_tts", f"Síntese TTS retornou vazia para o perfil '{profile}'", f"Texto: {text[:80]}")
             return Response(status_code=204)
 
-        return Response(body=audio_bytes, headers={"Content-Type": mime or "audio/mpeg"})
+        return Response(
+            body=audio_bytes,
+            headers={
+                "Content-Type": mime or "audio/mpeg",
+                "Cache-Control": "public, max-age=604800, immutable",
+            },
+        )
     except Exception as e:
         registrar_log("ERRO", "voz_tts", f"Exceção na síntese TTS: {e}", str(e))
         return Response(status_code=500)

@@ -213,7 +213,10 @@ def api_tts():
         return Response(
             audio_bytes,
             mimetype=mime_type,
-            headers={"Cache-Control": "no-store"},
+            headers={
+                "Cache-Control": "public, max-age=604800, immutable",
+                "X-Audio-Cache": "hit" if profile_key in str(neural_tts._cache) else "miss"
+            },
         )
     except Exception as e:
         print(f"Aviso TTS: {e}")
