@@ -143,6 +143,18 @@ def favicon(request: Request):
     return Response(status_code=204)
 
 
+@app.route("/manifest.json")
+def manifest(request: Request):
+    caminho = os.path.join(STATIC_DIR, "manifest.json")
+    return send_file(caminho, content_type="application/manifest+json; charset=utf-8")
+
+
+@app.route("/sw.js")
+def service_worker(request: Request):
+    caminho = os.path.join(STATIC_DIR, "sw.js")
+    return send_file(caminho, content_type="application/javascript; charset=utf-8")
+
+
 # ==============================================================================
 # ROTA DE ARQUIVOS ESTÁTICOS COM STREAMING EM CHUNKS (ZERO PRÉ-CARREGAMENTO)
 # ==============================================================================

@@ -119,7 +119,8 @@ class JarvisPetManager:
             """,
             (time.time(),),
         )
-        token_mgr.creditar_fichas(1, "Banho Limpinho no Jarvis", "ROTINA")
+        if current["higiene"] < 90.0:
+            token_mgr.creditar_fichas(1, "Banho Limpinho no Jarvis", "ROTINA")
         return {
             "sucesso": True,
             "mensagem": "🧼 Circuito limpo e reluzente! A armadura do Jarvis está brilhando como nova!",
@@ -127,7 +128,7 @@ class JarvisPetManager:
         }
 
     def alimentar(self, pontos: int = 25, nome_alimento: str = "Fruta Saudável", moedas: int = 0) -> Dict[str, Any]:
-        """Alimenta o pet recarregando a bateria (sem inflação de moedas a cada fruta)."""
+        """Alimenta o pet recarregando a bateria (com limite pedagógico de moedas)."""
         current = self.obter_status()
         nova_alim = min(100.0, current["alimentacao"] + pontos)
 
@@ -139,8 +140,9 @@ class JarvisPetManager:
             """,
             (nova_alim, time.time()),
         )
-        if moedas > 0:
-            token_mgr.creditar_fichas(moedas, f"Alimentou o Jarvis com {nome_alimento}", "ALIMENTO")
+        # Só credita se o mascote realmente precisava de recarga (educação sobre saciedade)
+        if moedas > 0 and current["alimentacao"] < 90.0:
+            token_mgr.creditar_fichas(min(moedas, 2), f"Alimentou o Jarvis com {nome_alimento}", "ALIMENTO")
 
         return {
             "sucesso": True,
@@ -149,7 +151,7 @@ class JarvisPetManager:
         }
 
     def brincar(self, pontos: int = 20, jogo_nome: str = "Desafio Educativo") -> Dict[str, Any]:
-        """Aumenta diversão concedendo 1 moeda justa."""
+        """Aumenta diversão concedendo moeda somente em atividade real."""
         current = self.obter_status()
         nova_div = min(100.0, current["diversao"] + pontos)
 
@@ -161,7 +163,8 @@ class JarvisPetManager:
             """,
             (nova_div, time.time()),
         )
-        token_mgr.creditar_fichas(1, f"Brincou no jogo: {jogo_nome}", "JOGO")
+        if current["diversao"] < 90.0:
+            token_mgr.creditar_fichas(1, f"Brincou no jogo: {jogo_nome}", "JOGO")
         return {
             "sucesso": True,
             "mensagem": f"🎮 Bip-bip! Que divertido brincar de {jogo_nome} com você, Kaleu!",

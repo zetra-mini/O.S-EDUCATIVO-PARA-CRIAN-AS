@@ -2,7 +2,9 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0284c7" />
+  <link rel="manifest" href="/manifest.json" />
   <title>◈ J.A.R.V.I.S. Kids OS v2.2 — Sistema Educativo Infantil Stark</title>
   <style>
     :root {
@@ -364,12 +366,12 @@
     }
 
     @keyframes pulseMic {
-      from { box-shadow: 0 0 25px rgba(244, 63, 94, 0.7); transform: scale(1.05); }
-      to { box-shadow: 0 0 50px rgba(244, 63, 94, 1); transform: scale(1.10); }
+      0%, 100% { transform: translateZ(0) scale(1.02); opacity: 0.92; }
+      50% { transform: translateZ(0) scale(1.07); opacity: 1; }
     }
     @keyframes pulseProcessing {
-      from { box-shadow: 0 0 25px rgba(192, 132, 252, 0.6); transform: scale(1.03); }
-      to { box-shadow: 0 0 50px rgba(236, 72, 153, 0.95); transform: scale(1.08); }
+      0%, 100% { transform: translateZ(0) scale(1.01); opacity: 0.9; }
+      50% { transform: translateZ(0) scale(1.06); opacity: 1; }
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
     @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
@@ -1352,15 +1354,16 @@
 
     /* BOTÃO FLUTUANTE DE CONVERSA COM O JARVIS (FLOATING HERO ACTION CAPSULE) */
     @keyframes heroBtnFloat {
-      0%, 100% { transform: translateX(-50%) translateY(0px); box-shadow: 0 10px 24px rgba(2, 132, 199, 0.45); }
-      50% { transform: translateX(-50%) translateY(-6px); box-shadow: 0 16px 32px rgba(0, 240, 255, 0.6); }
+      0%, 100% { transform: translate3d(-50%, 0, 0); opacity: 0.98; }
+      50% { transform: translate3d(-50%, -6px, 0); opacity: 1; }
     }
 
     .jarvis-talk-hero-btn {
       position: fixed;
       bottom: 84px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate3d(-50%, 0, 0);
+      will-change: transform;
       z-index: 95;
       background: linear-gradient(135deg, rgba(2, 132, 199, 0.95) 0%, rgba(3, 105, 161, 0.95) 100%);
       backdrop-filter: blur(12px);
@@ -1377,7 +1380,7 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      box-shadow: 0 10px 24px rgba(2, 132, 199, 0.45);
+      box-shadow: 0 10px 26px rgba(0, 240, 255, 0.45);
       animation: heroBtnFloat 3.2s ease-in-out infinite;
       transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
       letter-spacing: 0.3px;
@@ -1387,7 +1390,7 @@
       box-shadow: 0 12px 28px rgba(0, 240, 255, 0.6);
     }
     .jarvis-talk-hero-btn:active {
-      transform: translateX(-50%) scale(0.95) !important;
+      transform: translate3d(-50%, 0, 0) scale(0.95) !important;
     }
     .jarvis-talk-hero-btn.is-listening {
       background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
@@ -1396,8 +1399,8 @@
       animation: heroListeningPulse 1.1s infinite alternate !important;
     }
     @keyframes heroListeningPulse {
-      0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 14px rgba(239, 68, 68, 0.5); }
-      100% { transform: translateX(-50%) scale(1.05); box-shadow: 0 0 34px rgba(239, 68, 68, 0.95); }
+      0% { transform: translate3d(-50%, 0, 0) scale(1); opacity: 0.92; }
+      100% { transform: translate3d(-50%, 0, 0) scale(1.05); opacity: 1; }
     }
     .jarvis-talk-hero-btn.is-processing {
       background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
@@ -3721,7 +3724,7 @@
 
             <div style="position:relative; width:100%; max-width:520px; height:260px; background:#040a17; border:3px dashed #38bdf8; border-radius:18px; display:flex; align-items:center; justify-content:center; overflow:hidden; touch-action:none; box-shadow:inset 0 0 30px rgba(0,240,255,0.15);">
               <canvas id="trace-canvas" width="520" height="260" style="width:100%; height:100%; cursor:crosshair; touch-action:none;"></canvas>
-              <div id="trace-star-guide" style="position:absolute; top:28px; left:48%; transform:translateX(-50%); font-size:1.8rem; pointer-events:none; animation:pulseMic 1s infinite;">⭐</div>
+              <div id="trace-star-guide" style="position:absolute; pointer-events:none; transition:all 0.3s ease;"></div>
             </div>
 
             <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center;">
@@ -3751,6 +3754,47 @@
         let distanceDrawn = 0;
         let traceAwarded = false;
 
+        const START_POINTS = {
+          'A': { x: 0.50, y: 0.22, dir: '⬇️ Desça a perninha' },
+          'E': { x: 0.36, y: 0.22, dir: '➡️ Puxe para a direita' },
+          'I': { x: 0.50, y: 0.22, dir: '⬇️ Desça retinho' },
+          'O': { x: 0.50, y: 0.20, dir: '🔄 Gire como uma bolinha' },
+          'U': { x: 0.36, y: 0.24, dir: '⬇️ Desça e faça a curva' },
+          'B': { x: 0.36, y: 0.22, dir: '⬇️ Desça o palitinho' },
+          'C': { x: 0.62, y: 0.26, dir: '↩️ Curva para trás' },
+          'D': { x: 0.36, y: 0.22, dir: '⬇️ Desça e faça o barrigão' },
+          'K': { x: 0.36, y: 0.22, dir: '⬇️ Desça a coluna' },
+          'M': { x: 0.35, y: 0.78, dir: '⬆️ Suba a montanha' },
+          '1': { x: 0.44, y: 0.32, dir: '⬆️ Suba o biquinho' },
+          '2': { x: 0.40, y: 0.26, dir: '🔄 Faça a voltinha' },
+          '3': { x: 0.40, y: 0.26, dir: '🔄 Faça as duas curvas' },
+          '4': { x: 0.56, y: 0.24, dir: '⬇️ Desça e vire' },
+          '5': { x: 0.58, y: 0.24, dir: '⬅️ Puxe para trás' },
+        };
+
+        const CHAR_THRESHOLDS = {
+          'I': 130, '1': 140, 'C': 210, 'O': 230, 'U': 220,
+          'A': 280, 'E': 260, 'B': 290, 'D': 270, 'K': 280, 'M': 320,
+          '2': 240, '3': 250, '4': 260, '5': 260
+        };
+
+        function updateStartGuide(char) {
+          const guide = document.getElementById('trace-star-guide');
+          if (!guide) return;
+          const pt = START_POINTS[char] || { x: 0.50, y: 0.24, dir: '⬇️ Desça o traço' };
+          guide.style.left = `${pt.x * 100}%`;
+          guide.style.top = `${pt.y * 100}%`;
+          guide.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; transform:translate(-50%, -50%); pointer-events:none;">
+              <span style="font-size:1.6rem; filter:drop-shadow(0 0 10px #22c55e); animation:pulseMic 1.2s infinite;">🟢</span>
+              <span style="background:rgba(15,23,42,0.92); border:1.5px solid #22c55e; border-radius:10px; padding:3px 10px; font-size:0.8rem; color:#4ade80; font-weight:900; white-space:nowrap; margin-top:2px; box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+                Comece aqui! ${pt.dir}
+              </span>
+            </div>
+          `;
+          guide.style.display = 'block';
+        }
+
         function selectTraceChar(char) {
           currentTraceChar = char;
           document.querySelectorAll('#trace-char-buttons button').forEach(btn => {
@@ -3764,15 +3808,16 @@
           }
           const item = TRACE_CHARS.find(x => x.c === char) || { name: char };
           const title = document.getElementById('trace-title-msg');
-          if (title) title.innerHTML = `✍️ Traçando: <span style="color:#00f0ff; font-size:1.3rem;">${item.name}</span> — Passe o mouse ou dedinho!`;
+          if (title) title.innerHTML = `✍️ Traçando: <span style="color:#00f0ff; font-size:1.3rem;">${item.name}</span> — Siga o ponto verde!`;
           initCanvas();
-          speak(`Vamos traçar ${item.name}! Siga o pontilhado da letrinha!`);
+          speak(`Vamos traçar ${item.name}! Comece no ponto verde e siga o caminho!`);
         }
 
         function initCanvas() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           distanceDrawn = 0;
           traceAwarded = false;
+          updateStartGuide(currentTraceChar);
 
           // Desenhar guia pontilhada grande e nítida
           ctx.save();
@@ -3824,11 +3869,12 @@
             playTone(600 + Math.random() * 350, 45);
           }
 
-          if (distanceDrawn >= 420 && !traceAwarded) {
+          const targetDistance = CHAR_THRESHOLDS[currentTraceChar] || 250;
+          if (distanceDrawn >= targetDistance && !traceAwarded) {
             traceAwarded = true;
-            playTone(523, 100);
-            setTimeout(() => playTone(659, 100), 100);
-            setTimeout(() => playTone(784, 180), 200);
+            const guide = document.getElementById('trace-star-guide');
+            if (guide) guide.style.display = 'none';
+            playSfxSuccess();
             addStar(1);
             speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você traçou a letrinha ${currentTraceChar} perfeitamente!`);
             const title = document.getElementById('trace-title-msg');
@@ -3914,32 +3960,32 @@
 
           playTone(523, 120);
           const PHONETICS = {
-            'A': 'Letra A! /a/ /a/! A de Abelha e Avião!',
-            'B': 'Letra B! /b/ /b/! B de Bola e Barco!',
-            'C': 'Letra C! /k/ /k/! C de Casa e Carro!',
-            'D': 'Letra D! /d/ /d/! D de Dinossauro e Dedo!',
-            'E': 'Letra E! /e/ /e/! E de Estrela e Elefante!',
-            'F': 'Letra F! /f/ /f/! F de Foguete e Família!',
-            'G': 'Letra G! /g/ /g/! G de Gato e Girafa!',
-            'H': 'Letra H! O H é mágico! H de Herói e História!',
-            'I': 'Letra I! /i/ /i/! I de Ilha e Irmão!',
-            'J': 'Letra J! /j/ /j/! J de Járvis e Jacaré!',
-            'K': 'Letra K! /k/ /k/! K de Kaleo! O grande herói Kaleo Noah!',
-            'L': 'Letra L! /l/ /l/! L de Livro e Lua!',
-            'M': 'Letra M! /m/ /m/! M de Música e Mamãe!',
-            'N': 'Letra N! /n/ /n/! N de Navio e Nuvem!',
-            'O': 'Letra O! /o/ /o/! O de Olho e Ovelha!',
-            'P': 'Letra P! /p/ /p/! P de Papai e Pipoca!',
-            'Q': 'Letra Q! /k/ /k/! Q de Queijo e Quati!',
-            'R': 'Letra R! /r/ /r/! R de Robô e Reator!',
-            'S': 'Letra S! /s/ /s/! S de Sol e Stark!',
-            'T': 'Letra T! /t/ /t/! T de Trem e Tubarão!',
-            'U': 'Letra U! /u/ /u/! U de Urso e Uva!',
-            'V': 'Letra V! /v/ /v/! V de Voar e Vitória!',
-            'W': 'Letra W! W de Walkie-talkie!',
-            'X': 'Letra X! /ch/ /ch/! X de Xícara!',
-            'Y': 'Letra Y! Y de Yoga!',
-            'Z': 'Letra Z! /z/ /z/! Z de Zebra!'
+            'A': 'Abra bem a boquinha e solte o som: /aaaa/! A de Abelha e Avião!',
+            'B': 'Junte os lábios e solte o ventinho: /b/... /b/... /b/! B de Bola e Barco!',
+            'C': 'Língua lá atrás na garganta: /k/... /k/... /k/! C de Casa e Carro!',
+            'D': 'Pontinha da língua atrás dos dentes: /d/... /d/... /d/! D de Dinossauro e Dedo!',
+            'E': 'Sorria de orelha a orelha: /ééé/! E de Estrela e Elefante!',
+            'F': 'Dentinhos no lábio de baixo soprando: /ffff/... /f/ de Foguete e Família!',
+            'G': 'Som lá da gargantinha: /g/... /g/... /g/! G de Gato e Girafa!',
+            'H': 'A letra H é mágica e companheira! H de Herói e História!',
+            'I': 'Sorrisinho com dentinhos juntos: /iii/! I de Ilha e Irmão!',
+            'J': 'Biquinho soltando o zumbido suave: /jjj/... /j/ de Járvis e Jacaré!',
+            'K': 'O som forte /k/... /k/! K de Kaleo Noah! O super-herói Stark!',
+            'L': 'Língua subindo até o céu da boca: /lll/! L de Lua e Livro!',
+            'M': 'Boca bem fechadinha fazendo /mmmm/! M de Música e Mamãe querida!',
+            'N': 'Língua no dente de cima fazendo /nnn/! N de Navio e Nuvem!',
+            'O': 'Faça uma bolinha com a boca: /ooo/! O de Olho e Ovelha!',
+            'P': 'Lábios juntinhos com explosãozinha: /p/... /p/... /p/! P de Papai e Pipoca!',
+            'Q': 'Som /k/ com biquinho: /k/! Q de Queijo gostoso!',
+            'R': 'Arranhando suave na gargantinha: /rrr/... /r/ de Robô Stark!',
+            'S': 'Dentinhos juntos como o som de cobrinha: /ssss/! S de Sol e Super-herói!',
+            'T': 'Pontinha da língua batendo nos dentes: /t/... /t/... /t/! T de Trem e Tubarão!',
+            'U': 'Biquinho fechadinho soprando: /uuuu/! U de Ursinho e Uva!',
+            'V': 'Dentinhos de cima vibrando no lábio: /vvvv/! V de Voar e Vitória!',
+            'W': 'Som de u: /u/ /u/! W de Walkie-talkie!',
+            'X': 'Fazendo som de chiado: /chhh/! X de Xícara!',
+            'Y': 'Som de i: /i/ /i/! Y de Yoga e Youtuber!',
+            'Z': 'Zumbido de abelhinha: /zzzz/! Z de Zebra veloz!'
           };
           const speechText = PHONETICS[item.letter] || `Esta é a letra ${item.letter}! O som dela é ${item.sound}! ${item.desc}`;
           speak(speechText);
@@ -4528,8 +4574,13 @@
         apple.textContent = '🍎';
         apple.title = `Maçã número ${i}`;
         apple.onclick = () => {
-          playTone(600 + i * 50, 100);
-          speak(`Maçã número ${i}!`);
+          playTone(600 + i * 50, 110);
+          if (i === num) {
+            speak(`Contamos ${i}! No total temos exatamente ${num} maçã${num > 1 ? 's' : ''}!`);
+            playSfxCoin();
+          } else {
+            speak(`${i}...`);
+          }
         };
         shelf.appendChild(apple);
       }
@@ -4556,6 +4607,11 @@
       const rep = document.getElementById('fc-feedback-bar');
       if (rep) {
         rep.textContent = `${count} dedinho${count !== 1 ? 's' : ''} levantado${count !== 1 ? 's' : ''}!`;
+      }
+      if (count > 0) {
+        speak(`${count}! ${count === 1 ? 'Um dedinho' : count + ' dedinhos'} levantados!`);
+      } else {
+        speak('Mãozinhas fechadas! Zero dedinhos!');
       }
     }
 
@@ -7589,6 +7645,39 @@
         destravarAudioNavegador();
       }
     });
+
+    // REGISTRO DE SERVICE WORKER PARA SUPORTE 100% OFFLINE (PWA)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+
+    // =========================================================================
+    // TRAVAMENTO KIOSK DEFENSIVO (PROTEÇÃO CONTRA SAÍDA ACIDENTAL DA CRIANÇA)
+    // =========================================================================
+    window.addEventListener('keydown', (e) => {
+      const blockedFn = ['F1', 'F3', 'F5', 'F6', 'F7', 'F11', 'F12'];
+      if (blockedFn.includes(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      if (e.ctrlKey && ['r', 'R', 'w', 'W', 'u', 'U', 'p', 'P', 's', 'S', 'o', 'O', 'n', 'N'].includes(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      if (e.altKey && ['ArrowLeft', 'ArrowRight', 'Home'].includes(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, { capture: true });
+
+    window.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    }, { capture: true });
 
     // ROTINAS COOPERATIVAS (DENTE & QUARTO)
     function iniciarMissaoDente() {

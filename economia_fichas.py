@@ -24,9 +24,37 @@ class TokenEconomyManager:
             }
         return {"saldo": 0, "total_acumulado": 0, "estrelas": 0}
 
+    def pode_creditar_categoria(self, categoria: str, limite_diario: int = 4) -> bool:
+        """Verifica se a categoria atingiu o limite diário de recompensas para valorizar as conquistas."""
+        cat_norm = categoria.upper()
+        if cat_norm in ("MISSAO", "LEITURA", "LOJA", "CONQUISTA"):
+            return True
+        try:
+            sql = """
+                SELECT COUNT(*) as total FROM transacoes_fichas
+                WHERE tipo = 'GANHO' AND categoria = ? AND date(data_hora) = date('now', 'localtime');
+            """
+            row = self.db.consultar_um(sql, (cat_norm,))
+            if row and int(row.get("total", 0)) >= limite_diario:
+                return False
+        except Exception:
+            pass
+        return True
+
     def creditar_fichas(self, quantidade: int, motivo: str, categoria: str = "ROTINA") -> Dict[str, Any]:
-        """Credita fichas na conta do Kaleu via fila de escrita Single-Writer."""
+        """Credita fichas na conta do Kaleu com limite pedagógico para controle de dopamina."""
         if quantidade <= 0:
+            return self.obter_status_pote()
+
+        cat = categoria.upper()
+        # Limites diários pedagógicos: previne spam de cliques e estimula esforço real
+        limites = {
+            "ALIMENTO": 3,
+            "ROTINA": 4,
+            "PET": 3,
+            "JOGO": 8,
+        }
+        if cat in limites and not self.pode_creditar_categoria(cat, limites[cat]):
             return self.obter_status_pote()
 
         # Atualiza saldo e total acumulado
@@ -45,7 +73,7 @@ class TokenEconomyManager:
             INSERT INTO transacoes_fichas (quantidade, tipo, categoria, descricao)
             VALUES (?, 'GANHO', ?, ?);
             """,
-            (quantidade, categoria.upper(), motivo),
+            (quantidade, cat, motivo),
         )
 
         return self.obter_status_pote()

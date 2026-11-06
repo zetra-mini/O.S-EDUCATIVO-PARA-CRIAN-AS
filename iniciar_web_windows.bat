@@ -18,8 +18,18 @@ echo [*] Iniciando servidor Microdot ultraleve...
 start "" python run_server.py 8000
 timeout /t 2 /nobreak >nul
 
-echo [*] Abrindo interface no navegador...
-start http://127.0.0.1:8000
+echo [*] Abrindo interface nativa Kiosk no navegador...
+where msedge >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    start msedge --app=http://127.0.0.1:8000 --start-fullscreen
+) else (
+    where chrome >nul 2>&1
+    if %ERRORLEVEL% equ 0 (
+        start chrome --app=http://127.0.0.1:8000 --start-fullscreen
+    ) else (
+        start http://127.0.0.1:8000
+    )
+)
 echo ==============================================================================
 echo   Pronto! Servidor ativo: http://127.0.0.1:8000
 echo   Painel dos Pais:        http://127.0.0.1:8000/pais

@@ -1,6 +1,6 @@
 import os
 import socket
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request, send_file
 
 from biblioteca_livros import BOOKS
 from gestao_tempo_midia import MediaTimeManager
@@ -43,6 +43,16 @@ def painel_pais():
 @app.route("/favicon.ico")
 def favicon():
     return Response(status=204)
+
+
+@app.route("/manifest.json")
+def manifest():
+    return send_file(os.path.join(BASE_DIR, "static", "manifest.json"), mimetype="application/manifest+json")
+
+
+@app.route("/sw.js")
+def service_worker():
+    return send_file(os.path.join(BASE_DIR, "static", "sw.js"), mimetype="application/javascript")
 
 
 @app.route("/api/state", methods=["GET"])

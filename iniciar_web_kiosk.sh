@@ -24,6 +24,10 @@ if command -v chromium >/dev/null 2>&1; then
   chromium --app="$KIOSK_URL" \
     --start-fullscreen \
     --kiosk \
+    --incognito \
+    --noerrdialogs \
+    --disable-infobars \
+    --overscroll-history-navigation=0 \
     --process-per-site \
     --disable-features=Translate,OptimizationHints,MediaRouter \
     --disable-background-networking \
@@ -34,6 +38,10 @@ elif command -v chromium-browser >/dev/null 2>&1; then
   chromium-browser --app="$KIOSK_URL" \
     --start-fullscreen \
     --kiosk \
+    --incognito \
+    --noerrdialogs \
+    --disable-infobars \
+    --overscroll-history-navigation=0 \
     --process-per-site \
     --disable-features=Translate,OptimizationHints \
     --disable-background-networking \

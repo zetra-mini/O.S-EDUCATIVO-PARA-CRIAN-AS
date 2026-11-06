@@ -1,0 +1,18 @@
+{
+  "name": "J.A.R.V.I.S. Kids OS",
+  "short_name": "JARVIS Kids",
+  "description": "Sistema Operacional Lúdico e Educativo para Crianças",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#040914",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "/static/assets_poupy/imagens/logo_poupy_960x960.png",
+      "sizes": "960x960",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
