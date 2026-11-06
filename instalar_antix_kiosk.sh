@@ -36,7 +36,7 @@ sudo apt-get install -y \
   firefox-esr \
   zram-tools || true
 
-python3 -m pip install --user --break-system-packages edge-tts google-genai flask 2>/dev/null || python3 -m pip install --user edge-tts google-genai flask || true
+python3 -m pip install --user --break-system-packages microdot bottle edge-tts google-genai flask 2>/dev/null || python3 -m pip install --user microdot bottle edge-tts google-genai flask || true
 
 echo "[2/6] Copiando arquivos do JARVIS Kids OS para $APP_DIR ..."
 mkdir -p "$APP_DIR"

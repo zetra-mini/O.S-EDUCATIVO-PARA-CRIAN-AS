@@ -8,3 +8,8 @@ uso_diario.json
 venv/
 *.log
 
+
+*.db
+*.db-wal
+*.db-shm
+

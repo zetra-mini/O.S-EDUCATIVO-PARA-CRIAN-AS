@@ -1,62 +1,124 @@
-# ◈ J.A.R.V.I.S. Kids OS v2.6 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.0 — Stark Educational System (Para Kaleo Noah)
 
-Sistema educativo completo estilo **JARVIS do Homem de Ferro** projetado sob medida para o netbook **Acer Aspire One 532h / Asus EeePC** (`Intel Atom N450`, `2 GB RAM`, SSD, vídeo `Intel GMA 3150`, tela `1024x600`).
+Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida para o netbook **Acer Aspire One 532h / Asus EeePC** (`Intel Atom N450 1.66 GHz`, `2 GB RAM`, `SSD`, GPU `Intel GMA 3150`, tela `1024x600`), rodando sobre **antiX Linux** ou **Windows**.
 
-Consome **menos de 28 MB de memória RAM no modo nativo (ou ~180 MB no modo Web Arcade Kiosk)**, funciona **100% offline** nas atividades educativas com respostas instantâneas (< 1 ms), integra controle de tempo pedagógico inteligente para o cinema e agora suporta **OpenCode CLI / LAN Híbrido** e **Jogo das Emoções Interativo**.
-
----
-
-## 🚀 Novidades da Versão 2.6
-
-1. **⚡ Suporte Prioritário ao OpenCode CLI & Modo Híbrido LAN:**
-   - Adicionada opção do **OpenCode CLI (`opencode-ai`)** como motor prioritário de IA e orquestração.
-   - Pode rodar diretamente no netbook ou conectar-se via Wi-Fi a um servidor OpenCode no PC principal da casa (`iniciar_opencode_lan.sh` / `.bat`), garantindo IA inteligente sem esquentar o processador Atom nem travar os 2 GB de RAM.
-   - Suporte a modelos como `google/gemini-2.0-flash`, `opencode/mimo-v2.6-flash-free` e `groq/llama-3.3-70b`.
-
-2. **💚 Novo Jogo das Emoções Reformulado (Histórias Lúdicas com Estrelas):**
-   - **🎮 1. Jogo: Como o Amigo se Sente?:** Mini-histórias ilustradas com situações infantis reais (o dinossauro ganhando brinquedo, torre de blocos caindo, barulho de trovão, amiguinho pegando giz sem pedir, cobertor macio na hora de dormir).
-   - A criança identifica a emoção certa nos botões coloridos, ouve o elogio em voz alta e ganha estrelas Stark com avanço automático!
-   - **🎭 2. Meu Coração & Sentimentos:** Cartões táteis de autorregulação emocional.
-   - **🌸 3. Florzinha da Calma:** Respiração guiada para acalmar a criança: "Cheirar a florzinha pelo nariz" (4s) e "Soprar a velinha pela boca" (4s) com animação suave e som harmônico.
-
-3. **📏 Respostas do Járvis 100% Proporcionais (Resolução 1024x600):**
-   - O cérebro (`jarvis_brain.py`) agora ajusta e trunca automaticamente respostas longas em 2 ou 3 sentenças completas e carinhosas, evitando parágrafos cansativos para crianças de 4 anos.
-   - O rodapé de legendas e o balão de conversa receberam tipografia fluida com `clamp()` e barra de rolagem suave com `overflow-y: auto`, nunca quebrando nem escondendo botões.
-
-4. **🔇 Silenciamento do Talkback ao Passar o Mouse:**
-   - Removido o áudio automático ao passar o cursor sobre os cards da tela inicial. O Járvis agora só fala quando a criança clica no card ou pressiona o microfone para conversar.
+Projetado sob princípios rigorosos de **engenharia de software para hardware ultra-restrito**, consumindo **menos de 15 MB de RAM no backend** e garantindo que o processador Atom de núcleo único nunca trave em 100%.
 
 ---
 
-## 🌟 Recursos Anteriores (v2.5)
+## ⚡ Parte 1: Engenharia de Performance & Hardware Restrito
 
-1. **⚡ Armadura Stark por Conquistas:**
-   - Conforme a criança estuda e lê, desbloqueia em tempo real as 4 peças da Armadura Stark (Capacete, Luvas com Repulsores, Botas a Jato e Reator Arc).
-2. **🔤 Método Fônico & Lousa de Traçado Neon:**
-   - Fonemas estendidos (*"/b/ /b/ de Bola!"*) e traçado interativo em neon ciano com faíscas elétricas.
-3. **📖 Histórias Interativas ("Você Decide!"):**
-   - Livros com decisões ilustradas de 1 toque (ex: *"A Grande Aventura Espacial de Kaleo"*).
-4. **📱 Painel dos Pais no Celular (`/pais`):**
-   - Controle remoto de bônus de cinema (+15 min), pausa para almoço/jantar e modo noturno.
-5. **🔒 Blindagem de Quiosque no antiX Linux / IceWM:**
-   - Bloqueio de atalhos acidentais e trava de volume seguro a 75%.
+### 1. Servidor Web Ultraleve com Microdot (< 15 MB de RAM)
+- O backend foi migrado de frameworks pesados para o **Microdot**, um micro-framework assíncrono de pegada de memória mínima.
+- **Consumo real medido com `tracemalloc`:** Apenas **8.86 MB de RAM** (pico de **10.45 MB**), rodando com folga muito abaixo do teto de 30 MB.
+- Servido nativamente na porta `http://127.0.0.1:8000`.
+
+### 2. SQLite em Modo WAL & Arquitetura Single-Writer / Multi-Reader
+- Para evitar a temida falha `SQLITE_BUSY` e o congelamento do disco/SSD por acessos simultâneos, todas as conexões SQLite injetam no momento da abertura:
+  ```sql
+  PRAGMA journal_mode = WAL;     -- Write-Ahead Logging: leituras e escritas não bloqueiam umas às outras
+  PRAGMA synchronous = NORMAL;   -- Reduz chamadas excessivas de fsync ao disco
+  PRAGMA temp_store = MEMORY;    -- Força tabelas temporárias e ordenações na memória RAM
+  PRAGMA busy_timeout = 5000;    -- Espera até 5 segundos em caso de concorrência antes de falhar
+  ```
+- **Fila Sequencial Assíncrona (`banco_dados.py`):** As rotas de escrita enfileiram tarefas em uma `queue.Queue`. Um único Worker em segundo plano (`SQLiteSingleWriter`) consome os dados e grava de forma estritamente sequencial. Múltiplas rotas podem ler concorrentemente com conexões independentes.
+
+### 3. Gestão Defensiva de Memória RAM (Teto de 2 GB)
+- **Paginação com Geradores (`yield`):** Consultas de histórico (logs, fichas, mensagens) usam `LIMIT` e `OFFSET`, transmitindo registros através de geradores linha por linha sem criar arrays gigantes na RAM.
+- **Coleta Ativa (`gc.collect()`):** Liberação ativa de memória e variáveis de sessão na transição entre jogos e módulos.
+- **Mídia sob Demanda:** Imagens, sons e áudios são transmitidos via fluxo contínuo do disco (`send_file(..., stream=True)`), nunca pré-carregados na memória.
+
+### 4. Inteligência Artificial e Voz Terceirizadas
+- **Zero modelos neurais pesados locais:** Nenhum modelo Whisper, PyTorch ou LLM local roda no Atom.
+- O reconhecimento e síntese de voz (STT/TTS) são terceirizados para APIs em nuvem (**Google AI Studio / Gemini**, **Edge-TTS**, **OpenCode LAN** ou a **Web Speech API** nativa do navegador), garantindo CPU a 0% em repouso.
 
 ---
 
-## 🛠️ Como Iniciar o Sistema
+## 🧸 Parte 2: Psicologia Infantil, Rotinas e Conexão Paterna
+
+### 1. Bichinho Virtual Estilo Pou (`jarvis_pet_status.py` / POUPY)
+- **4 Barras Vitais:** Higiene, Alimentação, Diversão e Energia com decaimento suave ao longo do tempo.
+- **Interação Tátil:** Carinho ao clicar/segurar no mascote, sabonete/chuveiro para higiene, frutinhas saudáveis e abajur interativo para o sono reparador.
+- **Humores Dinâmicos:** `FELIZ`, `COM_FOME`, `SUJO`, `CANSADO`, `TRISTE` refletidos nas expressões visuais 2D do mascote.
+
+### 2. Rotinas Diárias B-bot & Protocolo Anti-Conflito (`rotinas_companheiro.py`)
+- Em vez de ordens, missões cooperativas gamificadas:
+  - **Missão Dente Brilhante:** Cronômetro interativo de 2 minutos com barra visual de escovação.
+  - **Operação Quarto Limpo:** Desafio de contagem regressiva (3 a 5 minutos) para guardar brinquedos.
+  - **Aviso Preventivo de 5 Minutos:** Notificação afetuosa antes do fim do tempo de brincar ou do cinema.
+  - **Escolhas Dirigidas:** "Você quer calçar o sapato azul ou o vermelho agora?" promovendo autonomia sem atrito.
+
+### 3. Economia de Fichas & O "Pote do Tesouro" (`economia_fichas.py`)
+- Cada rotina concluída rende moedas/estrelas creditadas instantaneamente.
+- **Pote Virtual:** Animação imediata com o pote enchendo na tela.
+- **Loja de Privilégios Reais:** Troca de moedas por momentos especiais com os pais (passeio no parque, piquenique, sessão de cinema em família) e acessórios virtuais.
+
+### 4. Inteligência Emocional SEL & Autorregulação (`academia_emocoes_tech.py`)
+- **Mini-Histórias:** Situações infantis reais onde a criança identifica o sentimento do amigo.
+- **Florzinha da Calma:** Exercício de respiração vagal guiada: "Cheirar a florzinha pelo nariz" (4s) e "Soprar a velinha pela boca" (4s) para momentos de agitação ou frustração.
+
+### 5. Funções Executivas & Cognição (`cognicao_jogos.py`)
+- **Desafio do Semáforo (Controle Inibitório):** Toque rápido quando o sinal está verde; pare imediato quando o sinal fica vermelho.
+- **Baú do Conhecimento (Repetição Espaçada de Leitner):** Flashcards educativos em 3 caixas progressivas (diária, a cada 2 dias, semanal), consolidando letras, números, cores e animais.
+
+### 6. Educação Alimentar & Semáforo Nutricional (`educacao_alimentar.py`)
+- **Prato Colorido dos Superpoderes:** Estimula comer alimentos de cores variadas (verde para força, vermelho para coração forte, laranja para visão de herói).
+- **Semáforo dos Alimentos:** Alimentos livres (verde), moderados (amarelo) e doces ocasionais (vermelho), com validação remota de refeição pelos pais.
+
+### 7. Clima, Estações & Cuidados Pessoais (`clima_estacoes.py`)
+- Consulta automática da API gratuita **Open-Meteo** (sem necessidade de chaves).
+- **Cache de 120 minutos no SQLite:** Poupando conexão e processamento.
+- Dicas práticas e carinhosas para a criança (levar guarda-chuva na chuva, beber água no calor, vestir casaco no frio).
+
+### 8. Presença Paterna & Mensagens Remotas (`mensagens_pais.py`)
+- Mensagens secretas enviadas pelos pais via celular que surgem com destaque afetuoso na tela do Kaleo.
+- **Rastreamento em Tempo Real:** O painel dos pais exibe o status exato: `ENVIADA` ➔ `RECEBIDA` ➔ `ABERTA (às HH:MM:SS)`.
+- **SOS Intervenção:** O pai pode disparar do celular uma pausa com tela de abraço, música de calma ou chamada para refeição.
+
+### 9. Atualização em 1 Clique & Persistência do Sistema
+- **Script `atualizar_sistema.sh`:** Atualiza o repositório do GitHub (`git pull`) e reinicia os serviços sem complicações.
+- **Watchdog `iniciar_servicos.sh`:** Monitora o processo e reinicia automaticamente em caso de encerramento, garantindo disponibilidade contínua.
+- **Monitor de Bateria:** Alerta amigável no netbook quando a bateria estiver baixa (< 20%) ou 100% cheia para desconectar da tomada e proteger as células.
+
+---
+
+## 🕹️ Como Iniciar o Sistema
 
 ### No Windows
-- **Modo Web Arcade Completo:** Clique duas vezes em `iniciar_web_windows.bat` (abre em `http://127.0.0.1:5090`)
-- **Modo Nativo Desktop:** Clique duas vezes em `testar_no_windows.bat`
-- **Servidor OpenCode LAN:** Clique duas vezes em `iniciar_opencode_lan.bat`
+1. Dê um duplo-clique em:
+   ```cmd
+   iniciar_web_windows.bat
+   ```
+2. O servidor Microdot ultraleve iniciará na porta `8000` e o navegador abrirá automaticamente em `http://127.0.0.1:8000`.
+3. O painel dos pais estará disponível em `http://127.0.0.1:8000/pais`.
 
 ### No Netbook Acer / Asus One (antiX Linux)
-1. Instale o **antiX Linux** com **Auto-Login** ativado.
-2. No terminal:
+1. Instale as dependências com o script otimizado:
    ```bash
-   git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git jarvis-kids-os
-   cd jarvis-kids-os
-   chmod +x instalar_antix_kiosk.sh iniciar_opencode_lan.sh
    bash instalar_antix_kiosk.sh
    ```
-3. O netbook iniciará automaticamente em modo quiosque Stark em tela cheia!
+2. Inicie o modo quiosque de tela cheia:
+   ```bash
+   bash iniciar_web_kiosk.sh
+   ```
+3. Para ativar a inicialização automática no boot com proteção de tela e atalhos bloqueados:
+   ```bash
+   bash configurar_boot_automatico.sh
+   ```
+
+---
+
+## 📱 Painel dos Pais (`/pais`)
+
+Acessível por qualquer smartphone, tablet ou computador na mesma rede Wi-Fi (`http://[IP-DO-NETBOOK]:8000/pais`):
+- **Envio de Mensagens com Leitura Confirmada:** Acompanhe quando seu filho abriu o bilhete.
+- **Pote do Tesouro:** Gerenciamento de fichas conquistadas e aprovação de resgates da vida real.
+- **Controle de Cinema & Mídia:** Adicione minutos de bônus ou pause a tela para o almoço.
+- **SOS Intervenção Imediata:** Acione respiração guiada, pausa de descanso ou hora da comidinha com um toque.
+- **Atualização do Sistema:** Botão remoto para baixar atualizações do GitHub e reiniciar o Jarvis.
+
+---
+
+## 🛡️ Licença e Dedicação
+
+Desenvolvido com amor, carinho e dedicação paterna para **Kaleo Noah**, unindo a mais avançada psicologia do desenvolvimento infantil à engenharia de software de alta eficiência.

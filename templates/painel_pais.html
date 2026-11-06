@@ -3,22 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>J.A.R.V.I.S. Kids — Controle dos Pais</title>
+  <title>J.A.R.V.I.S. Kids — Controle dos Pais & Presença Paterna</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body {
       background: #040914;
       color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       padding: 16px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      max-width: 600px;
+      margin: 0 auto;
     }
     header {
       text-align: center;
-      padding: 12px;
+      padding: 14px;
       background: #0f172a;
       border: 2px solid #00f0ff;
       border-radius: 16px;
@@ -47,8 +48,8 @@
 
     .stat-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
     }
     .stat-box {
       background: #071120;
@@ -57,21 +58,21 @@
       padding: 10px;
       text-align: center;
     }
-    .stat-val { font-size: 1.6rem; font-weight: 900; color: #38bdf8; }
-    .stat-lbl { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+    .stat-val { font-size: 1.45rem; font-weight: 900; color: #38bdf8; }
+    .stat-lbl { font-size: 0.72rem; color: #94a3b8; margin-top: 2px; }
 
     .btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       border: none;
-      border-radius: 14px;
-      font-size: 1.05rem;
+      border-radius: 12px;
+      font-size: 1rem;
       font-weight: 900;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       transition: transform 0.1s, opacity 0.15s;
     }
     .btn:active { transform: scale(0.97); }
@@ -79,6 +80,47 @@
     .btn-pause { background: #f97316; color: #fff; }
     .btn-resume { background: #0284c7; color: #fff; }
     .btn-night { background: #8b5cf6; color: #fff; }
+    .btn-sos { background: #e11d48; color: #fff; font-size: 0.95rem; }
+    .btn-update { background: #7c3aed; color: #fff; font-size: 1rem; }
+    .btn-send { background: #0284c7; color: #fff; }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #071120;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+    }
+
+    .msg-item {
+      background: #071120;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.85rem;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      align-self: flex-start;
+    }
+    .status-ENVIADA { background: #854d0e; color: #fef08a; }
+    .status-RECEBIDA { background: #1e3a8a; color: #93c5fd; }
+    .status-ABERTA { background: #065f46; color: #6ee7b7; }
 
     .toast {
       position: fixed;
@@ -95,6 +137,7 @@
       display: none;
       z-index: 1000;
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      text-align: center;
     }
   </style>
 </head>
@@ -104,7 +147,7 @@
     <div class="sub" id="child-name-display">Controle Remoto de Kaleo Noah</div>
   </header>
 
-  <!-- STATUS DO DIA -->
+  <!-- STATUS DO DIA: LIVROS, VÍDEO E FICHAS -->
   <div class="card">
     <div class="card-title">📊 Status de Hoje</div>
     <div class="stat-grid">
@@ -116,29 +159,92 @@
         <div class="stat-val" id="val-cinema">0m</div>
         <div class="stat-lbl">⏱ Vídeos Restantes</div>
       </div>
+      <div class="stat-box">
+        <div class="stat-val" id="val-fichas" style="color:#facc15;">0</div>
+        <div class="stat-lbl">🪙 Moedas no Pote</div>
+      </div>
     </div>
   </div>
 
-  <!-- AÇÕES RÁPIDAS -->
+  <!-- PRESENÇA PATERNA: RECADOS SECRETOS -->
+  <div class="card">
+    <div class="card-title">💌 Recados Secretos dos Pais</div>
+    <div style="font-size:0.85rem; color:#94a3b8;">
+      Envie uma mensagem de incentivo ou carinho que abrirá como envelope brilhante no netbook do Kaleu:
+    </div>
+    <textarea id="txt-recado" rows="2" placeholder="Ex: Oi, meu campeão! O papai tá orgulhoso de você hoje!"></textarea>
+    <button type="button" class="btn btn-send" onclick="enviarRecado()">
+      🚀 Enviar Recado Especial
+    </button>
+    <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:160px; overflow-y:auto;"></div>
+  </div>
+
+  <!-- AÇÕES RÁPIDAS & CONTROLE -->
   <div class="card">
     <div class="card-title">⚡ Ações Rápidas</div>
-    <button type="button" class="btn btn-bonus" onclick="giveBonus(15)">
-      🎁 +15 Minutos de Vídeo
-    </button>
-    <button type="button" class="btn btn-pause" id="btn-pause-toggle" onclick="togglePause()">
-      🍽️ Pausar Tela (Almoço / Jantar)
-    </button>
+    <div class="action-grid">
+      <button type="button" class="btn btn-bonus" onclick="giveBonus(15)">
+        🎁 +15m Vídeo
+      </button>
+      <button type="button" class="btn btn-pause" id="btn-pause-toggle" onclick="togglePause()">
+        🍽️ Pausar Tela
+      </button>
+    </div>
     <button type="button" class="btn btn-night" onclick="toggleNight()">
       🌙 Alternar Modo Noturno
     </button>
   </div>
 
-  <!-- PROVEDOR ATIVO -->
+  <!-- SOS INTERVENÇÃO & MEDIAÇÃO DE CONFLITOS -->
   <div class="card">
-    <div class="card-title">🤖 Inteligência Artificial</div>
-    <div style="font-size:0.9rem; color:#cbd5e1;" id="ia-provider-info">
-      Carregando provedor ativo...
+    <div class="card-title">🛡️ SOS Intervenção (Sem Brigas)</div>
+    <div style="font-size:0.85rem; color:#94a3b8;">
+      Se o clima esquentar ou a criança resistir, acione o Jarvis para mediar a transição com escolha dirigida:
     </div>
+    <div class="action-grid">
+      <button type="button" class="btn btn-sos" onclick="dispararSos('guardar_brinquedos')">
+        🧸 Guardar Brinquedos
+      </button>
+      <button type="button" class="btn btn-sos" onclick="dispararSos('escovar_dentes')">
+        🦷 Escovar Dentes
+      </button>
+      <button type="button" class="btn btn-sos" onclick="dispararSos('calma')">
+        🌸 Acalmar / Respirar
+      </button>
+      <button type="button" class="btn btn-sos" onclick="dispararSos('dormir')">
+        🌙 Hora do Sono
+      </button>
+    </div>
+  </div>
+
+  <!-- REFEIÇÕES DO MUNDO REAL -->
+  <div class="card">
+    <div class="card-title">🍽️ Validar Refeição Real (+Moedas)</div>
+    <div class="action-grid">
+      <button type="button" class="btn" style="background:#059669; color:#fff;" onclick="validarRefeicao('almoco_completo')">
+        🍽️ Comeu Almoço (+15)
+      </button>
+      <button type="button" class="btn" style="background:#16a34a; color:#fff;" onclick="validarRefeicao('comeu_fruta')">
+        🍎 Comeu Fruta (+10)
+      </button>
+      <button type="button" class="btn" style="background:#0284c7; color:#fff;" onclick="validarRefeicao('provou_novo')">
+        🥦 Provou Novo (+20)
+      </button>
+      <button type="button" class="btn" style="background:#0369a1; color:#fff;" onclick="validarRefeicao('bebeu_agua')">
+        💧 Bebeu Água (+5)
+      </button>
+    </div>
+  </div>
+
+  <!-- ATUALIZAÇÃO DO SISTEMA VIA GITHUB -->
+  <div class="card">
+    <div class="card-title">🔄 Manutenção Remota do Sistema</div>
+    <div style="font-size:0.85rem; color:#94a3b8;">
+      Puxa a versão mais recente do código diretamente do GitHub e reinicia o Jarvis em 5 segundos:
+    </div>
+    <button type="button" class="btn btn-update" onclick="atualizarSistema()">
+      ☁️ Atualizar Jarvis via GitHub
+    </button>
   </div>
 
   <div class="toast" id="toast">Ação concluída com sucesso!</div>
@@ -151,7 +257,7 @@
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 2500);
+      setTimeout(() => t.style.display = 'none', 3000);
     }
 
     async function refresh() {
@@ -160,9 +266,13 @@
         const data = await res.json();
         document.getElementById('child-name-display').textContent = `Controle Remoto de ${data.config.child_name || 'Kaleo Noah'}`;
         document.getElementById('val-books').textContent = data.books_read_today || 0;
-        
+
         const remSec = (data.media_permission && data.media_permission.remaining_sec) || 0;
         document.getElementById('val-cinema').textContent = `${Math.ceil(remSec / 60)} min`;
+
+        if (data.pote) {
+          document.getElementById('val-fichas').textContent = data.pote.saldo || 0;
+        }
 
         isPaused = !!data.remote_paused;
         nightActive = !!data.night_mode;
@@ -176,11 +286,81 @@
           btnP.textContent = '🍽️ Pausar Tela (Almoço / Jantar)';
         }
 
-        document.getElementById('ia-provider-info').innerHTML = `
-          Modo Atual: <b style="color:#00f0ff;">${(data.config.active_provider || 'offline').toUpperCase()}</b><br>
-          Voz: ${data.config.voice_profile || 'Padrão'}
-        `;
+        carregarMensagens();
       } catch (e) {}
+    }
+
+    async function carregarMensagens() {
+      try {
+        const res = await fetch('/api/admin/mensagens/status');
+        const msgs = await res.json();
+        const box = document.getElementById('historico-mensagens');
+        if (!msgs || msgs.length === 0) {
+          box.innerHTML = '<div style="color:#64748b; font-size:0.8rem;">Nenhum recado enviado ainda.</div>';
+          return;
+        }
+        box.innerHTML = msgs.slice(0, 4).map(m => `
+          <div class="msg-item">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="status-badge status-${m.status}">${m.status === 'ABERTA' ? '✓ Visto pelo Kaleu' : m.status}</span>
+              <span style="font-size:0.75rem; color:#64748b;">${m.data_envio || ''}</span>
+            </div>
+            <div style="color:#f1f5f9; margin-top:2px;">"${m.conteudo_texto || 'Mídia enviada'}"</div>
+            ${m.data_abertura ? `<div style="font-size:0.72rem; color:#34d399;">Ouvido às ${m.data_abertura.split(' ')[1] || m.data_abertura}</div>` : ''}
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    async function enviarRecado() {
+      const txt = document.getElementById('txt-recado').value.trim();
+      if (!txt) {
+        showToast('Digite uma mensagem carinhosa antes de enviar!');
+        return;
+      }
+      try {
+        const res = await fetch('/api/admin/mensagem/enviar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ remetente: 'Papai', tipo: 'texto', texto: txt })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast('💌 Recado enviado! O envelope apareceu no netbook!');
+          document.getElementById('txt-recado').value = '';
+          carregarMensagens();
+        }
+      } catch (e) {
+        showToast('Erro ao enviar recado.');
+      }
+    }
+
+    async function dispararSos(acao) {
+      try {
+        await fetch('/api/admin/sos', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ acao: acao })
+        });
+        showToast(`🛡️ Intervenção ativada na tela do Kaleu!`);
+      } catch (e) {
+        showToast('Erro ao disparar intervenção.');
+      }
+    }
+
+    async function validarRefeicao(tipo) {
+      try {
+        const res = await fetch('/api/alimentos/refeicao_real', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ tipo: tipo })
+        });
+        const d = await res.json();
+        showToast(d.mensagem || 'Refeição validada com sucesso!');
+        refresh();
+      } catch (e) {
+        showToast('Erro ao validar refeição.');
+      }
     }
 
     async function giveBonus(mins) {
@@ -219,6 +399,18 @@
         refresh();
       } catch (e) {
         showToast('Erro na comunicação.');
+      }
+    }
+
+    async function atualizarSistema() {
+      if (!confirm('Deseja baixar a versão mais recente do GitHub e reiniciar o Jarvis Kids OS?')) {
+        return;
+      }
+      try {
+        showToast('⏳ Atualizando sistema... Reiniciando em 5 segundos!');
+        await fetch('/api/admin/sistema/atualizar', { method: 'POST' });
+      } catch (e) {
+        showToast('Atualização iniciada!');
       }
     }
 

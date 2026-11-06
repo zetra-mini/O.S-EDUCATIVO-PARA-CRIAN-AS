@@ -1,3 +1,4 @@
+import gc
 import json
 import os
 import random
@@ -76,7 +77,8 @@ class JarvisBrain:
 
     def reset_conversation(self):
         self.last_gemini_interaction_id = None
-        self.local_history = []
+        self.local_history.clear()
+        gc.collect()
 
     @property
     def name(self) -> str:

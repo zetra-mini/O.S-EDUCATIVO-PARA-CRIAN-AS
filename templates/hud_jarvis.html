@@ -785,19 +785,319 @@
       border-color: #ffffff !important;
       box-shadow: 0 0 25px currentColor;
     }
+
+    /* =========================================================================
+       MODO MASCOTE PRIMEIRO (STANDBY) & TRANSIÇÃO DE FLUTUAÇÃO 2D
+       ========================================================================= */
+    .standby-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #0b2247 0%, #030814 85%);
+      z-index: 7000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      user-select: none;
+    }
+    .standby-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.06);
+    }
+    .mascote-avatar-box {
+      position: relative;
+      width: 200px;
+      height: 230px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: flutuar 3.6s ease-in-out infinite;
+    }
+    @keyframes flutuar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-16px); }
+    }
+    .mascote-body-2d {
+      width: 170px;
+      height: 190px;
+      background: linear-gradient(145deg, #0f274a, #071324);
+      border: 4px solid var(--cyan);
+      border-radius: 90px 90px 75px 75px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.45), inset 0 0 20px rgba(0, 240, 255, 0.25);
+    }
+    .mascote-ears {
+      position: absolute;
+      top: -12px;
+      width: 190px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 8px;
+    }
+    .mascote-ear {
+      width: 22px;
+      height: 38px;
+      background: #0284c7;
+      border: 3px solid var(--cyan);
+      border-radius: 12px;
+      box-shadow: 0 0 15px #00f0ff;
+    }
+    .mascote-visor {
+      width: 130px;
+      height: 72px;
+      background: #030712;
+      border: 2px solid #38bdf8;
+      border-radius: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      box-shadow: inset 0 0 14px rgba(0, 240, 255, 0.4);
+    }
+    .mascote-eye {
+      width: 26px;
+      height: 26px;
+      background: #00f0ff;
+      border-radius: 50%;
+      box-shadow: 0 0 16px #00f0ff;
+      animation: pulsarOlhos 2.8s ease-in-out infinite;
+    }
+    @keyframes pulsarOlhos {
+      0%, 100% { filter: drop-shadow(0 0 8px #00f0ff); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 18px #00f0ff); transform: scale(1.08); }
+    }
+    .mascote-heart-chest {
+      margin-top: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff, #00f0ff 60%, #0369a1);
+      box-shadow: 0 0 20px #00f0ff;
+      animation: spinReverse 6s linear infinite;
+    }
+    .mascote-bubble {
+      margin-top: 24px;
+      background: #0f172a;
+      border: 2px solid var(--cyan);
+      border-radius: 20px;
+      padding: 12px 24px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #f8fafc;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      max-width: 580px;
+    }
+    .mascote-tap-label {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      color: #94a3b8;
+      font-weight: 700;
+      animation: pulseTap 1.8s infinite ease-in-out;
+    }
+    @keyframes pulseTap {
+      0%, 100% { opacity: 0.6; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.03); color: #38bdf8; }
+    }
+
+    /* =========================================================================
+       BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS)
+       ========================================================================= */
+    .pet-bar-container {
+      background: #081528;
+      border: 2px solid #1e3a5f;
+      border-radius: 16px;
+      padding: 6px 14px;
+      margin: 4px 18px 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pet-need-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: #0c1c36;
+      border: 1px solid #334155;
+      padding: 4px 10px;
+      border-radius: 12px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .pet-need-item:hover, .pet-need-item:active {
+      transform: scale(1.05);
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+    .need-track {
+      width: 70px;
+      height: 12px;
+      background: #030712;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid #475569;
+    }
+    .need-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+    .fill-higiene { background: linear-gradient(90deg, #0284c7, #38bdf8); }
+    .fill-alimentacao { background: linear-gradient(90deg, #16a34a, #4ade80); }
+    .fill-diversao { background: linear-gradient(90deg, #a855f7, #c084fc); }
+    .fill-energia { background: linear-gradient(90deg, #eab308, #fde047); }
+    .need-icon { font-size: 1.25rem; }
+    .need-label { font-size: 0.72rem; font-weight: 800; color: #cbd5e1; }
+
+    .btn-pote-tesouro {
+      background: #78350f;
+      color: #fde047;
+      border: 2px solid #f59e0b;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.15s;
+    }
+    .btn-pote-tesouro:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+    }
+
+    .badge-fichas {
+      background: #78350f;
+      color: #fde047;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      border: 1px solid #f59e0b;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .badge-clima, .badge-bateria {
+      background: #0c1c36;
+      color: #38bdf8;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      border: 1px solid #334155;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-home-standby {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 5px 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn-secret-envelope {
+      background: #854d0e;
+      color: #fef08a;
+      border: 2px solid #facc15;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.82rem;
+      cursor: pointer;
+      animation: pulseEnvelope 1.4s infinite alternate;
+    }
+    @keyframes pulseEnvelope {
+      0% { transform: scale(1); box-shadow: 0 0 6px #facc15; }
+      100% { transform: scale(1.08); box-shadow: 0 0 18px #f59e0b; }
+    }
   </style>
 </head>
 <body>
+  <!-- TELA INICIAL: MODO MASCOTE PRIMEIRO (STANDBY / DESCANSANDO NO ESPAÇO) -->
+  <div id="standby-mascote-screen" class="standby-screen" onclick="entrarNaDashboard()">
+    <div class="mascote-avatar-box">
+      <div class="mascote-ears">
+        <div class="mascote-ear"></div>
+        <div class="mascote-ear"></div>
+      </div>
+      <div class="mascote-body-2d">
+        <div class="mascote-visor">
+          <div class="mascote-eye"></div>
+          <div class="mascote-eye"></div>
+        </div>
+        <div class="mascote-heart-chest"></div>
+      </div>
+    </div>
+    <div class="mascote-bubble" id="standby-bubble-text">
+      ✨ Olá, Kaleu! Eu sou o Járvis! Toque em mim para começar a aventura!
+    </div>
+    <div class="mascote-tap-label">👆 Toque na tela para brincar</div>
+  </div>
+
   <header>
     <div class="hud-brand">
+      <button type="button" class="btn-home-standby" onclick="voltarAoMascoteCentral()" title="Descanso do Jarvis">🏠</button>
       <span class="hud-title">◈ J.A.R.V.I.S. KIDS</span>
+      <span class="badge-fichas" id="badge-pote-fichas" onclick="abrirLojaTesouro()" title="Pote do Tesouro Real">🪙 <span id="pote-fichas-val">20</span></span>
       <span class="badge-stars" id="stars-badge">★ 0</span>
-      <span class="badge-books" id="books-badge">📖 0</span>
+      <span class="badge-clima" id="badge-clima-top" onclick="abrirModalEstacoes()" title="Previsão do Tempo">☀️ <span id="clima-val-top">24°C</span></span>
+      <span class="badge-bateria" id="badge-bateria-top" title="Bateria do Netbook">🔋 <span id="bateria-val-top">88%</span></span>
     </div>
     <div class="hud-right">
+      <button type="button" class="btn-secret-envelope" id="btn-secret-msg" onclick="abrirMensagemPais()" style="display:none;" title="Mensagem Secreta da Família!">
+        💌 RECADO DO PAPAI!
+      </button>
       <button type="button" class="btn-parents" onclick="openParentsGate()">⚙ PAIS</button>
     </div>
   </header>
+
+  <!-- PAINEL DO BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS) -->
+  <div class="pet-bar-container" id="pet-bar-hud">
+    <div class="pet-need-item" onclick="darBanhoPet()" title="Dar banho de espuma no Jarvis (+5 🪙)">
+      <span class="need-icon">🧼</span>
+      <div class="need-track"><div class="need-fill fill-higiene" id="pet-bar-higiene" style="width:100%;"></div></div>
+      <span class="need-label">HIGIENE</span>
+    </div>
+
+    <div class="pet-need-item" onclick="abrirPratoColorido()" title="Monte o Prato Colorido (+15 🪙)">
+      <span class="need-icon">🍎</span>
+      <div class="need-track"><div class="need-fill fill-alimentacao" id="pet-bar-alimentacao" style="width:100%;"></div></div>
+      <span class="need-label">COMIDA</span>
+    </div>
+
+    <div class="pet-need-item" onclick="abrirJogosCognitivos()" title="Jogos do cérebro e cognição (+5 🪙)">
+      <span class="need-icon">🎮</span>
+      <div class="need-track"><div class="need-fill fill-diversao" id="pet-bar-diversao" style="width:100%;"></div></div>
+      <span class="need-label">DIVERSÃO</span>
+    </div>
+
+    <div class="pet-need-item" onclick="alternarAbajurSono()" title="Puxar a cordinha do abajur do sono">
+      <span class="need-icon">🌙</span>
+      <div class="need-track"><div class="need-fill fill-energia" id="pet-bar-energia" style="width:100%;"></div></div>
+      <span class="need-label">ABAJUR</span>
+    </div>
+
+    <button type="button" class="btn-pote-tesouro" onclick="abrirLojaTesouro()" title="Ver Pote do Tesouro Real">
+      🪙 LOJA DO TESOURO
+    </button>
+  </div>
 
   <main>
     <!-- COLUNA ESQUERDA: HISTÓRIAS, LER & ESCREVER, NÚMEROS & MÃOS, TECLADO & MOUSE -->
@@ -1189,6 +1489,20 @@
 
       const sBadge = document.getElementById('stars-badge');
       if (sBadge) sBadge.textContent = `★ ${appState.stars}`;
+
+      if (data.pet) atualizarBarrasPet(data.pet);
+      if (data.pote) {
+        const el = document.getElementById('pote-fichas-val');
+        if (el) el.textContent = data.pote.saldo || 0;
+      }
+      if (data.clima) {
+        const cEl = document.getElementById('clima-val-top');
+        if (cEl) cEl.textContent = `${data.clima.temperatura}°C`;
+      }
+      if (data.bateria) {
+        const bEl = document.getElementById('bateria-val-top');
+        if (bEl) bEl.textContent = `${data.bateria.porcentagem}%`;
+      }
 
       const mBadge = document.getElementById('mode-badge');
       if (mBadge) {
@@ -4389,6 +4703,508 @@
         showToast('✅ Todas as configurações salvas com sucesso!');
         speak(`Configurações salvas! Tudo pronto para brincar, ${payload.child_name}!`);
       };
+    }
+
+    // =========================================================================
+    // NAVEGAÇÃO: MODO MASCOTE PRIMEIRO (STANDBY) & AUTO-RETORNO POR INATIVIDADE
+    // =========================================================================
+    let inactivityTimer = null;
+
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      // 120 segundos (2 minutos) sem toque retorna ao robô central em descanso
+      inactivityTimer = setTimeout(() => {
+        voltarAoMascoteCentral();
+      }, 120000);
+    }
+
+    window.addEventListener('pointerdown', resetInactivityTimer, { passive: true });
+    window.addEventListener('keydown', resetInactivityTimer, { passive: true });
+    window.addEventListener('touchstart', resetInactivityTimer, { passive: true });
+
+    function entrarNaDashboard() {
+      const scr = document.getElementById('standby-mascote-screen');
+      if (scr) scr.classList.add('hidden');
+      playTone(587, 120);
+      setTimeout(() => playTone(880, 160), 120);
+      resetInactivityTimer();
+      speak(`Olá, ${appState.config.child_name || 'Kaleu'}! O que vamos explorar hoje?`);
+    }
+
+    function voltarAoMascoteCentral() {
+      closeModal();
+      stopCurrentSpeech();
+      const scr = document.getElementById('standby-mascote-screen');
+      if (scr) scr.classList.remove('hidden');
+      playTone(440, 150);
+    }
+
+    // =========================================================================
+    // BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS)
+    // =========================================================================
+    function atualizarBarrasPet(pet) {
+      if (!pet) return;
+      const bH = document.getElementById('pet-bar-higiene');
+      const bA = document.getElementById('pet-bar-alimentacao');
+      const bD = document.getElementById('pet-bar-diversao');
+      const bE = document.getElementById('pet-bar-energia');
+
+      if (bH) bH.style.width = `${Math.max(8, pet.higiene)}%`;
+      if (bA) bA.style.width = `${Math.max(8, pet.alimentacao)}%`;
+      if (bD) bD.style.width = `${Math.max(8, pet.diversao)}%`;
+      if (bE) bE.style.width = `${Math.max(8, pet.energia)}%`;
+    }
+
+    async function darBanhoPet() {
+      playTone(659, 100);
+      try {
+        const res = await fetch('/api/pet/banho', { method: 'POST' });
+        const d = await res.json();
+        atualizarBarrasPet(d.status);
+        showToast(d.mensagem);
+        speak(d.mensagem);
+        atualizarPoteVisual();
+      } catch (e) {}
+    }
+
+    async function alternarAbajurSono() {
+      playTone(440, 140);
+      try {
+        const res = await fetch('/api/pet/abajur', { method: 'POST' });
+        const d = await res.json();
+        atualizarBarrasPet(d.status);
+        showToast(d.mensagem);
+        speak(d.mensagem);
+        if (d.modo_dormir) {
+          document.body.classList.add('night-mode');
+        } else {
+          document.body.classList.remove('night-mode');
+        }
+      } catch (e) {}
+    }
+
+    async function fazerCarinhoPet() {
+      try {
+        const res = await fetch('/api/pet/carinho', { method: 'POST' });
+        const d = await res.json();
+        atualizarBarrasPet(d.status);
+        playTone(784, 100);
+        showToast('❤️ O Járvis adorou o seu carinho!');
+      } catch (e) {}
+    }
+
+    async function atualizarPoteVisual() {
+      try {
+        const res = await fetch('/api/fichas/status');
+        const d = await res.json();
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = d.saldo || 0;
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // MODAL: MONTE O PRATO COLORIDO & SUPERPODERES DAS CORES
+    // =========================================================================
+    let pratoSelecionados = [];
+
+    async function abrirPratoColorido() {
+      playTone(523, 90);
+      document.getElementById('modal-title').textContent = '🍽️ MONTE O PRATO DOS SUPERPODERES!';
+      const body = document.getElementById('modal-body');
+      body.innerHTML = `
+        <div style="font-size:1.05rem; color:#fde047; font-weight:800; margin-bottom:10px; text-align:center;">
+          Escolha até 4 alimentos saudáveis para dar superpoderes ao seu corpo e ao Jarvis!
+        </div>
+        <div id="prato-alimentos-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:14px;">
+          Carregando alimentos...
+        </div>
+        <div style="background:#0b1d36; border:2px dashed #38bdf8; border-radius:14px; padding:12px; margin-bottom:12px; text-align:center;">
+          <div style="font-size:0.95rem; color:#38bdf8; font-weight:800;">SEU PRATO:</div>
+          <div id="prato-selecao-display" style="font-size:1.8rem; min-height:42px; display:flex; gap:10px; justify-content:center; align-items:center;">
+            (Toque nos alimentos acima)
+          </div>
+        </div>
+        <button type="button" class="big-btn" style="background:#16a34a; width:100%; font-size:1.2rem; padding:14px;" onclick="avaliarPratoColorido()">
+          🥗 ALIMENTAR O JÁRVIS! (+15 🪙)
+        </button>
+      `;
+      openModal();
+      pratoSelecionados = [];
+
+      try {
+        const res = await fetch('/api/alimentos/listar');
+        const foods = await res.json();
+        const grid = document.getElementById('prato-alimentos-grid');
+        grid.innerHTML = foods.map(f => `
+          <div class="toy-card" style="padding:10px; gap:8px; flex-direction:column; text-align:center; cursor:pointer;" onclick="toggleItemPrato('${f.id}', '${f.icone}')">
+            <div style="font-size:2.4rem;">${f.icone}</div>
+            <div style="font-size:0.95rem; font-weight:900; color:#fff;">${f.nome}</div>
+            <div style="font-size:0.75rem; color:#94a3b8;">${f.superpoder}</div>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    function toggleItemPrato(id, icone) {
+      playTone(659, 70);
+      const idx = pratoSelecionados.indexOf(id);
+      if (idx >= 0) {
+        pratoSelecionados.splice(idx, 1);
+      } else {
+        if (pratoSelecionados.length >= 4) pratoSelecionados.shift();
+        pratoSelecionados.push(id);
+      }
+      const disp = document.getElementById('prato-selecao-display');
+      disp.textContent = pratoSelecionados.length > 0 ? pratoSelecionados.join(' ') : '(Toque nos alimentos acima)';
+    }
+
+    async function avaliarPratoColorido() {
+      if (pratoSelecionados.length === 0) {
+        showToast('Escolha pelo menos 1 alimento para montar o prato!');
+        return;
+      }
+      try {
+        const res = await fetch('/api/alimentos/avaliar_prato', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ alimentos: pratoSelecionados })
+        });
+        const d = await res.json();
+        atualizarBarrasPet(d.status_pet);
+        atualizarPoteVisual();
+        playTone(880, 180);
+        showToast(d.mensagem);
+        speak(d.mensagem);
+        setTimeout(closeModal, 3000);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // MODAL: JOGOS COGNITIVOS (SEMÁFORO DO CONTROLE INIBITÓRIO & LEITNER)
+    // =========================================================================
+    function abrirJogosCognitivos() {
+      playTone(523, 90);
+      document.getElementById('modal-title').textContent = '🎮 JOGOS DO CÉREBRO & MEMÓRIA';
+      const body = document.getElementById('modal-body');
+      body.innerHTML = `
+        <div style="display:flex; gap:10px; margin-bottom:14px;">
+          <button type="button" class="big-btn" style="flex:1; background:#0284c7;" onclick="carregarJogoSemaforo()">
+            🟢🔴 Desafio do Semáforo
+          </button>
+          <button type="button" class="big-btn" style="flex:1; background:#7c3aed;" onclick="carregarJogoLeitner()">
+            📦 Baú do Conhecimento
+          </button>
+        </div>
+        <div id="cognicao-game-area" style="min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-size:1.1rem; color:#cbd5e1; text-align:center;">
+            Escolha um dos jogos acima para treinar o cérebro, a paciência e ganhar moedas!
+          </div>
+        </div>
+      `;
+      openModal();
+    }
+
+    async function carregarJogoSemaforo() {
+      try {
+        const res = await fetch('/api/cognicao/semaforo');
+        const d = await res.json();
+        const area = document.getElementById('cognicao-game-area');
+        area.innerHTML = `
+          <div style="font-size:1.2rem; font-weight:900; color:#f8fafc; margin-bottom:12px; text-align:center;">
+            ${d.instrucao}
+          </div>
+          <div id="semaforo-luz" style="width:130px; height:130px; border-radius:50%; background:${d.cor_hex}; box-shadow:0 0 35px ${d.cor_hex}; display:flex; align-items:center; justify-content:center; font-size:3rem; cursor:pointer;" onclick="responderSemaforo('${d.sinal}')">
+            ${d.sinal === 'VERDE' ? '🟢' : '🛑'}
+          </div>
+          <div style="margin-top:14px; font-size:0.9rem; color:#94a3b8;">
+            Atenção: Aja no verde e pare no vermelho!
+          </div>
+        `;
+      } catch (e) {}
+    }
+
+    async function responderSemaforo(sinal) {
+      const acertou = (sinal === 'VERDE');
+      playTone(acertou ? 880 : 330, 140);
+      try {
+        const res = await fetch('/api/cognicao/semaforo/resultado', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ acertou })
+        });
+        const d = await res.json();
+        showToast(d.mensagem);
+        speak(d.mensagem);
+        atualizarPoteVisual();
+        setTimeout(carregarJogoSemaforo, 2500);
+      } catch (e) {}
+    }
+
+    async function carregarJogoLeitner() {
+      try {
+        const res = await fetch('/api/cognicao/leitner/sortear');
+        const card = await res.json();
+        const area = document.getElementById('cognicao-game-area');
+        if (!card || !card.pergunta) {
+          area.innerHTML = '<div style="color:#cbd5e1;">Nenhum cartão para revisar agora!</div>';
+          return;
+        }
+        area.innerHTML = `
+          <div style="font-size:0.85rem; color:#facc15; font-weight:800; margin-bottom:4px;">
+            📦 BAÚ DE CONHECIMENTO — CAIXA ${card.caixa}
+          </div>
+          <div style="font-size:1.3rem; font-weight:900; color:#ffffff; margin-bottom:14px; text-align:center;">
+            ${card.pergunta}
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:440px;">
+            ${card.opcoes.map(op => `
+              <button type="button" class="big-btn" style="background:#1e3a8a; padding:14px; font-size:1.15rem;" onclick="responderLeitner(${card.id}, '${op}')">
+                ${op}
+              </button>
+            `).join('')}
+          </div>
+        `;
+        speak(card.pergunta);
+      } catch (e) {}
+    }
+
+    async function responderLeitner(cardId, resposta) {
+      try {
+        const res = await fetch('/api/cognicao/leitner/responder', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ card_id: cardId, resposta: resposta })
+        });
+        const d = await res.json();
+        playTone(d.acertou ? 880 : 330, 140);
+        showToast(d.mensagem);
+        speak(d.mensagem);
+        atualizarPoteVisual();
+        setTimeout(carregarJogoLeitner, 2800);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // MODAL: LOJA DO TESOURO REAL (TOKEN ECONOMY)
+    // =========================================================================
+    async function abrirLojaTesouro() {
+      playTone(523, 90);
+      document.getElementById('modal-title').textContent = '🪙 LOJA DO TESOURO REAL';
+      const body = document.getElementById('modal-body');
+      body.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0b1d36; border:2px solid #f59e0b; border-radius:14px; padding:10px 16px; margin-bottom:14px;">
+          <span style="font-weight:900; color:#fde047; font-size:1.15rem;">SEU SALDO ATUAL:</span>
+          <span style="font-weight:900; color:#fde047; font-size:1.4rem;">🪙 <span id="loja-saldo-display">...</span> Moedas</span>
+        </div>
+        <div id="loja-itens-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+          Carregando recompensas...
+        </div>
+      `;
+      openModal();
+
+      try {
+        const [resSt, resL] = await Promise.all([
+          fetch('/api/fichas/status'),
+          fetch('/api/fichas/loja')
+        ]);
+        const st = await resSt.json();
+        const itens = await resL.json();
+
+        document.getElementById('loja-saldo-display').textContent = st.saldo || 0;
+        const grid = document.getElementById('loja-itens-grid');
+        grid.innerHTML = itens.map(item => `
+          <div class="toy-card" style="flex-direction:column; padding:12px; text-align:center; gap:8px;">
+            <div style="font-size:2.8rem;">${item.icone}</div>
+            <div style="font-size:1.05rem; font-weight:900; color:#fff;">${item.titulo}</div>
+            <div style="font-size:0.8rem; color:#94a3b8;">${item.descricao}</div>
+            <button type="button" class="big-btn" style="background:#0284c7; width:100%; margin-top:4px;" onclick="resgatarItemLoja('${item.id}')">
+              Resgatar por 🪙 ${item.custo_fichas}
+            </button>
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    async function resgatarItemLoja(itemId) {
+      try {
+        const res = await fetch('/api/fichas/resgatar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ item_id: itemId })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          playTone(880, 180);
+          showToast(d.mensagem);
+          speak(d.mensagem);
+          atualizarPoteVisual();
+          document.getElementById('loja-saldo-display').textContent = d.saldo_restante;
+        } else {
+          showToast(d.mensagem, true);
+          speak(d.mensagem);
+        }
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // MODAL: PRESENÇA PATERNA & MENSAGEM SECRETA DOS PAIS (MODO FOCO)
+    // =========================================================================
+    let msgSecretaAtualId = null;
+
+    async function verificarMensagensSecretas() {
+      try {
+        const res = await fetch('/api/mensagens/novas');
+        const msg = await res.json();
+        const btn = document.getElementById('btn-secret-msg');
+        if (msg && msg.id) {
+          msgSecretaAtualId = msg.id;
+          btn.style.display = 'inline-flex';
+          btn.textContent = `💌 RECADO DO ${msg.remetente.toUpperCase()}!`;
+        } else {
+          btn.style.display = 'none';
+        }
+      } catch (e) {}
+    }
+
+    async function abrirMensagemPais() {
+      if (!msgSecretaAtualId) return;
+      playTone(659, 100);
+      document.getElementById('modal-title').textContent = '💌 RECADO ESPECIAL DA FAMÍLIA';
+      const body = document.getElementById('modal-body');
+
+      try {
+        const res = await fetch('/api/mensagens/novas');
+        const msg = await res.json();
+        body.innerHTML = `
+          <div style="background:#0c1c36; border:3px solid #facc15; border-radius:18px; padding:20px; text-align:center; box-shadow:0 0 25px rgba(250, 204, 21, 0.4);">
+            <div style="font-size:4rem; margin-bottom:8px;">💌</div>
+            <div style="font-size:1.15rem; color:#fde047; font-weight:800; margin-bottom:12px;">
+              O seu ${msg.remetente} preparou esta mensagem para você:
+            </div>
+            <div style="font-size:1.45rem; font-weight:900; color:#ffffff; line-height:1.4; margin-bottom:20px;">
+              "${msg.conteudo_texto || 'Um grande abraço de herói!'}"
+            </div>
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.25rem; padding:14px 28px;" onclick="concluirMensagemPais(${msg.id})">
+              ✓ JÁ OUVI E AMEI! (CONCLUIR)
+            </button>
+          </div>
+        `;
+        openModal();
+        speak(`O seu ${msg.remetente} deixou um recado especial para você: ${msg.conteudo_texto}`);
+      } catch (e) {}
+    }
+
+    async function concluirMensagemPais(msgId) {
+      try {
+        await fetch('/api/mensagens/marcar_aberta', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ id: msgId })
+        });
+        document.getElementById('btn-secret-msg').style.display = 'none';
+        msgSecretaAtualId = null;
+        closeModal();
+        showToast('❤️ Mensagem confirmada com carinho para o papai!');
+        playTone(880, 160);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // MODAL: CLIMA & AS 4 ESTAÇÕES DO ANO
+    // =========================================================================
+    async function abrirModalEstacoes() {
+      playTone(523, 90);
+      document.getElementById('modal-title').textContent = '🌤️ CLIMA & AS 4 ESTAÇÕES';
+      const body = document.getElementById('modal-body');
+      body.innerHTML = `
+        <div id="estacoes-content" style="text-align:center;">
+          Carregando previsão do tempo e estações...
+        </div>
+      `;
+      openModal();
+
+      try {
+        const [resC, resE] = await Promise.all([
+          fetch('/api/clima/atual'),
+          fetch('/api/clima/estacoes')
+        ]);
+        const clima = await resC.json();
+        const est = await resE.json();
+
+        body.innerHTML = `
+          <div style="background:#0f274a; border:2px solid #38bdf8; border-radius:16px; padding:14px; margin-bottom:14px; text-align:center;">
+            <div style="font-size:3.2rem;">${clima.icone}</div>
+            <div style="font-size:1.4rem; font-weight:900; color:#fff;">${clima.temperatura}°C — ${clima.descricao}</div>
+            <div style="font-size:1.05rem; color:#fde047; font-weight:800; margin-top:6px;">${clima.conselho_infantil}</div>
+          </div>
+          <div style="font-size:1.1rem; color:#38bdf8; font-weight:800; margin-bottom:8px;">🌸 AS 4 ESTAÇÕES DO ANO:</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            ${est.estacoes.map(e => `
+              <div class="toy-card" style="padding:10px; gap:8px; border-color:${e.nome === est.estacao_atual ? '#facc15' : '#334155'};">
+                <div style="font-size:2.2rem;">${e.icone}</div>
+                <div>
+                  <div style="font-size:1.05rem; font-weight:900; color:#fff;">${e.nome} ${e.nome === est.estacao_atual ? '⭐ (Agora)' : ''}</div>
+                  <div style="font-size:0.75rem; color:#94a3b8;">${e.descricao}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        speak(clima.conselho_infantil);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // ATUALIZAÇÃO PERIÓDICA DE ESTADO (PET, MENSAGENS, BATERIA, S.O.S.)
+    // =========================================================================
+    setInterval(verificarMensagensSecretas, 15000);
+    setInterval(async () => {
+      try {
+        const res = await fetch('/api/state');
+        const data = await res.json();
+        if (data.pet) atualizarBarrasPet(data.pet);
+        if (data.pote) {
+          const el = document.getElementById('pote-fichas-val');
+          if (el) el.textContent = data.pote.saldo || 0;
+        }
+        if (data.clima) {
+          const cEl = document.getElementById('clima-val-top');
+          if (cEl) cEl.textContent = `${data.clima.temperatura}°C`;
+        }
+        if (data.bateria) {
+          const bEl = document.getElementById('bateria-val-top');
+          if (bEl) bEl.textContent = `${data.bateria.porcentagem}%`;
+        }
+
+        // Se os pais ativaram SOS Intervenção no celular
+        if (data.sos_action) {
+          dispararIntervencaoSosLocal(data.sos_action);
+        }
+      } catch (e) {}
+    }, 12000);
+
+    function dispararIntervencaoSosLocal(acao) {
+      if (acao === 'guardar_brinquedos') {
+        openModal();
+        document.getElementById('modal-title').textContent = '🧸 OPERAÇÃO QUARTO LIMPO';
+        document.getElementById('modal-body').innerHTML = `
+          <div style="text-align:center; padding:16px;">
+            <div style="font-size:4rem;">🏎️🧱</div>
+            <div style="font-size:1.3rem; font-weight:900; color:#fff; margin-bottom:12px;">
+              Atenção, Kaleu! Missão Guardar Brinquedos Ativada pelo Papai!
+            </div>
+            <div style="font-size:1.1rem; color:#facc15; margin-bottom:18px;">
+              Como você quer guardar primeiro: os carrinhos ou os blocos de montar?
+            </div>
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.2rem; padding:14px 24px;" onclick="closeModal(); speak('Boa escolha! Guardando com alegria de herói!');">
+              ✓ Começar Agora (+10 🪙)!
+            </button>
+          </div>
+        `;
+        speak('Atenção, Kaleu! O papai chamou para a Operação Quarto Limpo! Vamos guardar os brinquedos juntos?');
+      } else if (acao === 'calma') {
+        openEmotionsCenter();
+      }
     }
   </script>
   <!-- TELA DE PAUSA REMOTA DOS PAIS (ALMOÇO / JANTAR) -->

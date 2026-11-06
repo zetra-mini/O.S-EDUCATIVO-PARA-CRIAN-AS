@@ -7,6 +7,8 @@ import subprocess
 import tkinter as tk
 import webbrowser
 
+from banco_dados import db
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USAGE_PATH = os.path.join(BASE_DIR, "uso_diario.json")
 
@@ -14,14 +16,16 @@ USAGE_PATH = os.path.join(BASE_DIR, "uso_diario.json")
 class MediaTimeManager:
     """
     Controlador pedagógico de tempo para Netflix & YouTube Kids ('Tudo tem o seu tempo'):
+    - Persiste dados no SQLite WAL com Single-Writer para zero conflito em disco.
     - Só libera dentro da janela de horário definida pelos pais (ex: 16:00 às 17:00) ou se houver bônus ativo.
     - Pode exigir 1 livro lido no dia antes de liberar o vídeo (hábito de leitura em 1º lugar!).
     - Monitora os minutos restantes, faz aviso gentil faltando 2 minutos e, ao terminar,
       fecha o vídeo e direciona a criança para uma nova atividade educativa!
     """
 
-    def __init__(self, brain):
+    def __init__(self, brain, database=db):
         self.brain = brain
+        self.db = database
         self.browser_proc = None
         self.session_active = False
         self.warned_two_min = False
@@ -31,20 +35,56 @@ class MediaTimeManager:
 
     def _load_usage(self) -> dict:
         today = self._today_key()
-        if os.path.exists(USAGE_PATH):
+        row = self.db.consultar_um(
+            "SELECT data_iso, segundos_assistidos, livros_lidos, livros_ids_json, minutos_bonus FROM uso_tempo_midia WHERE data_iso = ?;",
+            (today,),
+        )
+        if row:
             try:
-                with open(USAGE_PATH, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                if data.get("date") == today:
-                    return data
+                b_ids = json.loads(row["livros_ids_json"])
             except Exception:
-                pass
+                b_ids = []
+            return {
+                "date": today,
+                "seconds_watched": int(row["segundos_assistidos"]),
+                "books_read": int(row["livros_lidos"]),
+                "book_ids": b_ids,
+                "bonus_minutes": int(row["minutos_bonus"]),
+            }
+
+        # Inicializa o dia no SQLite
+        self.db.executar_escrita(
+            """
+            INSERT OR IGNORE INTO uso_tempo_midia (data_iso, segundos_assistidos, livros_lidos, livros_ids_json, minutos_bonus)
+            VALUES (?, 0, 0, '[]', 0);
+            """,
+            (today,),
+        )
         return {"date": today, "seconds_watched": 0, "books_read": 0, "book_ids": [], "bonus_minutes": 0}
 
     def _save_usage(self, data: dict):
+        today = self._today_key()
         try:
-            with open(USAGE_PATH, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
+            b_json = json.dumps(data.get("book_ids", []), ensure_ascii=False)
+            self.db.executar_escrita(
+                """
+                INSERT INTO uso_tempo_midia (data_iso, segundos_assistidos, livros_lidos, livros_ids_json, minutos_bonus, atualizado_em)
+                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(data_iso) DO UPDATE SET
+                    segundos_assistidos = excluded.segundos_assistidos,
+                    livros_lidos = excluded.livros_lidos,
+                    livros_ids_json = excluded.livros_ids_json,
+                    minutos_bonus = excluded.minutos_bonus,
+                    atualizado_em = CURRENT_TIMESTAMP;
+                """,
+                (
+                    today,
+                    int(data.get("seconds_watched", 0)),
+                    int(data.get("books_read", 0)),
+                    b_json,
+                    int(data.get("bonus_minutes", 0)),
+                ),
+            )
         except Exception:
             pass
 
