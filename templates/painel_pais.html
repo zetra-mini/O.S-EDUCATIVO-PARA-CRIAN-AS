@@ -312,6 +312,27 @@
     </div>
   </div>
 
+  <!-- PERFIL DE VOZ NEURAL DO JARVIS (PRIORIDADE ABSOLUTA) -->
+  <div class="card">
+    <div class="card-title">🎙️ Voz Neural do Jarvis (PT-BR)</div>
+    <div style="font-size:0.85rem; color:#94a3b8;">
+      Prioridade estrita de voz independente do motor de inteligência artificial (Llama, Gemini ou OpenAI):
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <select id="sel-voice-profile" onchange="alterarVozRemota(this.value)">
+        <option value="jarvis_antonio">J.A.R.V.I.S. Neural (Antonio PT-BR — Masculino Amigável)</option>
+        <option value="amiga_thalita">Amiga Gemini Neural (Thalita PT-BR — Expressiva e Calorosa)</option>
+        <option value="amiga_francisca">Contadora de Histórias (Francisca PT-BR — Doce e Calma)</option>
+        <option value="gemini_puck">Google Gemini Studio TTS — Puck (Alegre)</option>
+        <option value="gemini_sulafat">Google Gemini Studio TTS — Sulafat (Acolhedora)</option>
+      </select>
+      <button type="button" class="btn" style="background:#7c3aed; color:#fff; padding:10px;" onclick="testarVozRemota()">
+        🔊 Testar Voz do Jarvis no Netbook
+      </button>
+      <div id="voice-test-result" style="display:none; font-size:0.8rem; padding:8px 12px; border-radius:8px; background:#071120; border:1px solid #1e293b;"></div>
+    </div>
+  </div>
+
   <!-- LOGS DO SISTEMA & DIAGNÓSTICO DE FALHAS -->
   <div class="card" id="card-logs">
     <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
@@ -548,6 +569,45 @@
       }
     }
 
+    async function alterarVozRemota(voice) {
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ voice_profile: voice })
+        });
+        showToast('🎙️ Voz do Jarvis alterada com prioridade absoluta!');
+      } catch (e) {
+        showToast('Erro ao trocar voz');
+      }
+    }
+
+    async function testarVozRemota() {
+      const voice = document.getElementById('sel-voice-profile').value;
+      const resBox = document.getElementById('voice-test-result');
+      resBox.style.display = 'block';
+      resBox.innerHTML = '⏳ Sintetizando teste no perfil de voz selecionado...';
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            text: 'Olá! Sou o Járvis. Minha voz está definida com prioridade total em qualquer motor de IA!',
+            voice_profile: voice
+          })
+        });
+        if (res.status === 200) {
+          resBox.innerHTML = '✅ Voz sintetizada com sucesso no backend!';
+          resBox.style.borderColor = '#10b981';
+        } else {
+          resBox.innerHTML = '⚠️ Resposta recebida do servidor. Voz configurada!';
+          resBox.style.borderColor = '#f59e0b';
+        }
+      } catch (e) {
+        resBox.innerHTML = '❌ Erro ao testar voz.';
+      }
+    }
+
     async function alterarProvedorRemoto(prov) {
       try {
         await fetch('/api/config', {
@@ -603,7 +663,7 @@
           ramEl.innerHTML = `<span style="color:${mb < 30 ? '#34d399' : '#f59e0b'}">${mb} MB</span>`;
         }
 
-        // IA
+        // IA & Voz
         const iaEl = document.getElementById('diag-ia-status');
         if (iaEl) {
           iaEl.textContent = (diag.ia.provedor || 'offline').toUpperCase();
@@ -612,6 +672,16 @@
         if (selIa && diag.ia && diag.ia.provedor) {
           selIa.value = diag.ia.provedor;
         }
+
+        // Voz Neural Selecionada
+        try {
+          const stRes = await fetch('/api/state');
+          const stData = await stRes.json();
+          const selVoice = document.getElementById('sel-voice-profile');
+          if (selVoice && stData.config && stData.config.voice_profile) {
+            selVoice.value = stData.config.voice_profile;
+          }
+        } catch (e) {}
 
         // Bateria
         const batEl = document.getElementById('diag-bateria-status');
