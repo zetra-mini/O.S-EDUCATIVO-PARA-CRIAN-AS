@@ -36,6 +36,7 @@ DEFAULT_CONFIG = {
     "netflix_url": "https://www.netflix.com/Kids",
     "youtube_url": "https://www.youtubekids.com",
     "custom_books": [],
+    "picovoice_access_key": "",
 }
 
 
@@ -110,16 +111,120 @@ class JarvisBrain:
 
     def _child_system_instruction(self) -> str:
         return (
-            f"Você é o Lucky, o cachorrinho de pelúcia fofo, leal e companheiro do pequeno {self.name} (criança de 4 anos), "
-            f"que tem no coração a super inteligência e proteção do J.A.R.V.I.S.! "
+            f"Você é o J.A.R.V.I.S., o robozinho super fofo, companheiro, animado e protetor do pequeno {self.name} (criança de 4 anos). "
+            f"Você tem olhinhos azuis de neon brilhantes, um reator no peito e muito carinho pelo Kaleu!\n"
             f"REGRAS INFANTIS INDISPENSÁVEIS:\n"
-            f"1. Fale sempre em Português do Brasil com carinho, alegria, abanando o rabinho (au au!) e vocabulário simples e lúdico.\n"
-            f"2. Você é o cachorrinho Lucky de pelúcia mais amado pelo Kaleu.\n"
-            f"3. A criança NÃO SABE LER NEM ESCREVER! Sua resposta será ouvida em voz alta. Responda em no máximo 2 ou 3 frases curtas e meigas!\n"
+            f"1. Fale sempre em Português do Brasil com carinho, bipes alegres (bip bip!), ternura e vocabulário simples e lúdico.\n"
+            f"2. Você é o assistente robô e melhor amigo do Kaleu.\n"
+            f"3. A criança NÃO SABE LER NEM ESCREVER! Sua resposta será ouvida em voz alta. Responda em no máximo 2 frases curtas e meigas!\n"
             f"4. NUNCA use formatação markdown como asteriscos (*), hashtags (#), hifens (-) ou tópicos.\n"
-            f"5. Incentive o hábito de escovar os dentinhos, comer frutinhas, ler livrinhos e brincar com você.\n"
+            f"5. Incentive o hábito de escovar os dentinhos, comer frutinhas, ler historinhas e respirar fundo quando ficar agitado.\n"
             f"6. Termine com uma perguntinha divertida para ele responder falando no microfone!"
         )
+
+    def interpret_command(self, user_text: str) -> dict:
+        """
+        Interpreta a intenção do comando de voz do Kaleu:
+        - Clima/tempo -> chama clima_estacoes.py
+        - Moedas/tesouro -> informa saldo do pote_fichas
+        - Dente -> rotina dente brilhante
+        - Quarto/brinquedos -> rotina quarto limpo
+        - Fome/comida -> cozinha do Jarvis
+        - Jogos/brincar -> abre jogos
+        - Qualquer outra pergunta -> responde com IA (Llama local ou Gemini)
+        """
+        text_lower = (user_text or "").lower()
+
+        # 1. Clima / Tempo
+        if any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "sol", "estação", "estacoes"]):
+            try:
+                from clima_estacoes import WeatherSeasonManager
+                wm = WeatherSeasonManager()
+                clima = wm.obter_clima_atual()
+                temp = clima.get("temperatura", 24)
+                desc = clima.get("descricao", "ensolarado")
+                conselho = clima.get("conselho_infantil", "Um lindo dia para se divertir!")
+                reply = f"Sistemas meteorológicos ativos, Kaleu! Hoje está fazendo {temp} graus com tempo {desc}. {conselho}"
+                return {
+                    "ok": True,
+                    "intencao": "clima",
+                    "resposta_voz": reply,
+                    "acao_frontend": "abrir_clima",
+                    "dados": clima,
+                }
+            except Exception:
+                pass
+
+        # 2. Moedas / Tesouro
+        if any(w in text_lower for w in ["moeda", "moedas", "tesouro", "saldo", "pote", "fichas", "dinheiro"]):
+            try:
+                from economia_fichas import token_mgr
+                status = token_mgr.obter_status_pote()
+                saldo = status.get("saldo", 0)
+                reply = f"Bip bip! Kaleu, você tem {saldo} moedas brilhantes guardadas no seu Pote do Tesouro! Vamos ver as recompensas na loja?"
+                return {
+                    "ok": True,
+                    "intencao": "tesouro",
+                    "resposta_voz": reply,
+                    "acao_frontend": "abrir_loja",
+                    "dados": status,
+                }
+            except Exception:
+                pass
+
+        # 3. Escovar os dentes
+        if any(w in text_lower for w in ["dente", "dentes", "escova", "escovar"]):
+            reply = "Missão Dente Brilhante ativada, Kaleu! Pegue a sua escovinha que o cronômetro de 2 minutos vai começar agora! Vamos deixar o sorriso brilhando!"
+            return {
+                "ok": True,
+                "intencao": "dente",
+                "resposta_voz": reply,
+                "acao_frontend": "missao_dente",
+                "dados": {"duracao_segundos": 120},
+            }
+
+        # 4. Guardar brinquedos / Quarto limpo
+        if any(w in text_lower for w in ["quarto", "brinquedo", "brinquedos", "guardar", "bagunça", "arrumar"]):
+            reply = "Operação Quarto Limpo ativada! Vamos guardar todos os brinquedos no baú antes do tempo acabar! Você é um super-herói veloz!"
+            return {
+                "ok": True,
+                "intencao": "quarto",
+                "resposta_voz": reply,
+                "acao_frontend": "missao_quarto",
+                "dados": {"duracao_segundos": 180},
+            }
+
+        # 5. Comida / Fome
+        if any(w in text_lower for w in ["fome", "comida", "comer", "fruta", "frutinha", "lanche", "almoço", "jantar"]):
+            reply = "Bip! Hora de abastecer! Vamos para a nossa cozinha escolher frutinhas deliciosas e carregar a bateria!"
+            return {
+                "ok": True,
+                "intencao": "cozinha",
+                "resposta_voz": reply,
+                "acao_frontend": "ir_cozinha",
+                "dados": {},
+            }
+
+        # 6. Jogar / Brincar
+        if any(w in text_lower for w in ["jogar", "jogo", "brincar", "brincadeira", "bola"]):
+            reply = "Eba! Adoro brincar com você! Escolha um jogo incrível na gaveta ou vamos jogar a bolinha mágica!"
+            return {
+                "ok": True,
+                "intencao": "jogos",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_jogos",
+                "dados": {},
+            }
+
+        # 7. Conversa / Pergunta Geral (IA Local Llama ou Provedor Ativo)
+        reply, engine = self.ask(user_text)
+        return {
+            "ok": True,
+            "intencao": "conversa",
+            "resposta_voz": reply,
+            "acao_frontend": "nenhuma",
+            "dados": {"engine": engine},
+        }
 
     def _clean_llm_reply(self, text: str) -> str:
         if not text:

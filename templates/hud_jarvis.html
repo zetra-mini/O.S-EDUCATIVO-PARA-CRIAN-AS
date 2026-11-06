@@ -1255,59 +1255,144 @@
       100% { transform: scale(1, 1); }
     }
 
-    /* ANIMAÇÃO DO RABINHO DO LUCKY */
-    @keyframes tailWag {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(20deg); }
+    /* ANIMAÇÃO DE FLUTUAÇÃO DO ROBOZINHO J.A.R.V.I.S. */
+    @keyframes robotHover {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
     }
-    .lucky-tail-wag {
-      transform-origin: 165px 170px;
-      animation: tailWag 0.75s ease-in-out infinite;
+    @keyframes shadowPulse {
+      0%, 100% { transform: scale(1); opacity: 0.22; }
+      50% { transform: scale(0.85); opacity: 0.14; }
     }
-    .lucky-tail-fast {
-      animation: tailWag 0.22s ease-in-out infinite !important;
+    @keyframes antennaPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px #00f0ff); }
+      50% { transform: scale(1.15); filter: drop-shadow(0 0 10px #38bdf8); }
+    }
+    @keyframes reactorPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px #00f0ff); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 16px #38bdf8); }
+    }
+    @keyframes ringExpand {
+      0% { r: 50; opacity: 0.8; }
+      100% { r: 120; opacity: 0; }
+    }
+    .jarvis-robot-svg {
+      animation: robotHover 2.6s ease-in-out infinite;
+    }
+    #robot-floor-shadow {
+      transform-origin: 120px 222px;
+      animation: shadowPulse 2.6s ease-in-out infinite;
+    }
+    .antenna-glow {
+      transform-origin: 120px 20px;
+      animation: antennaPulse 1.8s ease-in-out infinite;
+    }
+    .arc-reactor-group {
+      transform-origin: 120px 162px;
+      animation: reactorPulse 2s ease-in-out infinite;
+    }
+    .jarvis-ring-pulse {
+      animation: ringExpand 1.4s ease-out infinite;
+      transform-origin: 120px 90px;
+    }
+    .jarvis-ring-pulse-delay {
+      animation: ringExpand 1.4s ease-out infinite 0.45s;
+      transform-origin: 120px 90px;
     }
 
-    /* ORELHAS FOFAS DE PELÚCIA */
-    @keyframes earWiggle {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(5deg); }
-    }
-    .lucky-ear-left {
-      transform-origin: 78px 54px;
-      animation: earWiggle 2.2s ease-in-out infinite;
-    }
-    .lucky-ear-right {
-      transform-origin: 162px 54px;
-      animation: earWiggle 2.2s ease-in-out infinite reverse;
-    }
-
-    /* BOTÃO HERÓI DE CONVERSA COM O LUCKY NA PRIMEIRA TELA */
-    .lucky-talk-hero-btn {
+    /* BOTÃO HERÓI DE CONVERSA COM O JARVIS NA PRIMEIRA TELA */
+    .jarvis-talk-hero-btn {
       position: relative;
       z-index: 20;
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
-      border: 3.5px solid #ffffff;
+      border: 3.5px solid #38bdf8;
       border-radius: 999px;
-      padding: 10px 24px;
-      font-size: 1.15rem;
+      padding: 12px 28px;
+      font-size: 1.2rem;
       font-weight: 900;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 8px 18px rgba(0,0,0,0.3);
       transition: transform 0.15s, box-shadow 0.2s;
-      margin-top: 2px;
+      margin-top: 4px;
       letter-spacing: 0.3px;
+      animation: heroBtnPulse 2.4s ease-in-out infinite;
     }
-    .lucky-talk-hero-btn:hover {
+    @keyframes heroBtnPulse {
+      0%, 100% { box-shadow: 0 0 16px rgba(56, 189, 248, 0.4), 0 6px 14px rgba(0,0,0,0.25); }
+      50% { box-shadow: 0 0 26px rgba(0, 240, 255, 0.75), 0 8px 22px rgba(2, 132, 199, 0.45); }
+    }
+    .jarvis-talk-hero-btn:hover {
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 8px 22px rgba(2, 132, 199, 0.45);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.85);
     }
-    .lucky-talk-hero-btn:active {
+    .jarvis-talk-hero-btn:active {
       transform: scale(0.96);
+    }
+
+    /* BANDEJA DE ALIMENTOS INTERATIVA NA COZINHA */
+    .kitchen-food-tray {
+      position: relative;
+      z-index: 25;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(8px);
+      border: 2.5px solid #f59e0b;
+      border-radius: 18px;
+      padding: 10px 16px;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      max-width: 92%;
+    }
+    .food-tray-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fde047;
+      text-align: center;
+    }
+    .food-tray-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .food-item-btn {
+      background: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 12px;
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s, background 0.12s;
+    }
+    .food-item-btn:hover {
+      transform: translateY(-3px) scale(1.08);
+      border-color: #38bdf8;
+      background: #0f172a;
+    }
+    .food-item-btn:active {
+      transform: scale(0.92);
+    }
+    .food-emoji {
+      font-size: 1.8rem;
+    }
+    .food-name {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .food-reward {
+      font-size: 0.65rem;
+      font-weight: 900;
+      color: #4ade80;
     }
 
     /* BALÃO DE DIÁLOGO FLUTUANTE */
@@ -1578,23 +1663,23 @@
 
         <!-- NÍVEL / ESTRELAS -->
         <div style="display:flex; align-items:center; gap:6px;">
-          <div class="pou-level-badge" id="pou-level-box" title="Nível do Lucky">
-            🐶 <span id="pou-level-val">1</span>
+          <div class="pou-level-badge" id="pou-level-box" title="Nível do Jarvis">
+            🤖 <span id="pou-level-val">1</span>
           </div>
           <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:4px 8px; font-size:0.85rem;" title="Painel dos Pais">⚙️</button>
         </div>
       </div>
 
-      <!-- SEGUNDA LINHA: SELETOR DE CÔMODOS DO LUCKY -->
+      <!-- SEGUNDA LINHA: SELETOR DE CÔMODOS DO JARVIS -->
       <div class="pou-room-nav-row">
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
         <span id="pou-room-title" class="pou-room-title">Sala de Brincar</span>
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(1)" title="Próximo Cômodo">▶</button>
-        <button type="button" class="btn-pou-mic" onclick="iniciarConversaDiretaLucky()" style="background:#0284c7; color:#fff; border:2.5px solid #0369a1; border-radius:10px; padding:6px 12px; font-size:0.95rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px;" title="Conversar com o Lucky (J.A.R.V.I.S.)">🎙️ <span>Conversar</span></button>
+        <button type="button" class="btn-pou-mic" onclick="ativarEscutaJarvisDireta()" style="background:#0284c7; color:#fff; border:2.5px solid #0369a1; border-radius:10px; padding:6px 12px; font-size:0.95rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px;" title="Falar com o J.A.R.V.I.S.">🎙️ <span>Falar</span></button>
       </div>
     </header>
 
-    <!-- 2. SALA CENTRAL DO LUCKY (O CACHORRINHO DE PELÚCIA NO CENTRO DA TELA) -->
+    <!-- 2. SALA CENTRAL DO ROBOZINHO J.A.R.V.I.S. (NO CENTRO DA TELA) -->
     <div class="pou-room-stage" id="pou-room-stage">
       <!-- Cordinha do Abajur (Quarto) -->
       <div class="pou-lamp-container" id="pou-lamp-cord" onclick="alternarAbajurSonoPou()" title="Puxar cordinha para dormir">
@@ -1602,116 +1687,129 @@
         <div class="lamp-knob"></div>
       </div>
 
-      <!-- O MASCOTE LUCKY NO CENTRO -->
-      <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoLucky(event)" title="Clique para dar carinho e conversar com o Lucky!">
-        <!-- BALÃO DE DIÁLOGO FLUTUANTE DO LUCKY / JARVIS -->
+      <!-- O MASCOTE ROBOZINHO J.A.R.V.I.S. NO CENTRO -->
+      <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoJarvis(event)" title="Toque no Jarvis para conversar ou receber carinho!">
+        <!-- BALÃO DE DIÁLOGO FLUTUANTE DO JARVIS -->
         <div id="pou-floating-bubble" class="pou-floating-bubble" style="display:none;">
-          <div id="pou-bubble-text">🐶 Au au, Kaleo! Eu sou o Lucky! Toque em mim para conversar!</div>
+          <div id="pou-bubble-text">✨ Olá, Kaleu! Eu sou o J.A.R.V.I.S.! Toque em mim ou diga "Jarvis" para falar!</div>
         </div>
 
-        <!-- SVG VETORIAL DO LUCKY (CACHORRINHO DE PELÚCIA SUPER FOFO) -->
-        <svg id="pou-svg" viewBox="0 0 240 240" width="245" height="245" style="filter: drop-shadow(0 10px 16px rgba(0,0,0,0.28));">
-          <!-- Sombra no Chão -->
-          <ellipse cx="120" cy="216" rx="76" ry="14" fill="rgba(0,0,0,0.2)" />
+        <!-- SVG VETORIAL DO ROBOZINHO J.A.R.V.I.S. (SUPER BONITINHO, FUTURISTA E EXPRESSIVO) -->
+        <svg id="pou-svg" class="jarvis-robot-svg" viewBox="0 0 240 240" width="245" height="245" style="filter: drop-shadow(0 12px 20px rgba(2,132,199,0.35));">
+          <defs>
+            <linearGradient id="robotBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="60%" stop-color="#e2e8f0" />
+              <stop offset="100%" stop-color="#cbd5e1" />
+            </linearGradient>
+            <linearGradient id="robotVisorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#0f172a" />
+              <stop offset="100%" stop-color="#020617" />
+            </linearGradient>
+            <radialGradient id="reactorGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffffff" />
+              <stop offset="40%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#0284c7" />
+            </radialGradient>
+            <filter id="neonCyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
 
-          <!-- Rabinho Peludinho Abanando -->
-          <g class="lucky-tail-wag" id="lucky-tail-group">
-            <path d="M 165,170 C 205,150 215,120 195,110 C 180,105 170,135 155,160 Z" fill="#c97d34" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
-            <circle cx="198" cy="114" r="8" fill="#fff1df" />
+          <!-- Sombra Suave no Chão com Animação de Flutuação -->
+          <ellipse id="robot-floor-shadow" cx="120" cy="222" rx="60" ry="11" fill="rgba(0,0,0,0.22)" />
+
+          <!-- Efeito de Propulsão Hover / Brilho Azul Abaixo do Corpo -->
+          <ellipse id="robot-thruster-glow" cx="120" cy="202" rx="20" ry="8" fill="#38bdf8" opacity="0.75" filter="url(#neonCyanGlow)" />
+          <ellipse cx="120" cy="200" rx="10" ry="4" fill="#ffffff" />
+
+          <!-- ONDAS SONORAS DE WAKE WORD (PULSAM QUANDO O KALEO FALA OU ATIVA O JARVIS) -->
+          <g id="jarvis-soundwave-rings" style="display:none;">
+            <circle cx="120" cy="90" r="75" fill="none" stroke="#00f0ff" stroke-width="2.5" opacity="0.6" class="jarvis-ring-pulse" />
+            <circle cx="120" cy="90" r="95" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.4" class="jarvis-ring-pulse-delay" />
           </g>
 
-          <!-- Patinhas Traseiras Sentadas -->
-          <ellipse cx="62" cy="192" rx="22" ry="16" fill="#c97d34" stroke="#8d4b14" stroke-width="4" />
-          <ellipse cx="62" cy="192" rx="14" ry="10" fill="#fff1df" />
-          <ellipse cx="178" cy="192" rx="22" ry="16" fill="#c97d34" stroke="#8d4b14" stroke-width="4" />
-          <ellipse cx="178" cy="192" rx="14" ry="10" fill="#fff1df" />
-
-          <!-- Corpo de Pelúcia Macio -->
-          <path id="lucky-body" d="M 75,115 C 60,175 70,205 120,208 C 170,205 180,175 165,115 C 150,110 90,110 75,115 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="4.5" />
-
-          <!-- Barriguinha / Peito de Pelúcia Macia Clara -->
-          <ellipse cx="120" cy="162" rx="34" ry="32" fill="#fff1df" stroke="#d49354" stroke-width="2" />
-
-          <!-- Coleirinha Azul Royal com Medalhinha J.A.R.V.I.S. -->
-          <path d="M 85,128 Q 120,146 155,128 Q 158,135 152,139 Q 120,155 88,139 Z" fill="#2563eb" stroke="#1d4ed8" stroke-width="2" />
-          <!-- Medalha de Super-Herói / JARVIS -->
-          <circle cx="120" cy="148" r="10" fill="#facc15" stroke="#ca8a04" stroke-width="2.5" />
-          <circle cx="120" cy="148" r="6.5" fill="#00f0ff" />
-          <text x="120" y="152.5" font-size="10" font-weight="900" fill="#0f172a" text-anchor="middle" font-family="sans-serif">J</text>
-
-          <!-- Patinhas Dianteiras Fofas de Pelúcia -->
-          <g>
-            <path d="M 92,168 C 86,192 88,210 102,210 C 114,210 114,192 110,168 Z" fill="#fff1df" stroke="#8d4b14" stroke-width="3.5" />
-            <circle cx="97" cy="204" r="2.5" fill="#e6a35c" />
-            <circle cx="104" cy="204" r="2.5" fill="#e6a35c" />
+          <!-- BRACINHOS ROBÓTICOS FLUTUANTES -->
+          <g id="robot-arm-left" class="robot-arm-float">
+            <rect x="36" y="128" width="24" height="42" rx="12" fill="url(#robotBodyGrad)" stroke="#0284c7" stroke-width="2.5" />
+            <circle cx="48" cy="164" r="7.5" fill="#38bdf8" />
           </g>
-          <g>
-            <path d="M 130,168 C 126,192 126,210 138,210 C 152,210 154,192 148,168 Z" fill="#fff1df" stroke="#8d4b14" stroke-width="3.5" />
-            <circle cx="136" cy="204" r="2.5" fill="#e6a35c" />
-            <circle cx="143" cy="204" r="2.5" fill="#e6a35c" />
+          <g id="robot-arm-right" class="robot-arm-float">
+            <rect x="180" y="128" width="24" height="42" rx="12" fill="url(#robotBodyGrad)" stroke="#0284c7" stroke-width="2.5" />
+            <circle cx="192" cy="164" r="7.5" fill="#38bdf8" />
           </g>
 
-          <!-- Orelha Esquerda Caída de Pelúcia -->
-          <g class="lucky-ear-left" id="lucky-ear-left-group">
-            <path d="M 78,54 C 42,56 36,96 46,128 C 52,142 70,140 72,120 C 74,98 80,72 78,54 Z" fill="#c97d34" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
-            <path d="M 52,78 C 46,98 52,122 60,128 C 66,128 68,116 66,102 Z" fill="#fbcfe8" opacity="0.9" />
+          <!-- CORPO / TORSO ROBÓTICO (Cápsula elegante, branca perolada) -->
+          <path id="robot-body" d="M 72,130 C 66,185 82,204 120,204 C 158,204 174,185 168,130 C 158,124 82,124 72,130 Z" fill="url(#robotBodyGrad)" stroke="#0284c7" stroke-width="3" />
+          <path d="M 82,134 C 80,172 92,192 120,192 C 148,192 160,172 158,134 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" />
+
+          <!-- REATOR ARC DO JARVIS NO PEITO (PULSA LUZ CIANO / AZUL STARK) -->
+          <g id="jarvis-arc-reactor" class="arc-reactor-group">
+            <circle cx="120" cy="162" r="17" fill="#0f172a" stroke="#f59e0b" stroke-width="2.5" />
+            <circle id="reactor-core" cx="120" cy="162" r="12" fill="url(#reactorGlow)" filter="url(#neonCyanGlow)" />
+            <polygon points="120,154 127,167 113,167" fill="none" stroke="#ffffff" stroke-width="1.8" />
+            <circle cx="120" cy="162" r="3.5" fill="#ffffff" />
           </g>
 
-          <!-- Orelha Direita Caída de Pelúcia -->
-          <g class="lucky-ear-right" id="lucky-ear-right-group">
-            <path d="M 162,54 C 198,56 204,96 194,128 C 188,142 170,140 168,120 C 166,98 160,72 162,54 Z" fill="#c97d34" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
-            <path d="M 188,78 C 194,98 188,122 180,128 C 174,128 172,116 174,102 Z" fill="#fbcfe8" opacity="0.9" />
+          <!-- ANTENINHA FUTURISTA COM ORBE CIANO PULSANTE -->
+          <line x1="120" y1="42" x2="120" y2="24" stroke="#0284c7" stroke-width="3.5" stroke-linecap="round" />
+          <circle id="robot-antenna-orb" cx="120" cy="20" r="7.5" fill="#00f0ff" stroke="#0284c7" stroke-width="2" filter="url(#neonCyanGlow)" class="antenna-glow" />
+
+          <!-- ORELHAS / FONES LATERAIS CIANO -->
+          <rect x="52" y="72" width="14" height="34" rx="7" fill="#0284c7" stroke="#0369a1" stroke-width="2" />
+          <circle cx="59" cy="89" r="3.5" fill="#00f0ff" />
+          <rect x="174" y="72" width="14" height="34" rx="7" fill="#0284c7" stroke="#0369a1" stroke-width="2" />
+          <circle cx="181" cy="89" r="3.5" fill="#00f0ff" />
+
+          <!-- CABEÇA DO ROBOZINHO (Perfeitamente arredondada e simpática) -->
+          <rect id="robot-head" x="60" y="42" width="120" height="92" rx="46" fill="url(#robotBodyGrad)" stroke="#0284c7" stroke-width="3" />
+
+          <!-- VISOR ESCURO ESPELHADO DO ROBOZINHO -->
+          <rect x="70" y="56" width="100" height="66" rx="33" fill="url(#robotVisorGrad)" stroke="#1e293b" stroke-width="2" />
+          <path d="M 80,62 Q 120,54 160,62 Q 155,70 120,68 Q 85,70 80,62 Z" fill="#ffffff" opacity="0.16" />
+
+          <!-- OLHOS DE NEON CIANO (SUPER EXPRESSIVOS - ACOMPANHAM O MOUSE) -->
+          <ellipse id="robot-eye-left" class="robot-neon-eye" cx="95" cy="84" rx="13" ry="16" fill="#00f0ff" filter="url(#neonCyanGlow)" />
+          <circle id="pou-pupil-left" class="pou-pupil" cx="95" cy="84" r="7.5" fill="#0f172a" />
+          <circle cx="92" cy="79" r="3" fill="#ffffff" />
+
+          <ellipse id="robot-eye-right" class="robot-neon-eye" cx="145" cy="84" rx="13" ry="16" fill="#00f0ff" filter="url(#neonCyanGlow)" />
+          <circle id="pou-pupil-right" class="pou-pupil" cx="145" cy="84" r="7.5" fill="#0f172a" />
+          <circle cx="142" cy="79" r="3" fill="#ffffff" />
+
+          <!-- Olhos Felizes sorrindo (^ ^) quando faz carinho, come ou joga -->
+          <g id="robot-eyes-happy" style="display:none;">
+            <path d="M 83,86 Q 95,72 107,86" fill="none" stroke="#00f0ff" stroke-width="4.5" stroke-linecap="round" filter="url(#neonCyanGlow)" />
+            <path d="M 133,86 Q 145,72 157,86" fill="none" stroke="#00f0ff" stroke-width="4.5" stroke-linecap="round" filter="url(#neonCyanGlow)" />
           </g>
 
-          <!-- Cabeça Fofinha de Pelúcia -->
-          <path id="lucky-head" d="M 72,82 C 66,42 104,32 120,32 C 136,32 174,42 168,82 C 166,116 146,126 120,126 C 94,126 74,116 72,82 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="4.5" stroke-linejoin="round" />
+          <!-- Olhos de Standby / Dormindo no Quarto (- -) -->
+          <g id="pou-eyes-sleeping" style="display:none;">
+            <line x1="84" y1="86" x2="106" y2="86" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" opacity="0.75" />
+            <line x1="134" y1="86" x2="156" y2="86" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" opacity="0.75" />
+          </g>
 
-          <!-- Mancha Branca Fofa na Testa (estilo pelúcia) -->
-          <path d="M 112,33 C 114,50 115,64 112,74 C 116,76 124,76 128,74 C 125,64 126,50 128,33 Z" fill="#fff1df" opacity="0.8" />
+          <!-- BOCA DE LED CIANO (Sorriso Tecnológico & Ondas de Fala) -->
+          <path id="pou-mouth-smile" d="M 110,105 Q 120,114 130,105" fill="none" stroke="#00f0ff" stroke-width="3" stroke-linecap="round" filter="url(#neonCyanGlow)" />
 
-          <!-- Focinho Fofo Peludinho -->
-          <ellipse cx="120" cy="98" rx="27" ry="19" fill="#fff1df" stroke="#8d4b14" stroke-width="3.5" />
+          <!-- Boca Aberta para Mastigar / Comer Frutas (Cozinha) -->
+          <ellipse id="pou-mouth-open" cx="120" cy="107" rx="8" ry="10" fill="#00f0ff" filter="url(#neonCyanGlow)" style="display:none;" />
 
-          <!-- Narizinho Preto Brilhante em Formato de Coração Suave -->
-          <path d="M 113,89 Q 120,84 127,89 Q 129,97 120,103 Q 111,97 113,89 Z" fill="#1e1e1e" />
-          <ellipse cx="116.5" cy="89.5" rx="3" ry="1.8" fill="#ffffff" />
+          <!-- ONDAS DIGITAIS NA BOCA QUANDO O JARVIS ESTÁ FALANDO -->
+          <g id="robot-speaking-waves" style="display:none;">
+            <line x1="108" y1="106" x2="108" y2="102" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="114" y1="107" x2="114" y2="99" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="120" y1="108" x2="120" y2="97" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="126" y1="107" x2="126" y2="99" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+            <line x1="132" y1="106" x2="132" y2="102" stroke="#00f0ff" stroke-width="2.5" stroke-linecap="round" />
+          </g>
 
-          <!-- Olho Esquerdo Grande e Carinhoso -->
-          <ellipse cx="94" cy="74" rx="14.5" ry="16.5" fill="#ffffff" stroke="#8d4b14" stroke-width="3.5" />
-          <circle id="pou-pupil-left" class="pou-pupil" cx="95" cy="74" r="9" fill="#2d1a0e" />
-          <circle cx="92" cy="70" r="3.5" fill="#ffffff" />
-          <circle cx="97.5" cy="77" r="1.5" fill="#ffffff" />
-
-          <!-- Olho Direito Grande e Carinhoso -->
-          <ellipse cx="146" cy="74" rx="14.5" ry="16.5" fill="#ffffff" stroke="#8d4b14" stroke-width="3.5" />
-          <circle id="pou-pupil-right" class="pou-pupil" cx="145" cy="74" r="9" fill="#2d1a0e" />
-          <circle cx="142" cy="70" r="3.5" fill="#ffffff" />
-          <circle cx="147.5" cy="77" r="1.5" fill="#ffffff" />
-
-          <!-- Pálpebras para Piscar -->
-          <path id="pou-eyelid-left" d="M 79.5,74 A 14.5,16.5 0 0,1 108.5,74 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="3.5" style="display:none;" />
-          <path id="pou-eyelid-right" d="M 131.5,74 A 14.5,16.5 0 0,1 160.5,74 Z" fill="#e6a35c" stroke="#8d4b14" stroke-width="3.5" style="display:none;" />
-
-          <!-- Olhinhos Fechados Dormindo (Quarto) -->
-          <path id="pou-eyes-sleeping" d="M 83,75 Q 94,86 105,75 M 135,75 Q 146,86 157,75" fill="none" stroke="#2d1a0e" stroke-width="4.5" stroke-linecap="round" style="display:none;" />
-
-          <!-- Boquinha Sorrindo -->
-          <path id="pou-mouth-smile" d="M 112,106 Q 120,114 128,106" fill="none" stroke="#2d1a0e" stroke-width="3.5" stroke-linecap="round" />
-          <!-- Linguinha Rosada de Cãozinho Feliz -->
-          <path id="lucky-tongue" d="M 117,108 Q 120,121 123,108 Z" fill="#f43f5e" stroke="#be123c" stroke-width="1.5" />
-
-          <!-- Boquinha Aberta (Comendo ou falando) -->
-          <ellipse id="pou-mouth-open" cx="120" cy="111" rx="9" ry="11" fill="#78350f" stroke="#2d1a0e" stroke-width="3" style="display:none;" />
-
-          <!-- Bochechas Rosadinhas de Pelúcia -->
-          <ellipse cx="80" cy="94" rx="7.5" ry="4.5" fill="#fda4af" opacity="0.65" />
-          <ellipse cx="160" cy="94" rx="7.5" ry="4.5" fill="#fda4af" opacity="0.65" />
-
-          <!-- Touca de Dormir (Quarto) -->
+          <!-- Touquinha de Dormir Holográfica (Quarto) -->
           <g id="pou-nightcap" style="display:none;">
-            <path d="M 80,38 Q 120,6 160,38 Q 178,12 186,28 Q 155,24 132,32 Z" fill="#3b82f6" stroke="#1e3a8a" stroke-width="3" />
-            <circle cx="188" cy="30" r="8" fill="#ffffff" stroke="#1e3a8a" stroke-width="2" />
-            <path d="M 76,36 Q 120,26 164,36" stroke="#ffffff" stroke-width="7" stroke-linecap="round" />
+            <path d="M 80,38 Q 120,6 160,38 Q 178,12 186,28 Q 155,24 132,32 Z" fill="#0284c7" stroke="#38bdf8" stroke-width="2.5" />
+            <circle cx="188" cy="30" r="7.5" fill="#facc15" stroke="#eab308" stroke-width="2" />
+            <path d="M 76,36 Q 120,26 164,36" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
           </g>
         </svg>
 
@@ -1727,9 +1825,46 @@
       </div>
 
       <!-- BOTÃO DE CONVERSA EM DESTAQUE NA PRIMEIRA TELA -->
-      <button type="button" class="lucky-talk-hero-btn" onclick="iniciarConversaDiretaLucky()" title="Falar por voz ou conversar com o Lucky!">
-        🎙️ Conversar com o Lucky (J.A.R.V.I.S.)
+      <button type="button" class="jarvis-talk-hero-btn" onclick="ativarEscutaJarvisDireta()" title="Falar com o Jarvis ou diga 'Jarvis!'">
+        🎙️ Falar com o Jarvis (ou diga "Jarvis!")
       </button>
+
+      <!-- BANDEJA DE ALIMENTOS INTERATIVA (SÓ VISÍVEL NA COZINHA DO JARVIS) -->
+      <div id="kitchen-food-tray" class="kitchen-food-tray" style="display:none;">
+        <div class="food-tray-title">🍎 Toque em uma frutinha para alimentar o Jarvis:</div>
+        <div class="food-tray-grid">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍎', 'Maçã Crocante', 20, 2)" title="Maçã Crocante">
+            <span class="food-emoji">🍎</span>
+            <span class="food-name">Maçã</span>
+            <span class="food-reward">+20 🔋</span>
+          </button>
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍌', 'Banana Docinha', 25, 2)" title="Banana Docinha">
+            <span class="food-emoji">🍌</span>
+            <span class="food-name">Banana</span>
+            <span class="food-reward">+25 🔋</span>
+          </button>
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥕', 'Cenoura Super', 20, 3)" title="Cenoura">
+            <span class="food-emoji">🥕</span>
+            <span class="food-name">Cenoura</span>
+            <span class="food-reward">+20 🔋</span>
+          </button>
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥦', 'Brócolis Força', 30, 5)" title="Brócolis de Super-Herói">
+            <span class="food-emoji">🥦</span>
+            <span class="food-name">Brócolis</span>
+            <span class="food-reward">+30 🔋</span>
+          </button>
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍓', 'Moranguinho', 15, 2)" title="Moranguinho">
+            <span class="food-emoji">🍓</span>
+            <span class="food-name">Morango</span>
+            <span class="food-reward">+15 🔋</span>
+          </button>
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥛', 'Copo de Leite', 25, 3)" title="Copo de Leite">
+            <span class="food-emoji">🥛</span>
+            <span class="food-name">Leite</span>
+            <span class="food-reward">+25 🔋</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Chão Horizontal da Sala -->
       <div class="pou-room-floor"></div>
@@ -1969,7 +2104,7 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     // ==============================================================================
-    // CONTROLADOR DO LUCKY (J.A.R.V.I.S.) — CÔMODOS, INTERAÇÕES E ANIMAÇÕES
+    // CONTROLADOR DO ROBOZINHO J.A.R.V.I.S. — CÔMODOS, INTERAÇÕES E ANIMAÇÕES
     // ==============================================================================
     const COMODOS_POU = [
       {
@@ -1978,34 +2113,34 @@
         wall: '#58d672',
         floor: '#22c55e',
         toolIcon: '🎾',
-        toolTitle: 'Brincar com a Bolinha do Lucky',
+        toolTitle: 'Jogar Bolinha com o Jarvis',
         toolAcao: brincarBolaPou
       },
       {
         id: 'cozinha',
-        nome: 'Cozinha do Lucky',
+        nome: 'Cozinha do Jarvis',
         wall: '#fde047',
         floor: '#d97706',
         toolIcon: '🍎',
-        toolTitle: 'Alimentar o Lucky com Frutinha',
+        toolTitle: 'Alimentar o Jarvis com Frutinhas',
         toolAcao: alimentarPouRapido
       },
       {
         id: 'banheiro',
-        nome: 'Banheiro do Lucky',
+        nome: 'Banheiro do Jarvis',
         wall: '#38bdf8',
         floor: '#0284c7',
         toolIcon: '🧼',
-        toolTitle: 'Dar Banho de Espuma no Lucky',
+        toolTitle: 'Limpar Circuitos do Jarvis',
         toolAcao: darBanhoPouRapido
       },
       {
         id: 'quarto',
-        nome: 'Quarto do Lucky',
+        nome: 'Quarto do Jarvis',
         wall: '#c084fc',
         floor: '#7c3aed',
         toolIcon: '🌙',
-        toolTitle: 'Hora de Dormir do Lucky (Abajur)',
+        toolTitle: 'Modo de Recarga do Jarvis (Abajur)',
         toolAcao: alternarAbajurSonoPou
       }
     ];
@@ -2041,20 +2176,26 @@
       const floorEl = document.querySelector('.pou-room-floor');
       if (floorEl) floorEl.style.background = c.floor;
 
-      // Lamp cord only in Quarto
+      // Cordinha do abajur apenas no Quarto
       const lampEl = document.getElementById('pou-lamp-cord');
       if (lampEl) {
         lampEl.style.display = c.id === 'quarto' ? 'flex' : 'none';
       }
 
-      // Center active tool
+      // Bandeja de alimentos interativa apenas na Cozinha
+      const foodTray = document.getElementById('kitchen-food-tray');
+      if (foodTray) {
+        foodTray.style.display = c.id === 'cozinha' ? 'flex' : 'none';
+      }
+
+      // Ferramenta ativa do centro da barra inferior
       const toolBtn = document.getElementById('btn-tool-active');
       if (toolBtn) {
         toolBtn.textContent = c.toolIcon;
         toolBtn.title = c.toolTitle;
       }
 
-      // Soap bubbles only in Banheiro if active
+      // Bolhas de sabão no Banheiro
       const soapBubbles = document.getElementById('pou-soap-bubbles');
       if (soapBubbles) {
         soapBubbles.style.display = (c.id === 'banheiro' && bolhaSabaoAtiva) ? 'block' : 'none';
@@ -2068,117 +2209,120 @@
       }
     }
 
-    // LATIDINHO FOFO DO LUCKY (WEB AUDIO SINTETIZADO)
-    function tocarLatidinhoLucky() {
+    // CHIME FUTURISTA DO J.A.R.V.I.S. (WEB AUDIO SINTETIZADO)
+    function tocarChimeJarvis() {
       try {
         if (!audioCtx) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const now = audioCtx.currentTime;
 
-        const osc1 = audioCtx.createOscillator();
-        const g1 = audioCtx.createGain();
-        osc1.type = 'triangle';
-        osc1.frequency.setValueAtTime(460, now);
-        osc1.frequency.exponentialRampToValueAtTime(760, now + 0.08);
-        g1.gain.setValueAtTime(0.24, now);
-        g1.gain.linearRampToValueAtTime(0.01, now + 0.1);
-        osc1.connect(g1);
-        g1.connect(audioCtx.destination);
-        osc1.start(now);
-        osc1.stop(now + 0.1);
-
-        setTimeout(() => {
-          try {
-            const now2 = audioCtx.currentTime;
-            const osc2 = audioCtx.createOscillator();
-            const g2 = audioCtx.createGain();
-            osc2.type = 'triangle';
-            osc2.frequency.setValueAtTime(500, now2);
-            osc2.frequency.exponentialRampToValueAtTime(820, now2 + 0.09);
-            g2.gain.setValueAtTime(0.26, now2);
-            g2.gain.linearRampToValueAtTime(0.01, now2 + 0.11);
-            osc2.connect(g2);
-            g2.connect(audioCtx.destination);
-            osc2.start(now2);
-            osc2.stop(now2 + 0.11);
-          } catch (e) {}
-        }, 110);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, now); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+        gain.setValueAtTime(0.28, now);
+        gain.linearRampToValueAtTime(0.01, now + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.22);
       } catch (e) {}
     }
 
-    // CLIQUE NO LUCKY (AFETO, LATIDO E ATIVAÇÃO DE CONVERSA DIRETA)
-    function clicarNoLucky(e) {
-      const luckyBox = document.getElementById('pou-mascot');
-      if (luckyBox) {
-        luckyBox.classList.remove('bob-bounce');
-        void luckyBox.offsetWidth;
-        luckyBox.classList.add('bob-bounce');
+    // CLIQUE NO JARVIS (AFETO, CHIME E ATIVAÇÃO IMEDIATA DE VOZ)
+    function clicarNoJarvis(e) {
+      const mascot = document.getElementById('pou-mascot');
+      if (mascot) {
+        mascot.classList.remove('bob-bounce');
+        void mascot.offsetWidth;
+        mascot.classList.add('bob-bounce');
       }
 
-      // Abana o rabinho rápido e feliz!
-      const tail = document.getElementById('lucky-tail-group');
-      if (tail) {
-        tail.classList.add('lucky-tail-fast');
-        setTimeout(() => tail.classList.remove('lucky-tail-fast'), 1600);
-      }
-
-      tocarLatidinhoLucky();
+      tocarChimeJarvis();
       soltarCoracoes(e ? e.clientX : null, e ? e.clientY : null);
 
       fetch('/api/pet/carinho', { method: 'POST' })
         .then(r => r.json())
         .then(d => {
           if (d.status) atualizarStatusPou(d.status);
-          mostrarFalaPou(`🐶 Au au! Te amo, ${appState.config.child_name || 'Kaleo'}! Estou te ouvindo!`);
         })
         .catch(() => {});
 
-      // Inicia o diálogo ou escuta de voz após o latido
-      setTimeout(() => {
-        iniciarConversaDiretaLucky();
-      }, 750);
+      // Ativa a escuta de voz direta imediatamente!
+      ativarEscutaJarvisDireta();
     }
 
-    const darCarinhoPou = clicarNoLucky;
+    const clicarNoLucky = clicarNoJarvis;
+    const darCarinhoPou = clicarNoJarvis;
+    const iniciarConversaDiretaLucky = ativarEscutaJarvisDireta;
 
-    function iniciarConversaDiretaLucky() {
-      openTalkModal();
+    // ATIVAÇÃO DIRETA DA ESCUTA DO JARVIS (SEM MODAL NEM DIGITAÇÃO)
+    function ativarEscutaJarvisDireta() {
+      tocarChimeJarvis();
+
+      // Ativa ondas sonoras e olhos felizes no robô
+      const rings = document.getElementById('jarvis-soundwave-rings');
+      if (rings) rings.style.display = 'block';
+
+      const eyesHappy = document.getElementById('robot-eyes-happy');
+      const eyesSleep = document.getElementById('pou-eyes-sleeping');
+      if (eyesSleep) eyesSleep.style.display = 'none';
+      if (eyesHappy) {
+        eyesHappy.style.display = 'block';
+        setTimeout(() => { if (voiceState !== 'speaking') eyesHappy.style.display = 'none'; }, 1600);
+      }
+
+      mostrarFalaPou('✨ Sim, Kaleu! Estou ouvindo! Pode falar comigo!');
+      document.getElementById('subtitle-bar').textContent = '🎧 JÁRVIS OUVINDO... PODE FALAR NO MICROFONE!';
+
+      startVoiceListening();
     }
 
-    // ALIMENTAÇÃO RÁPIDA (COZINHA)
-    function alimentarPouRapido() {
+    // ALIMENTAÇÃO COM ITEM ESPECÍFICO DA BANDEJA (COZINHA)
+    async function alimentarComItem(emoji, nome, pontos, moedas) {
+      tocarSomMastigar();
+      soltarCoracoes();
+
       const mouthSmile = document.getElementById('pou-mouth-smile');
       const mouthOpen = document.getElementById('pou-mouth-open');
-      const tongue = document.getElementById('lucky-tongue');
+      const eyesHappy = document.getElementById('robot-eyes-happy');
+      const eyesSleep = document.getElementById('pou-eyes-sleeping');
+
+      if (eyesSleep) eyesSleep.style.display = 'none';
       if (mouthSmile && mouthOpen) {
         mouthSmile.style.display = 'none';
         mouthOpen.style.display = 'block';
-        if (tongue) tongue.style.display = 'none';
       }
+      if (eyesHappy) eyesHappy.style.display = 'block';
 
-      tocarSomMastigar();
-      mostrarFalaPou('🍎 Nhac! Nhac! Que frutinha gostosa pro Lucky!');
+      mostrarFalaPou(`${emoji} Nhac! Nhac! Que delícia de ${nome}!`);
+
+      try {
+        const res = await fetch('/api/pet/alimentar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ pontos: pontos, nome: nome, moedas: moedas })
+        });
+        const d = await res.json();
+        if (d.status) atualizarStatusPou(d.status);
+        atualizarPoteVisual();
+      } catch (e) {}
 
       setTimeout(() => {
         if (mouthSmile && mouthOpen) {
           mouthSmile.style.display = 'block';
           mouthOpen.style.display = 'none';
-          if (tongue) tongue.style.display = 'block';
         }
-      }, 700);
+        if (eyesHappy) eyesHappy.style.display = 'none';
+      }, 1400);
 
-      soltarCoracoes();
+      speak(`Nhac! Adoro ${nome}! Bateria recarregada, ${appState.config.child_name || 'Kaleo'}!`);
+    }
 
-      fetch('/api/pet/alimentar', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ alimento: 'fruta' })
-      })
-      .then(r => r.json())
-      .then(d => {
-        if (d.status) atualizarStatusPou(d.status);
-      })
-      .catch(() => {});
+    // ALIMENTAÇÃO RÁPIDA (BOTÃO DO CENTRO NA COZINHA)
+    function alimentarPouRapido() {
+      alimentarComItem('🍎', 'Maçã Vermelhinha', 25, 2);
     }
 
     // BANHO RÁPIDO (BANHEIRO)
@@ -2188,13 +2332,13 @@
       if (soapBubbles) soapBubbles.style.display = 'block';
 
       tocarSomBolha();
-      mostrarFalaPou('🧼 Espuminha quentinha! O Lucky está ficando limpinho e cheiroso!');
+      mostrarFalaPou('🧼 Espuminha quentinha! O Jarvis está limpando seus circuitos!');
 
       setTimeout(() => {
         tocarSomAgua();
         if (soapBubbles) soapBubbles.style.display = 'none';
         bolhaSabaoAtiva = false;
-        mostrarFalaPou('✨ Banho tomado! Pêlo fofinho e brilhante!');
+        mostrarFalaPou('✨ Circuitos limpos! Armadura reluzente como nova!');
       }, 1200);
 
       fetch('/api/pet/banho', { method: 'POST' })
@@ -2205,7 +2349,7 @@
         .catch(() => {});
     }
 
-    // ABAJUR / SONO (QUARTO)
+    // ABAJUR / RECARGA DO SONO (QUARTO)
     function alternarAbajurSonoPou() {
       pouDormindo = !pouDormindo;
       const stage = document.getElementById('pou-room-stage');
@@ -2220,7 +2364,7 @@
         if (eyesSleep) eyesSleep.style.display = 'block';
         if (eyeL) eyeL.style.display = 'none';
         if (eyeR) eyeR.style.display = 'none';
-        mostrarFalaPou('🌙 Zzz... Bons sonhos, Kaleo! O Lucky está dormindo quentinho...');
+        mostrarFalaPou('🌙 Zzz... Modo de recarga ativo. Bons sonhos, Kaleo!');
         tocarSomClick();
       } else {
         if (stage) stage.style.filter = 'none';
@@ -2228,7 +2372,7 @@
         if (eyesSleep) eyesSleep.style.display = 'none';
         if (eyeL) eyeL.style.display = 'block';
         if (eyeR) eyeR.style.display = 'block';
-        mostrarFalaPou('☀️ Bom dia, Kaleo! O Lucky acordou alegre para brincar!');
+        mostrarFalaPou('☀️ Sistemas online! Bom dia, Kaleo! Pronto para aprender!');
         tocarSomClick();
       }
 
@@ -2240,29 +2384,81 @@
         .catch(() => {});
     }
 
-    // BOLA (SALA DE BRINCAR)
+    // MINI-GAME DA BOLINHA INTERATIVA (SALA DE BRINCAR)
+    let bolaQuicando = false;
     function brincarBolaPou() {
-      const toolBtn = document.getElementById('btn-tool-active');
-      if (toolBtn) {
-        toolBtn.style.transform = 'translateY(-40px) scale(1.2)';
-        setTimeout(() => {
-          toolBtn.style.transform = 'translateY(0) scale(1)';
-        }, 300);
+      if (bolaQuicando) return;
+      bolaQuicando = true;
+
+      tocarChimeJarvis();
+
+      const mascot = document.getElementById('pou-mascot');
+      if (mascot) {
+        mascot.classList.remove('bob-bounce');
+        void mascot.offsetWidth;
+        mascot.classList.add('bob-bounce');
       }
 
-      tocarLatidinhoLucky();
-      const luckyBox = document.getElementById('pou-mascot');
-      if (luckyBox) {
-        luckyBox.classList.remove('bob-bounce');
-        void luckyBox.offsetWidth;
-        luckyBox.classList.add('bob-bounce');
+      const eyesHappy = document.getElementById('robot-eyes-happy');
+      if (eyesHappy) {
+        eyesHappy.style.display = 'block';
+        setTimeout(() => { eyesHappy.style.display = 'none'; }, 1600);
       }
 
-      mostrarFalaPou('🎾 Peguei a bolinha, Kaleo! Au au! Que jogada divertida!');
-      addStar(1);
+      let ballEl = document.getElementById('room-bouncing-ball');
+      if (!ballEl) {
+        ballEl = document.createElement('div');
+        ballEl.id = 'room-bouncing-ball';
+        ballEl.style.cssText = 'position:absolute; font-size:3.5rem; z-index:30; pointer-events:none; transition:all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);';
+        document.getElementById('pou-room-stage').appendChild(ballEl);
+      }
+
+      ballEl.textContent = '⚽';
+      ballEl.style.display = 'block';
+      ballEl.style.left = '20%';
+      ballEl.style.top = '60%';
+
+      setTimeout(() => {
+        playTone(523, 80);
+        ballEl.style.left = '50%';
+        ballEl.style.top = '25%';
+      }, 50);
+
+      setTimeout(() => {
+        playTone(659, 90);
+        ballEl.style.left = '75%';
+        ballEl.style.top = '62%';
+      }, 450);
+
+      setTimeout(() => {
+        playTone(784, 100);
+        ballEl.style.left = '50%';
+        ballEl.style.top = '40%';
+      }, 850);
+
+      setTimeout(() => {
+        ballEl.style.display = 'none';
+        bolaQuicando = false;
+      }, 1400);
+
+      soltarCoracoes();
+      mostrarFalaPou('⚽ Bip bip! Que jogada incrível, Kaleo!');
+      speak('Bip bip! Boa cabeceada de bola, Kaleo! Você é um craque!');
+
+      fetch('/api/pet/brincar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ jogo: 'Bolinha do Jarvis', pontos: 20 })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.status) atualizarStatusPou(d.status);
+        atualizarPoteVisual();
+      })
+      .catch(() => {});
     }
 
-    // BALÃO DE FALA DO POU
+    // BALÃO DE FALA DO JARVIS
     let pouBubbleTimer = null;
     function mostrarFalaPou(msg) {
       const bubble = document.getElementById('pou-floating-bubble');
@@ -2274,7 +2470,18 @@
       clearTimeout(pouBubbleTimer);
       pouBubbleTimer = setTimeout(() => {
         bubble.style.display = 'none';
-      }, 4000);
+      }, 4500);
+    }
+
+    // ATALHOS PARA OS JOGOS COGNITIVOS DA GAVETA
+    function abrirModalSemaforo() {
+      abrirJogosCognitivos();
+      carregarJogoSemaforo();
+    }
+
+    function abrirModalLeitner() {
+      abrirJogosCognitivos();
+      carregarJogoLeitner();
     }
 
     // CORAÇÕES AO CLICAR
@@ -2751,6 +2958,10 @@
         try { recognitionObj.stop(); } catch (e) {}
         recognitionObj = null;
       }
+      const rings = document.getElementById('jarvis-soundwave-rings');
+      if (rings) rings.style.display = 'none';
+      const speakWaves = document.getElementById('robot-speaking-waves');
+      if (speakWaves) speakWaves.style.display = 'none';
       setVoiceVisualState('idle');
     }
 
@@ -2977,32 +3188,61 @@
         return;
       }
 
-      // 3. COM O TEXTO RECONHECIDO, ENVIA PARA O CÉREBRO DO JÁRVIS
+      // 3. COM O TEXTO RECONHECIDO, ENVIA PARA O INTERPRETADOR DE COMANDOS DO JÁRVIS
       document.getElementById('subtitle-bar').textContent = `👦 Você: "${spoken}"`;
       playTone(659, 100);
       setTimeout(() => playTone(784, 120), 100);
 
       try {
-        const res = await fetch('/api/ask', {
+        const res = await fetch('/api/comando/interpretar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ question: spoken })
+          body: JSON.stringify({ texto: spoken })
         });
         const data = await res.json();
 
         if (voiceState !== 'processing') return;
 
+        const replyText = data.resposta_voz || data.reply || "Sim, Kaleu!";
+        mostrarFalaPou(replyText);
+
+        // Desliga anel de escuta
+        const rings = document.getElementById('jarvis-soundwave-rings');
+        if (rings) rings.style.display = 'none';
+
+        // Ativa ondas de fala na boca do robô
+        const speakWaves = document.getElementById('robot-speaking-waves');
+        if (speakWaves) speakWaves.style.display = 'block';
+
         // ESTADO: FALANDO!
         setVoiceVisualState('speaking');
-        document.getElementById('subtitle-bar').textContent = `🤖 Járvis: "${data.reply}"`;
+        document.getElementById('subtitle-bar').textContent = `🤖 Járvis: "${replyText}"`;
 
-        speak(data.reply, {
+        speak(replyText, {
           onEnd: () => {
+            if (speakWaves) speakWaves.style.display = 'none';
             resetVoiceToIdle();
-            document.getElementById('subtitle-bar').textContent = 'Toque para falar de novo com o Járvis!';
+            document.getElementById('subtitle-bar').textContent = 'Toque no robô ou diga "Jarvis" para falar!';
+
+            // EXECUTA AÇÃO CORRESPONDENTE DETECTADA
+            if (data.acao_frontend === 'abrir_clima') {
+              abrirModalEstacoes();
+            } else if (data.acao_frontend === 'abrir_loja') {
+              abrirLojaTesouro();
+            } else if (data.acao_frontend === 'missao_dente') {
+              iniciarMissaoDente();
+            } else if (data.acao_frontend === 'missao_quarto') {
+              iniciarMissaoQuarto();
+            } else if (data.acao_frontend === 'ir_cozinha') {
+              irParaComodo(1); // Cozinha
+            } else if (data.acao_frontend === 'abrir_jogos') {
+              toggleActivityDrawer();
+            }
           }
         });
       } catch (err) {
+        const rings = document.getElementById('jarvis-soundwave-rings');
+        if (rings) rings.style.display = 'none';
         resetVoiceToIdle();
         speak('Tive uma falha de conexão com meu cérebro agora. Clique para tentar de novo!');
       }
@@ -6572,6 +6812,134 @@
       } else if (acao === 'calma') {
         openEmotionsCenter();
       }
+    }
+
+    // =========================================================================
+    // VIGILÂNCIA DE WAKE WORD "JARVIS" (DUAS ETAPAS: PORCUPINE + WEB SPEECH)
+    // =========================================================================
+    let continuousWakeRecognizer = null;
+    let wakeWatcherActive = false;
+
+    function iniciarVigilanciaWakeWord() {
+      if (wakeWatcherActive || voiceState !== 'idle') return;
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) return;
+
+      try {
+        continuousWakeRecognizer = new SpeechRec();
+        continuousWakeRecognizer.continuous = true;
+        continuousWakeRecognizer.interimResults = false;
+        continuousWakeRecognizer.lang = 'pt-BR';
+
+        continuousWakeRecognizer.onresult = (event) => {
+          if (voiceState !== 'idle') return;
+          const lastResult = event.results[event.results.length - 1];
+          if (!lastResult || !lastResult[0]) return;
+          const transcript = lastResult[0].transcript.toLowerCase();
+
+          // Reconhece "Jarvis", "Jarwis", "Oi Jarvis", "Olá Jarvis"
+          if (transcript.includes('jarvis') || transcript.includes('jarwis') || transcript.includes('jervis') || transcript.includes('javes')) {
+            try { continuousWakeRecognizer.stop(); } catch (e) {}
+            ativarEscutaJarvisDireta();
+          }
+        };
+
+        continuousWakeRecognizer.onerror = () => {
+          setTimeout(iniciarVigilanciaWakeWord, 3500);
+        };
+
+        continuousWakeRecognizer.onend = () => {
+          if (voiceState === 'idle') {
+            setTimeout(iniciarVigilanciaWakeWord, 1200);
+          }
+        };
+
+        continuousWakeRecognizer.start();
+        wakeWatcherActive = true;
+      } catch (e) {
+        wakeWatcherActive = false;
+      }
+    }
+
+    // Polling ultraleve de Wake Word do backend Porcupine (Picovoice)
+    let lastWakeCheckTime = Date.now() / 1000;
+    setInterval(async () => {
+      if (voiceState !== 'idle') return;
+      try {
+        const res = await fetch(`/api/wake/check?since=${lastWakeCheckTime}`);
+        const data = await res.json();
+        if (data.wake && data.event) {
+          lastWakeCheckTime = data.event.timestamp;
+          ativarEscutaJarvisDireta();
+        }
+      } catch (e) {}
+    }, 1200);
+
+    // Inicia a escuta contínua assim que o usuário interagir com a tela
+    window.addEventListener('click', () => {
+      iniciarVigilanciaWakeWord();
+    }, { once: true });
+
+    // ROTINAS COOPERATIVAS (DENTE & QUARTO)
+    function iniciarMissaoDente() {
+      const body = openModal('🪥 MISSÃO DENTE BRILHANTE (2 MINUTOS)');
+      playTone(587, 100);
+      let segundos = 120;
+      body.innerHTML = `
+        <div style="text-align:center; padding:18px;">
+          <div style="font-size:3.8rem; margin-bottom:8px;">🪥✨</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#fff; margin-bottom:8px;">
+            Escovando os Dentinhos com o Jarvis!
+          </div>
+          <div style="font-size:1.1rem; color:#38bdf8; margin-bottom:16px;">
+            Movimentos circulares em cima, embaixo e na linguinha!
+          </div>
+          <div id="cronometro-dente" style="font-size:3rem; font-weight:900; color:#facc15; font-family:monospace; margin-bottom:18px;">
+            02:00
+          </div>
+          <div style="width:100%; max-width:320px; height:18px; background:#1e293b; border-radius:9px; margin:0 auto 20px; overflow:hidden;">
+            <div id="progresso-dente" style="width:100%; height:100%; background:linear-gradient(90deg, #10b981, #38bdf8); transition:width 1s linear;"></div>
+          </div>
+          <button type="button" class="big-btn" style="background:#10b981; font-size:1.2rem; padding:12px 28px;" onclick="concluirMissaoDente()">
+            ✓ Dentinhos Limpos e Brilhando! (+10 🪙)
+          </button>
+        </div>
+      `;
+      speak('Missão Dente Brilhante iniciada! Pegue a escova e a pasta! Dois minutos de escovação caprichada!');
+      const timer = setInterval(() => {
+        segundos--;
+        const el = document.getElementById('cronometro-dente');
+        const bar = document.getElementById('progresso-dente');
+        if (!el) { clearInterval(timer); return; }
+        const m = String(Math.floor(segundos / 60)).padStart(2, '0');
+        const s = String(segundos % 60).padStart(2, '0');
+        el.textContent = `${m}:${s}`;
+        if (bar) bar.style.width = `${(segundos / 120) * 100}%`;
+        if (segundos <= 0) {
+          clearInterval(timer);
+          concluirMissaoDente();
+        }
+      }, 1000);
+    }
+
+    async function concluirMissaoDente() {
+      closeModal();
+      playTone(880, 200);
+      try {
+        const res = await fetch('/api/rotinas/concluir', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ rotina_id: 'dente_manha' })
+        });
+        const d = await res.json();
+        showToast('✨ Parabéns, Kaleu! Dentinhos brilhando como diamantes!');
+        speak('Parabéns, Kaleu! Seus dentes ficaram limpinhos e você ganhou 10 moedas de herói!');
+        atualizarPoteVisual();
+      } catch (e) {}
+    }
+
+    function iniciarMissaoQuarto() {
+      dispararIntervencaoSosLocal('guardar_brinquedos');
     }
   </script>
   <!-- TELA DE PAUSA REMOTA DOS PAIS (ALMOÇO / JANTAR) -->

@@ -46,6 +46,7 @@ from datas_comemorativas import calendar_mgr
 from economia_fichas import token_mgr
 from educacao_alimentar import food_mgr
 import estudo_idiomas
+import escuta_jarvis
 from gestao_tempo_midia import MediaTimeManager
 from jarvis_brain import JarvisBrain
 from jarvis_pet_status import pet_mgr
@@ -577,6 +578,63 @@ def api_idiomas_progresso(request: Request):
 # ==============================================================================
 
 
+@app.route("/api/wake/check", methods=["GET"])
+def api_wake_check(request: Request):
+    since = 0.0
+    try:
+        since = float(request.args.get("since", 0.0))
+    except Exception:
+        pass
+    return json_response(escuta_jarvis.obter_ultimo_wake(since))
+
+
+@app.route("/api/wake/trigger", methods=["POST"])
+def api_wake_trigger(request: Request):
+    try:
+        data = request.json or {}
+    except Exception:
+        data = {}
+    origem = data.get("origem", "frontend")
+    evt = escuta_jarvis.disparar_wake(origem)
+    return json_response({"ok": True, "event": evt})
+
+
+@app.route("/api/comando/interpretar", methods=["POST"])
+def api_comando_interpretar(request: Request):
+    try:
+        data = request.json or {}
+    except Exception:
+        data = {}
+    if not data and getattr(request, "body", None):
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            pass
+
+    texto = (data.get("texto") or data.get("command") or data.get("question") or data.get("message") or "").strip()
+    if not texto:
+        return json_response({
+            "ok": True,
+            "intencao": "conversa",
+            "resposta_voz": "Sim, Kaleu! Estou aqui pronto para te ouvir! O que você quer fazer agora?",
+            "acao_frontend": "nenhuma",
+            "dados": {},
+        })
+
+    try:
+        res = brain.interpret_command(texto)
+        return json_response(res)
+    except Exception as exc:
+        registrar_log("ERRO", "comando_interpretar", f"Erro ao interpretar comando: {exc}", f"Texto: {texto[:100]}")
+        return json_response({
+            "ok": False,
+            "intencao": "conversa",
+            "resposta_voz": "Bip! Tive um pequeno soluço no circuito, mas já estou ouvindo você de novo!",
+            "acao_frontend": "nenhuma",
+            "dados": {},
+        })
+
+
 @app.route("/api/ask", methods=["POST"])
 def api_ask(request: Request):
     try:
@@ -680,6 +738,7 @@ def api_config(request: Request):
         "require_book_before_media",
         "netflix_url",
         "youtube_url",
+        "picovoice_access_key",
     ):
         if key in data:
             brain.config[key] = data[key]
@@ -768,6 +827,13 @@ if __name__ == "__main__":
     print(f"[*] Painel dos Pais: http://{get_local_ip()}:{porta}/pais")
     print(f"[*] Banco de dados: banco_educativo.db (Modo WAL + Single-Writer Ativo)")
     print("==============================================================================")
+
+    picokey = brain.config.get("picovoice_access_key", "").strip()
+    if picokey:
+        if escuta_jarvis.iniciar_escuta_segura(picokey):
+            print("[*] Picovoice Porcupine ativo escutando a palavra 'Jarvis'")
+        else:
+            print("[!] Porcupine não iniciado (usando escuta nativa no navegador)")
 
     gc.collect()
     app.run(host="0.0.0.0", port=porta, debug=False)

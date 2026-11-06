@@ -8,17 +8,52 @@ Projetado para rodar em thread separada sem consumir CPU excessiva do Intel Atom
 
 import threading
 import time
+import uuid
 from typing import Callable, Optional
 
-# Callback para quando a palavra 'Jarvis' for detectada
+# Estado global de eventos de Wake
 _on_wake_callback: Optional[Callable] = None
 _listening_thread: Optional[threading.Thread] = None
 _is_running = False
+
+_last_wake_event = {
+    "id": "",
+    "timestamp": 0.0,
+    "origem": "none",
+}
+_wake_lock = threading.Lock()
 
 
 def configurar_callback_wake(callback: Callable):
     global _on_wake_callback
     _on_wake_callback = callback
+
+
+def disparar_wake(origem: str = "manual") -> dict:
+    """Dispara um evento de ativação 'Jarvis!' e notifica os ouvintes."""
+    global _last_wake_event
+    with _wake_lock:
+        evt = {
+            "id": str(uuid.uuid4()),
+            "timestamp": time.time(),
+            "origem": origem,
+        }
+        _last_wake_event = evt
+
+    if _on_wake_callback:
+        try:
+            _on_wake_callback(evt)
+        except Exception:
+            pass
+    return evt
+
+
+def obter_ultimo_wake(since_timestamp: float = 0.0) -> dict:
+    """Retorna o último evento de wake se ocorreu após since_timestamp."""
+    with _wake_lock:
+        if _last_wake_event["timestamp"] > since_timestamp:
+            return {"wake": True, "event": dict(_last_wake_event)}
+        return {"wake": False, "timestamp": _last_wake_event["timestamp"]}
 
 
 def iniciar_escuta_segura(access_key: str = "") -> bool:
@@ -55,8 +90,7 @@ def iniciar_escuta_segura(access_key: str = "") -> bool:
                     pcm_unpacked = struct.unpack_from("h" * porcupine.frame_length, pcm)
                     idx = porcupine.process(pcm_unpacked)
                     if idx >= 0:
-                        if _on_wake_callback:
-                            _on_wake_callback()
+                        disparar_wake(origem="porcupine")
             except Exception:
                 pass
             finally:
