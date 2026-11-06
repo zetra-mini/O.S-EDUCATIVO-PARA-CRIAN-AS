@@ -1028,94 +1028,110 @@
       100% { transform: scale(1.08); box-shadow: 0 0 18px #f59e0b; }
     }
     /* ==============================================================================
-       ESTILO J.A.R.V.I.S. KIDS — SALA CENTRAL SCI-FI & AMBIENTES FUTURISTAS SUAVES
+       ESTILO J.A.R.V.I.S. KIDS — PROPORÇÃO PERFEITA ESTILO POU / APP VERTICAL
        ============================================================================== */
     :root {
       --pou-border: #0284c7;
       --pou-body: #ffffff;
-      --room-wall: radial-gradient(circle at 50% 30%, #0d2342 0%, #050c18 85%);
-      --room-floor: linear-gradient(180deg, #091a33 0%, #040913 100%);
+      --room-wall: radial-gradient(circle at 50% 32%, #183153 0%, #0c1a2e 90%);
+      --room-floor: linear-gradient(180deg, #112238 0%, #0a1422 100%);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #060d17;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     #pou-app-container {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      max-width: 480px; /* ALINHAMENTO E PROPORÇÃO EXATA ESTILO POU EM QUALQUER MONITOR */
+      height: 100%;
+      max-height: 100vh;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
       background: var(--room-wall);
-      transition: background 0.5s ease;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.75), 0 0 25px rgba(2, 132, 199, 0.25);
+      transition: background 0.4s ease;
     }
 
-    /* 1. TOP BAR FUTURISTA TRANSLÚCIDA CLEAN (LINHA ÚNICA) */
+    /* 1. TOP BAR SLIM (LINHA ÚNICA, 50px) */
     .pou-top-bar {
-      height: 56px;
-      background: rgba(7, 16, 32, 0.88);
-      backdrop-filter: blur(14px);
-      padding: 0 18px;
+      height: 50px;
+      min-height: 50px;
+      background: rgba(8, 17, 32, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 2px solid rgba(0, 240, 255, 0.25);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      border-bottom: 2px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
       z-index: 100;
     }
 
     .pou-coin-badge {
-      background: rgba(30, 25, 10, 0.85);
+      background: rgba(30, 25, 10, 0.9);
       border: 2px solid #f59e0b;
-      border-radius: 20px;
-      padding: 6px 16px;
+      border-radius: 18px;
+      padding: 4px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 900;
       color: #fde047;
-      font-size: 1.15rem;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+      font-size: 1.05rem;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
       cursor: pointer;
       transition: transform 0.1s, box-shadow 0.2s;
     }
     .pou-coin-badge:active { transform: scale(0.95); }
 
-    /* NAVEGADOR DE CÔMODOS FUTURISTA TOUCH */
+    /* NAVEGADOR DE CÔMODOS TOUCH */
     .pou-room-nav-pill {
       display: flex;
       align-items: center;
-      gap: 12px;
-      background: rgba(15, 23, 42, 0.85);
+      gap: 8px;
+      background: rgba(15, 23, 42, 0.9);
       border: 2px solid rgba(56, 189, 248, 0.45);
       border-radius: 999px;
-      padding: 4px 14px;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
+      padding: 3px 12px;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
     }
 
     .btn-room-arrow {
       background: none;
       border: none;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 900;
       color: #38bdf8;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      padding: 2px 8px;
+      padding: 2px 6px;
       transition: transform 0.1s, color 0.15s;
     }
     .btn-room-arrow:active { transform: scale(0.85); }
     .btn-room-arrow:hover { color: #00f0ff; }
 
     .pou-room-title {
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       font-weight: 900;
       color: #e0f2fe;
-      text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
-      letter-spacing: 0.6px;
-      min-width: 170px;
-      text-align: center;
-    }
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+      letter-spacing: 0.4px;
+      min-width: 140px;
       text-align: center;
     }
 
@@ -1128,31 +1144,22 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      padding: 8px 0;
       transition: filter 0.4s;
     }
 
-    /* Chão com grade holográfica e borda de neon */
+    /* Chão suave com perspectiva acolhedora */
     .pou-room-floor {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 22%;
+      height: 25%;
       background: var(--room-floor);
-      border-top: 3px solid #00f0ff;
-      box-shadow: 0 -4px 24px rgba(0, 240, 255, 0.35);
+      border-top: 3px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.35);
       z-index: 1;
-      transition: background 0.5s;
-    }
-    .pou-room-floor::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: 
-        linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px);
-      background-size: 32px 32px;
-      opacity: 0.6;
+      transition: background 0.4s;
     }
 
     /* Cordinha do Abajur (Quarto) */
@@ -1182,7 +1189,7 @@
     }
     .lamp-knob:active { transform: scale(1.3); }
 
-    /* O PERSONAGEM POU NO CENTRO */
+    /* O PERSONAGEM J.A.R.V.I.S. NO CENTRO COM ESCALA DINÂMICA INTELIGENTE */
     .pou-mascot-box {
       position: relative;
       z-index: 10;
@@ -1190,8 +1197,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       transition: transform 0.15s ease-out;
-      margin-bottom: 2vh;
+      margin: 0;
     }
     .pou-mascot-box:active {
       transform: scale(0.96);
@@ -1201,15 +1209,15 @@
     }
     @keyframes pouBob {
       0% { transform: scale(1, 1); }
-      40% { transform: scale(1.14, 0.86); }
-      75% { transform: scale(0.9, 1.1); }
+      40% { transform: scale(1.12, 0.88); }
+      75% { transform: scale(0.92, 1.08); }
       100% { transform: scale(1, 1); }
     }
 
     /* ANIMAÇÃO DE FLUTUAÇÃO DO ROBOZINHO J.A.R.V.I.S. */
     @keyframes robotHover {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
+      50% { transform: translateY(-8px); }
     }
     @keyframes shadowPulse {
       0%, 100% { transform: scale(1); opacity: 0.22; }
@@ -1225,9 +1233,11 @@
     }
     @keyframes ringExpand {
       0% { r: 50; opacity: 0.8; }
-      100% { r: 120; opacity: 0; }
+      100% { r: 110; opacity: 0; }
     }
     .jarvis-robot-svg {
+      width: clamp(160px, 30vh, 220px);
+      height: clamp(160px, 30vh, 220px);
       animation: robotHover 2.6s ease-in-out infinite;
     }
     #robot-floor-shadow {
@@ -1251,58 +1261,72 @@
       transform-origin: 120px 90px;
     }
 
-    /* BOTÃO HERÓI DE CONVERSA COM O JARVIS NA PRIMEIRA TELA */
+    /* BOTÃO HERÓI DE CONVERSA COM O JARVIS (100% SOB DEMANDA COM FEEDBACK CLARO) */
     .jarvis-talk-hero-btn {
       position: relative;
       z-index: 20;
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
       color: #ffffff;
-      border: 3.5px solid #38bdf8;
+      border: 3px solid #38bdf8;
       border-radius: 999px;
-      padding: 12px 28px;
-      font-size: 1.2rem;
+      padding: 10px 20px;
+      width: clamp(190px, 70%, 260px);
+      height: 48px;
+      font-size: 1.05rem;
       font-weight: 900;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 8px 18px rgba(0,0,0,0.3);
-      transition: transform 0.15s, box-shadow 0.2s;
-      margin-top: 4px;
-      letter-spacing: 0.3px;
-      animation: heroBtnPulse 2.4s ease-in-out infinite;
-    }
-    @keyframes heroBtnPulse {
-      0%, 100% { box-shadow: 0 0 16px rgba(56, 189, 248, 0.4), 0 6px 14px rgba(0,0,0,0.25); }
-      50% { box-shadow: 0 0 26px rgba(0, 240, 255, 0.75), 0 8px 22px rgba(2, 132, 199, 0.45); }
-    }
-    .jarvis-talk-hero-btn:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 0 30px rgba(0, 240, 255, 0.85);
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4);
+      transition: all 0.2s ease;
+      margin-top: 12px;
+      letter-spacing: 0.2px;
     }
     .jarvis-talk-hero-btn:active {
       transform: scale(0.96);
+    }
+    .jarvis-talk-hero-btn.is-listening {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
+      border-color: #fca5a5 !important;
+      box-shadow: 0 0 24px rgba(239, 68, 68, 0.75) !important;
+      animation: heroListeningPulse 1.1s infinite alternate !important;
+    }
+    @keyframes heroListeningPulse {
+      0% { transform: scale(1); box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
+      100% { transform: scale(1.05); box-shadow: 0 0 28px rgba(239, 68, 68, 0.9); }
+    }
+    .jarvis-talk-hero-btn.is-processing {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
+      border-color: #c4b5fd !important;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.6) !important;
+    }
+    .jarvis-talk-hero-btn.is-speaking {
+      background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%) !important;
+      border-color: #67e8f9 !important;
+      box-shadow: 0 0 22px rgba(6, 182, 212, 0.65) !important;
     }
 
     /* BANDEJA DE ALIMENTOS INTERATIVA NA COZINHA */
     .kitchen-food-tray {
       position: relative;
       z-index: 25;
-      background: rgba(15, 23, 42, 0.88);
+      background: rgba(15, 23, 42, 0.92);
       backdrop-filter: blur(8px);
-      border: 2.5px solid #f59e0b;
-      border-radius: 18px;
-      padding: 10px 16px;
+      border: 2px solid #f59e0b;
+      border-radius: 16px;
+      padding: 8px 14px;
       margin-top: 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      max-width: 92%;
+      gap: 5px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      max-width: 95%;
     }
     .food-tray-title {
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 800;
       color: #fde047;
       text-align: center;
@@ -1310,22 +1334,22 @@
     .food-tray-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
     .food-item-btn {
       background: #1e293b;
-      border: 2px solid #475569;
-      border-radius: 12px;
-      padding: 6px 4px;
+      border: 1.5px solid #475569;
+      border-radius: 10px;
+      padding: 5px 3px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 2px;
       cursor: pointer;
-      transition: transform 0.12s, border-color 0.12s, background 0.12s;
+      transition: transform 0.12s, border-color 0.12s;
     }
     .food-item-btn:hover {
-      transform: translateY(-3px) scale(1.08);
+      transform: translateY(-2px) scale(1.05);
       border-color: #38bdf8;
       background: #0f172a;
     }
@@ -1333,62 +1357,31 @@
       transform: scale(0.92);
     }
     .food-emoji {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
     }
     .food-name {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 800;
       color: #ffffff;
     }
     .food-reward {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 900;
       color: #4ade80;
     }
 
-    /* BALÃO DE DIÁLOGO FLUTUANTE */
-    .pou-floating-bubble {
-      position: absolute;
-      bottom: 108%;
-      background: #ffffff;
-      border: 3.5px solid #3b2310;
-      border-radius: 20px;
-      padding: 10px 18px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #1e1e1e;
-      max-width: 300px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      z-index: 25;
-      animation: bubblePop 0.25s ease-out;
-    }
-    .pou-floating-bubble::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 12px;
-      border-style: solid;
-      border-color: #3b2310 transparent transparent transparent;
-    }
-    @keyframes bubblePop {
-      0% { transform: scale(0.7); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    /* 3. BARRA INFERIOR FUTURISTA HOLOGRÁFICA */
+    /* 3. BARRA INFERIOR HARMONIOSA (64px) */
     .pou-bottom-bar {
-      height: 78px;
-      background: rgba(7, 16, 32, 0.85);
-      backdrop-filter: blur(14px);
-      border-top: 2px solid rgba(0, 240, 255, 0.25);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+      height: 64px;
+      min-height: 64px;
+      background: rgba(8, 17, 32, 0.92);
+      backdrop-filter: blur(12px);
+      border-top: 2px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.4);
       display: flex;
       align-items: center;
       justify-content: space-around;
-      padding: 0 20px;
+      padding: 0 16px;
       z-index: 100;
     }
 
@@ -1398,58 +1391,62 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
       cursor: pointer;
       transition: transform 0.12s;
     }
     .pou-bottom-btn:active { transform: scale(0.92); }
 
     .pou-btn-icon-box {
-      width: 48px;
-      height: 48px;
-      background: rgba(15, 23, 42, 0.85);
+      width: 40px;
+      height: 40px;
+      background: rgba(15, 23, 42, 0.9);
       border: 2px solid #0284c7;
-      border-radius: 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      box-shadow: 0 0 12px rgba(2, 132, 199, 0.35);
+      font-size: 1.55rem;
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .pou-bottom-btn:hover .pou-btn-icon-box {
       border-color: #00f0ff;
-      box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.55);
     }
 
     .pou-btn-label {
-      font-size: 0.95rem;
-      font-weight: 900;
+      font-size: 0.85rem;
+      font-weight: 800;
       color: #e0f2fe;
-      text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
-      letter-spacing: 0.3px;
+      text-shadow: 0 0 6px rgba(56, 189, 248, 0.5);
     }
 
     /* FERRAMENTA CENTRAL DO CÔMODO */
     .pou-center-tool {
       display: flex;
       align-items: center;
-      gap: 16px;
+      justify-content: center;
     }
     .tool-circle-btn {
-      width: 62px;
-      height: 62px;
+      width: 52px;
+      height: 52px;
       background: radial-gradient(circle, #0369a1 0%, #0c213d 100%);
-      border: 3px solid #38bdf8;
+      border: 2.5px solid #38bdf8;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       cursor: pointer;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
       transition: transform 0.12s, box-shadow 0.2s;
     }
+    .tool-circle-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.8);
+    }
+    .tool-circle-btn:active { transform: scale(0.92); }
     .tool-circle-btn:hover {
       transform: scale(1.06);
       box-shadow: 0 0 28px rgba(0, 240, 255, 0.85);
@@ -1619,11 +1616,11 @@
         <div class="lamp-knob"></div>
       </div>
 
-      <!-- O MASCOTE ROBOZINHO J.A.R.V.I.S. NO CENTRO (SEM BALÕES DE TEXTO SOBREPOSTOS) -->
-      <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoJarvis(event)" title="Toque no Jarvis para conversar ou receber carinho!">
+      <!-- O MASCOTE ROBOZINHO J.A.R.V.I.S. NO CENTRO (CARINHO AFETUOSO SEM LIGAR MICROFONE) -->
+      <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoJarvis(event)" title="Toque no Jarvis para dar carinho!">
 
-        <!-- SVG VETORIAL DO ROBOZINHO J.A.R.V.I.S. (SUPER BONITINHO, FUTURISTA E EXPRESSIVO) -->
-        <svg id="pou-svg" class="jarvis-robot-svg" viewBox="0 0 240 240" width="245" height="245" style="filter: drop-shadow(0 12px 20px rgba(2,132,199,0.35));">
+        <!-- SVG VETORIAL DO ROBOZINHO J.A.R.V.I.S. (RESPONSIVO COM CLAMP) -->
+        <svg id="pou-svg" class="jarvis-robot-svg" viewBox="0 0 240 240" style="filter: drop-shadow(0 10px 18px rgba(2,132,199,0.35));">
           <defs>
             <linearGradient id="robotBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#ffffff" />
@@ -1821,9 +1818,10 @@
         <div id="pou-hearts-layer" style="position:absolute; inset:0; pointer-events:none;"></div>
       </div>
 
-      <!-- BOTÃO DE CONVERSA EM DESTAQUE NA PRIMEIRA TELA (TOUCH LIMPO) -->
-      <button type="button" class="jarvis-talk-hero-btn" onclick="ativarEscutaJarvisDireta()" title="Toque para conversar com o Jarvis">
-        🎙️ Falar com o Jarvis
+      <!-- BOTÃO DE CONVERSA EM DESTAQUE NA PRIMEIRA TELA (100% SOB DEMANDA: SÓ ESCUTA AO CLICAR) -->
+      <button type="button" id="btn-hero-talk" class="jarvis-talk-hero-btn" onclick="toggleConversaComJarvis()" title="Toque para conversar com o Jarvis">
+        <span id="hero-talk-icon" style="font-size:1.25rem;">🎙️</span>
+        <span id="hero-talk-label">Falar com o Jarvis</span>
       </button>
 
       <!-- BANDEJA DE ALIMENTOS INTERATIVA (SÓ VISÍVEL NA COZINHA DO JARVIS) -->
@@ -2098,36 +2096,36 @@
     const COMODOS_POU = [
       {
         id: 'jogos',
-        nome: 'Módulo de Comando',
-        wall: 'radial-gradient(circle at 50% 32%, #0f274a 0%, #06101f 85%)',
-        floor: 'linear-gradient(180deg, #091a33 0%, #040913 100%)',
+        nome: 'Sala de Brincar',
+        wall: 'radial-gradient(circle at 50% 32%, #1c3a63 0%, #0d1f36 90%)',
+        floor: 'linear-gradient(180deg, #132c4d 0%, #0b1a2e 100%)',
         toolIcon: '🎾',
         toolTitle: 'Jogar Bolinha com o Jarvis',
         toolAcao: brincarBolaPou
       },
       {
         id: 'cozinha',
-        nome: 'Módulo de Energia',
-        wall: 'radial-gradient(circle at 50% 32%, #222538 0%, #0a0e1c 85%)',
-        floor: 'linear-gradient(180deg, #151c2b 0%, #080c14 100%)',
+        nome: 'Cozinha',
+        wall: 'radial-gradient(circle at 50% 32%, #352516 0%, #1a120a 90%)',
+        floor: 'linear-gradient(180deg, #23180d 0%, #110b06 100%)',
         toolIcon: '🍎',
         toolTitle: 'Alimentar o Jarvis com Frutinhas',
         toolAcao: alimentarPouRapido
       },
       {
         id: 'banheiro',
-        nome: 'Baia de Limpeza',
-        wall: 'radial-gradient(circle at 50% 32%, #0e3547 0%, #06141d 85%)',
-        floor: 'linear-gradient(180deg, #0a232f 0%, #030d13 100%)',
+        nome: 'Banheiro',
+        wall: 'radial-gradient(circle at 50% 32%, #104446 0%, #072122 90%)',
+        floor: 'linear-gradient(180deg, #0d3537 0%, #051516 100%)',
         toolIcon: '🧼',
         toolTitle: 'Limpar Circuitos do Jarvis',
         toolAcao: darBanhoPouRapido
       },
       {
         id: 'quarto',
-        nome: 'Câmara de Hibernação',
-        wall: 'radial-gradient(circle at 50% 32%, #1b1338 0%, #090616 85%)',
-        floor: 'linear-gradient(180deg, #110c26 0%, #05030e 100%)',
+        nome: 'Quarto de Dormir',
+        wall: 'radial-gradient(circle at 50% 32%, #211a47 0%, #0d0921 90%)',
+        floor: 'linear-gradient(180deg, #161131 0%, #080514 100%)',
         toolIcon: '🌙',
         toolTitle: 'Modo de Recarga do Jarvis (Abajur)',
         toolAcao: alternarAbajurSonoPou
@@ -2229,8 +2227,11 @@
       } catch (e) {}
     }
 
-    // CLIQUE NO JARVIS (AFETO, CHIME E ATIVAÇÃO IMEDIATA DE VOZ)
+    // CLIQUE NO JARVIS (AFETO, BRINQUEDO E CHIME — NÃO LIGA O MICROFONE!)
     function clicarNoJarvis(e) {
+      if (e) e.stopPropagation();
+      destravarAudioNavegador();
+
       const mascot = document.getElementById('pou-mascot');
       if (mascot) {
         mascot.classList.remove('bob-bounce');
@@ -2241,30 +2242,6 @@
       tocarChimeJarvis();
       soltarCoracoes(e ? e.clientX : null, e ? e.clientY : null);
 
-      fetch('/api/pet/carinho', { method: 'POST' })
-        .then(r => r.json())
-        .then(d => {
-          if (d.status) atualizarStatusPou(d.status);
-        })
-        .catch(() => {});
-
-      // Ativa a escuta de voz direta imediatamente!
-      ativarEscutaJarvisDireta();
-    }
-
-    const clicarNoLucky = clicarNoJarvis;
-    const darCarinhoPou = clicarNoJarvis;
-    const iniciarConversaDiretaLucky = ativarEscutaJarvisDireta;
-
-    // ATIVAÇÃO DIRETA DA ESCUTA DO JARVIS (SEM MODAL NEM DIGITAÇÃO)
-    function ativarEscutaJarvisDireta() {
-      destravarAudioNavegador();
-      tocarChimeJarvis();
-
-      // Ativa ondas sonoras e olhos felizes no robô
-      const rings = document.getElementById('jarvis-soundwave-rings');
-      if (rings) rings.style.display = 'block';
-
       const eyesHappy = document.getElementById('robot-eyes-happy');
       const eyesSleep = document.getElementById('pou-eyes-sleeping');
       if (eyesSleep) eyesSleep.style.display = 'none';
@@ -2273,11 +2250,21 @@
         setTimeout(() => { if (voiceState !== 'speaking') eyesHappy.style.display = 'none'; }, 1600);
       }
 
-      mostrarFalaPou('✨ Sim, Kaleu! Estou ouvindo! Pode falar comigo!');
-      document.getElementById('subtitle-bar').textContent = '🎧 JÁRVIS OUVINDO... PODE FALAR NO MICROFONE!';
+      fetch('/api/pet/carinho', { method: 'POST' })
+        .then(r => r.json())
+        .then(d => {
+          if (d.status) atualizarStatusPou(d.status);
+        })
+        .catch(() => {});
 
-      startVoiceListening();
+      // O microfone NUNCA é ligado ao fazer carinho no robô!
+      // O microfone só escuta quando o botão de conversa é clicado!
     }
+
+    const clicarNoLucky = clicarNoJarvis;
+    const darCarinhoPou = clicarNoJarvis;
+    const ativarEscutaJarvisDireta = toggleConversaComJarvis;
+    const iniciarConversaDiretaLucky = toggleConversaComJarvis;
 
     // ALIMENTAÇÃO COM ITEM ESPECÍFICO DA BANDEJA (COZINHA)
     async function alimentarComItem(emoji, nome, pontos, moedas) {
@@ -2991,215 +2978,163 @@
     let audioAnalyserNode = null;
     let visualizerAnimFrame = null;
 
-    function stopMicVisualizer() {
+    // =========================================================================
+    // ENCERRAMENTO FÍSICO IMEDIATO DO MICROFONE (ZERO ESCUTA OCULTA / SEM PRENDER PLACA)
+    // =========================================================================
+    function pararMicrofoneTotalmente() {
+      clearTimeout(silenceTimer);
+      silenceTimer = null;
+
       if (visualizerAnimFrame) {
         cancelAnimationFrame(visualizerAnimFrame);
         visualizerAnimFrame = null;
       }
+
+      if (audioAnalyserNode) {
+        try { audioAnalyserNode.disconnect(); } catch (e) {}
+        audioAnalyserNode = null;
+      }
+
+      if (mediaRecorderObj) {
+        try {
+          if (mediaRecorderObj.state !== 'inactive') {
+            mediaRecorderObj.stop();
+          }
+        } catch (e) {}
+        mediaRecorderObj = null;
+      }
+
+      // Desliga todas as faixas do microfone físico do dispositivo
       if (mediaStreamObj) {
         try {
-          mediaStreamObj.getTracks().forEach(t => t.stop());
+          mediaStreamObj.getTracks().forEach(track => {
+            track.stop();
+            track.enabled = false;
+          });
         } catch (e) {}
         mediaStreamObj = null;
       }
-    }
 
-    function setVoiceVisualState(state) {
-      voiceState = state;
-      const btn = document.getElementById('btn-voice-push');
-      const arc = document.getElementById('arc-reactor');
-      const micIcon = document.getElementById('mic-icon');
-      const micLabel = document.getElementById('mic-label');
-      const waveBox = document.getElementById('mic-sound-waves');
-
-      if (btn) btn.classList.remove('listening', 'processing', 'speaking');
-      if (arc) arc.classList.remove('listening', 'processing', 'speaking');
-
-      if (state === 'listening') {
-        if (btn) {
-          btn.classList.add('listening');
-          if (micIcon) micIcon.textContent = '🛑';
-          if (micLabel) micLabel.textContent = 'OUVINDO...';
-        }
-        if (arc) arc.classList.add('listening');
-        if (waveBox) waveBox.style.display = 'flex';
-      } else if (state === 'processing') {
-        if (btn) {
-          btn.classList.add('processing');
-          if (micIcon) micIcon.textContent = '⏳';
-          if (micLabel) micLabel.textContent = 'PENSANDO...';
-        }
-        if (arc) arc.classList.add('processing');
-        if (waveBox) waveBox.style.display = 'none';
-      } else if (state === 'speaking') {
-        if (btn) {
-          btn.classList.add('speaking');
-          if (micIcon) micIcon.textContent = '🔊';
-          if (micLabel) micLabel.textContent = 'FALANDO...';
-        }
-        if (arc) arc.classList.add('speaking');
-        if (waveBox) waveBox.style.display = 'none';
-      } else {
-        // idle
-        if (btn) {
-          if (micIcon) micIcon.textContent = '🎙️';
-          if (micLabel) micLabel.textContent = 'FALAR COM JÁRVIS';
-        }
-        if (waveBox) waveBox.style.display = 'none';
-      }
-    }
-
-    function clickArcToy() {
-      toggleVoiceListening();
-    }
-
-    function toggleVoiceListening() {
-      if (voiceState === 'idle') {
-        startVoiceListening();
-      } else if (voiceState === 'listening') {
-        finishVoiceListeningAndProcess();
-      } else if (voiceState === 'speaking') {
-        stopCurrentSpeech();
-        resetVoiceToIdle();
-      }
-    }
-
-    function resetVoiceToIdle() {
-      stopMicVisualizer();
-      clearTimeout(silenceTimer);
-      silenceTimer = null;
-      if (mediaRecorderObj && mediaRecorderObj.state !== 'inactive') {
-        try { mediaRecorderObj.stop(); } catch (e) {}
-      }
-      mediaRecorderObj = null;
+      // Aborta e libera imediatamente o Web Speech Recognition do Chrome
       if (recognitionObj) {
-        try { recognitionObj.stop(); } catch (e) {}
+        try {
+          recognitionObj.onresult = null;
+          recognitionObj.onerror = null;
+          recognitionObj.onend = null;
+          recognitionObj.abort(); // abort() força liberação imediata no Chromium
+        } catch (e) {}
         recognitionObj = null;
       }
+
+      // Desliga anel de luz do mascote
       const rings = document.getElementById('jarvis-soundwave-rings');
       if (rings) rings.style.display = 'none';
+    }
+
+    const stopMicVisualizer = pararMicrofoneTotalmente;
+
+    // ATUALIZAÇÃO VISUAL DO BOTÃO PRINCIPAL DE CONVERSA
+    function setVoiceVisualState(state) {
+      voiceState = state;
+      const heroBtn = document.getElementById('btn-hero-talk');
+      const heroIcon = document.getElementById('hero-talk-icon');
+      const heroLabel = document.getElementById('hero-talk-label');
+      const rings = document.getElementById('jarvis-soundwave-rings');
+
+      if (heroBtn) {
+        heroBtn.classList.remove('is-listening', 'is-processing', 'is-speaking');
+      }
+
+      if (state === 'listening') {
+        if (heroBtn) {
+          heroBtn.classList.add('is-listening');
+          if (heroIcon) heroIcon.textContent = '🛑';
+          if (heroLabel) heroLabel.textContent = 'Ouvindo... (Toque p/ enviar)';
+        }
+        if (rings) rings.style.display = 'block';
+      } else if (state === 'processing') {
+        if (heroBtn) {
+          heroBtn.classList.add('is-processing');
+          if (heroIcon) heroIcon.textContent = '🧠';
+          if (heroLabel) heroLabel.textContent = 'Jarvis pensando...';
+        }
+        if (rings) rings.style.display = 'none';
+      } else if (state === 'speaking') {
+        if (heroBtn) {
+          heroBtn.classList.add('is-speaking');
+          if (heroIcon) heroIcon.textContent = '🔊';
+          if (heroLabel) heroLabel.textContent = 'Jarvis falando...';
+        }
+        if (rings) rings.style.display = 'none';
+      } else {
+        // idle (microfone 100% desligado)
+        if (heroBtn) {
+          if (heroIcon) heroIcon.textContent = '🎙️';
+          if (heroLabel) heroLabel.textContent = 'Falar com o Jarvis';
+        }
+        if (rings) rings.style.display = 'none';
+      }
+    }
+
+    // TOGGLE DO BOTÃO PRINCIPAL DE CONVERSA (SÓ ESCUTA AO CLICAR)
+    function toggleConversaComJarvis() {
+      destravarAudioNavegador();
+
+      // 1. Se já está ouvindo: clicar envia/finaliza imediatamente!
+      if (voiceState === 'listening') {
+        finishVoiceListeningAndProcess();
+        return;
+      }
+
+      // 2. Se o Jarvis está falando: clicar silencia a fala
+      if (voiceState === 'speaking') {
+        stopCurrentSpeech();
+        resetVoiceToIdle();
+        return;
+      }
+
+      // 3. Se está processando: aguarda
+      if (voiceState === 'processing') {
+        return;
+      }
+
+      // 4. Se está idle: INICIA ESCUTA SOB DEMANDA!
+      startVoiceListening();
+    }
+
+    const toggleVoiceListening = toggleConversaComJarvis;
+    const clickArcToy = toggleConversaComJarvis;
+
+    function resetVoiceToIdle() {
+      pararMicrofoneTotalmente();
       const speakWaves = document.getElementById('robot-speaking-waves');
       if (speakWaves) speakWaves.style.display = 'none';
       setVoiceVisualState('idle');
     }
 
+    // INICIALIZAÇÃO SOB DEMANDA (MICROFONE SÓ ABRE AQUI!)
     async function startVoiceListening() {
       if (voiceState === 'listening' || voiceState === 'processing') return;
       destravarAudioNavegador();
       stopCurrentSpeech();
-
-      // Libera o microfone parando qualquer escuta em segundo plano para não conflitar com a captura de comando
-      if (continuousWakeRecognizer) {
-        try {
-          continuousWakeRecognizer.abort();
-        } catch (e) {}
-        wakeWatcherActive = false;
-      }
+      pararMicrofoneTotalmente();
 
       pushTranscript = '';
       recordedAudioChunks = [];
-      clearTimeout(silenceTimer);
-      silenceTimer = null;
       listeningSessionStart = Date.now();
 
-      // FEEDBACK VISUAL E SONORO IMEDIATO (SEM ATRASO)
       setVoiceVisualState('listening');
-      document.getElementById('subtitle-bar').textContent = '🎧 JÁRVIS OUVINDO... PODE FALAR NO MICROFONE!';
-      if (audioCtx && audioCtx.state === 'suspended') {
-        try { await audioCtx.resume(); } catch (e) {}
-      }
       playTone(587, 80);
-      setTimeout(() => playTone(880, 120), 80);
+      setTimeout(() => playTone(880, 100), 80);
 
-      // 1. SOLICITA ACESSO AO MICROFONE FÍSICO REAL DO APARELHO
-      try {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error('Navegador sem suporte a getUserMedia ou acessado via HTTP inseguro');
-        }
-        mediaStreamObj = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        });
-      } catch (err) {
-        console.warn('Acesso ao microfone negado ou indisponível:', err);
-        showToast('⚠️ Microfone não liberado! Clique no cadeado do navegador e permita o microfone.', true);
-        document.getElementById('subtitle-bar').textContent = '⚠️ Microfone não liberado! Clique no cadeado no topo do navegador e permita o microfone.';
-        speak('Por favor, autorize o microfone no navegador para conversarmos!');
-        resetVoiceToIdle();
-        openTalkModal();
-        const rep = document.getElementById('jarvis-talk-reply');
-        if (rep) rep.textContent = '⚠️ Microfone bloqueado no navegador. Digite sua pergunta ou toque em um tema!';
-        return;
-      }
-
-      // 2. CONECTA O ANALISADOR DE ÁUDIO REAL (MEDIDOR VISUAL DE DECIBÉIS)
-      try {
-        const source = audioCtx.createMediaStreamSource(mediaStreamObj);
-        audioAnalyserNode = audioCtx.createAnalyser();
-        audioAnalyserNode.fftSize = 64;
-        source.connect(audioAnalyserNode);
-
-        const dataArray = new Uint8Array(audioAnalyserNode.frequencyBinCount);
-        function drawWave() {
-          if (voiceState !== 'listening') return;
-          audioAnalyserNode.getByteFrequencyData(dataArray);
-          const bars = document.querySelectorAll('.sound-wave-bar');
-          let sum = 0;
-          bars.forEach((bar, idx) => {
-            const val = dataArray[idx % dataArray.length] || 10;
-            sum += val;
-            const h = Math.max(6, Math.min(32, Math.round((val / 255) * 36)));
-            bar.style.height = `${h}px`;
-          });
-
-          // Se detectou voz ativa com volume suficiente:
-          if (sum > 70 && pushTranscript) {
-            clearTimeout(silenceTimer);
-            silenceTimer = setTimeout(() => {
-              if (voiceState === 'listening') {
-                finishVoiceListeningAndProcess();
-              }
-            }, 1200);
-          }
-
-          visualizerAnimFrame = requestAnimationFrame(drawWave);
-        }
-        drawWave();
-      } catch (e) {
-        console.warn('Erro ao inicializar analisador de áudio:', e);
-      }
-
-      // 3. INICIA A GRAVAÇÃO DE ÁUDIO FÍSICA (MEDIA RECORDER) PARA FALLBACK ROBUSTO
-      try {
-        let mime = '';
-        if (typeof MediaRecorder !== 'undefined') {
-          if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime = 'audio/webm;codecs=opus';
-          else if (MediaRecorder.isTypeSupported('audio/webm')) mime = 'audio/webm';
-          else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mime = 'audio/ogg;codecs=opus';
-          
-          mediaRecorderObj = mime ? new MediaRecorder(mediaStreamObj, { mimeType: mime }) : new MediaRecorder(mediaStreamObj);
-          mediaRecorderObj.ondataavailable = (ev) => {
-            if (ev.data && ev.data.size > 0) {
-              recordedAudioChunks.push(ev.data);
-            }
-          };
-          mediaRecorderObj.start(100);
-        }
-      } catch (recErr) {
-        console.warn('Aviso MediaRecorder:', recErr);
-      }
-
-      // 4. ATIVA PARALELAMENTE O RECONHECIMENTO WEB SPEECH SE DISPONÍVEL NO CHROME/EDGE
+      // 1. Reconhecimento de Fala Web Speech (Chrome/Edge nativo) com continuous = false!
       const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (SpeechRec) {
         try {
           const rec = new SpeechRec();
           rec.lang = 'pt-BR';
           rec.interimResults = true;
-          rec.continuous = true;
+          rec.continuous = false; // Fecha assim que o usuário para de falar!
           recognitionObj = rec;
 
           rec.onresult = (ev) => {
@@ -3211,57 +3146,82 @@
             }
             pushTranscript = text.trim();
             if (pushTranscript) {
-              document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
               clearTimeout(silenceTimer);
-              const silenceWaitMs = hasFinal ? 850 : 1600;
+              const waitMs = hasFinal ? 850 : 1400;
               silenceTimer = setTimeout(() => {
                 if (voiceState === 'listening') {
                   finishVoiceListeningAndProcess();
                 }
-              }, silenceWaitMs);
+              }, waitMs);
             }
           };
 
           rec.onerror = (ev) => {
-            console.warn('SpeechRecognition notice:', ev.error);
+            console.warn('SpeechRec notice:', ev.error);
             if (ev.error === 'not-allowed') {
-              showToast('Permita o microfone no navegador!', true);
+              showToast('⚠️ Permita o microfone no navegador!', true);
               resetVoiceToIdle();
+            } else if (ev.error === 'no-speech') {
+              finishVoiceListeningAndProcess();
             }
           };
 
           rec.onend = () => {
             if (voiceState === 'listening') {
-              if (pushTranscript.trim()) {
-                finishVoiceListeningAndProcess();
-              }
+              finishVoiceListeningAndProcess();
             }
           };
 
           rec.start();
         } catch (e) {
-          console.warn('SpeechRec start warning:', e);
+          console.warn('SpeechRec start notice:', e);
         }
       }
 
-      // Limite máximo de segurança: 16 segundos
+      // 2. Gravação de áudio getUserMedia como backup inteligente de STT
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          mediaStreamObj = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true
+            }
+          });
+
+          if (typeof MediaRecorder !== 'undefined') {
+            let mime = '';
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mime = 'audio/webm;codecs=opus';
+            else if (MediaRecorder.isTypeSupported('audio/webm')) mime = 'audio/webm';
+
+            mediaRecorderObj = mime ? new MediaRecorder(mediaStreamObj, { mimeType: mime }) : new MediaRecorder(mediaStreamObj);
+            mediaRecorderObj.ondataavailable = (ev) => {
+              if (ev.data && ev.data.size > 0) {
+                recordedAudioChunks.push(ev.data);
+              }
+            };
+            mediaRecorderObj.start(120);
+          }
+        }
+      } catch (err) {
+        console.warn('Acesso ao microfone negado ou indisponível:', err);
+      }
+
+      // Trava de segurança: máximo de 10 segundos de escuta
       setTimeout(() => {
         if (voiceState === 'listening') {
           finishVoiceListeningAndProcess();
         }
-      }, 16000);
+      }, 10000);
     }
 
+    // PROCESSAMENTO DO COMANDO E RESPOSTA AUDÍVEL
     async function finishVoiceListeningAndProcess() {
       if (voiceState !== 'listening') return;
       clearTimeout(silenceTimer);
       silenceTimer = null;
 
-      // Altera visual para pensando
-      setVoiceVisualState('processing');
-      document.getElementById('subtitle-bar').textContent = '🧠 Járvis ouvindo e processando o que você falou...';
-
-      // 1. Encerra e coleta a gravação física
+      // 1. Encerra e coleta a gravação do MediaRecorder
       let recordedBlob = null;
       if (mediaRecorderObj && mediaRecorderObj.state !== 'inactive') {
         await new Promise((resolve) => {
@@ -3280,19 +3240,16 @@
         });
       }
 
-      // Encerra microfone físico e reconhecimento web
-      stopMicVisualizer();
-      if (recognitionObj) {
-        try { recognitionObj.stop(); } catch (err) {}
-        recognitionObj = null;
-      }
+      // 2. DESLIGA O MICROFONE IMEDIATAMENTE (LIBERA O DISPOSITIVO DE ÁUDIO NO HARDWARE)
+      pararMicrofoneTotalmente();
+
+      // Muda estado visual para pensando
+      setVoiceVisualState('processing');
 
       let spoken = pushTranscript.trim();
 
-      // 2. FALLBACK INTELIGENTE: Se o SpeechRecognition do Chrome falhou ou deu erro de rede,
-      // envia o áudio gravado diretamente para a API STT no backend (/api/stt)!
+      // 3. Fallback backend STT se Web Speech não tiver pego o texto mas houver áudio
       if (!spoken && recordedBlob && recordedBlob.size > 800) {
-        document.getElementById('subtitle-bar').textContent = '🧠 Járvis transcrevendo voz pelo microfone...';
         try {
           const sttRes = await fetch('/api/stt', {
             method: 'POST',
@@ -3303,21 +3260,15 @@
           if (sttData.ok && sttData.text) {
             spoken = sttData.text.trim();
           }
-        } catch (sttErr) {
-          console.warn('Falha no fallback de STT:', sttErr);
-        }
+        } catch (sttErr) {}
       }
 
-      // Se após todas as camadas nada foi dito
       if (!spoken) {
         resetVoiceToIdle();
-        document.getElementById('subtitle-bar').textContent = 'Não ouvi sua voz. Toque no microfone e fale pertinho!';
         speak('Não consegui te ouvir! Toque no botão e fale pertinho de mim!');
         return;
       }
 
-      // 3. COM O TEXTO RECONHECIDO, ENVIA PARA O INTERPRETADOR DE COMANDOS DO JÁRVIS
-      document.getElementById('subtitle-bar').textContent = `👦 Você: "${spoken}"`;
       playTone(659, 100);
       setTimeout(() => playTone(784, 120), 100);
 
@@ -3332,52 +3283,31 @@
         if (voiceState !== 'processing') return;
 
         const replyText = data.resposta_voz || data.reply || "Sim, Kaleu!";
-        mostrarFalaPou(replyText);
 
-        // Desliga anel de escuta
-        const rings = document.getElementById('jarvis-soundwave-rings');
-        if (rings) rings.style.display = 'none';
+        // ESTADO: FALANDO!
+        setVoiceVisualState('speaking');
 
         // Ativa ondas de fala na boca do robô
         const speakWaves = document.getElementById('robot-speaking-waves');
         if (speakWaves) speakWaves.style.display = 'block';
 
-        // ESTADO: FALANDO!
-        setVoiceVisualState('speaking');
-        document.getElementById('subtitle-bar').textContent = `🤖 Járvis: "${replyText}"`;
-
         speak(replyText, {
           onEnd: () => {
             if (speakWaves) speakWaves.style.display = 'none';
             resetVoiceToIdle();
-            document.getElementById('subtitle-bar').textContent = 'Toque no robô ou diga "Jarvis" para falar!';
 
-            // EXECUTA AÇÃO CORRESPONDENTE DETECTADA
-            if (data.acao_frontend === 'abrir_clima') {
-              abrirModalEstacoes();
-            } else if (data.acao_frontend === 'abrir_loja') {
-              abrirLojaTesouro();
-            } else if (data.acao_frontend === 'missao_dente') {
-              iniciarMissaoDente();
-            } else if (data.acao_frontend === 'missao_quarto') {
-              iniciarMissaoQuarto();
-            } else if (data.acao_frontend === 'ir_cozinha') {
-              irParaComodo(1); // Cozinha
-            } else if (data.acao_frontend === 'abrir_jogos') {
-              toggleActivityDrawer();
-            }
+            // Ações secundárias detectadas
+            if (data.acao_frontend === 'abrir_clima') abrirModalEstacoes();
+            else if (data.acao_frontend === 'abrir_loja') abrirLojaTesouro();
+            else if (data.acao_frontend === 'missao_dente') iniciarMissaoDente();
+            else if (data.acao_frontend === 'missao_quarto') iniciarMissaoQuarto();
+            else if (data.acao_frontend === 'ir_cozinha') irParaComodo(1);
+            else if (data.acao_frontend === 'abrir_jogos') toggleActivityDrawer();
 
-            // Reativa a vigilância contínua da palavra-chave "Jarvis" após a fala terminar
-            setTimeout(() => {
-              if (voiceState === 'idle') {
-                iniciarVigilanciaWakeWord();
-              }
-            }, 800);
+            // O MICROFONE PERMANECE 100% DESLIGADO! ZERO WAKE-WORD. ZERO REINÍCIO OCULTO.
           }
         });
       } catch (err) {
-        const rings = document.getElementById('jarvis-soundwave-rings');
-        if (rings) rings.style.display = 'none';
         resetVoiceToIdle();
         speak('Tive uma falha de conexão com meu cérebro agora. Clique para tentar de novo!');
       }
