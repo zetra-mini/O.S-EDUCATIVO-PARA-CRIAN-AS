@@ -126,7 +126,7 @@ def index(request: Request):
     """Serve a interface principal do Jarvis em streaming contínuo."""
     gc.collect()
     caminho = os.path.join(TEMPLATES_DIR, "hud_jarvis.html")
-    return send_file(caminho, content_type="text/html; charset=utf-8", stream=True)
+    return send_file(caminho, content_type="text/html; charset=utf-8")
 
 
 @app.route("/pais")
@@ -134,7 +134,7 @@ def painel_pais(request: Request):
     """Serve o painel dos pais em streaming contínuo."""
     gc.collect()
     caminho = os.path.join(TEMPLATES_DIR, "painel_pais.html")
-    return send_file(caminho, content_type="text/html; charset=utf-8", stream=True)
+    return send_file(caminho, content_type="text/html; charset=utf-8")
 
 
 @app.route("/favicon.ico")
@@ -171,7 +171,7 @@ def static_files(request: Request, path: str):
         ".ttf": "font/ttf",
     }
     content_type = mime_types.get(ext, "application/octet-stream")
-    return send_file(full_path, content_type=content_type, stream=True)
+    return send_file(full_path, content_type=content_type)
 
 
 # ==============================================================================
