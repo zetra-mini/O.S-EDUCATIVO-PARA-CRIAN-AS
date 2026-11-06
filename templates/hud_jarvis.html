@@ -1048,136 +1048,74 @@
       transition: background 0.5s ease;
     }
 
-    /* 1. TOP BAR FUTURISTA TRANSLÚCIDA */
+    /* 1. TOP BAR FUTURISTA TRANSLÚCIDA CLEAN (LINHA ÚNICA) */
     .pou-top-bar {
-      background: rgba(7, 16, 32, 0.82);
+      height: 56px;
+      background: rgba(7, 16, 32, 0.88);
       backdrop-filter: blur(14px);
-      padding: 6px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      border-bottom: 2px solid rgba(0, 240, 255, 0.25);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
-      z-index: 100;
-    }
-
-    .pou-top-row {
+      padding: 0 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 2px solid rgba(0, 240, 255, 0.25);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+      z-index: 100;
     }
 
     .pou-coin-badge {
       background: rgba(30, 25, 10, 0.85);
       border: 2px solid #f59e0b;
       border-radius: 20px;
-      padding: 4px 14px;
+      padding: 6px 16px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-weight: 900;
       color: #fde047;
-      font-size: 1.05rem;
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+      font-size: 1.15rem;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
       cursor: pointer;
       transition: transform 0.1s, box-shadow 0.2s;
     }
     .pou-coin-badge:active { transform: scale(0.95); }
 
-    .pou-plus-btn {
-      background: #10b981;
-      border: 1px solid #34d399;
-      color: #ffffff;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
+    /* NAVEGADOR DE CÔMODOS FUTURISTA TOUCH */
+    .pou-room-nav-pill {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 0.95rem;
-      font-weight: 900;
-      margin-left: 2px;
-    }
-
-    /* OS 4 QUADRADINHOS DE STATUS HOLOGRÁFICOS */
-    .pou-status-meters {
-      display: flex;
-      gap: 8px;
-    }
-
-    .pou-meter-box {
+      gap: 12px;
       background: rgba(15, 23, 42, 0.85);
-      border: 2px solid #0284c7;
-      border-radius: 10px;
-      width: 50px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.1s, border-color 0.2s;
-    }
-    .pou-meter-box:active { transform: scale(0.92); }
-
-    .pou-meter-fill {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 240, 255, 0.35);
-      transition: height 0.4s;
-    }
-
-    .pou-level-badge {
-      background: rgba(15, 23, 42, 0.9);
-      border: 2px solid #38bdf8;
-      border-radius: 12px;
-      padding: 4px 12px;
-      font-weight: 900;
-      color: #38bdf8;
-      font-size: 1.05rem;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
-    }
-
-    /* NAVEGADOR DE CÔMODOS FUTURISTA */
-    .pou-room-nav-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      position: relative;
+      border: 2px solid rgba(56, 189, 248, 0.45);
+      border-radius: 999px;
+      padding: 4px 14px;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
     }
 
     .btn-room-arrow {
-      background: rgba(15, 23, 42, 0.85);
-      border: 2px solid #38bdf8;
-      border-radius: 10px;
-      width: 38px;
-      height: 32px;
-      font-size: 1.15rem;
+      background: none;
+      border: none;
+      font-size: 1.35rem;
       font-weight: 900;
       color: #38bdf8;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
-      transition: transform 0.1s, background 0.15s;
+      padding: 2px 8px;
+      transition: transform 0.1s, color 0.15s;
     }
-    .btn-room-arrow:active { transform: scale(0.9); }
-    .btn-room-arrow:hover { background: rgba(56, 189, 248, 0.2); }
+    .btn-room-arrow:active { transform: scale(0.85); }
+    .btn-room-arrow:hover { color: #00f0ff; }
 
     .pou-room-title {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 900;
       color: #e0f2fe;
       text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
-      letter-spacing: 0.8px;
-      min-width: 180px;
+      letter-spacing: 0.6px;
+      min-width: 170px;
+      text-align: center;
+    }
       text-align: center;
     }
 
@@ -1654,55 +1592,23 @@
 </head>
 <body>
   <div id="pou-app-container">
-    <!-- 1. TOP BAR DO POU COM MOEDAS, 4 STATUS E NAVEGADOR DE CÔMODOS -->
+    <!-- 1. TOP BAR FUTURISTA TRANSLÚCIDA CLEAN (LINHA ÚNICA) -->
     <header class="pou-top-bar">
-      <div class="pou-top-row">
-        <!-- MOEDAS COM BOTÃO PLUS -->
-        <div class="pou-coin-badge" onclick="abrirLojaTesouro()" title="Pote do Tesouro Real">
-          <span>🪙</span>
-          <span id="pote-fichas-val">25</span>
-          <span class="pou-plus-btn">+</span>
-        </div>
-
-        <!-- 4 QUADRADINHOS DE STATUS IDÊNTICOS AO POU -->
-        <div class="pou-status-meters">
-          <!-- 1. COMIDA (FOME) -->
-          <div class="pou-meter-box" onclick="irParaComodo(1)" title="Fome / Alimentação">
-            <span>🍗</span>
-            <div class="pou-meter-fill" id="meter-fill-food" style="height:0%;"></div>
-          </div>
-          <!-- 2. SAÚDE / LIMPEZA -->
-          <div class="pou-meter-box" onclick="irParaComodo(2)" title="Higiene / Banho">
-            <span>🧼</span>
-            <div class="pou-meter-fill" id="meter-fill-clean" style="height:0%;"></div>
-          </div>
-          <!-- 3. DIVERSÃO -->
-          <div class="pou-meter-box" onclick="toggleActivityDrawer()" title="Diversão / Jogos">
-            <span>🎮</span>
-            <div class="pou-meter-fill" id="meter-fill-fun" style="height:0%;"></div>
-          </div>
-          <!-- 4. ENERGIA / SONO -->
-          <div class="pou-meter-box" onclick="irParaComodo(3)" title="Energia / Sono">
-            <span>⚡</span>
-            <div class="pou-meter-fill" id="meter-fill-energy" style="height:0%;"></div>
-          </div>
-        </div>
-
-        <!-- NÍVEL / ESTRELAS -->
-        <div style="display:flex; align-items:center; gap:6px;">
-          <div class="pou-level-badge" id="pou-level-box" title="Nível do Jarvis">
-            🤖 <span id="pou-level-val">1</span>
-          </div>
-          <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:4px 8px; font-size:0.85rem;" title="Painel dos Pais">⚙️</button>
-        </div>
+      <!-- MOEDAS DO TESOURO -->
+      <div class="pou-coin-badge" onclick="abrirLojaTesouro()" title="Loja do Tesouro & Armário">
+        <span>🪙</span>
+        <span id="pote-fichas-val">20</span>
       </div>
 
-      <!-- SEGUNDA LINHA: SELETOR DE CÔMODOS DO JARVIS -->
-      <div class="pou-room-nav-row">
+      <!-- NAVEGADOR DE CÔMODOS FUTURISTA TOUCH -->
+      <div class="pou-room-nav-pill">
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
         <span id="pou-room-title" class="pou-room-title">Sala de Brincar</span>
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(1)" title="Próximo Cômodo">▶</button>
       </div>
+
+      <!-- PAINEL DOS PAIS -->
+      <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:6px 14px; font-size:1.05rem;" title="Painel dos Pais">⚙️</button>
     </header>
 
     <!-- 2. SALA CENTRAL DO ROBOZINHO J.A.R.V.I.S. (NO CENTRO DA TELA) -->
@@ -1713,12 +1619,8 @@
         <div class="lamp-knob"></div>
       </div>
 
-      <!-- O MASCOTE ROBOZINHO J.A.R.V.I.S. NO CENTRO -->
+      <!-- O MASCOTE ROBOZINHO J.A.R.V.I.S. NO CENTRO (SEM BALÕES DE TEXTO SOBREPOSTOS) -->
       <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoJarvis(event)" title="Toque no Jarvis para conversar ou receber carinho!">
-        <!-- BALÃO DE DIÁLOGO FLUTUANTE DO JARVIS -->
-        <div id="pou-floating-bubble" class="pou-floating-bubble" style="display:none;">
-          <div id="pou-bubble-text">✨ Olá, Kaleu! Eu sou o J.A.R.V.I.S.! Toque em mim ou diga "Jarvis" para falar!</div>
-        </div>
 
         <!-- SVG VETORIAL DO ROBOZINHO J.A.R.V.I.S. (SUPER BONITINHO, FUTURISTA E EXPRESSIVO) -->
         <svg id="pou-svg" class="jarvis-robot-svg" viewBox="0 0 240 240" width="245" height="245" style="filter: drop-shadow(0 12px 20px rgba(2,132,199,0.35));">
@@ -1919,41 +1821,41 @@
         <div id="pou-hearts-layer" style="position:absolute; inset:0; pointer-events:none;"></div>
       </div>
 
-      <!-- BOTÃO DE CONVERSA EM DESTAQUE NA PRIMEIRA TELA -->
-      <button type="button" class="jarvis-talk-hero-btn" onclick="ativarEscutaJarvisDireta()" title="Falar com o Jarvis ou diga 'Jarvis!'">
-        🎙️ Falar com o Jarvis (ou diga "Jarvis!")
+      <!-- BOTÃO DE CONVERSA EM DESTAQUE NA PRIMEIRA TELA (TOUCH LIMPO) -->
+      <button type="button" class="jarvis-talk-hero-btn" onclick="ativarEscutaJarvisDireta()" title="Toque para conversar com o Jarvis">
+        🎙️ Falar com o Jarvis
       </button>
 
       <!-- BANDEJA DE ALIMENTOS INTERATIVA (SÓ VISÍVEL NA COZINHA DO JARVIS) -->
       <div id="kitchen-food-tray" class="kitchen-food-tray" style="display:none;">
         <div class="food-tray-title">🍎 Toque em uma frutinha para alimentar o Jarvis:</div>
         <div class="food-tray-grid">
-          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍎', 'Maçã Crocante', 20, 2)" title="Maçã Crocante">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍎', 'Maçã Crocante', 20, 0)" title="Maçã Crocante">
             <span class="food-emoji">🍎</span>
             <span class="food-name">Maçã</span>
             <span class="food-reward">+20 🔋</span>
           </button>
-          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍌', 'Banana Docinha', 25, 2)" title="Banana Docinha">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍌', 'Banana Docinha', 25, 0)" title="Banana Docinha">
             <span class="food-emoji">🍌</span>
             <span class="food-name">Banana</span>
             <span class="food-reward">+25 🔋</span>
           </button>
-          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥕', 'Cenoura Super', 20, 3)" title="Cenoura">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥕', 'Cenoura Super', 20, 0)" title="Cenoura">
             <span class="food-emoji">🥕</span>
             <span class="food-name">Cenoura</span>
             <span class="food-reward">+20 🔋</span>
           </button>
-          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥦', 'Brócolis Força', 30, 5)" title="Brócolis de Super-Herói">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥦', 'Brócolis Força', 30, 0)" title="Brócolis de Super-Herói">
             <span class="food-emoji">🥦</span>
             <span class="food-name">Brócolis</span>
             <span class="food-reward">+30 🔋</span>
           </button>
-          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍓', 'Moranguinho', 15, 2)" title="Moranguinho">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🍓', 'Moranguinho', 15, 0)" title="Moranguinho">
             <span class="food-emoji">🍓</span>
             <span class="food-name">Morango</span>
             <span class="food-reward">+15 🔋</span>
           </button>
-          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥛', 'Copo de Leite', 25, 3)" title="Copo de Leite">
+          <button type="button" class="food-item-btn" onclick="alimentarComItem('🥛', 'Copo de Leite', 25, 0)" title="Copo de Leite">
             <span class="food-emoji">🥛</span>
             <span class="food-name">Leite</span>
             <span class="food-reward">+25 🔋</span>
@@ -1963,11 +1865,6 @@
 
       <!-- Chão Horizontal da Sala -->
       <div class="pou-room-floor"></div>
-
-      <!-- Aba Discreta na Esquerda para abrir Jogos & Atividades -->
-      <div class="peek-drawer-tab" onclick="toggleActivityDrawer()" title="Abrir Jogos & Atividades">
-        JOGOS
-      </div>
 
       <!-- Notificação do Recado Secreto do Papai -->
       <div id="btn-secret-msg" onclick="abrirMensagemPais()" class="btn-secret-envelope" style="position:absolute; top:12px; right:14px; display:none; z-index:90;" title="Recado Secreto da Família!">
@@ -2788,6 +2685,8 @@
       setSpeakingVisual(false);
     }
 
+    let currentBufferSource = null;
+
     function destravarAudioNavegador() {
       try {
         if (audioCtx && audioCtx.state === 'suspended') {
@@ -2803,8 +2702,76 @@
       } catch (e) {}
     }
 
+    function stopCurrentSpeech() {
+      if (ttsAbortCtrl) {
+        try { ttsAbortCtrl.abort(); } catch (e) {}
+        ttsAbortCtrl = null;
+      }
+      if (currentBufferSource) {
+        try {
+          currentBufferSource.stop();
+          currentBufferSource.disconnect();
+        } catch (e) {}
+        currentBufferSource = null;
+      }
+      if (currentAudio) {
+        try {
+          currentAudio.pause();
+          if (currentAudio._blobUrl) URL.revokeObjectURL(currentAudio._blobUrl);
+        } catch (e) {}
+        currentAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+        window._activeUtterance = null;
+      }
+      setSpeakingVisual(false);
+      const speakWaves = document.getElementById('robot-speaking-waves');
+      if (speakWaves) speakWaves.style.display = 'none';
+    }
+
+    // TOCA ÁUDIO DE FORMA AUDÍVEL E IMEDIATA VIA WEB AUDIO API (SEM BLOQUEIO DE AUTOPLAY)
+    function tocarAudioBufferWebAudio(arrayBuffer, onEnd) {
+      try {
+        destravarAudioNavegador();
+        const copyBuf = arrayBuffer.slice(0);
+        audioCtx.decodeAudioData(copyBuf, (decodedData) => {
+          stopCurrentSpeech();
+          const source = audioCtx.createBufferSource();
+          source.buffer = decodedData;
+
+          const gainNode = audioCtx.createGain();
+          gainNode.gain.setValueAtTime(1.0, audioCtx.currentTime);
+          source.connect(gainNode);
+          gainNode.connect(audioCtx.destination);
+          currentBufferSource = source;
+
+          setSpeakingVisual(true);
+          const speakWaves = document.getElementById('robot-speaking-waves');
+          if (speakWaves) speakWaves.style.display = 'block';
+
+          source.onended = () => {
+            setSpeakingVisual(false);
+            if (speakWaves) speakWaves.style.display = 'none';
+            currentBufferSource = null;
+            if (onEnd) onEnd();
+          };
+
+          source.start(0);
+        }, (err) => {
+          console.warn('Fallback de decodeAudioData:', err);
+          if (onEnd) onEnd();
+        });
+      } catch (e) {
+        console.warn('Erro tocarAudioBufferWebAudio:', e);
+        if (onEnd) onEnd();
+      }
+    }
+
     async function speak(text, options = {}) {
-      document.getElementById('subtitle-bar').textContent = text;
+      if (document.getElementById('subtitle-bar')) {
+        document.getElementById('subtitle-bar').textContent = text;
+      }
       if (!appState.config.voice_enabled || !text) {
         if (options.onEnd) options.onEnd();
         return;
@@ -2820,13 +2787,13 @@
       const ctrl = new AbortController();
       ttsAbortCtrl = ctrl;
 
-      // Timeout de segurança: Se a chamada TTS externa demorar mais de 3.5s, cai no fallback falado imediatamente
+      // Timeout de segurança: Se o backend demorar mais de 3.2s, fala via síntese nativa sem travar
       let fallbackTimer = setTimeout(() => {
         if (ttsAbortCtrl === ctrl) {
           try { ctrl.abort(); } catch (e) {}
           speakBrowserFallback(text, options.onEnd);
         }
-      }, 3500);
+      }, 3200);
 
       try {
         const payload = { text };
@@ -2843,32 +2810,9 @@
         clearTimeout(fallbackTimer);
 
         if (res.status === 200) {
-          const blob = await res.blob();
-          if (blob.size > 200 && ttsAbortCtrl === ctrl) {
-            const url = URL.createObjectURL(blob);
-            const player = document.getElementById('jarvis-speech-player') || new Audio();
-            player.src = url;
-            player._blobUrl = url;
-            player.volume = 1.0;
-            currentAudio = player;
-            setSpeakingVisual(true);
-
-            player.onended = () => {
-              URL.revokeObjectURL(url);
-              if (currentAudio === player) {
-                currentAudio = null;
-                setSpeakingVisual(false);
-              }
-              if (speakWaves) speakWaves.style.display = 'none';
-              if (options.onEnd) options.onEnd();
-            };
-            player.onerror = () => {
-              URL.revokeObjectURL(url);
-              setSpeakingVisual(false);
-              speakBrowserFallback(text, options.onEnd);
-            };
-
-            await player.play();
+          const arrayBuffer = await res.arrayBuffer();
+          if (arrayBuffer && arrayBuffer.byteLength > 200 && ttsAbortCtrl === ctrl) {
+            tocarAudioBufferWebAudio(arrayBuffer, options.onEnd);
             return;
           }
         }
@@ -2895,6 +2839,7 @@
       } catch (e) {}
 
       const utter = new SpeechSynthesisUtterance(text);
+      window._activeUtterance = utter; // FIX CRÍTICO: Previne Garbage Collection no Chromium
       utter.lang = 'pt-BR';
       utter.volume = 1.0;
       utter.rate = 1.0;
@@ -2915,11 +2860,13 @@
         if (speakWaves) speakWaves.style.display = 'block';
       };
       utter.onend = () => {
+        window._activeUtterance = null;
         setSpeakingVisual(false);
         if (speakWaves) speakWaves.style.display = 'none';
         if (onEnd) onEnd();
       };
       utter.onerror = () => {
+        window._activeUtterance = null;
         setSpeakingVisual(false);
         if (speakWaves) speakWaves.style.display = 'none';
         if (onEnd) onEnd();
@@ -7133,70 +7080,13 @@
     }
 
     // =========================================================================
-    // VIGILÂNCIA DE WAKE WORD "JARVIS" (DUAS ETAPAS: PORCUPINE + WEB SPEECH)
+    // INICIALIZAÇÃO DE ÁUDIO LIMPA E SEGURA (MICROFONE APENAS SOB DEMANDA)
     // =========================================================================
-    let continuousWakeRecognizer = null;
-    let wakeWatcherActive = false;
-
-    function iniciarVigilanciaWakeWord() {
-      if (wakeWatcherActive || voiceState !== 'idle') return;
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRec) return;
-
-      try {
-        continuousWakeRecognizer = new SpeechRec();
-        continuousWakeRecognizer.continuous = true;
-        continuousWakeRecognizer.interimResults = false;
-        continuousWakeRecognizer.lang = 'pt-BR';
-
-        continuousWakeRecognizer.onresult = (event) => {
-          if (voiceState !== 'idle') return;
-          const lastResult = event.results[event.results.length - 1];
-          if (!lastResult || !lastResult[0]) return;
-          const transcript = lastResult[0].transcript.toLowerCase();
-
-          // Reconhece "Jarvis", "Jarwis", "Oi Jarvis", "Olá Jarvis"
-          if (transcript.includes('jarvis') || transcript.includes('jarwis') || transcript.includes('jervis') || transcript.includes('javes')) {
-            try { continuousWakeRecognizer.stop(); } catch (e) {}
-            ativarEscutaJarvisDireta();
-          }
-        };
-
-        continuousWakeRecognizer.onerror = () => {
-          setTimeout(iniciarVigilanciaWakeWord, 3500);
-        };
-
-        continuousWakeRecognizer.onend = () => {
-          if (voiceState === 'idle') {
-            setTimeout(iniciarVigilanciaWakeWord, 1200);
-          }
-        };
-
-        continuousWakeRecognizer.start();
-        wakeWatcherActive = true;
-      } catch (e) {
-        wakeWatcherActive = false;
-      }
-    }
-
-    // Polling ultraleve de Wake Word do backend Porcupine (Picovoice)
-    let lastWakeCheckTime = Date.now() / 1000;
-    setInterval(async () => {
-      if (voiceState !== 'idle') return;
-      try {
-        const res = await fetch(`/api/wake/check?since=${lastWakeCheckTime}`);
-        const data = await res.json();
-        if (data.wake && data.event) {
-          lastWakeCheckTime = data.event.timestamp;
-          ativarEscutaJarvisDireta();
-        }
-      } catch (e) {}
-    }, 1200);
-
-    // Inicia a escuta contínua e destrava o áudio assim que o usuário interagir com a tela
     window.addEventListener('click', () => {
       destravarAudioNavegador();
-      iniciarVigilanciaWakeWord();
+    }, { once: true });
+    window.addEventListener('touchstart', () => {
+      destravarAudioNavegador();
     }, { once: true });
 
     // ROTINAS COOPERATIVAS (DENTE & QUARTO)

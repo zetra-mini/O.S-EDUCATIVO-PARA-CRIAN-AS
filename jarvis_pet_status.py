@@ -110,7 +110,7 @@ class JarvisPetManager:
         }
 
     def dar_banho(self) -> Dict[str, Any]:
-        """Restaura higiene para 100%, dá moedas para o pote e comemora."""
+        """Restaura higiene para 100%, dá 1 moeda justa e comemora."""
         self.db.executar_escrita(
             """
             UPDATE bixinho_status
@@ -119,15 +119,15 @@ class JarvisPetManager:
             """,
             (time.time(),),
         )
-        token_mgr.creditar_fichas(5, "Banho Limpinho no Jarvis", "ROTINA")
+        token_mgr.creditar_fichas(1, "Banho Limpinho no Jarvis", "ROTINA")
         return {
             "sucesso": True,
             "mensagem": "🧼 Circuito limpo e reluzente! A armadura do Jarvis está brilhando como nova!",
             "status": self.obter_status(),
         }
 
-    def alimentar(self, pontos: int = 25, nome_alimento: str = "Fruta Saudável", moedas: int = 5) -> Dict[str, Any]:
-        """Alimenta o pet, restaurando alimentação e concedendo recompensas."""
+    def alimentar(self, pontos: int = 25, nome_alimento: str = "Fruta Saudável", moedas: int = 0) -> Dict[str, Any]:
+        """Alimenta o pet recarregando a bateria (sem inflação de moedas a cada fruta)."""
         current = self.obter_status()
         nova_alim = min(100.0, current["alimentacao"] + pontos)
 
@@ -149,7 +149,7 @@ class JarvisPetManager:
         }
 
     def brincar(self, pontos: int = 20, jogo_nome: str = "Desafio Educativo") -> Dict[str, Any]:
-        """Aumenta diversão ao concluir jogos educativos."""
+        """Aumenta diversão concedendo 1 moeda justa."""
         current = self.obter_status()
         nova_div = min(100.0, current["diversao"] + pontos)
 
@@ -161,7 +161,7 @@ class JarvisPetManager:
             """,
             (nova_div, time.time()),
         )
-        token_mgr.creditar_fichas(5, f"Brincou no jogo: {jogo_nome}", "JOGO")
+        token_mgr.creditar_fichas(1, f"Brincou no jogo: {jogo_nome}", "JOGO")
         return {
             "sucesso": True,
             "mensagem": f"🎮 Bip-bip! Que divertido brincar de {jogo_nome} com você, Kaleu!",
