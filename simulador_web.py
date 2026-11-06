@@ -3,6 +3,7 @@ import socket
 from flask import Flask, Response, jsonify, render_template, request, send_file
 
 from biblioteca_livros import BOOKS
+from clima_estacoes import weather_mgr
 from gestao_tempo_midia import MediaTimeManager
 from jarvis_brain import JarvisBrain
 from voz_jarvis import VOICE_PROFILES, neural_tts
@@ -55,6 +56,16 @@ def service_worker():
     return send_file(os.path.join(BASE_DIR, "static", "sw.js"), mimetype="application/javascript")
 
 
+@app.route("/api/clima/atual", methods=["GET"])
+def api_clima_atual():
+    return jsonify(weather_mgr.obter_clima_atual())
+
+
+@app.route("/api/clima/estacoes", methods=["GET"])
+def api_clima_estacoes():
+    return jsonify(weather_mgr.obter_dados_estacoes())
+
+
 @app.route("/api/state", methods=["GET"])
 def api_state():
     brain.load_config()
@@ -97,6 +108,7 @@ def api_state():
             "remote_paused": REMOTE_STATE["paused"],
             "pause_message": REMOTE_STATE["pause_message"],
             "night_mode": REMOTE_STATE["night_mode"],
+            "clima": weather_mgr.obter_clima_atual(),
         }
     )
 
