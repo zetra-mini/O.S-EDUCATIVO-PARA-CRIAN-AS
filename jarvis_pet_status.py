@@ -10,7 +10,7 @@ Porta a lógica matemática de necessidades do repositório POUPY para a API ass
 """
 
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from banco_dados import db
 from economia_fichas import token_mgr
 
@@ -206,6 +206,110 @@ class JarvisPetManager:
             "modo_dormir": novo_dormir,
             "mensagem": msg,
             "status": self.obter_status(),
+        }
+
+    # ==========================================================================
+    # GESTÃO DE ACESSÓRIOS VESTÍVEIS (ARMÁRIO DO JARVIS)
+    # ==========================================================================
+
+    def listar_acessorios(self) -> Dict[str, Any]:
+        """Lista todos os itens vestíveis com status de compra e equipamento."""
+        itens = self.db.consultar_todos(
+            "SELECT id, nome, descricao, custo_fichas, icone, categoria, comprado, equipado FROM inventario_acessorios ORDER BY custo_fichas ASC;"
+        )
+        status_pet = self.obter_status()
+        return {
+            "acessorios": itens,
+            "acessorio_atual": status_pet.get("acessorio"),
+        }
+
+    def comprar_acessorio(self, item_id: str) -> Dict[str, Any]:
+        """Compra um item do armário com moedas do pote e equipa no robô."""
+        item = self.db.consultar_um(
+            "SELECT id, nome, custo_fichas, comprado, equipado FROM inventario_acessorios WHERE id = ?;",
+            (item_id,),
+        )
+        if not item:
+            return {"sucesso": False, "mensagem": "Acessório não encontrado."}
+
+        if item["comprado"]:
+            # Já comprado, apenas equipa
+            return self.equipar_acessorio(item_id)
+
+        custo = int(item["custo_fichas"])
+        if not token_mgr.debitar_fichas(custo, f"Compra Acessório: {item['nome']}"):
+            saldo = token_mgr.obter_status_pote()["saldo"]
+            return {
+                "sucesso": False,
+                "mensagem": f"Você precisa de {custo} moedas, mas tem {saldo} moedas no Pote do Tesouro!",
+            }
+
+        # Marca como comprado e já equipa
+        self.db.executar_escrita(
+            "UPDATE inventario_acessorios SET equipado = 0;"
+        )
+        self.db.executar_escrita(
+            "UPDATE inventario_acessorios SET comprado = 1, equipado = 1 WHERE id = ?;",
+            (item_id,),
+        )
+        self.db.executar_escrita(
+            "UPDATE bixinho_status SET acessorio_atual = ? WHERE id = 1;",
+            (item_id,),
+        )
+
+        return {
+            "sucesso": True,
+            "mensagem": f"🎉 Uau, Kaleu! Você comprou e vestiu o '{item['nome']}' no Jarvis!",
+            "item_id": item_id,
+            "acessorio_atual": item_id,
+            "saldo": token_mgr.obter_status_pote()["saldo"],
+        }
+
+    def equipar_acessorio(self, item_id: str) -> Dict[str, Any]:
+        """Equipa um acessório já comprado."""
+        item = self.db.consultar_um(
+            "SELECT id, nome, comprado FROM inventario_acessorios WHERE id = ?;",
+            (item_id,),
+        )
+        if not item:
+            return {"sucesso": False, "mensagem": "Acessório não encontrado."}
+        if not item["comprado"]:
+            return {"sucesso": False, "mensagem": f"Você precisa comprar '{item['nome']}' primeiro na loja!"}
+
+        # Desequipa os outros e equipa este
+        self.db.executar_escrita("UPDATE inventario_acessorios SET equipado = 0;")
+        self.db.executar_escrita(
+            "UPDATE inventario_acessorios SET equipado = 1 WHERE id = ?;",
+            (item_id,),
+        )
+        self.db.executar_escrita(
+            "UPDATE bixinho_status SET acessorio_atual = ? WHERE id = 1;",
+            (item_id,),
+        )
+
+        return {
+            "sucesso": True,
+            "mensagem": f"✨ Estilo ativado! O Jarvis agora está usando '{item['nome']}'!",
+            "item_id": item_id,
+            "acessorio_atual": item_id,
+        }
+
+    def desequipar_acessorio(self, item_id: Optional[str] = None) -> Dict[str, Any]:
+        """Desequipa o acessório atual, guardando-o de volta no armário."""
+        if item_id:
+            self.db.executar_escrita(
+                "UPDATE inventario_acessorios SET equipado = 0 WHERE id = ?;",
+                (item_id,),
+            )
+        else:
+            self.db.executar_escrita("UPDATE inventario_acessorios SET equipado = 0;")
+
+        self.db.executar_escrita("UPDATE bixinho_status SET acessorio_atual = NULL WHERE id = 1;")
+
+        return {
+            "sucesso": True,
+            "mensagem": "👕 Acessório guardado no armário! O Jarvis voltou ao traje original!",
+            "acessorio_atual": None,
         }
 
 

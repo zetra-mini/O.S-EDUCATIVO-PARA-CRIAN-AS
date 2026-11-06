@@ -217,6 +217,22 @@ class DatabaseManager:
             """
         )
 
+        # 2.1 INVENTÁRIO DE ACESSÓRIOS VESTÍVEIS REAIS DO JARVIS (ARMÁRIO)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS inventario_acessorios (
+                id TEXT PRIMARY KEY,
+                nome TEXT NOT NULL,
+                descricao TEXT NOT NULL,
+                custo_fichas INTEGER NOT NULL,
+                icone TEXT NOT NULL,
+                categoria TEXT NOT NULL, -- 'olhos', 'cabeca', 'pescoco', 'costas'
+                comprado BOOLEAN NOT NULL DEFAULT 0,
+                equipado BOOLEAN NOT NULL DEFAULT 0
+            );
+            """
+        )
+
         # 3. STATUS DO BICHINHO VIRTUAL (POU / B-BOT JARVIS)
         cursor.execute(
             """
@@ -421,6 +437,22 @@ class DatabaseManager:
             cursor.executemany(
                 "INSERT INTO recompensas_loja (id, titulo, descricao, custo_fichas, tipo, icone) VALUES (?, ?, ?, ?, ?, ?);",
                 itens_loja,
+            )
+
+        # POPULAR ACESSÓRIOS VESTÍVEIS DO ARMÁRIO DO JARVIS SE VAZIA
+        cursor.execute("SELECT COUNT(*) FROM inventario_acessorios;")
+        if cursor.fetchone()[0] == 0:
+            acessorios = [
+                ("oculos_stark", "Óculos Stark Neon", "Lentes futuristas espelhadas de alta tecnologia!", 15, "🕶️", "olhos", 0, 0),
+                ("coroa_ouro", "Coroa Real de Ouro", "Coroa brilhante de mestre de missões cumpridas!", 25, "👑", "cabeca", 0, 0),
+                ("bone_heroi", "Boné Espacial de Campeão", "Boné estiloso de explorador do universo!", 15, "🧢", "cabeca", 0, 0),
+                ("cachecol_espacial", "Cachecol Quentinho das Estrelas", "Cachecol macio e quentinho com listras douradas!", 12, "🧣", "pescoco", 0, 0),
+                ("headset_gamer", "Headset Gamer Neon Pro", "Fones luminosos com microfone de comunicação galáctica!", 20, "🎧", "cabeca", 0, 0),
+                ("asas_foguete", "Asas de Propulsão Plasma", "Turbinas de voo cósmico para voar super alto!", 30, "🚀", "costas", 0, 0),
+            ]
+            cursor.executemany(
+                "INSERT INTO inventario_acessorios (id, nome, descricao, custo_fichas, icone, categoria, comprado, equipado) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+                acessorios,
             )
 
         # POPULAR DATAS COMEMORATIVAS SE VAZIA

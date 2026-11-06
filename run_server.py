@@ -263,6 +263,32 @@ def api_pet_abajur(request: Request):
     return json_response(pet_mgr.alternar_abajur())
 
 
+@app.route("/api/pet/acessorios", methods=["GET"])
+def api_pet_acessorios(request: Request):
+    return json_response(pet_mgr.listar_acessorios())
+
+
+@app.route("/api/pet/acessorio/comprar", methods=["POST"])
+def api_pet_acessorio_comprar(request: Request):
+    data = request.json or {}
+    item_id = data.get("item_id", "")
+    return json_response(pet_mgr.comprar_acessorio(item_id))
+
+
+@app.route("/api/pet/acessorio/equipar", methods=["POST"])
+def api_pet_acessorio_equipar(request: Request):
+    data = request.json or {}
+    item_id = data.get("item_id", "")
+    return json_response(pet_mgr.equipar_acessorio(item_id))
+
+
+@app.route("/api/pet/acessorio/desequipar", methods=["POST"])
+def api_pet_acessorio_desequipar(request: Request):
+    data = request.json or {}
+    item_id = data.get("item_id")
+    return json_response(pet_mgr.desequipar_acessorio(item_id))
+
+
 # ==============================================================================
 # ROTAS DA ECONOMIA DE FICHAS & POTE DO TESOURO REAL
 # ==============================================================================

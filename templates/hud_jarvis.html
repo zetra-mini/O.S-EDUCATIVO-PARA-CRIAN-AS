@@ -1028,13 +1028,13 @@
       100% { transform: scale(1.08); box-shadow: 0 0 18px #f59e0b; }
     }
     /* ==============================================================================
-       ESTILO JOGO POU OFICIAL — SALA CENTRAL, MASCOTE E GAVETA LATERAL CLEAN
+       ESTILO J.A.R.V.I.S. KIDS — SALA CENTRAL SCI-FI & AMBIENTES FUTURISTAS SUAVES
        ============================================================================== */
     :root {
-      --pou-border: #3b2310;
-      --pou-body: #c8965d;
-      --room-wall: #58d672;
-      --room-floor: #22c55e;
+      --pou-border: #0284c7;
+      --pou-body: #ffffff;
+      --room-wall: radial-gradient(circle at 50% 30%, #0d2342 0%, #050c18 85%);
+      --room-floor: linear-gradient(180deg, #091a33 0%, #040913 100%);
     }
 
     #pou-app-container {
@@ -1045,18 +1045,19 @@
       position: relative;
       overflow: hidden;
       background: var(--room-wall);
-      transition: background-color 0.4s ease;
+      transition: background 0.5s ease;
     }
 
-    /* 1. TOP BAR IDÊNTICA AO POU */
+    /* 1. TOP BAR FUTURISTA TRANSLÚCIDA */
     .pou-top-bar {
-      background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(10px);
-      padding: 6px 14px;
+      background: rgba(7, 16, 32, 0.82);
+      backdrop-filter: blur(14px);
+      padding: 6px 16px;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      border-bottom: 3px solid rgba(0, 0, 0, 0.15);
+      border-bottom: 2px solid rgba(0, 240, 255, 0.25);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
       z-index: 100;
     }
 
@@ -1067,25 +1068,25 @@
     }
 
     .pou-coin-badge {
-      background: #facc15;
-      border: 3px solid #3b2310;
+      background: rgba(30, 25, 10, 0.85);
+      border: 2px solid #f59e0b;
       border-radius: 20px;
-      padding: 3px 12px;
+      padding: 4px 14px;
       display: flex;
       align-items: center;
       gap: 6px;
       font-weight: 900;
-      color: #1e1e1e;
+      color: #fde047;
       font-size: 1.05rem;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
       cursor: pointer;
-      transition: transform 0.1s;
+      transition: transform 0.1s, box-shadow 0.2s;
     }
     .pou-coin-badge:active { transform: scale(0.95); }
 
     .pou-plus-btn {
-      background: #22c55e;
-      border: 1.5px solid #14532d;
+      background: #10b981;
+      border: 1px solid #34d399;
       color: #ffffff;
       border-radius: 50%;
       width: 20px;
@@ -1098,27 +1099,27 @@
       margin-left: 2px;
     }
 
-    /* OS 4 QUADRADINHOS DE STATUS */
+    /* OS 4 QUADRADINHOS DE STATUS HOLOGRÁFICOS */
     .pou-status-meters {
       display: flex;
       gap: 8px;
     }
 
     .pou-meter-box {
-      background: #22c55e;
-      border: 2.5px solid #14532d;
-      border-radius: 8px;
-      width: 48px;
-      height: 32px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #0284c7;
+      border-radius: 10px;
+      width: 50px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.25rem;
-      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), 0 3px 0 rgba(0,0,0,0.25);
+      box-shadow: 0 0 10px rgba(2, 132, 199, 0.3);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform 0.1s;
+      transition: transform 0.1s, border-color 0.2s;
     }
     .pou-meter-box:active { transform: scale(0.92); }
 
@@ -1127,22 +1128,22 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0, 240, 255, 0.35);
       transition: height 0.4s;
     }
 
     .pou-level-badge {
-      background: #ffffff;
-      border: 3px solid #3b2310;
-      border-radius: 50% 50% 45% 45%;
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid #38bdf8;
+      border-radius: 12px;
       padding: 4px 12px;
       font-weight: 900;
-      color: #3b2310;
+      color: #38bdf8;
       font-size: 1.05rem;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
     }
 
-    /* NAVEGADOR DE CÔMODOS */
+    /* NAVEGADOR DE CÔMODOS FUTURISTA */
     .pou-room-nav-row {
       display: flex;
       align-items: center;
@@ -1152,34 +1153,35 @@
     }
 
     .btn-room-arrow {
-      background: #ffffff;
-      border: 3px solid #3b2310;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #38bdf8;
       border-radius: 10px;
-      width: 36px;
-      height: 30px;
+      width: 38px;
+      height: 32px;
       font-size: 1.15rem;
       font-weight: 900;
-      color: #3b2310;
+      color: #38bdf8;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.25);
-      transition: transform 0.1s;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+      transition: transform 0.1s, background 0.15s;
     }
     .btn-room-arrow:active { transform: scale(0.9); }
+    .btn-room-arrow:hover { background: rgba(56, 189, 248, 0.2); }
 
     .pou-room-title {
       font-size: 1.35rem;
       font-weight: 900;
-      color: #ffffff;
-      text-shadow: -2px -2px 0 #3b2310, 2px -2px 0 #3b2310, -2px 2px 0 #3b2310, 2px 2px 0 #3b2310, 0 4px 0 rgba(0,0,0,0.35);
-      letter-spacing: 0.5px;
-      min-width: 160px;
+      color: #e0f2fe;
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+      letter-spacing: 0.8px;
+      min-width: 180px;
       text-align: center;
     }
 
-    /* 2. O PALCO CENTRAL (SALA DO POU) */
+    /* 2. O PALCO CENTRAL (SALA DO JARVIS) */
     .pou-room-stage {
       flex: 1;
       position: relative;
@@ -1191,17 +1193,28 @@
       transition: filter 0.4s;
     }
 
-    /* Chão horizontal estilo Pou */
+    /* Chão com grade holográfica e borda de neon */
     .pou-room-floor {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 20%;
+      height: 22%;
       background: var(--room-floor);
-      border-top: 4px solid rgba(0,0,0,0.15);
+      border-top: 3px solid #00f0ff;
+      box-shadow: 0 -4px 24px rgba(0, 240, 255, 0.35);
       z-index: 1;
-      transition: background-color 0.4s;
+      transition: background 0.5s;
+    }
+    .pou-room-floor::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: 0.6;
     }
 
     /* Cordinha do Abajur (Quarto) */
@@ -1427,15 +1440,16 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
-    /* 3. BARRA INFERIOR IDÊNTICA AO POU */
+    /* 3. BARRA INFERIOR FUTURISTA HOLOGRÁFICA */
     .pou-bottom-bar {
-      height: 76px;
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(10px);
-      border-top: 3px solid rgba(0, 0, 0, 0.15);
+      height: 78px;
+      background: rgba(7, 16, 32, 0.85);
+      backdrop-filter: blur(14px);
+      border-top: 2px solid rgba(0, 240, 255, 0.25);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-around;
       padding: 0 20px;
       z-index: 100;
     }
@@ -1446,27 +1460,36 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       cursor: pointer;
       transition: transform 0.12s;
     }
-    .pou-bottom-btn:active { transform: scale(0.9); }
+    .pou-bottom-btn:active { transform: scale(0.92); }
 
     .pou-btn-icon-box {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #0284c7;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.1rem;
-      filter: drop-shadow(0 3px 2px rgba(0,0,0,0.3));
+      font-size: 2rem;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.35);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .pou-bottom-btn:hover .pou-btn-icon-box {
+      border-color: #00f0ff;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.6);
     }
 
     .pou-btn-label {
       font-size: 0.95rem;
       font-weight: 900;
-      color: #ffffff;
-      text-shadow: -1.5px -1.5px 0 #3b2310, 1.5px -1.5px 0 #3b2310, -1.5px 1.5px 0 #3b2310, 1.5px 1.5px 0 #3b2310;
+      color: #e0f2fe;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+      letter-spacing: 0.3px;
     }
 
     /* FERRAMENTA CENTRAL DO CÔMODO */
@@ -1476,20 +1499,24 @@
       gap: 16px;
     }
     .tool-circle-btn {
-      width: 56px;
-      height: 56px;
-      background: #ffffff;
-      border: 3.5px solid #3b2310;
+      width: 62px;
+      height: 62px;
+      background: radial-gradient(circle, #0369a1 0%, #0c213d 100%);
+      border: 3px solid #38bdf8;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       cursor: pointer;
-      box-shadow: 0 5px 0 rgba(0,0,0,0.25);
-      transition: transform 0.12s;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.3);
+      transition: transform 0.12s, box-shadow 0.2s;
     }
-    .tool-circle-btn:active { transform: scale(0.9); }
+    .tool-circle-btn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.85);
+    }
+    .tool-circle-btn:active { transform: scale(0.92); }
 
     /* 4. GAVETA LATERAL RETRÁTIL DE JOGOS & ATIVIDADES (CLEAN) */
     .activity-drawer {
@@ -1675,7 +1702,6 @@
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
         <span id="pou-room-title" class="pou-room-title">Sala de Brincar</span>
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(1)" title="Próximo Cômodo">▶</button>
-        <button type="button" class="btn-pou-mic" onclick="ativarEscutaJarvisDireta()" style="background:#0284c7; color:#fff; border:2.5px solid #0369a1; border-radius:10px; padding:6px 12px; font-size:0.95rem; font-weight:900; cursor:pointer; display:flex; align-items:center; gap:6px;" title="Falar com o J.A.R.V.I.S.">🎙️ <span>Falar</span></button>
       </div>
     </header>
 
@@ -1728,6 +1754,22 @@
           <g id="jarvis-soundwave-rings" style="display:none;">
             <circle cx="120" cy="90" r="75" fill="none" stroke="#00f0ff" stroke-width="2.5" opacity="0.6" class="jarvis-ring-pulse" />
             <circle cx="120" cy="90" r="95" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.4" class="jarvis-ring-pulse-delay" />
+          </g>
+
+          <!-- ACESSÓRIO VESTÍVEL: ASAS DE FOGUETE / PROPULSÃO PLASMA -->
+          <g id="robot-acc-asas_foguete" style="display:none;">
+            <!-- Asa Esquerda -->
+            <polygon points="72,136 18,124 24,158 72,168" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+            <polygon points="68,140 28,130 32,152 68,160" fill="#0284c7" />
+            <ellipse cx="22" cy="142" rx="4" ry="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
+            <polygon points="18,136 4,142 18,148" fill="#00f0ff" filter="url(#neonCyanGlow)" />
+            <polygon points="18,138 9,142 18,146" fill="#ffffff" />
+            <!-- Asa Direita -->
+            <polygon points="168,136 222,124 216,158 168,168" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+            <polygon points="172,140 212,130 208,152 172,160" fill="#0284c7" />
+            <ellipse cx="218" cy="142" rx="4" ry="12" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
+            <polygon points="222,136 236,142 222,148" fill="#00f0ff" filter="url(#neonCyanGlow)" />
+            <polygon points="222,138 231,142 222,146" fill="#ffffff" />
           </g>
 
           <!-- BRACINHOS ROBÓTICOS FLUTUANTES -->
@@ -1811,6 +1853,59 @@
             <circle cx="188" cy="30" r="7.5" fill="#facc15" stroke="#eab308" stroke-width="2" />
             <path d="M 76,36 Q 120,26 164,36" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
           </g>
+
+          <!-- 1. ACESSÓRIO: ÓCULOS STARK NEON (OLHOS) -->
+          <g id="robot-acc-oculos_stark" style="display:none;">
+            <path d="M 76,75 L 114,75 L 120,79 L 126,75 L 164,75 L 164,95 L 126,95 L 120,91 L 114,95 L 76,95 Z" fill="#f59e0b" stroke="#78350f" stroke-width="2" />
+            <rect x="80" y="77" width="32" height="16" rx="4" fill="#f97316" opacity="0.9" />
+            <line x1="84" y1="80" x2="94" y2="90" stroke="#ffffff" stroke-width="1.8" opacity="0.8" />
+            <rect x="128" y="77" width="32" height="16" rx="4" fill="#f97316" opacity="0.9" />
+            <line x1="132" y1="80" x2="142" y2="90" stroke="#ffffff" stroke-width="1.8" opacity="0.8" />
+            <line x1="76" y1="82" x2="66" y2="80" stroke="#f59e0b" stroke-width="2.5" />
+            <line x1="164" y1="82" x2="174" y2="80" stroke="#f59e0b" stroke-width="2.5" />
+          </g>
+
+          <!-- 2. ACESSÓRIO: COROA REAL DE OURO (CABEÇA) -->
+          <g id="robot-acc-coroa_ouro" style="display:none;">
+            <polygon points="86,44 92,20 106,32 120,12 134,32 148,20 154,44" fill="#facc15" stroke="#b45309" stroke-width="2" filter="url(#neonCyanGlow)" />
+            <rect x="86" y="40" width="68" height="6" rx="2" fill="#eab308" stroke="#b45309" stroke-width="1.5" />
+            <circle cx="92" cy="20" r="3" fill="#ef4444" />
+            <circle cx="120" cy="12" r="3.5" fill="#3b82f6" />
+            <circle cx="148" cy="20" r="3" fill="#10b981" />
+            <circle cx="120" cy="43" r="2.5" fill="#ef4444" />
+            <circle cx="103" cy="43" r="2.5" fill="#3b82f6" />
+            <circle cx="137" cy="43" r="2.5" fill="#10b981" />
+          </g>
+
+          <!-- 3. ACESSÓRIO: BONÉ ESPACIAL DE CAMPEÃO (CABEÇA) -->
+          <g id="robot-acc-bone_heroi" style="display:none;">
+            <path d="M 72,46 Q 120,18 168,46 Q 164,30 120,26 Q 76,30 72,46 Z" fill="#ef4444" stroke="#991b1b" stroke-width="2" />
+            <path d="M 148,44 Q 192,42 186,54 Q 152,56 138,46 Z" fill="#0284c7" stroke="#0369a1" stroke-width="2" />
+            <circle cx="120" cy="36" r="6" fill="#ffffff" />
+            <circle cx="120" cy="25" r="3" fill="#0284c7" />
+          </g>
+
+          <!-- 4. ACESSÓRIO: CACHECÓL ESTELAR (PESCOÇO) -->
+          <g id="robot-acc-cachecol_espacial" style="display:none;">
+            <rect x="74" y="122" width="92" height="16" rx="8" fill="#1e3a8a" stroke="#fbbf24" stroke-width="2.5" />
+            <line x1="94" y1="122" x2="94" y2="138" stroke="#fbbf24" stroke-width="3" />
+            <line x1="114" y1="122" x2="114" y2="138" stroke="#fbbf24" stroke-width="3" />
+            <line x1="134" y1="122" x2="134" y2="138" stroke="#fbbf24" stroke-width="3" />
+            <rect x="80" y="132" width="18" height="26" rx="4" fill="#1e3a8a" stroke="#fbbf24" stroke-width="2" />
+            <line x1="80" y1="150" x2="98" y2="150" stroke="#fbbf24" stroke-width="3" />
+          </g>
+
+          <!-- 5. ACESSÓRIO: HEADSET GAMER NEON PRO (CABEÇA) -->
+          <g id="robot-acc-headset_gamer" style="display:none;">
+            <path d="M 52,82 Q 120,8 188,82" fill="none" stroke="#0f172a" stroke-width="8" stroke-linecap="round" />
+            <path d="M 54,82 Q 120,12 186,82" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+            <rect x="42" y="70" width="18" height="36" rx="9" fill="#0f172a" stroke="#00f0ff" stroke-width="2.5" filter="url(#neonCyanGlow)" />
+            <circle cx="51" cy="88" r="4" fill="#00f0ff" />
+            <rect x="180" y="70" width="18" height="36" rx="9" fill="#0f172a" stroke="#00f0ff" stroke-width="2.5" filter="url(#neonCyanGlow)" />
+            <circle cx="189" cy="88" r="4" fill="#00f0ff" />
+            <path d="M 50,96 Q 70,118 100,112" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" />
+            <circle cx="102" cy="112" r="4.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+          </g>
         </svg>
 
         <!-- Bolhas de Sabão (Banheiro) -->
@@ -1880,7 +1975,7 @@
       </div>
     </div>
 
-    <!-- 3. BARRA INFERIOR IDÊNTICA AO POU COM ATALHO DE CONVERSA -->
+    <!-- 3. BARRA INFERIOR FUTURISTA (CLEAN: JOGOS, FERRAMENTA E LOJA/ARMÁRIO) -->
     <footer class="pou-bottom-bar">
       <!-- BOTÃO JOGOS (ABRE A GAVETA LATERAL DE ATIVIDADES EDUCATIVAS) -->
       <button type="button" class="pou-bottom-btn" onclick="toggleActivityDrawer()" title="Abrir Jogos & Atividades Educativas">
@@ -1891,23 +1986,20 @@
       <!-- FERRAMENTA DINÂMICA DO CÔMODO (CENTRO) -->
       <div class="pou-center-tool" id="pou-room-tool-center">
         <!-- Na Sala de Brincar: Bolinha -->
-        <button type="button" class="tool-circle-btn" id="btn-tool-active" onclick="acionarFerramentaComodo()" title="Brincar com a Bolinha do Lucky">
+        <button type="button" class="tool-circle-btn" id="btn-tool-active" onclick="acionarFerramentaComodo()" title="Brincar com a Bolinha do Jarvis">
           🎾
         </button>
       </div>
 
-      <!-- BOTÃO CONVERSAR COM O LUCKY (JARVIS) -->
-      <button type="button" class="pou-bottom-btn" onclick="iniciarConversaDiretaLucky()" title="Conversar com o Lucky (J.A.R.V.I.S.)">
-        <div class="pou-btn-icon-box" style="background:#0284c7; color:#fff;">🎙️</div>
-        <span class="pou-btn-label">Conversar</span>
-      </button>
-
-      <!-- BOTÃO LOJA (ABRE O POTE DO TESOURO REAL) -->
-      <button type="button" class="pou-bottom-btn" onclick="abrirLojaTesouro()" title="Abrir Loja do Tesouro Real">
+      <!-- BOTÃO LOJA & ARMÁRIO (VESTIR ACESSÓRIOS & TESOURO REAL) -->
+      <button type="button" class="pou-bottom-btn" onclick="abrirLojaTesouro()" title="Abrir Armário de Acessórios & Loja do Tesouro">
         <div class="pou-btn-icon-box">🏪</div>
-        <span class="pou-btn-label">Loja</span>
+        <span class="pou-btn-label">Loja / Armário</span>
       </button>
     </footer>
+
+    <!-- PLAYER DE ÁUDIO INVISÍVEL PARA VOZ AUDÍVEL SEM BLOQUEIOS -->
+    <audio id="jarvis-speech-player" preload="auto" style="display:none;"></audio>
   </div>
 
   <!-- 4. GAVETA LATERAL RETRÁTIL (CLEAN: SÓ APARECE QUANDO FOR CLICADA!) -->
@@ -2104,41 +2196,41 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     // ==============================================================================
-    // CONTROLADOR DO ROBOZINHO J.A.R.V.I.S. — CÔMODOS, INTERAÇÕES E ANIMAÇÕES
+    // CONTROLADOR DO ROBOZINHO J.A.R.V.I.S. — MÓDULOS ESPACIAIS, ACESSÓRIOS E FALA
     // ==============================================================================
     const COMODOS_POU = [
       {
         id: 'jogos',
-        nome: 'Sala de Brincar',
-        wall: '#58d672',
-        floor: '#22c55e',
+        nome: 'Módulo de Comando',
+        wall: 'radial-gradient(circle at 50% 32%, #0f274a 0%, #06101f 85%)',
+        floor: 'linear-gradient(180deg, #091a33 0%, #040913 100%)',
         toolIcon: '🎾',
         toolTitle: 'Jogar Bolinha com o Jarvis',
         toolAcao: brincarBolaPou
       },
       {
         id: 'cozinha',
-        nome: 'Cozinha do Jarvis',
-        wall: '#fde047',
-        floor: '#d97706',
+        nome: 'Módulo de Energia',
+        wall: 'radial-gradient(circle at 50% 32%, #222538 0%, #0a0e1c 85%)',
+        floor: 'linear-gradient(180deg, #151c2b 0%, #080c14 100%)',
         toolIcon: '🍎',
         toolTitle: 'Alimentar o Jarvis com Frutinhas',
         toolAcao: alimentarPouRapido
       },
       {
         id: 'banheiro',
-        nome: 'Banheiro do Jarvis',
-        wall: '#38bdf8',
-        floor: '#0284c7',
+        nome: 'Baia de Limpeza',
+        wall: 'radial-gradient(circle at 50% 32%, #0e3547 0%, #06141d 85%)',
+        floor: 'linear-gradient(180deg, #0a232f 0%, #030d13 100%)',
         toolIcon: '🧼',
         toolTitle: 'Limpar Circuitos do Jarvis',
         toolAcao: darBanhoPouRapido
       },
       {
         id: 'quarto',
-        nome: 'Quarto do Jarvis',
-        wall: '#c084fc',
-        floor: '#7c3aed',
+        nome: 'Câmara de Hibernação',
+        wall: 'radial-gradient(circle at 50% 32%, #1b1338 0%, #090616 85%)',
+        floor: 'linear-gradient(180deg, #110c26 0%, #05030e 100%)',
         toolIcon: '🌙',
         toolTitle: 'Modo de Recarga do Jarvis (Abajur)',
         toolAcao: alternarAbajurSonoPou
@@ -2148,6 +2240,16 @@
     let comodoAtualIdx = 0;
     let pouDormindo = false;
     let bolhaSabaoAtiva = false;
+    let acessorioAtualJarvis = null;
+
+    function atualizarAcessorioVisual(itemId) {
+      acessorioAtualJarvis = itemId;
+      const ids = ['oculos_stark', 'coroa_ouro', 'bone_heroi', 'cachecol_espacial', 'headset_gamer', 'asas_foguete'];
+      ids.forEach(id => {
+        const el = document.getElementById(`robot-acc-${id}`);
+        if (el) el.style.display = (id === itemId) ? 'block' : 'none';
+      });
+    }
 
     function trocarComodoPou(delta) {
       comodoAtualIdx = (comodoAtualIdx + delta + COMODOS_POU.length) % COMODOS_POU.length;
@@ -2259,6 +2361,7 @@
 
     // ATIVAÇÃO DIRETA DA ESCUTA DO JARVIS (SEM MODAL NEM DIGITAÇÃO)
     function ativarEscutaJarvisDireta() {
+      destravarAudioNavegador();
       tocarChimeJarvis();
 
       // Ativa ondas sonoras e olhos felizes no robô
@@ -2610,7 +2713,7 @@
       }
     }
 
-    // ATUALIZAÇÃO DOS 4 STATUS DO POU
+    // ATUALIZAÇÃO DOS 4 STATUS DO POU E ACESSÓRIO VESTÍVEL
     function atualizarStatusPou(pet) {
       if (!pet) return;
       const fillFood = document.getElementById('meter-fill-food');
@@ -2623,6 +2726,10 @@
       if (fillClean) fillClean.style.height = `${inv(pet.higiene)}%`;
       if (fillFun) fillFun.style.height = `${inv(pet.diversao)}%`;
       if (fillEnergy) fillEnergy.style.height = `${inv(pet.energia)}%`;
+
+      if (pet.acessorio !== undefined) {
+        atualizarAcessorioVisual(pet.acessorio);
+      }
     }
 
     function showToast(msg, isError = false) {
@@ -2681,6 +2788,21 @@
       setSpeakingVisual(false);
     }
 
+    function destravarAudioNavegador() {
+      try {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const player = document.getElementById('jarvis-speech-player');
+        if (player) {
+          player.volume = 1.0;
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.resume();
+        }
+      } catch (e) {}
+    }
+
     async function speak(text, options = {}) {
       document.getElementById('subtitle-bar').textContent = text;
       if (!appState.config.voice_enabled || !text) {
@@ -2688,9 +2810,23 @@
         return;
       }
 
+      destravarAudioNavegador();
       stopCurrentSpeech();
+
+      // Ativa ondas de fala na boca do robô
+      const speakWaves = document.getElementById('robot-speaking-waves');
+      if (speakWaves) speakWaves.style.display = 'block';
+
       const ctrl = new AbortController();
       ttsAbortCtrl = ctrl;
+
+      // Timeout de segurança: Se a chamada TTS externa demorar mais de 3.5s, cai no fallback falado imediatamente
+      let fallbackTimer = setTimeout(() => {
+        if (ttsAbortCtrl === ctrl) {
+          try { ctrl.abort(); } catch (e) {}
+          speakBrowserFallback(text, options.onEnd);
+        }
+      }, 3500);
 
       try {
         const payload = { text };
@@ -2704,56 +2840,91 @@
           signal: ctrl.signal
         });
 
+        clearTimeout(fallbackTimer);
+
         if (res.status === 200) {
           const blob = await res.blob();
           if (blob.size > 200 && ttsAbortCtrl === ctrl) {
             const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
-            audio._blobUrl = url;
-            currentAudio = audio;
+            const player = document.getElementById('jarvis-speech-player') || new Audio();
+            player.src = url;
+            player._blobUrl = url;
+            player.volume = 1.0;
+            currentAudio = player;
             setSpeakingVisual(true);
-            audio.onended = () => {
+
+            player.onended = () => {
               URL.revokeObjectURL(url);
-              if (currentAudio === audio) {
+              if (currentAudio === player) {
                 currentAudio = null;
                 setSpeakingVisual(false);
               }
+              if (speakWaves) speakWaves.style.display = 'none';
               if (options.onEnd) options.onEnd();
             };
-            audio.onerror = () => {
+            player.onerror = () => {
               URL.revokeObjectURL(url);
               setSpeakingVisual(false);
               speakBrowserFallback(text, options.onEnd);
             };
-            await audio.play();
+
+            await player.play();
             return;
           }
         }
       } catch (err) {
+        clearTimeout(fallbackTimer);
         if (err && err.name === 'AbortError') return;
       }
+
       speakBrowserFallback(text, options.onEnd);
     }
 
     function speakBrowserFallback(text, onEnd) {
+      destravarAudioNavegador();
       if (!('speechSynthesis' in window)) {
+        const speakWaves = document.getElementById('robot-speaking-waves');
+        if (speakWaves) speakWaves.style.display = 'none';
         if (onEnd) onEnd();
         return;
       }
+
+      try {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
+      } catch (e) {}
+
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'pt-BR';
+      utter.volume = 1.0;
+      utter.rate = 1.0;
+      utter.pitch = 1.05;
+
       const voices = window.speechSynthesis.getVoices() || [];
       const ptVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('pt'));
       const best =
-        ptVoices.find(v => /natural|neural|online|francisca|antonio|thalita/i.test(v.name)) ||
+        ptVoices.find(v => /natural|neural|online|francisca|antonio|thalita|luciana|felipe/i.test(v.name)) ||
         ptVoices.find(v => /google/i.test(v.name)) ||
         ptVoices[0];
       if (best) utter.voice = best;
-      utter.rate = 1.0;
-      utter.pitch = 1.03;
-      utter.onstart = () => setSpeakingVisual(true);
-      utter.onend = () => { setSpeakingVisual(false); if (onEnd) onEnd(); };
-      utter.onerror = () => { setSpeakingVisual(false); if (onEnd) onEnd(); };
+
+      const speakWaves = document.getElementById('robot-speaking-waves');
+
+      utter.onstart = () => {
+        setSpeakingVisual(true);
+        if (speakWaves) speakWaves.style.display = 'block';
+      };
+      utter.onend = () => {
+        setSpeakingVisual(false);
+        if (speakWaves) speakWaves.style.display = 'none';
+        if (onEnd) onEnd();
+      };
+      utter.onerror = () => {
+        setSpeakingVisual(false);
+        if (speakWaves) speakWaves.style.display = 'none';
+        if (onEnd) onEnd();
+      };
+
       window.speechSynthesis.speak(utter);
     }
 
@@ -2967,7 +3138,17 @@
 
     async function startVoiceListening() {
       if (voiceState === 'listening' || voiceState === 'processing') return;
+      destravarAudioNavegador();
       stopCurrentSpeech();
+
+      // Libera o microfone parando qualquer escuta em segundo plano para não conflitar com a captura de comando
+      if (continuousWakeRecognizer) {
+        try {
+          continuousWakeRecognizer.abort();
+        } catch (e) {}
+        wakeWatcherActive = false;
+      }
+
       pushTranscript = '';
       recordedAudioChunks = [];
       clearTimeout(silenceTimer);
@@ -3034,7 +3215,7 @@
               if (voiceState === 'listening') {
                 finishVoiceListeningAndProcess();
               }
-            }, 1800);
+            }, 1200);
           }
 
           visualizerAnimFrame = requestAnimationFrame(drawWave);
@@ -3085,7 +3266,7 @@
             if (pushTranscript) {
               document.getElementById('subtitle-bar').textContent = `👦 Você: "${pushTranscript}"`;
               clearTimeout(silenceTimer);
-              const silenceWaitMs = hasFinal ? 1500 : 2500;
+              const silenceWaitMs = hasFinal ? 850 : 1600;
               silenceTimer = setTimeout(() => {
                 if (voiceState === 'listening') {
                   finishVoiceListeningAndProcess();
@@ -3116,12 +3297,12 @@
         }
       }
 
-      // Limite máximo de segurança: 18 segundos
+      // Limite máximo de segurança: 16 segundos
       setTimeout(() => {
         if (voiceState === 'listening') {
           finishVoiceListeningAndProcess();
         }
-      }, 18000);
+      }, 16000);
     }
 
     async function finishVoiceListeningAndProcess() {
@@ -3238,6 +3419,13 @@
             } else if (data.acao_frontend === 'abrir_jogos') {
               toggleActivityDrawer();
             }
+
+            // Reativa a vigilância contínua da palavra-chave "Jarvis" após a fala terminar
+            setTimeout(() => {
+              if (voiceState === 'idle') {
+                iniciarVigilanciaWakeWord();
+              }
+            }, 800);
           }
         });
       } catch (err) {
@@ -6594,47 +6782,176 @@
     }
 
     // =========================================================================
-    // MODAL: LOJA DO TESOURO REAL (TOKEN ECONOMY)
+    // MODAL: LOJA DO TESOURO & ARMÁRIO VESTÍVEL DO JARVIS (TOKEN ECONOMY)
     // =========================================================================
-    async function abrirLojaTesouro() {
-      const body = openModal('🪙 LOJA DO TESOURO REAL');
+    let abaLojaAtiva = 'armario';
+
+    async function abrirLojaTesouro(aba = 'armario') {
+      abaLojaAtiva = aba;
+      const body = openModal('🏪 LOJA DO TESOURO & ARMÁRIO DO JARVIS');
       playTone(523, 90);
+
       body.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#0b1d36; border:2px solid #f59e0b; border-radius:14px; padding:10px 16px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#0b1d36; border:2px solid #f59e0b; border-radius:14px; padding:10px 16px; margin-bottom:12px;">
           <span style="font-weight:900; color:#fde047; font-size:1.15rem;">SEU SALDO ATUAL:</span>
           <span style="font-weight:900; color:#fde047; font-size:1.4rem;">🪙 <span id="loja-saldo-display">...</span> Moedas</span>
         </div>
-        <div id="loja-itens-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
-          <div style="color:#94a3b8; padding:14px; text-align:center;">Carregando recompensas...</div>
+
+        <div style="display:flex; gap:10px; margin-bottom:14px;">
+          <button type="button" id="tab-btn-armario" class="big-btn" style="flex:1; padding:10px 14px; font-size:1.1rem; ${abaLojaAtiva === 'armario' ? 'background:#0284c7; border:2px solid #00f0ff;' : 'background:#1e293b; opacity:0.8;'}" onclick="abrirLojaTesouro('armario')">
+            👔 Armário do Jarvis (Vestir/Tirar)
+          </button>
+          <button type="button" id="tab-btn-real" class="big-btn" style="flex:1; padding:10px 14px; font-size:1.1rem; ${abaLojaAtiva === 'real' ? 'background:#0284c7; border:2px solid #00f0ff;' : 'background:#1e293b; opacity:0.8;'}" onclick="abrirLojaTesouro('real')">
+            🎁 Tesouro Real com a Família
+          </button>
+        </div>
+
+        <div id="loja-conteudo-aba" style="min-height:220px;">
+          <div style="color:#94a3b8; padding:16px; text-align:center;">Carregando itens...</div>
         </div>
       `;
 
       try {
-        const [resSt, resL] = await Promise.all([
-          fetch('/api/fichas/status'),
-          fetch('/api/fichas/loja')
-        ]);
+        const resSt = await fetch('/api/fichas/status');
         const st = await resSt.json();
-        const itens = await resL.json();
-
         const saldoEl = document.getElementById('loja-saldo-display');
         if (saldoEl) saldoEl.textContent = st.saldo || 0;
-        const grid = document.getElementById('loja-itens-grid');
-        if (grid && Array.isArray(itens)) {
-          grid.innerHTML = itens.map(item => `
-            <div class="toy-card" style="flex-direction:column; padding:12px; text-align:center; gap:8px;">
-              <div style="font-size:2.8rem;">${item.icone}</div>
-              <div style="font-size:1.05rem; font-weight:900; color:#fff;">${item.titulo}</div>
-              <div style="font-size:0.8rem; color:#94a3b8;">${item.descricao}</div>
-              <button type="button" class="big-btn" style="background:#0284c7; width:100%; margin-top:4px;" onclick="resgatarItemLoja('${item.id}')">
-                Resgatar por 🪙 ${item.custo_fichas}
-              </button>
+
+        const container = document.getElementById('loja-conteudo-aba');
+        if (!container) return;
+
+        if (abaLojaAtiva === 'armario') {
+          const resAcc = await fetch('/api/pet/acessorios');
+          const dataAcc = await resAcc.json();
+          const lista = dataAcc.acessorios || [];
+          const atual = dataAcc.acessorio_atual;
+
+          container.innerHTML = `
+            <div style="font-size:0.95rem; color:#38bdf8; font-weight:800; margin-bottom:10px;">
+              ✨ Toque para comprar, vestir ou tirar as roupinhas e itens no seu robô!
             </div>
-          `).join('');
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px;">
+              ${lista.map(item => {
+                const isEquipado = (item.equipado == 1) || (atual === item.id);
+                const isComprado = (item.comprado == 1);
+
+                let btnHtml = '';
+                if (!isComprado) {
+                  btnHtml = `
+                    <button type="button" class="big-btn" style="background:#10b981; width:100%; font-size:0.95rem; padding:9px 12px;" onclick="comprarAcessorioArmario('${item.id}', '${item.nome}')">
+                      🪙 Comprar (${item.custo_fichas} moedas)
+                    </button>
+                  `;
+                } else if (isEquipado) {
+                  btnHtml = `
+                    <button type="button" class="big-btn" style="background:#f97316; width:100%; font-size:0.95rem; padding:9px 12px;" onclick="desequiparAcessorioArmario('${item.id}', '${item.nome}')">
+                      ✖️ Tirar do Jarvis
+                    </button>
+                  `;
+                } else {
+                  btnHtml = `
+                    <button type="button" class="big-btn" style="background:#0284c7; width:100%; font-size:0.95rem; padding:9px 12px;" onclick="equiparAcessorioArmario('${item.id}', '${item.nome}')">
+                      ✨ Vestir no Jarvis
+                    </button>
+                  `;
+                }
+
+                return `
+                  <div class="toy-card" style="flex-direction:column; padding:14px; text-align:center; gap:8px; border-color:${isEquipado ? '#facc15' : '#334155'}; position:relative;">
+                    ${isEquipado ? '<span style="position:absolute; top:8px; right:10px; background:#facc15; color:#0f172a; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:999px;">⭐ VESTIDO</span>' : ''}
+                    <div style="font-size:3rem;">${item.icone}</div>
+                    <div style="font-size:1.05rem; font-weight:900; color:#fff;">${item.nome}</div>
+                    <div style="font-size:0.8rem; color:#94a3b8;">${item.descricao}</div>
+                    ${btnHtml}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        } else {
+          // ABA TESOURO REAL EM FAMÍLIA
+          const resL = await fetch('/api/fichas/loja');
+          const itens = await resL.json();
+
+          container.innerHTML = `
+            <div style="font-size:0.95rem; color:#fde047; font-weight:800; margin-bottom:10px;">
+              🎁 Troque suas moedas por privilégios especiais do mundo real com o papai e a mamãe!
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+              ${(Array.isArray(itens) ? itens : []).map(item => `
+                <div class="toy-card" style="flex-direction:column; padding:14px; text-align:center; gap:8px;">
+                  <div style="font-size:2.8rem;">${item.icone}</div>
+                  <div style="font-size:1.05rem; font-weight:900; color:#fff;">${item.titulo}</div>
+                  <div style="font-size:0.8rem; color:#94a3b8;">${item.descricao}</div>
+                  <button type="button" class="big-btn" style="background:#0284c7; width:100%; margin-top:4px;" onclick="resgatarItemLoja('${item.id}')">
+                    Resgatar por 🪙 ${item.custo_fichas}
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          `;
         }
       } catch (e) {
         console.error("Erro na loja:", e);
       }
+    }
+
+    async function comprarAcessorioArmario(itemId, nome) {
+      try {
+        const res = await fetch('/api/pet/acessorio/comprar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ item_id: itemId })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          playTone(880, 200);
+          showToast(d.mensagem);
+          atualizarAcessorioVisual(d.acessorio_atual);
+          atualizarPoteVisual();
+          speak(`Uau, Kaleu! Eu adorei o ${nome}! Ficou muito estiloso em mim!`);
+          abrirLojaTesouro('armario');
+        } else {
+          showToast(d.mensagem, true);
+          speak(d.mensagem);
+        }
+      } catch (e) {}
+    }
+
+    async function equiparAcessorioArmario(itemId, nome) {
+      try {
+        const res = await fetch('/api/pet/acessorio/equipar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ item_id: itemId })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          playTone(784, 160);
+          showToast(d.mensagem);
+          atualizarAcessorioVisual(d.acessorio_atual);
+          speak(`Prontinho, Kaleu! Já vesti o ${nome}! O que achou?`);
+          abrirLojaTesouro('armario');
+        }
+      } catch (e) {}
+    }
+
+    async function desequiparAcessorioArmario(itemId, nome) {
+      try {
+        const res = await fetch('/api/pet/acessorio/desequipar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ item_id: itemId })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          playTone(523, 140);
+          showToast(d.mensagem);
+          atualizarAcessorioVisual(null);
+          speak(`Tirei o ${nome} e guardei no meu armário, Kaleu!`);
+          abrirLojaTesouro('armario');
+        }
+      } catch (e) {}
     }
 
     async function resgatarItemLoja(itemId) {
@@ -6650,7 +6967,8 @@
           showToast(d.mensagem);
           speak(d.mensagem);
           atualizarPoteVisual();
-          document.getElementById('loja-saldo-display').textContent = d.saldo_restante;
+          const sEl = document.getElementById('loja-saldo-display');
+          if (sEl) sEl.textContent = d.saldo_restante;
         } else {
           showToast(d.mensagem, true);
           speak(d.mensagem);
@@ -6875,8 +7193,9 @@
       } catch (e) {}
     }, 1200);
 
-    // Inicia a escuta contínua assim que o usuário interagir com a tela
+    // Inicia a escuta contínua e destrava o áudio assim que o usuário interagir com a tela
     window.addEventListener('click', () => {
+      destravarAudioNavegador();
       iniciarVigilanciaWakeWord();
     }, { once: true });
 
