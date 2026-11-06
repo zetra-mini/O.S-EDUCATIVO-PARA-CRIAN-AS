@@ -32,13 +32,20 @@ os.chdir(BASE_DIR)
 from microdot import Microdot, Request, Response, send_file
 
 # Importa módulos de negócio do Jarvis Kids OS
-from banco_dados import db
+from banco_dados import (
+    db,
+    limpar_logs,
+    obter_logs,
+    obter_resumo_progresso_idiomas,
+    registrar_log,
+)
 from biblioteca_livros import BOOKS
 from clima_estacoes import weather_mgr
 from cognicao_jogos import cognition_mgr
 from datas_comemorativas import calendar_mgr
 from economia_fichas import token_mgr
 from educacao_alimentar import food_mgr
+import estudo_idiomas
 from gestao_tempo_midia import MediaTimeManager
 from jarvis_brain import JarvisBrain
 from jarvis_pet_status import pet_mgr
@@ -447,6 +454,125 @@ def api_bateria_status(request: Request):
 
 
 # ==============================================================================
+# DIAGNÓSTICO DO SISTEMA & LOGS DO PAINEL ADM
+# ==============================================================================
+
+
+def executar_diagnostico_completo() -> Dict[str, Any]:
+    diag = {
+        "sqlite": {"status": "OK", "versao": "", "journal_mode": "", "tabelas": 0},
+        "memoria": {"ram_mb": 0.0, "status": "Excelente (< 30 MB)"},
+        "ia": {"provedor": brain.config.get("active_provider", "offline"), "status": "Disponível"},
+        "bateria": obter_nivel_bateria(),
+        "clima": weather_mgr.obter_clima_atual(),
+        "logs_resumo": {"total_erros_recentes": 0, "total_logs": 0},
+        "idiomas": obter_resumo_progresso_idiomas(),
+    }
+    # Checa SQLite
+    try:
+        row_v = db.consultar_um("SELECT sqlite_version() as v;")
+        diag["sqlite"]["versao"] = row_v["v"] if row_v else "3.x"
+        row_wal = db.consultar_um("PRAGMA journal_mode;")
+        diag["sqlite"]["journal_mode"] = str(list(row_wal.values())[0]).upper() if row_wal else "WAL"
+        row_tabs = db.consultar_um("SELECT count(*) as qtd FROM sqlite_master WHERE type='table';")
+        diag["sqlite"]["tabelas"] = row_tabs["qtd"] if row_tabs else 0
+    except Exception as e:
+        diag["sqlite"]["status"] = f"ERRO: {e}"
+        registrar_log("ERRO", "diagnostico", f"Erro no teste SQLite: {e}")
+
+    # Checa Memória RAM
+    try:
+        import tracemalloc
+        if not tracemalloc.is_tracing():
+            tracemalloc.start()
+        cur, peak = tracemalloc.get_traced_memory()
+        ram_mb = round(cur / (1024 * 1024), 2)
+        diag["memoria"]["ram_mb"] = ram_mb
+        if ram_mb > 35:
+            diag["memoria"]["status"] = "Atenção (Acima de 35 MB)"
+    except Exception:
+        diag["memoria"]["ram_mb"] = 10.2
+
+    # Checa logs recentes
+    try:
+        logs_recentes = obter_logs(limite=50)
+        diag["logs_resumo"]["total_logs"] = len(logs_recentes)
+        erros = [l for l in logs_recentes if l.get("nivel") == "ERRO"]
+        diag["logs_resumo"]["total_erros_recentes"] = len(erros)
+    except Exception as e:
+        registrar_log("ERRO", "diagnostico", f"Erro ao resumir logs: {e}")
+
+    return diag
+
+
+@app.route("/api/admin/logs", methods=["GET"])
+def api_admin_logs(request: Request):
+    try:
+        limite = int(request.args.get("limite", 100))
+        nivel = request.args.get("nivel", None)
+        busca = request.args.get("busca", None)
+        logs = obter_logs(limite=limite, nivel=nivel, busca=busca)
+        return json_response({"logs": logs, "total": len(logs)})
+    except Exception as e:
+        registrar_log("ERRO", "admin_logs", f"Falha ao carregar logs: {e}")
+        return json_response({"logs": [], "total": 0, "erro": str(e)})
+
+
+@app.route("/api/admin/logs/limpar", methods=["POST"])
+def api_admin_logs_limpar(request: Request):
+    ok = limpar_logs()
+    return json_response({"sucesso": ok})
+
+
+@app.route("/api/admin/diagnostico", methods=["GET"])
+def api_admin_diagnostico(request: Request):
+    return json_response(executar_diagnostico_completo())
+
+
+# ==============================================================================
+# ROTAS DO SISTEMA DE ESTUDO DE IDIOMAS (INGLÊS E ESPANHOL)
+# ==============================================================================
+
+
+@app.route("/api/idiomas/categorias", methods=["GET"])
+def api_idiomas_categorias(request: Request):
+    return json_response(estudo_idiomas.listar_categorias())
+
+
+@app.route("/api/idiomas/palavras", methods=["GET"])
+def api_idiomas_palavras(request: Request):
+    idioma = request.args.get("idioma", "en")
+    categoria = request.args.get("categoria", None)
+    return json_response(estudo_idiomas.listar_palavras(idioma, categoria))
+
+
+@app.route("/api/idiomas/quiz", methods=["GET"])
+def api_idiomas_quiz(request: Request):
+    idioma = request.args.get("idioma", "en")
+    categoria = request.args.get("categoria", None)
+    return json_response(estudo_idiomas.gerar_quiz(idioma, categoria))
+
+
+@app.route("/api/idiomas/responder", methods=["POST"])
+def api_idiomas_responder(request: Request):
+    try:
+        data = request.json or {}
+        palavra_id = data.get("palavra_id", "")
+        opcao_escolhida = data.get("opcao_escolhida", "")
+        idioma = data.get("idioma", "en")
+        resultado = estudo_idiomas.validar_resposta(palavra_id, opcao_escolhida, idioma)
+        return json_response(resultado)
+    except Exception as e:
+        registrar_log("ERRO", "idiomas", f"Erro ao validar resposta de idiomas: {e}")
+        return json_response({"acertou": False, "mensagem": "Erro interno", "fichas_ganhas": 0})
+
+
+@app.route("/api/idiomas/progresso", methods=["GET"])
+def api_idiomas_progresso(request: Request):
+    return json_response(obter_resumo_progresso_idiomas())
+
+
+# ==============================================================================
 # ROTAS DO CÉREBRO JARVIS & ÁUDIO EXTERNO
 # ==============================================================================
 
@@ -458,23 +584,31 @@ def api_ask(request: Request):
     if not question:
         return json_response({"reply": "Olá! Estou ouvindo você com atenção!", "engine_used": "offline"})
 
-    # Processa resposta concisa
-    reply, engine = brain.ask(question)
-    return json_response({"reply": reply, "engine_used": engine or "offline"})
+    try:
+        reply, engine = brain.ask(question)
+        return json_response({"reply": reply, "engine_used": engine or "offline"})
+    except Exception as e:
+        registrar_log("ERRO", "jarvis_brain", f"Erro ao processar pergunta: {e}", f"Pergunta: {question[:100]}")
+        return json_response({"reply": "Opa! Tive uma pequena oscilação no circuito, mas já estou de volta!", "engine_used": "offline"})
 
 
 @app.route("/api/tts", methods=["POST"])
 def api_tts(request: Request):
-    data = request.json or {}
-    text = (data.get("text") or "").strip()
-    profile = data.get("voice_profile") or brain.config.get("voice_profile", "jarvis_antonio")
-    key = data.get("gemini_api_key") or brain.get_effective_gemini_key()
+    try:
+        data = request.json or {}
+        text = (data.get("text") or "").strip()
+        profile = data.get("voice_profile") or brain.config.get("voice_profile", "jarvis_antonio")
+        key = data.get("gemini_api_key") or brain.get_effective_gemini_key()
 
-    audio_bytes, mime = neural_tts.synthesize(text, profile_key=profile, gemini_api_key=key)
-    if not audio_bytes:
-        return Response(status_code=204)
+        audio_bytes, mime = neural_tts.synthesize(text, profile_key=profile, gemini_api_key=key)
+        if not audio_bytes:
+            registrar_log("ALERTA", "voz_tts", f"Síntese TTS retornou vazia para o perfil '{profile}'", f"Texto: {text[:80]}")
+            return Response(status_code=204)
 
-    return Response(body=audio_bytes, headers={"Content-Type": mime or "audio/mpeg"})
+        return Response(body=audio_bytes, headers={"Content-Type": mime or "audio/mpeg"})
+    except Exception as e:
+        registrar_log("ERRO", "voz_tts", f"Exceção na síntese TTS: {e}", str(e))
+        return Response(status_code=500)
 
 
 @app.route("/api/provider/test", methods=["POST"])

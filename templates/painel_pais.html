@@ -90,6 +90,60 @@
       gap: 8px;
     }
 
+    /* ESTILOS DOS LOGS E DIAGNÓSTICO */
+    .diag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .diag-item {
+      background: #071120;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+    }
+    .diag-title { color: #94a3b8; font-size: 0.7rem; }
+    .diag-value { color: #38bdf8; font-weight: bold; font-size: 0.9rem; margin-top: 2px; }
+    .log-filter-btn {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+    .log-filter-btn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #38bdf8;
+    }
+    .log-entry {
+      background: #071120;
+      border-left: 4px solid #3b82f6;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 0.78rem;
+    }
+    .log-entry.log-ERRO { border-left-color: #ef4444; }
+    .log-entry.log-ALERTA { border-left-color: #f59e0b; }
+    .log-entry.log-INFO { border-left-color: #10b981; }
+    .badge-nivel {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .badge-ERRO { background: #ef4444; color: #fff; }
+    .badge-ALERTA { background: #f59e0b; color: #000; }
+    .badge-INFO { background: #10b981; color: #fff; }
+
     input, textarea, select {
       width: 100%;
       background: #071120;
@@ -233,6 +287,64 @@
       <button type="button" class="btn" style="background:#0369a1; color:#fff;" onclick="validarRefeicao('bebeu_agua')">
         💧 Bebeu Água (+5)
       </button>
+    </div>
+  </div>
+
+  <!-- LOGS DO SISTEMA & DIAGNÓSTICO DE FALHAS -->
+  <div class="card" id="card-logs">
+    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>📜 Diagnóstico & Logs de Falhas</span>
+      <button type="button" class="btn" style="width:auto; padding:4px 10px; font-size:0.75rem; background:#0284c7; color:#fff;" onclick="executarDiagnostico()">
+        🩺 Diagnóstico
+      </button>
+    </div>
+
+    <!-- PAINEL DE SAÚDE DO SISTEMA EM TEMPO REAL -->
+    <div class="diag-grid" id="diag-painel-grid">
+      <div class="diag-item">
+        <div class="diag-title">💾 SQLite WAL</div>
+        <div class="diag-value" id="diag-sqlite-status">Carregando...</div>
+      </div>
+      <div class="diag-item">
+        <div class="diag-title">🧠 Memória RAM Backend</div>
+        <div class="diag-value" id="diag-ram-status">-- MB</div>
+      </div>
+      <div class="diag-item">
+        <div class="diag-title">🤖 Provedor de IA</div>
+        <div class="diag-value" id="diag-ia-status">--</div>
+      </div>
+      <div class="diag-item">
+        <div class="diag-title">🔋 Bateria do Netbook</div>
+        <div class="diag-value" id="diag-bateria-status">--%</div>
+      </div>
+    </div>
+
+    <!-- FILTROS DE LOGS -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:4px; flex-wrap:wrap;">
+      <div style="display:flex; gap:4px;">
+        <button type="button" class="log-filter-btn active" id="filter-todos" onclick="filtrarLogs('')">Todos</button>
+        <button type="button" class="log-filter-btn" id="filter-erro" onclick="filtrarLogs('ERRO')">🔴 Erros</button>
+        <button type="button" class="log-filter-btn" id="filter-alerta" onclick="filtrarLogs('ALERTA')">🟡 Alertas</button>
+        <button type="button" class="log-filter-btn" id="filter-info" onclick="filtrarLogs('INFO')">🟢 Info</button>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="btn" style="width:auto; padding:4px 8px; font-size:0.72rem; background:#334155; color:#f1f5f9;" onclick="carregarLogs()">
+          🔄 Atualizar
+        </button>
+        <button type="button" class="btn" style="width:auto; padding:4px 8px; font-size:0.72rem; background:#991b1b; color:#fff;" onclick="limparLogs()">
+          🧹 Limpar
+        </button>
+      </div>
+    </div>
+
+    <!-- CAMPO DE BUSCA -->
+    <input type="text" id="txt-busca-logs" placeholder="🔍 Filtrar logs por palavra ou módulo (ex: voz, sqlite, gemini)..." 
+      style="width:100%; box-sizing:border-box; background:#071120; border:1px solid #334155; border-radius:8px; padding:8px 10px; color:#f1f5f9; font-size:0.8rem; margin-bottom:10px;"
+      oninput="buscarLogs()">
+
+    <!-- LISTA DE LOGS -->
+    <div id="lista-logs" style="max-height:280px; overflow-y:auto; padding-right:4px;">
+      <div style="color:#64748b; font-size:0.8rem; text-align:center; padding:15px;">Carregando histórico de logs...</div>
     </div>
   </div>
 
@@ -414,8 +526,135 @@
       }
     }
 
+    let filtroNivelAtual = '';
+    let termoBuscaAtual = '';
+
+    async function executarDiagnostico() {
+      try {
+        const res = await fetch('/api/admin/diagnostico');
+        const diag = await res.json();
+        
+        // SQLite
+        const sqlEl = document.getElementById('diag-sqlite-status');
+        if (sqlEl) {
+          sqlEl.innerHTML = `<span style="color:#34d399;">${diag.sqlite.journal_mode || 'WAL'}</span> (${diag.sqlite.tabelas} tab)`;
+        }
+
+        // RAM
+        const ramEl = document.getElementById('diag-ram-status');
+        if (ramEl) {
+          const mb = diag.memoria.ram_mb || 0;
+          ramEl.innerHTML = `<span style="color:${mb < 30 ? '#34d399' : '#f59e0b'}">${mb} MB</span>`;
+        }
+
+        // IA
+        const iaEl = document.getElementById('diag-ia-status');
+        if (iaEl) {
+          iaEl.textContent = (diag.ia.provedor || 'offline').toUpperCase();
+        }
+
+        // Bateria
+        const batEl = document.getElementById('diag-bateria-status');
+        if (batEl) {
+          const bat = diag.bateria;
+          batEl.innerHTML = `${bat.porcentagem}% ${bat.carregando ? '⚡' : '🔋'}`;
+        }
+
+        showToast('🩺 Diagnóstico de saúde atualizado!');
+      } catch (e) {
+        showToast('Erro ao obter diagnóstico.');
+      }
+    }
+
+    async function carregarLogs() {
+      const box = document.getElementById('lista-logs');
+      try {
+        let url = `/api/admin/logs?limite=100`;
+        if (filtroNivelAtual) url += `&nivel=${encodeURIComponent(filtroNivelAtual)}`;
+        if (termoBuscaAtual) url += `&busca=${encodeURIComponent(termoBuscaAtual)}`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        const logs = data.logs || [];
+
+        if (logs.length === 0) {
+          box.innerHTML = '<div style="color:#64748b; font-size:0.8rem; text-align:center; padding:15px;">Nenhum log registrado para este filtro.</div>';
+          return;
+        }
+
+        box.innerHTML = logs.map(l => {
+          const dataHora = l.data_hora ? l.data_hora.split('.')[0] : '';
+          return `
+            <div class="log-entry log-${l.nivel}">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span class="badge-nivel badge-${l.nivel}">${l.nivel}</span>
+                  <span style="font-weight:bold; color:#e2e8f0; font-size:0.75rem;">[${l.modulo}]</span>
+                </div>
+                <span style="color:#64748b; font-size:0.7rem;">${dataHora}</span>
+              </div>
+              <div style="color:#f8fafc; font-size:0.8rem; margin-top:2px;">${escapeHtml(l.mensagem)}</div>
+              ${l.detalhes ? `
+                <details style="margin-top:4px; font-size:0.72rem; color:#94a3b8;">
+                  <summary style="cursor:pointer; color:#38bdf8;">Ver detalhes técnicos</summary>
+                  <pre style="background:#020617; padding:6px; border-radius:4px; overflow-x:auto; margin-top:3px; white-space:pre-wrap;">${escapeHtml(l.detalhes)}</pre>
+                </details>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        box.innerHTML = '<div style="color:#ef4444; font-size:0.8rem; text-align:center;">Falha ao carregar logs.</div>';
+      }
+    }
+
+    function filtrarLogs(nivel) {
+      filtroNivelAtual = nivel;
+      ['todos', 'erro', 'alerta', 'info'].forEach(n => {
+        const btn = document.getElementById(`filter-${n}`);
+        if (btn) btn.classList.remove('active');
+      });
+      const atv = document.getElementById(`filter-${nivel.toLowerCase() || 'todos'}`);
+      if (atv) atv.classList.add('active');
+      carregarLogs();
+    }
+
+    let buscaTimeout = null;
+    function buscarLogs() {
+      clearTimeout(buscaTimeout);
+      buscaTimeout = setTimeout(() => {
+        const txt = document.getElementById('txt-busca-logs').value.trim();
+        termoBuscaAtual = txt;
+        carregarLogs();
+      }, 300);
+    }
+
+    async function limparLogs() {
+      if (!confirm('Deseja realmente limpar todo o histórico de logs do sistema?')) return;
+      try {
+        await fetch('/api/admin/logs/limpar', { method: 'POST' });
+        showToast('🧹 Histórico de logs limpo com sucesso!');
+        carregarLogs();
+        executarDiagnostico();
+      } catch (e) {
+        showToast('Erro ao limpar logs.');
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
     refresh();
+    executarDiagnostico();
+    carregarLogs();
     setInterval(refresh, 5000);
+    setInterval(carregarLogs, 15000);
   </script>
 </body>
 </html>

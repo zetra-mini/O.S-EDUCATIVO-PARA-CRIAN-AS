@@ -373,6 +373,38 @@ class DatabaseManager:
             """
         )
 
+        # 12. LOGS DO SISTEMA & DIAGNÓSTICO DE FALHAS
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS sistema_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                nivel TEXT NOT NULL,         -- 'ERRO', 'ALERTA', 'INFO'
+                modulo TEXT NOT NULL,        -- 'voz', 'ia', 'sqlite', 'servidor', 'idiomas', 'clima', 'midia'
+                mensagem TEXT NOT NULL,
+                detalhes TEXT DEFAULT ''
+            );
+            """
+        )
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_logs_data ON sistema_logs (data_hora DESC);")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_logs_nivel ON sistema_logs (nivel);")
+
+        # 13. PROGRESSO DO ESTUDO DE IDIOMAS (INGLÊS E ESPANHOL)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS progresso_idiomas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                idioma TEXT NOT NULL,         -- 'en', 'es'
+                categoria TEXT NOT NULL,
+                palavra_id TEXT NOT NULL,
+                acertos INTEGER NOT NULL DEFAULT 0,
+                erros INTEGER NOT NULL DEFAULT 0,
+                ultima_pratica TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(idioma, categoria, palavra_id)
+            );
+            """
+        )
+
         conn.commit()
 
         # POPULAR ITENS INICIAIS DA LOJA DO TESOURO SE VAZIA
@@ -448,3 +480,114 @@ class DatabaseManager:
 
 # Instância singleton global do Banco de Dados
 db = DatabaseManager()
+
+
+# ==============================================================================
+# FUNÇÕES DE GESTÃO DE LOGS E DIAGNÓSTICO DO SISTEMA (PAINEL ADM)
+# ==============================================================================
+
+
+def registrar_log(nivel: str, modulo: str, mensagem: str, detalhes: str = "") -> None:
+    """
+    Grava um evento, alerta ou erro do sistema no SQLite via fila Single-Writer.
+    Níveis válidos: 'ERRO', 'ALERTA', 'INFO'.
+    """
+    try:
+        nivel_fmt = (nivel or "INFO").upper().strip()
+        modulo_fmt = (modulo or "sistema").lower().strip()
+        msg_fmt = str(mensagem or "").strip()
+        det_fmt = str(detalhes or "").strip()
+
+        db.executar_escrita(
+            """
+            INSERT INTO sistema_logs (nivel, modulo, mensagem, detalhes)
+            VALUES (?, ?, ?, ?);
+            """,
+            (nivel_fmt, modulo_fmt, msg_fmt, det_fmt),
+            timeout=2.0,
+        )
+    except Exception as e:
+        # Fallback defensivo para nunca quebrar a thread chamadora
+        import sys
+        sys.stderr.write(f"[FALHA_LOG] {e} | {nivel} | {modulo} | {mensagem}\n")
+
+
+def obter_logs(limite: int = 100, nivel: Optional[str] = None, busca: Optional[str] = None) -> List[dict]:
+    """
+    Consulta os logs mais recentes de forma defensiva e paginada.
+    """
+    limite = max(1, min(int(limite or 100), 500))
+    filtros = []
+    params = []
+
+    if nivel and nivel.upper() in ("ERRO", "ALERTA", "INFO"):
+        filtros.append("nivel = ?")
+        params.append(nivel.upper())
+
+    if busca and busca.strip():
+        filtros.append("(mensagem LIKE ? OR detalhes LIKE ? OR modulo LIKE ?)")
+        termo = f"%{busca.strip()}%"
+        params.extend([termo, termo, termo])
+
+    where_clause = f"WHERE {' AND '.join(filtros)}" if filtros else ""
+    sql = f"""
+        SELECT id, data_hora, nivel, modulo, mensagem, detalhes
+        FROM sistema_logs
+        {where_clause}
+        ORDER BY id DESC
+        LIMIT ?;
+    """
+    params.append(limite)
+
+    return db.consultar_todos(sql, tuple(params))
+
+
+def limpar_logs() -> bool:
+    """Limpa o histórico de logs do sistema e registra o evento de limpeza."""
+    try:
+        db.executar_escrita("DELETE FROM sistema_logs;", timeout=3.0)
+        registrar_log("INFO", "sistema", "Histórico de logs limpo pelo administrador.")
+        return True
+    except Exception as e:
+        registrar_log("ERRO", "sistema", f"Falha ao limpar logs: {e}")
+        return False
+
+
+def registrar_progresso_idioma(idioma: str, categoria: str, palavra_id: str, acertou: bool) -> None:
+    """Registra ou atualiza o progresso de aprendizado de vocabulário da criança."""
+    col_update = "acertos = acertos + 1" if acertou else "erros = erros + 1"
+    sql = f"""
+        INSERT INTO progresso_idiomas (idioma, categoria, palavra_id, acertos, erros, ultima_pratica)
+        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(idioma, categoria, palavra_id) DO UPDATE SET
+            {col_update},
+            ultima_pratica = CURRENT_TIMESTAMP;
+    """
+    acertos_init = 1 if acertou else 0
+    erros_init = 0 if acertou else 1
+    db.executar_escrita(sql, (idioma, categoria, palavra_id, acertos_init, erros_init), timeout=3.0)
+
+
+def obter_resumo_progresso_idiomas() -> dict:
+    """Retorna estatísticas consolidadas de estudo de idiomas para o painel."""
+    resumo = {
+        "total_praticado": 0,
+        "acertos_en": 0,
+        "acertos_es": 0,
+        "palavras_dominadas": 0,
+    }
+    for row in db.consultar_todos("SELECT idioma, SUM(acertos) as total_acertos, COUNT(*) as total_palavras FROM progresso_idiomas GROUP BY idioma;"):
+        idioma = row["idioma"]
+        total = row["total_acertos"] or 0
+        if idioma == "en":
+            resumo["acertos_en"] = total
+        elif idioma == "es":
+            resumo["acertos_es"] = total
+        resumo["total_praticado"] += total
+
+    row_dom = db.consultar_um("SELECT COUNT(*) as dominadas FROM progresso_idiomas WHERE acertos >= 3;")
+    if row_dom:
+        resumo["palavras_dominadas"] = row_dom.get("dominadas", 0)
+
+    return resumo
+

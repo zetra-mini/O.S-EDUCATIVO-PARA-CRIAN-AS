@@ -1165,6 +1165,11 @@
         <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, como são as estrelas do espaço?')">🌟 Estrelas</button>
         <button type="button" class="quick-pill" onclick="askQuickPrompt('Járvis, conta uma piada de robô bem engraçada!')">🤖 Piada</button>
       </div>
+
+      <!-- BOTÃO DE IDIOMAS MÁGICOS (ENGLISH & ESPAÑOL) -->
+      <button type="button" class="btn-idiomas-hud" onclick="openLanguagesAcademy()" style="background:linear-gradient(135deg, #1e3a8a, #0284c7); border:2px solid #38bdf8; color:#fff; border-radius:14px; padding:8px 16px; font-weight:900; font-size:0.92rem; cursor:pointer; display:flex; align-items:center; gap:8px; margin-top:8px; box-shadow:0 4px 12px rgba(2,132,199,0.4);" title="Aprenda Inglês e Espanhol brincando!">
+        🌍 IDIOMAS: ENGLISH & ESPAÑOL 🇺🇸 🇪🇸
+      </button>
     </div>
 
     <!-- COLUNA DIREITA: MÚSICA, PINTAR, VÍDEOS, EMOÇÕES -->
@@ -2931,6 +2936,231 @@
         clearTimeout(countingSongTimer);
         countingSongTimer = null;
       }
+    }
+
+    // ==============================================================================
+    // SISTEMA DE ESTUDO DE IDIOMAS (INGLÊS E ESPANHOL)
+    // ==============================================================================
+    let idiomaAtivo = 'en'; // 'en' ou 'es'
+    let categoriaIdiomaAtiva = 'animais';
+    let modoIdiomaAtivo = 'cards'; // 'cards' ou 'quiz'
+    let quizAtual = null;
+
+    function openLanguagesAcademy() {
+      const body = openModal('🌍 IDIOMAS MÁGICOS — ENGLISH & ESPAÑOL');
+      speak(`Welcome, ${appState.config.child_name || 'Kaleo'}! Vamos aprender palavras mágicas em Inglês e Espanhol!`);
+
+      body.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+          <!-- SELETOR DE IDIOMA -->
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="big-btn" id="btn-lang-en" style="padding:8px 14px; font-size:0.95rem; background:${idiomaAtivo === 'en' ? '#0284c7' : '#1e293b'}; border:2px solid ${idiomaAtivo === 'en' ? '#38bdf8' : '#334155'};" onclick="trocarIdiomaEstudo('en')">
+              🇺🇸 ENGLISH (Inglês)
+            </button>
+            <button type="button" class="big-btn" id="btn-lang-es" style="padding:8px 14px; font-size:0.95rem; background:${idiomaAtivo === 'es' ? '#0284c7' : '#1e293b'}; border:2px solid ${idiomaAtivo === 'es' ? '#38bdf8' : '#334155'};" onclick="trocarIdiomaEstudo('es')">
+              🇪🇸 ESPAÑOL (Espanhol)
+            </button>
+          </div>
+
+          <!-- SELETOR DE MODO -->
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="big-btn" id="btn-modo-cards" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'cards' ? '#10b981' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'cards' ? '#34d399' : '#334155'};" onclick="trocarModoIdioma('cards')">
+              🃏 Cards Falantes
+            </button>
+            <button type="button" class="big-btn" id="btn-modo-quiz" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'quiz' ? '#f59e0b' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'quiz' ? '#fbbf24' : '#334155'};" onclick="trocarModoIdioma('quiz')">
+              🎯 Adivinhe (+5 🪙)
+            </button>
+          </div>
+        </div>
+
+        <!-- PÍLULAS DE CATEGORIAS -->
+        <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px;" id="lang-cat-pills">
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'animais' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'animais' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('animais')">🐶 Animais</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'cores' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'cores' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('cores')">🎨 Cores</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'numeros' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'numeros' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('numeros')">🖐️ Mãos & Números</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'comidas' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'comidas' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('comidas')">🍎 Comidas</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'saudacoes' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'saudacoes' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('saudacoes')">👋 Saudações</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'familia' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'familia' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('familia')">👨‍👩‍👦 Família</button>
+        </div>
+
+        <!-- ÁREA DE CONTEÚDO PRINCIPAL (CARDS OU QUIZ) -->
+        <div id="lang-stage" style="flex:1; display:flex; flex-direction:column; overflow-y:auto;">
+          <div style="text-align:center; color:#64748b; padding:20px;">Carregando vocabulário mágico...</div>
+        </div>
+      `;
+
+      renderizarEstagioIdioma();
+    }
+
+    function trocarIdiomaEstudo(novoIdioma) {
+      idiomaAtivo = novoIdioma;
+      openLanguagesAcademy();
+    }
+
+    function trocarModoIdioma(novoModo) {
+      modoIdiomaAtivo = novoModo;
+      openLanguagesAcademy();
+    }
+
+    function filtrarCategoriaIdioma(cat) {
+      categoriaIdiomaAtiva = cat;
+      openLanguagesAcademy();
+    }
+
+    async function renderizarEstagioIdioma() {
+      const stage = document.getElementById('lang-stage');
+      if (!stage) return;
+
+      if (modoIdiomaAtivo === 'cards') {
+        stage.innerHTML = '<div style="text-align:center; color:#38bdf8; padding:20px;">Buscando cartões mágicos...</div>';
+        try {
+          const res = await fetch(`/api/idiomas/palavras?idioma=${idiomaAtivo}&categoria=${categoriaIdiomaAtiva}`);
+          const palavras = await res.json();
+
+          if (!palavras || palavras.length === 0) {
+            stage.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:20px;">Nenhuma palavra encontrada nesta categoria.</div>';
+            return;
+          }
+
+          stage.innerHTML = `
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:12px; padding:4px;">
+              ${palavras.map(p => `
+                <div class="lang-word-card" onclick="falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')" style="background:#071224; border:2px solid #1e3a8a; border-radius:16px; padding:12px; display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; transition:transform 0.15s, border-color 0.15s; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+                  <div style="font-size:2.8rem; margin-bottom:4px;">${p.icone}</div>
+                  <div style="font-size:1.35rem; font-weight:900; color:#38bdf8; letter-spacing:0.5px;">${p.palavra}</div>
+                  <div style="font-size:0.85rem; color:#facc15; font-style:italic; margin-top:2px;">"${p.pronuncia_som}"</div>
+                  <div style="font-size:0.9rem; color:#e2e8f0; font-weight:bold; margin-top:4px;">${p.pt}</div>
+                  ${p.gesto ? `<div style="font-size:0.75rem; color:#94a3b8; margin-top:6px; background:#0f172a; padding:4px 8px; border-radius:6px; width:100%; box-sizing:border-box;">👉 ${p.gesto}</div>` : ''}
+                  <button type="button" class="big-btn" style="width:100%; margin-top:8px; padding:6px; font-size:0.85rem; background:#0284c7;" onclick="event.stopPropagation(); falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')">
+                    🔊 Ouvir
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } catch (e) {
+          stage.innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">Erro ao carregar cartões de idiomas.</div>';
+        }
+      } else {
+        // MODO QUIZ
+        carregarQuizIdioma();
+      }
+    }
+
+    async function carregarQuizIdioma() {
+      const stage = document.getElementById('lang-stage');
+      if (!stage) return;
+
+      stage.innerHTML = '<div style="text-align:center; color:#facc15; padding:20px;">Sorteando desafio com o Járvis...</div>';
+      try {
+        const res = await fetch(`/api/idiomas/quiz?idioma=${idiomaAtivo}&categoria=${categoriaIdiomaAtiva}`);
+        quizAtual = await res.json();
+
+        // O Jarvis fala a pergunta
+        speak(quizAtual.frase_jarvis);
+
+        stage.innerHTML = `
+          <div style="background:#071224; border:3px solid #f59e0b; border-radius:18px; padding:16px; margin-bottom:14px; text-align:center;">
+            <div style="font-size:1.1rem; color:#94a3b8; font-weight:bold;">MISSÃO DE IDIOMAS DO JARVIS</div>
+            <div style="font-size:1.7rem; font-weight:900; color:#ffffff; margin:8px 0;">
+              ${quizAtual.frase_jarvis}
+            </div>
+            <button type="button" class="big-btn" style="background:#0284c7; padding:6px 14px; font-size:0.9rem;" onclick="speak('${escapeJs(quizAtual.frase_jarvis)}')">
+              🔊 Repetir Pergunta
+            </button>
+          </div>
+
+          <!-- OPÇÕES DE ESCOLHA -->
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:14px;" id="quiz-options-grid">
+            ${quizAtual.opcoes.map(op => `
+              <div class="toy-card quiz-card-option" style="border-color:#38bdf8; background:#071733; padding:16px; min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center;" onclick="responderQuizIdioma('${op.id}')">
+                <div style="font-size:3.2rem; margin-bottom:6px;">${op.icone}</div>
+                <div style="font-size:1.4rem; font-weight:900; color:#ffffff;">${op.palavra}</div>
+                <div style="font-size:0.9rem; color:#94a3b8; margin-top:2px;">(${op.pt})</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div id="quiz-feedback-box" style="display:none; text-align:center; padding:12px; border-radius:12px; margin-bottom:10px;"></div>
+
+          <div style="text-align:center;">
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1.05rem; padding:10px 24px;" onclick="carregarQuizIdioma()">
+              Próxima Palavra ➡️
+            </button>
+          </div>
+        `;
+      } catch (e) {
+        stage.innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">Erro ao carregar o quiz de idiomas.</div>';
+      }
+    }
+
+    async function responderQuizIdioma(opcaoId) {
+      if (!quizAtual) return;
+      try {
+        const res = await fetch('/api/idiomas/responder', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            palavra_id: quizAtual.id_correto,
+            opcao_escolhida: opcaoId,
+            idioma: idiomaAtivo
+          })
+        });
+        const resp = await res.json();
+        const box = document.getElementById('quiz-feedback-box');
+        if (!box) return;
+
+        box.style.display = 'block';
+        if (resp.acertou) {
+          box.style.background = '#064e3b';
+          box.style.border = '2px solid #10b981';
+          box.style.color = '#34d399';
+          box.innerHTML = `
+            <div style="font-size:1.4rem; font-weight:900;">🎉 EXCELENTE, KALEO!</div>
+            <div style="font-size:1.05rem; margin-top:4px;">${resp.mensagem}</div>
+            <div style="font-size:1.2rem; font-weight:bold; color:#facc15; margin-top:4px;">🪙 +5 Fichas para o Pote do Tesouro!</div>
+          `;
+          speak(resp.mensagem);
+          addStar(1);
+          if (resp.saldo_pote !== undefined) {
+            const pEl = document.getElementById('pote-fichas-val');
+            if (pEl) pEl.textContent = resp.saldo_pote;
+          }
+        } else {
+          box.style.background = '#78350f';
+          box.style.border = '2px solid #f59e0b';
+          box.style.color = '#fbbf24';
+          box.innerHTML = `
+            <div style="font-size:1.2rem; font-weight:900;">✨ QUASE LÁ!</div>
+            <div style="font-size:1rem; margin-top:4px;">${resp.mensagem}</div>
+          `;
+          speak(resp.mensagem);
+        }
+      } catch (e) {
+        showHudToast('Erro ao validar resposta.');
+      }
+    }
+
+    function falarPalavraIdioma(palavra, idioma, traducaoPt) {
+      try {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(palavra);
+          u.lang = idioma === 'en' ? 'en-US' : 'es-ES';
+          u.rate = 0.85;
+          window.speechSynthesis.speak(u);
+        } else {
+          speak(palavra);
+        }
+        showHudToast(`🔊 ${palavra} (${traducaoPt})`);
+      } catch (e) {
+        speak(palavra);
+      }
+    }
+
+    function escapeJs(str) {
+      if (!str) return '';
+      return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
     function openTechAcademy() {

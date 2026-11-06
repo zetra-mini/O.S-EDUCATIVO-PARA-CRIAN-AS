@@ -75,7 +75,14 @@ Projetado sob princípios rigorosos de **engenharia de software para hardware ul
 - **Rastreamento em Tempo Real:** O painel dos pais exibe o status exato: `ENVIADA` ➔ `RECEBIDA` ➔ `ABERTA (às HH:MM:SS)`.
 - **SOS Intervenção:** O pai pode disparar do celular uma pausa com tela de abraço, música de calma ou chamada para refeição.
 
-### 9. Atualização em 1 Clique & Persistência do Sistema
+### 10. Estudo Lúdico de Idiomas (Inglês 🇺🇸 e Espanhol 🇪🇸 — `estudo_idiomas.py`)
+- **Cards Falantes Interativos:** A criança vê a ilustração colorida, o nome em português, a palavra em destaque com guia fonético (ex: *"Dóg"*, *"Pê-rro"*, *"Uan"*) e ouve a pronúncia nativa com a Web Speech API (`en-US` e `es-ES`).
+- **Mãozinhas & Dedos (Números de 1 a 10):** Ensinamento concreto mostrando os dedinhos das mãos levantados (ex: 1 dedinho = *One / Uno*, 5 dedinhos = *Five / Cinco*, duas mãos abertas = *Ten / Diez*).
+- **Categorias Cotidianas:** Animais, Cores, Mãozinhas & Números, Frutinhas & Comidas, Saudações de Afeto e Família Querida.
+- **Mini-Quiz do Jarvis ("Adivinhe a Palavra"):** O Jarvis pergunta com áudio (*"Where is the Cat?"* ou *"¿Dónde está el Perro?"*) e a criança toca na carta correta entre 3 opções coloridas.
+- **Reforço Imediato:** Cada acerto credita **+5 moedas para o Pote do Tesouro** com festa visual de confetes e estrelas!
+
+### 11. Atualização em 1 Clique & Persistência do Sistema
 - **Script `atualizar_sistema.sh`:** Atualiza o repositório do GitHub (`git pull`) e reinicia os serviços sem complicações.
 - **Watchdog `iniciar_servicos.sh`:** Monitora o processo e reinicia automaticamente em caso de encerramento, garantindo disponibilidade contínua.
 - **Monitor de Bateria:** Alerta amigável no netbook quando a bateria estiver baixa (< 20%) ou 100% cheia para desconectar da tomada e proteger as células.
@@ -115,6 +122,7 @@ Acessível por qualquer smartphone, tablet ou computador na mesma rede Wi-Fi (`h
 - **Pote do Tesouro:** Gerenciamento de fichas conquistadas e aprovação de resgates da vida real.
 - **Controle de Cinema & Mídia:** Adicione minutos de bônus ou pause a tela para o almoço.
 - **SOS Intervenção Imediata:** Acione respiração guiada, pausa de descanso ou hora da comidinha com um toque.
+- **Diagnóstico em Tempo Real & Logs de Falhas:** Visualizador de eventos, erros e alertas do sistema (banco SQLite, IA, voz TTS, bateria e memória) com filtros dinâmicos, busca por palavra e limpeza com 1 clique.
 - **Atualização do Sistema:** Botão remoto para baixar atualizações do GitHub e reiniciar o Jarvis.
 
 ---
