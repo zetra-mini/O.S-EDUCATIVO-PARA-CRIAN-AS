@@ -18,16 +18,25 @@ from jarvis_pet_status import pet_mgr
 
 
 CARDS_INICIAIS = [
-    ("ALFABETO", "Qual a primeira letra da palavra BOLA?", "B", ["B", "L", "A", "O"]),
-    ("ALFABETO", "Qual a primeira letra da palavra CASA?", "C", ["C", "S", "M", "A"]),
-    ("ALFABETO", "Qual a letrinha que faz o som /a/ de AVIÃO?", "A", ["A", "E", "I", "U"]),
-    ("ALFABETO", "Qual a letra do herói DINOSSAURO?", "D", ["D", "P", "T", "B"]),
-    ("NUMEROS", "Quantas mãos você tem para abraçar a família?", "2", ["1", "2", "3", "5"]),
-    ("NUMEROS", "Quantas patinhas tem o gatinho ou o cachorrinho?", "4", ["2", "3", "4", "6"]),
-    ("NUMEROS", "Quantos dedos você tem em uma mãozinha?", "5", ["3", "4", "5", "10"]),
-    ("ANIMAIS", "Quem é o gigante pescoçudo que come as folhinhas do topo das árvores?", "Girafa", ["Girafa", "Leão", "Pinguim", "Sapo"]),
-    ("ANIMAIS", "Quem gosta de rugir bem alto e é o rei da selva?", "Leão", ["Leão", "Coelho", "Tartaruga", "Formiga"]),
-    ("CURIOSIDADES", "O que o Sol faz no céu durante o dia?", "Ilumina e aquece a Terra", ["Ilumina e aquece a Terra", "Faz chover gelo", "Fica invisível", "Dorme o dia todo"]),
+    ("ANIMAIS", "Quem é o rei da selva e dá um rugido bem forte?", "🦁 Leão", ["🦁 Leão", "🐶 Cachorrinho", "🐱 Gatinho", "🦆 Patinho"]),
+    ("ANIMAIS", "Quem gosta de abanar o rabinho e faz Au-Au?", "🐶 Cachorrinho", ["🐶 Cachorrinho", "🐸 Sapinho", "🐮 Vaquinha", "🐷 Porquinho"]),
+    ("ANIMAIS", "Quem dá o leitinho gostoso para o nosso lanche?", "🐮 Vaquinha", ["🐮 Vaquinha", "🦁 Leão", "🐵 Macaquinho", "🐰 Coelhinho"]),
+    ("ANIMAIS", "Quem diz Quac-Quac e adora nadar na lagoa?", "🦆 Patinho", ["🦆 Patinho", "🐱 Gatinho", "🐻 Ursinho", "🐴 Cavalinho"]),
+    ("ANIMAIS", "Quem diz Miau e adora brincar com novelo de lã?", "🐱 Gatinho", ["🐱 Gatinho", "🐶 Cachorrinho", "🐸 Sapinho", "🦁 Leão"]),
+    ("FRUTAS", "Qual é a frutinha vermelha bem crocante e docinha?", "🍎 Maçã", ["🍎 Maçã", "🍌 Banana", "🍇 Uva", "🍊 Laranja"]),
+    ("FRUTAS", "Qual fruta amarela o macaquinho mais adora comer?", "🍌 Banana", ["🍌 Banana", "🍎 Maçã", "🍓 Morango", "🍉 Melancia"]),
+    ("FRUTAS", "Qual é a fruta vermelhinha com pintinhas que é uma delícia?", "🍓 Morango", ["🍓 Morango", "🍇 Uva", "🍍 Abacaxi", "🍋 Limão"]),
+    ("TRANSPORTE", "Qual meio de transporte voa lá no alto entre as nuvens?", "✈️ Avião", ["✈️ Avião", "🚗 Carro", "⛵ Barco", "🚲 Bicicleta"]),
+    ("TRANSPORTE", "Qual transporte anda sobre os trilhos fazendo Piwi-Tchutchu?", "🚂 Trem", ["🚂 Trem", "🚀 Foguete", "🚗 Carro", "⛵ Barco"]),
+    ("TRANSPORTE", "Qual vai lá no espaço sideral até a Lua?", "🚀 Foguete", ["🚀 Foguete", "🚲 Bicicleta", "🚌 Ônibus", "🚗 Carro"]),
+    ("NATUREZA", "Quem brilha lá no céu de dia para esquentar o nosso dia?", "☀️ Sol", ["☀️ Sol", "🌙 Lua", "⭐ Estrela", "🌧️ Chuva"]),
+    ("NATUREZA", "Quem aparece no céu de noite para iluminar nossos sonhos?", "🌙 Lua", ["🌙 Lua", "☀️ Sol", "🌈 Arco-íris", "⚡ Raio"]),
+    ("NUMEROS", "Quantas mãos você tem para abraçar a família?", "2️⃣ Duas Mãos", ["2️⃣ Duas Mãos", "1️⃣ Uma Mão", "4️⃣ Quatro Mãos", "5️⃣ Cinco Mãos"]),
+    ("NUMEROS", "Quantas patinhas tem o cachorrinho ou o gatinho?", "4️⃣ Quatro Patas", ["4️⃣ Quatro Patas", "2️⃣ Duas Patas", "3️⃣ Três Patas", "6️⃣ Seis Patas"]),
+    ("NUMEROS", "Quantos dedinhos você tem em uma mãozinha?", "5️⃣ Cinco Dedos", ["5️⃣ Cinco Dedos", "3️⃣ Três Dedos", "2️⃣ Dois Dedos", "🔟 Dez Dedos"]),
+    ("LETRAS", "Qual a primeira letra da palavra BOLA?", "⚽ Letra B", ["⚽ Letra B", "🚗 Letra C", "🍎 Letra A", "🌙 Letra M"]),
+    ("LETRAS", "Qual a letrinha que começa o nome do herói KALEO?", "👑 Letra K", ["👑 Letra K", "⚽ Letra B", "☀️ Letra S", "🚀 Letra R"]),
+    ("LETRAS", "Qual a letrinha mágica de AVIÃO e AMIGO?", "✈️ Letra A", ["✈️ Letra A", "🦆 Letra P", "🐱 Letra G", "⭐ Letra E"]),
 ]
 
 
@@ -40,7 +49,17 @@ class CognitionGamesManager:
 
     def _popular_cards_se_vazio(self):
         row = self.db.consultar_um("SELECT COUNT(*) AS total FROM cognicao_leitner;")
+        # Se vazio ou se tem cards antigos sem emojis, limpa e popula com os novos cards ilustrados
+        precisa_recriar = False
         if not row or row["total"] == 0:
+            precisa_recriar = True
+        else:
+            amostra = self.db.consultar_um("SELECT resposta_correta FROM cognicao_leitner LIMIT 1;")
+            if amostra and "🦁" not in amostra["resposta_correta"] and "🍎" not in amostra["resposta_correta"] and "2️⃣" not in amostra["resposta_correta"]:
+                precisa_recriar = True
+
+        if precisa_recriar:
+            self.db.executar_escrita("DELETE FROM cognicao_leitner;")
             for cat, perg, resp, opc in CARDS_INICIAIS:
                 self.db.executar_escrita(
                     """

@@ -443,41 +443,51 @@
       box-shadow: 0 0 16px rgba(0, 240, 255, 0.2);
     }
 
-    /* MODAL DE ATIVIDADE FULLSCREEN */
+    /* MODAL DE ATIVIDADE FULLSCREEN RESPONSIVO (COMPATÍVEL COM ASUS ONE 1024x600 E COMPUTADORES) */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: var(--bg);
-      z-index: 100;
+      background: radial-gradient(circle at 50% 30%, #0c1a2e 0%, #030712 100%);
+      z-index: 800;
       display: none;
       flex-direction: column;
+      overflow: hidden;
     }
     .modal-overlay.open { display: flex; }
     .modal-header {
-      height: 58px;
-      background: #071120;
-      border-bottom: 2px solid var(--cyan);
+      height: 50px;
+      min-height: 50px;
+      background: rgba(7, 17, 32, 0.95);
+      border-bottom: 2px solid rgba(56, 189, 248, 0.4);
       display: flex;
       align-items: center;
-      padding: 0 18px;
-      gap: 18px;
+      padding: 0 16px;
+      gap: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+      z-index: 20;
     }
     .btn-back {
-      background: var(--red);
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
       color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 22px;
-      font-size: 1.1rem;
+      border: 2px solid #fca5a5;
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 0.95rem;
       font-weight: 900;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+      transition: transform 0.1s;
     }
+    .btn-back:active { transform: scale(0.95); }
     .modal-body {
       flex: 1;
-      padding: 16px 24px;
+      padding: 12px 16px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
     }
 
     /* DESAFIO MATEMÁTICO DOS PAIS (100% HTML) */
@@ -676,17 +686,26 @@
         font-size: 0.82rem;
       }
       .modal-header {
-        height: 46px;
+        height: 44px;
+        min-height: 44px;
         padding: 0 12px;
         gap: 12px;
       }
       .btn-back {
-        padding: 6px 16px;
-        font-size: 0.95rem;
+        padding: 5px 14px;
+        font-size: 0.88rem;
       }
       .modal-body {
-        padding: 10px 14px;
+        padding: 8px 12px;
       }
+      .music-tab-btn { font-size: 0.85rem; padding: 5px 10px; }
+      .big-btn { font-size: 0.95rem; }
+      #fc-big-num { font-size: 2.6rem !important; }
+      #fc-hands-svg { height: 160px !important; }
+      #music-sky { min-height: 75px !important; max-height: 90px !important; }
+      #music-instrument-container { min-height: 130px !important; }
+      .leitner-opt-card span:first-child { font-size: 2.8rem !important; }
+      #mouse-arena { min-height: 220px !important; }
       #subtitle-bar {
         font-size: clamp(0.82rem, 1.4vw, 0.95rem);
         max-height: 52px;
@@ -3409,132 +3428,206 @@
       `;
 
       function updateLitTabs(activeId) {
-        ['tab-alpha', 'tab-words', 'tab-quiz'].forEach(id => {
+        ['tab-alpha', 'tab-words', 'tab-quiz', 'tab-trace'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.classList.toggle('active', id === activeId);
         });
       }
 
-      document.getElementById('tab-alpha').onclick = () => { updateLitTabs('tab-alpha'); 
+      document.getElementById('tab-alpha').onclick = () => { updateLitTabs('tab-alpha'); renderAlphabetStage(); };
+      document.getElementById('tab-words').onclick = () => { updateLitTabs('tab-words'); renderWordsStage(); };
+      document.getElementById('tab-quiz').onclick = () => { updateLitTabs('tab-quiz'); renderQuizStage(); };
+      document.getElementById('tab-trace').onclick = () => { updateLitTabs('tab-trace'); renderTracingStage(); };
+
       function renderTracingStage() {
         if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
         const stage = document.getElementById('literacy-stage');
         let currentTraceChar = 'A';
-        const TRACE_CHARS = ['A', 'B', 'C', '1', '2', '3'];
+        const TRACE_CHARS = [
+          { c: 'A', cat: 'vogal', col: '#ef4444', name: 'A de Abelha' },
+          { c: 'E', cat: 'vogal', col: '#f97316', name: 'E de Estrela' },
+          { c: 'I', cat: 'vogal', col: '#eab308', name: 'I de Ilha' },
+          { c: 'O', cat: 'vogal', col: '#10b981', name: 'O de Olho' },
+          { c: 'U', cat: 'vogal', col: '#06b6d4', name: 'U de Uva' },
+          { c: 'B', cat: 'consoante', col: '#3b82f6', name: 'B de Bola' },
+          { c: 'C', cat: 'consoante', col: '#8b5cf6', name: 'C de Casa' },
+          { c: 'D', cat: 'consoante', col: '#ec4899', name: 'D de Dinossauro' },
+          { c: 'K', cat: 'consoante', col: '#facc15', name: 'K de Kaleo' },
+          { c: 'M', cat: 'consoante', col: '#14b8a6', name: 'M de Mamãe' },
+          { c: '1', cat: 'numero', col: '#0284c7', name: 'Número 1' },
+          { c: '2', cat: 'numero', col: '#22c55e', name: 'Número 2' },
+          { c: '3', cat: 'numero', col: '#f59e0b', name: 'Número 3' },
+          { c: '4', cat: 'numero', col: '#ec4899', name: 'Número 4' },
+          { c: '5', cat: 'numero', col: '#8b5cf6', name: 'Número 5' }
+        ];
 
         stage.innerHTML = `
-          <div style="background:#0f172a; border:3px solid #38bdf8; border-radius:20px; padding:16px; display:flex; flex-direction:column; align-items:center; flex:1; gap:12px;">
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center; flex-wrap:wrap; gap:10px;">
-              <div style="font-size:1.35rem; font-weight:900; color:#facc15;">
-                Passe o mouse ou o dedinho por cima da letrinha para acender o neon!
+          <div style="background:#0b192e; border:3px solid #38bdf8; border-radius:20px; padding:12px; display:flex; flex-direction:column; align-items:center; flex:1; gap:10px;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div style="font-size:1.15rem; font-weight:900; color:#fde047;" id="trace-title-msg">
+                ✍️ Passe o mouse ou o dedinho por cima da letrinha para acender o neon!
               </div>
-              <div style="display:flex; gap:8px;" id="trace-char-buttons"></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; max-width:620px;" id="trace-char-buttons"></div>
             </div>
-            <div style="position:relative; width:440px; height:280px; background:#071120; border:3px dashed #38bdf8; border-radius:18px; display:flex; align-items:center; justify-content:center;">
-              <canvas id="trace-canvas" width="440" height="280" style="cursor:crosshair; touch-action:none;"></canvas>
+
+            <div style="position:relative; width:100%; max-width:520px; height:260px; background:#040a17; border:3px dashed #38bdf8; border-radius:18px; display:flex; align-items:center; justify-content:center; overflow:hidden; touch-action:none; box-shadow:inset 0 0 30px rgba(0,240,255,0.15);">
+              <canvas id="trace-canvas" width="520" height="260" style="width:100%; height:100%; cursor:crosshair; touch-action:none;"></canvas>
+              <div id="trace-star-guide" style="position:absolute; top:28px; left:48%; transform:translateX(-50%); font-size:1.8rem; pointer-events:none; animation:pulseMic 1s infinite;">⭐</div>
             </div>
-            <div style="display:flex; gap:12px;">
+
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center;">
               <button type="button" class="big-btn" style="background:#0284c7; padding:8px 18px; font-size:1rem;" id="btn-clear-trace">🧹 Limpar Traço</button>
+              <button type="button" class="big-btn" style="background:#059669; padding:8px 18px; font-size:1rem;" id="btn-sound-trace">🔊 Ouvir Som</button>
+              <button type="button" class="big-btn" style="background:#d97706; padding:8px 18px; font-size:1rem;" id="btn-next-trace">➡️ Próxima Letrinha</button>
             </div>
           </div>
         `;
 
         const btnsBox = document.getElementById('trace-char-buttons');
-        TRACE_CHARS.forEach(c => {
+        TRACE_CHARS.forEach(item => {
           const b = document.createElement('button');
           b.type = 'button';
           b.className = 'big-btn';
-          b.style.cssText = 'background:#1e293b; border:2px solid #475569; padding:6px 14px; font-size:1.15rem; font-weight:900;';
-          b.textContent = c;
-          b.onclick = () => {
-            currentTraceChar = c;
-            initCanvas();
-            speak(`Vamos traçar a letrinha ${c}! Passe o dedinho por cima dela!`);
-          };
+          b.id = `trace-btn-${item.c}`;
+          b.style.cssText = `background:#1e293b; border:2px solid ${item.col}; padding:5px 12px; font-size:1.1rem; font-weight:900; color:#fff; min-width:38px;`;
+          b.textContent = item.c;
+          b.onclick = () => selectTraceChar(item.c);
           btnsBox.appendChild(b);
         });
 
         const canvas = document.getElementById('trace-canvas');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
-        let drawnPoints = 0;
+        let lastX = 0, lastY = 0;
+        let distanceDrawn = 0;
         let traceAwarded = false;
+
+        function selectTraceChar(char) {
+          currentTraceChar = char;
+          document.querySelectorAll('#trace-char-buttons button').forEach(btn => {
+            btn.style.boxShadow = 'none';
+            btn.style.transform = 'scale(1)';
+          });
+          const activeBtn = document.getElementById(`trace-btn-${char}`);
+          if (activeBtn) {
+            activeBtn.style.boxShadow = '0 0 15px #00f0ff';
+            activeBtn.style.transform = 'scale(1.15)';
+          }
+          const item = TRACE_CHARS.find(x => x.c === char) || { name: char };
+          const title = document.getElementById('trace-title-msg');
+          if (title) title.innerHTML = `✍️ Traçando: <span style="color:#00f0ff; font-size:1.3rem;">${item.name}</span> — Passe o mouse ou dedinho!`;
+          initCanvas();
+          speak(`Vamos traçar ${item.name}! Siga o pontilhado da letrinha!`);
+        }
 
         function initCanvas() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          drawnPoints = 0;
+          distanceDrawn = 0;
           traceAwarded = false;
 
-          // Desenhar guia pontilhada grande
+          // Desenhar guia pontilhada grande e nítida
           ctx.save();
-          ctx.font = 'bold 200px sans-serif';
+          ctx.font = 'bold 180px sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.setLineDash([8, 10]);
+          ctx.setLineDash([10, 12]);
           ctx.strokeStyle = '#334155';
-          ctx.lineWidth = 6;
+          ctx.lineWidth = 8;
           ctx.strokeText(currentTraceChar, canvas.width / 2, canvas.height / 2 + 10);
           ctx.restore();
         }
 
-        function drawNeonPoint(x, y) {
+        function getCoords(e) {
+          const rect = canvas.getBoundingClientRect();
+          const scaleX = canvas.width / rect.width;
+          const scaleY = canvas.height / rect.height;
+          return {
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
+          };
+        }
+
+        function drawNeonSegment(x1, y1, x2, y2) {
           ctx.save();
           ctx.strokeStyle = '#00f0ff';
           ctx.fillStyle = '#fef08a';
-          ctx.lineWidth = 14;
+          ctx.lineWidth = 16;
           ctx.lineCap = 'round';
-          ctx.shadowBlur = 12;
+          ctx.lineJoin = 'round';
+          ctx.shadowBlur = 18;
           ctx.shadowColor = '#00f0ff';
 
           ctx.beginPath();
-          ctx.arc(x, y, 7, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+          // Ponto de luz interno amarelo
+          ctx.strokeStyle = '#fef08a';
+          ctx.lineWidth = 6;
+          ctx.stroke();
           ctx.restore();
 
-          drawnPoints++;
-          if (drawnPoints % 8 === 0) {
-            playTone(700 + Math.random() * 300, 45);
+          const dist = Math.hypot(x2 - x1, y2 - y1);
+          distanceDrawn += dist;
+
+          if (Math.random() < 0.2) {
+            playTone(600 + Math.random() * 350, 45);
           }
 
-          if (drawnPoints >= 38 && !traceAwarded) {
+          if (distanceDrawn >= 420 && !traceAwarded) {
             traceAwarded = true;
             playTone(523, 100);
             setTimeout(() => playTone(659, 100), 100);
             setTimeout(() => playTone(784, 180), 200);
             addStar(1);
             speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você traçou a letrinha ${currentTraceChar} perfeitamente!`);
+            const title = document.getElementById('trace-title-msg');
+            if (title) title.innerHTML = `🌟 PARABÉNS! Letrinha <span style="color:#22c55e;">${currentTraceChar}</span> traçada com sucesso! Ganhou +1 Estrela!`;
           }
         }
 
-        canvas.onmousedown = (e) => { isDrawing = true; drawNeonPoint(e.offsetX, e.offsetY); };
-        canvas.onmousemove = (e) => { if (isDrawing) drawNeonPoint(e.offsetX, e.offsetY); };
-        window.onmouseup = () => { isDrawing = false; };
-
-        canvas.ontouchstart = (e) => {
-          e.preventDefault();
+        canvas.onpointerdown = (e) => {
           isDrawing = true;
-          const rect = canvas.getBoundingClientRect();
-          const t = e.touches[0];
-          drawNeonPoint(t.clientX - rect.left, t.clientY - rect.top);
+          try { canvas.setPointerCapture(e.pointerId); } catch(err) {}
+          const c = getCoords(e);
+          lastX = c.x;
+          lastY = c.y;
+          drawNeonSegment(c.x, c.y, c.x + 0.1, c.y + 0.1);
         };
-        canvas.ontouchmove = (e) => {
-          e.preventDefault();
+
+        canvas.onpointermove = (e) => {
           if (!isDrawing) return;
-          const rect = canvas.getBoundingClientRect();
-          const t = e.touches[0];
-          drawNeonPoint(t.clientX - rect.left, t.clientY - rect.top);
+          const c = getCoords(e);
+          drawNeonSegment(lastX, lastY, c.x, c.y);
+          lastX = c.x;
+          lastY = c.y;
         };
-        canvas.ontouchend = () => { isDrawing = false; };
 
-        document.getElementById('btn-clear-trace').onclick = initCanvas;
-        initCanvas();
-        speak(`Vamos traçar a letrinha ${currentTraceChar}! Passe o dedinho ou o mouse por cima do desenho pontilhado!`);
+        canvas.onpointerup = (e) => {
+          isDrawing = false;
+          try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+        };
+        canvas.onpointercancel = (e) => {
+          isDrawing = false;
+        };
+
+        document.getElementById('btn-clear-trace').onclick = () => {
+          initCanvas();
+          speak('Lousa limpinha! Pode traçar de novo!');
+        };
+        document.getElementById('btn-sound-trace').onclick = () => {
+          const item = TRACE_CHARS.find(x => x.c === currentTraceChar) || { name: currentTraceChar };
+          speak(item.name);
+        };
+        document.getElementById('btn-next-trace').onclick = () => {
+          const curIdx = TRACE_CHARS.findIndex(x => x.c === currentTraceChar);
+          const nextIdx = (curIdx + 1) % TRACE_CHARS.length;
+          selectTraceChar(TRACE_CHARS[nextIdx].c);
+        };
+
+        selectTraceChar('A');
       }
-
-      renderAlphabetStage(); };
-      document.getElementById('tab-words').onclick = () => { updateLitTabs('tab-words'); renderWordsStage(); };
-      document.getElementById('tab-quiz').onclick = () => { updateLitTabs('tab-quiz'); renderQuizStage(); };
-      document.getElementById('tab-trace').onclick = () => { updateLitTabs('tab-trace'); renderTracingStage(); };
 
       function renderAlphabetStage() {
         if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
@@ -3992,16 +4085,16 @@
     };
 
     const FINGER_SPECS = [
-      { id: 5, hand: 'left', name: 'Mindinho', x: 42, y: 55, w: 17, h: 58, col: '#a855f7' },
-      { id: 4, hand: 'left', name: 'Anelar', x: 65, y: 32, w: 17, h: 80, col: '#f97316' },
-      { id: 3, hand: 'left', name: 'Médio', x: 88, y: 16, w: 18, h: 95, col: '#22c55e' },
-      { id: 2, hand: 'left', name: 'Indicador', x: 112, y: 28, w: 18, h: 84, col: '#0284c7' },
-      { id: 1, hand: 'left', name: 'Polegar', x: 135, y: 85, w: 19, h: 52, rot: 28, col: '#eab308' },
-      { id: 6, hand: 'right', name: 'Polegar', x: 35, y: 85, w: 19, h: 52, rot: -28, col: '#eab308' },
-      { id: 7, hand: 'right', name: 'Indicador', x: 58, y: 28, w: 18, h: 84, col: '#0284c7' },
-      { id: 8, hand: 'right', name: 'Médio', x: 82, y: 16, w: 18, h: 95, col: '#22c55e' },
-      { id: 9, hand: 'right', name: 'Anelar', x: 105, y: 32, w: 17, h: 80, col: '#f97316' },
-      { id: 10, hand: 'right', name: 'Mindinho', x: 128, y: 55, w: 17, h: 58, col: '#a855f7' }
+      { id: 5, hand: 'left', name: 'Mindinho', x: 42, y: 55, w: 20, h: 62, col: '#a855f7' },
+      { id: 4, hand: 'left', name: 'Anelar', x: 67, y: 32, w: 20, h: 84, col: '#f97316' },
+      { id: 3, hand: 'left', name: 'Médio', x: 92, y: 16, w: 21, h: 98, col: '#22c55e' },
+      { id: 2, hand: 'left', name: 'Indicador', x: 118, y: 28, w: 21, h: 86, col: '#0284c7' },
+      { id: 1, hand: 'left', name: 'Polegar', x: 142, y: 82, w: 22, h: 54, rot: 28, col: '#eab308' },
+      { id: 6, hand: 'right', name: 'Polegar', x: 30, y: 82, w: 22, h: 54, rot: -28, col: '#eab308' },
+      { id: 7, hand: 'right', name: 'Indicador', x: 55, y: 28, w: 21, h: 86, col: '#0284c7' },
+      { id: 8, hand: 'right', name: 'Médio', x: 80, y: 16, w: 21, h: 98, col: '#22c55e' },
+      { id: 9, hand: 'right', name: 'Anelar', x: 105, y: 32, w: 20, h: 84, col: '#f97316' },
+      { id: 10, hand: 'right', name: 'Mindinho', x: 130, y: 55, w: 20, h: 62, col: '#a855f7' }
     ];
 
     const FINGER_TONES = [262, 294, 330, 349, 392, 440, 494, 523, 587, 659];
@@ -4012,62 +4105,81 @@
 
     function openFingerCounting() {
       const body = openModal('🖐️ CONTAR DE 1 A 10 COM AS MÃOZINHAS');
-      speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name}! Toque em um número ou nos dedinhos para levantar!`);
+      speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name || 'Kaleo'}! Toque nos dedinhos ou em um número!`);
 
       body.innerHTML = `
         <!-- SELETOR DE MODOS -->
-        <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+        <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
           <button type="button" class="music-tab-btn active" id="tab-fc-free" onclick="switchFingerCountingMode('free')">🖐️ Mãos Livres & Números</button>
           <button type="button" class="music-tab-btn" id="tab-fc-quiz" onclick="switchFingerCountingMode('quiz')">🎮 Jogo: Quantos Dedinhos?</button>
           <button type="button" class="music-tab-btn" id="tab-fc-song" onclick="playCountingSong()">▶️ Canção de Contar (1 ao 10)</button>
         </div>
 
         <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
-        <div style="background:#0a192f; border:3px solid #38bdf8; border-radius:18px; padding:12px 18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:16px;">
-          <div style="display:flex; align-items:center; gap:16px;">
-            <div id="fc-big-num" style="font-size:3.6rem; font-weight:900; color:#facc15; text-shadow:0 0 20px rgba(250, 204, 21, 0.6); line-height:1; min-width:65px; text-align:center;">0</div>
+        <div style="background:#0b192e; border:3px solid #38bdf8; border-radius:18px; padding:10px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div id="fc-big-num" style="font-size:3.2rem; font-weight:900; color:#facc15; text-shadow:0 0 20px rgba(250, 204, 21, 0.6); line-height:1; min-width:60px; text-align:center;">0</div>
             <div>
-              <div id="fc-word-title" style="font-size:1.6rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
-              <div id="fc-concrete-items" style="font-size:1.15rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
+              <div id="fc-word-title" style="font-size:1.5rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
+              <div id="fc-concrete-items" style="font-size:1.1rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
             </div>
           </div>
           <button type="button" class="big-btn" style="background:#059669; font-size:1rem; padding:8px 16px;" onclick="speakCurrentNumberHint()">🔊 Ouvir Járvis</button>
         </div>
 
-        <!-- CONTAINER DO DIAGRAMA DAS MÃOS -->
-        <div style="background:#071224; border:2px solid #1e293b; border-radius:18px; padding:10px 14px; margin-bottom:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
-          <svg viewBox="0 0 620 210" style="width:100%; max-width:600px; height:195px;" id="fc-hands-svg">
+        <!-- PRATELEIRA VISUAL CONCRETA: FRUTINHAS / MAÇÃS GIGANTES PARA CRIANÇAS -->
+        <div id="fc-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; min-height:48px; padding:6px 14px; background:#040e1e; border:2px dashed #38bdf8; border-radius:14px; margin-bottom:10px;">
+          <span style="color:#94a3b8; font-size:1.05rem; font-weight:700;">Toque em um número para ver as frutinhas!</span>
+        </div>
+
+        <!-- CONTAINER DO DIAGRAMA DAS MÃOS CARTOON NITIDAS -->
+        <div style="background:#061224; border:2px solid #1e293b; border-radius:18px; padding:8px 12px; margin-bottom:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
+          <svg viewBox="0 0 620 205" style="width:100%; max-width:580px; height:185px;" id="fc-hands-svg">
+            <defs>
+              <filter id="hand-glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
+              </filter>
+            </defs>
+
             <!-- MÃO ESQUERDA -->
-            <g id="fc-hand-left" transform="translate(30, 10)">
-              <!-- Palma -->
-              <path d="M 55 125 C 55 85, 125 85, 125 125 C 125 168, 55 168, 55 125 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
-              <text x="90" y="148" fill="#94a3b8" font-size="11" font-weight="900" text-anchor="middle">MÃO ESQUERDA</text>
+            <g id="fc-hand-left" transform="translate(30, 8)">
+              <!-- Punho e Palma Cartoon -->
+              <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
+              <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
+              <!-- Linhas fofas da palma -->
+              <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">✋ ESQUERDA</text>
             </g>
 
             <!-- MÃO DIREITA -->
-            <g id="fc-hand-right" transform="translate(370, 10)">
-              <!-- Palma -->
-              <path d="M 55 125 C 55 85, 125 85, 125 125 C 125 168, 55 168, 55 125 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
-              <text x="90" y="148" fill="#94a3b8" font-size="11" font-weight="900" text-anchor="middle">MÃO DIREITA</text>
+            <g id="fc-hand-right" transform="translate(370, 8)">
+              <!-- Punho e Palma Cartoon -->
+              <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
+              <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
+              <!-- Linhas fofas da palma -->
+              <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">🤚 DIREITA</text>
             </g>
           </svg>
 
           <!-- DICA FLUTUANTE INFORMATIVA -->
-          <div id="fc-feedback-bar" style="font-size:1.15rem; font-weight:800; color:#fef08a; text-align:center; min-height:28px;">
+          <div id="fc-feedback-bar" style="font-size:1.15rem; font-weight:800; color:#fef08a; text-align:center; min-height:26px;">
             Toque nos dedinhos para levantar ou escolha um número abaixo!
           </div>
         </div>
 
-        <!-- RÉGUA COLORIDA DOS NÚMEROS DE 1 A 10 -->
-        <div style="display:flex; gap:6px; justify-content:center;" id="fc-num-bar"></div>
+        <!-- RÉGUA COLORIDA DOS NÚMEROS DE 0 A 10 -->
+        <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;" id="fc-num-bar"></div>
 
         <!-- ÁREA DO QUIZ (OCULTA INICIALMENTE) -->
-        <div id="fc-quiz-box" style="display:none; margin-top:10px; gap:12px; justify-content:center;"></div>
+        <div id="fc-quiz-box" style="display:none; margin-top:8px; gap:12px; justify-content:center; flex-wrap:wrap;"></div>
       `;
 
       renderHandsSvgElements();
       renderNumberPillsBar();
-      setCountingNumber(3, false); // Começa mostrando o número 3 de forma alegre
+      setCountingNumber(3, false);
     }
 
     function renderHandsSvgElements() {
@@ -4080,44 +4192,46 @@
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('class', 'counting-finger');
         g.setAttribute('id', `finger-group-${spec.id}`);
+        g.style.cursor = 'pointer';
         g.onclick = () => toggleSingleFinger(spec.id);
 
-        // Retângulo do dedo
+        // Cápsula do dedo anatômico
         const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         r.setAttribute('id', `finger-rect-${spec.id}`);
         r.setAttribute('x', spec.x);
         r.setAttribute('y', spec.y);
         r.setAttribute('width', spec.w);
         r.setAttribute('height', spec.h);
-        r.setAttribute('rx', 8);
-        r.setAttribute('fill', '#1e293b');
-        r.setAttribute('stroke', '#475569');
-        r.setAttribute('stroke-width', 2);
+        r.setAttribute('rx', 10);
+        r.setAttribute('ry', 10);
+        r.setAttribute('fill', '#fed7aa');
+        r.setAttribute('stroke', '#ea580c');
+        r.setAttribute('stroke-width', 2.5);
         if (spec.rot) {
           r.setAttribute('transform', `rotate(${spec.rot}, ${spec.x}, ${spec.y})`);
         }
         g.appendChild(r);
 
-        // Crachá circular com o número no topo do dedo
+        // Crachá circular grande e visível com o número no topo do dedinho
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         circle.setAttribute('id', `finger-circ-${spec.id}`);
         const cx = spec.x + spec.w / 2;
-        const cy = spec.y - 10;
+        const cy = spec.y - 12;
         circle.setAttribute('cx', cx);
         circle.setAttribute('cy', cy);
-        circle.setAttribute('r', 11);
-        circle.setAttribute('fill', '#0f172a');
-        circle.setAttribute('stroke', spec.col);
-        circle.setAttribute('stroke-width', 2);
+        circle.setAttribute('r', 13);
+        circle.setAttribute('fill', spec.col);
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', 2.5);
         g.appendChild(circle);
 
         // Texto com o número (1..10)
         const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         t.setAttribute('id', `finger-text-${spec.id}`);
         t.setAttribute('x', cx);
-        t.setAttribute('y', cy + 4);
+        t.setAttribute('y', cy + 5);
         t.setAttribute('fill', '#ffffff');
-        t.setAttribute('font-size', '10');
+        t.setAttribute('font-size', '12');
         t.setAttribute('font-weight', '900');
         t.setAttribute('text-anchor', 'middle');
         t.textContent = spec.id;
@@ -4149,22 +4263,47 @@
       }
     }
 
+    function renderConcreteShelf(num) {
+      const shelf = document.getElementById('fc-concrete-shelf');
+      if (!shelf) return;
+      shelf.innerHTML = '';
+
+      if (num === 0) {
+        shelf.innerHTML = '<span style="color:#94a3b8; font-size:1.15rem; font-weight:700;">✊ Mãozinhas fechadas! Nenhuma maçã levantada.</span>';
+        return;
+      }
+
+      for (let i = 1; i <= num; i++) {
+        const apple = document.createElement('span');
+        apple.style.cssText = `font-size:2.3rem; cursor:pointer; user-select:none; animation:pulseMic 0.5s ease-out ${i * 0.05}s; filter:drop-shadow(0 2px 8px rgba(239,68,68,0.6));`;
+        apple.textContent = '🍎';
+        apple.title = `Maçã número ${i}`;
+        apple.onclick = () => {
+          playTone(600 + i * 50, 100);
+          speak(`Maçã número ${i}!`);
+        };
+        shelf.appendChild(apple);
+      }
+
+      const label = document.createElement('span');
+      label.style.cssText = 'font-size:1.25rem; font-weight:900; color:#fde047; margin-left:8px; align-self:center;';
+      label.textContent = `= ${num} Maçã${num > 1 ? 's' : ''}!`;
+      shelf.appendChild(label);
+    }
+
     function toggleSingleFinger(fingerId) {
       stopCountingSong();
       currentFingerStates[fingerId] = !currentFingerStates[fingerId];
 
-      // Toca a nota correspondente ao dedo
       const toneFreq = FINGER_TONES[fingerId - 1] || 440;
       playTone(toneFreq, 180);
 
-      // Atualiza visual do dedo
       updateFingerVisuals();
 
-      // Conta quantos dedos estão levantados no total
       const count = Object.values(currentFingerStates).filter(Boolean).length;
       updateHeaderNumberDisplay(count);
+      renderConcreteShelf(count);
 
-      // Frase curta
       const rep = document.getElementById('fc-feedback-bar');
       if (rep) {
         rep.textContent = `${count} dedinho${count !== 1 ? 's' : ''} levantado${count !== 1 ? 's' : ''}!`;
@@ -4172,24 +4311,21 @@
     }
 
     function setCountingNumber(num, shouldSpeak = true) {
-      // Ajusta o array de dedos para o número escolhido
       for (let i = 1; i <= 10; i++) {
         currentFingerStates[i] = i <= num;
       }
       updateFingerVisuals();
       updateHeaderNumberDisplay(num);
+      renderConcreteShelf(num);
 
-      // Destaque na régua de botões
       document.querySelectorAll('.num-pill-btn').forEach(b => b.classList.remove('active'));
       const activePill = document.getElementById(`pill-num-${num}`);
       if (activePill) activePill.classList.add('active');
 
-      // Toca som de acorde suave
       const freq = FINGER_TONES[Math.min(9, Math.max(0, num - 1))] || 440;
       playTone(freq, 220);
 
       if (num === 10) {
-        // Fanfarra triunfal do 10!
         setTimeout(() => playTone(659, 120), 120);
         setTimeout(() => playTone(880, 250), 240);
         addStarReward();
@@ -4209,21 +4345,34 @@
 
         if (rect) {
           if (isUp) {
-            rect.setAttribute('fill', spec.col);
+            rect.setAttribute('fill', '#fef08a');
             rect.setAttribute('stroke', '#ffffff');
-            rect.setAttribute('stroke-width', '3');
+            rect.setAttribute('stroke-width', '3.5');
             rect.setAttribute('y', spec.y);
             rect.setAttribute('height', spec.h);
-            rect.style.filter = `drop-shadow(0 0 10px ${spec.col})`;
+            rect.style.filter = `drop-shadow(0 0 12px ${spec.col})`;
           } else {
-            rect.setAttribute('fill', '#1e293b');
-            rect.setAttribute('stroke', '#334155');
+            // Dobradinho para a palma com cor suave
+            rect.setAttribute('fill', '#fdba74');
+            rect.setAttribute('stroke', '#ca8a04');
             rect.setAttribute('stroke-width', '2');
-            rect.setAttribute('y', spec.y + spec.h - 22);
-            rect.setAttribute('height', '22');
+            rect.setAttribute('y', spec.y + spec.h - 26);
+            rect.setAttribute('height', '26');
             rect.style.filter = 'none';
           }
         }
+        if (circ) {
+          circ.setAttribute('fill', isUp ? spec.col : '#1e293b');
+          circ.setAttribute('stroke', isUp ? '#ffffff' : '#475569');
+          circ.setAttribute('r', isUp ? 14 : 11);
+          circ.style.filter = isUp ? `drop-shadow(0 0 8px ${spec.col})` : 'none';
+        }
+        if (text) {
+          text.setAttribute('fill', isUp ? '#ffffff' : '#64748b');
+          text.setAttribute('font-size', isUp ? '13' : '10');
+        }
+      });
+    }
         if (circ) {
           circ.setAttribute('fill', isUp ? spec.col : '#0f172a');
           circ.setAttribute('stroke', isUp ? '#ffffff' : '#334155');
@@ -4600,18 +4749,28 @@
       return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
+    const WORDS_POOL = ['KALEO', 'JARVIS', 'SOL', 'LUA', 'BOLA', 'CASA', 'AMOR', 'HEROI', 'MAMA', 'PAPA'];
+
     function openTechAcademy() {
-      const body = openModal('🖐️ ACADEMIA DAS MÃOZINHAS & DEDOS CORRETOS');
+      const body = openModal('🖐️ TREINO DE MOUSE & TECLADO DO JARVIS');
       body.innerHTML = `
-        <div style="display:flex; gap:12px; margin-bottom:12px;">
-          <button type="button" class="big-btn" style="background:#eab308; color:#0f172a; padding:10px 18px; font-size:1.05rem;" id="tab-kb">⌨️ Qual Dedinho Usar no Teclado</button>
-          <button type="button" class="big-btn" style="background:#0284c7; padding:10px 18px; font-size:1.05rem;" id="tab-mouse">🖱️ Treino do Mouse (Mover, Clicar e Arrastar)</button>
+        <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+          <button type="button" class="big-btn" style="background:#0284c7; padding:8px 18px; font-size:1.05rem;" id="tab-mouse">🖱️ Treino do Mouse (Mover, Clicar e Arrastar)</button>
+          <button type="button" class="big-btn" style="background:#7c3aed; color:#fff; padding:8px 18px; font-size:1.05rem;" id="tab-kb">⌨️ Qual Dedinho Usar no Teclado</button>
         </div>
         <div id="tech-stage" style="flex:1; display:flex; flex-direction:column;"></div>
       `;
-      document.getElementById('tab-kb').onclick = renderFingerTypingStage;
-      document.getElementById('tab-mouse').onclick = renderMouseStage;
-      renderFingerTypingStage();
+      document.getElementById('tab-mouse').onclick = () => {
+        document.getElementById('tab-mouse').style.border = '2px solid #00f0ff';
+        document.getElementById('tab-kb').style.border = 'none';
+        renderMouseStage();
+      };
+      document.getElementById('tab-kb').onclick = () => {
+        document.getElementById('tab-kb').style.border = '2px solid #00f0ff';
+        document.getElementById('tab-mouse').style.border = 'none';
+        renderFingerTypingStage();
+      };
+      document.getElementById('tab-mouse').click();
     }
 
     function renderFingerTypingStage() {
@@ -4620,49 +4779,37 @@
 
       stage.innerHTML = `
         <!-- DIAGRAMA VISUAL DAS DUAS MÃOS COM DEDOS COLORIDOS -->
-        <div style="background:#0b192c; border:2px solid #38bdf8; border-radius:16px; padding:12px; margin-bottom:12px; text-align:center;">
-          <div id="finger-instruction" style="font-size:1.35rem; font-weight:900; color:#facc15; margin-bottom:8px;">
+        <div style="background:#0b192c; border:2px solid #38bdf8; border-radius:14px; padding:8px 12px; margin-bottom:8px; text-align:center;">
+          <div id="finger-instruction" style="font-size:1.25rem; font-weight:900; color:#facc15; margin-bottom:6px;">
             Aperte a tecla indicada pelo dedinho brilhante!
           </div>
 
-          <svg class="hands-svg" viewBox="0 0 600 200">
+          <svg class="hands-svg" viewBox="0 0 600 180" style="max-height:140px; width:100%;">
             <!-- MÃO ESQUERDA -->
-            <g id="hand-left" transform="translate(40, 10)">
-              <!-- Palma -->
-              <path d="M 60 120 C 60 80, 120 80, 120 120 C 120 160, 60 160, 60 120 Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
-              <!-- Mindinho -->
-              <rect id="left-pinky" x="42" y="55" width="16" height="50" rx="8" fill="#a855f7" stroke="#334155" stroke-width="2" />
-              <!-- Anelar -->
-              <rect id="left-ring" x="64" y="35" width="16" height="68" rx="8" fill="#f97316" stroke="#334155" stroke-width="2" />
-              <!-- Médio -->
-              <rect id="left-middle" x="86" y="20" width="17" height="82" rx="8" fill="#22c55e" stroke="#334155" stroke-width="2" />
-              <!-- Indicador -->
-              <rect id="left-index" x="109" y="32" width="17" height="70" rx="8" fill="#0284c7" stroke="#334155" stroke-width="2" />
-              <!-- Polegar (Dedão) -->
-              <rect id="left-thumb" x="130" y="85" width="18" height="45" rx="8" transform="rotate(30, 130, 85)" fill="#eab308" stroke="#334155" stroke-width="2" />
-              <text x="90" y="150" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">MÃO ESQUERDA</text>
+            <g id="hand-left" transform="translate(40, 5)">
+              <path d="M 60 115 C 60 78, 120 78, 120 115 C 120 155, 60 155, 60 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="2.5"/>
+              <rect id="left-pinky" x="42" y="52" width="16" height="52" rx="8" fill="#a855f7" stroke="#334155" stroke-width="2" />
+              <rect id="left-ring" x="64" y="32" width="16" height="70" rx="8" fill="#f97316" stroke="#334155" stroke-width="2" />
+              <rect id="left-middle" x="86" y="16" width="17" height="84" rx="8" fill="#22c55e" stroke="#334155" stroke-width="2" />
+              <rect id="left-index" x="109" y="28" width="17" height="72" rx="8" fill="#0284c7" stroke="#334155" stroke-width="2" />
+              <rect id="left-thumb" x="130" y="80" width="18" height="46" rx="8" transform="rotate(28, 130, 80)" fill="#eab308" stroke="#334155" stroke-width="2" />
+              <text x="90" y="145" fill="#0f172a" font-size="11" font-weight="900" text-anchor="middle">ESQUERDA</text>
             </g>
 
             <!-- MÃO DIREITA -->
-            <g id="hand-right" transform="translate(360, 10)">
-              <!-- Palma -->
-              <path d="M 60 120 C 60 80, 120 80, 120 120 C 120 160, 60 160, 60 120 Z" fill="#1e293b" stroke="#475569" stroke-width="2"/>
-              <!-- Polegar (Dedão) -->
-              <rect id="right-thumb" x="35" y="85" width="18" height="45" rx="8" transform="rotate(-30, 35, 85)" fill="#eab308" stroke="#334155" stroke-width="2" />
-              <!-- Indicador -->
-              <rect id="right-index" x="58" y="32" width="17" height="70" rx="8" fill="#0284c7" stroke="#334155" stroke-width="2" />
-              <!-- Médio -->
-              <rect id="right-middle" x="81" y="20" width="17" height="82" rx="8" fill="#22c55e" stroke="#334155" stroke-width="2" />
-              <!-- Anelar -->
-              <rect id="right-ring" x="104" y="35" width="16" height="68" rx="8" fill="#f97316" stroke="#334155" stroke-width="2" />
-              <!-- Mindinho -->
-              <rect id="right-pinky" x="126" y="55" width="16" height="50" rx="8" fill="#a855f7" stroke="#334155" stroke-width="2" />
-              <text x="90" y="150" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle">MÃO DIREITA</text>
+            <g id="hand-right" transform="translate(360, 5)">
+              <path d="M 60 115 C 60 78, 120 78, 120 115 C 120 155, 60 155, 60 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="2.5"/>
+              <rect id="right-thumb" x="35" y="80" width="18" height="46" rx="8" transform="rotate(-28, 35, 80)" fill="#eab308" stroke="#334155" stroke-width="2" />
+              <rect id="right-index" x="58" y="28" width="17" height="72" rx="8" fill="#0284c7" stroke="#334155" stroke-width="2" />
+              <rect id="right-middle" x="81" y="16" width="17" height="84" rx="8" fill="#22c55e" stroke="#334155" stroke-width="2" />
+              <rect id="right-ring" x="104" y="32" width="16" height="70" rx="8" fill="#f97316" stroke="#334155" stroke-width="2" />
+              <rect id="right-pinky" x="126" y="52" width="16" height="52" rx="8" fill="#a855f7" stroke="#334155" stroke-width="2" />
+              <text x="90" y="145" fill="#0f172a" font-size="11" font-weight="900" text-anchor="middle">DIREITA</text>
             </g>
           </svg>
         </div>
 
-        <div id="typing-word" style="text-align:center; font-family:Consolas,monospace; font-size:2.8rem; font-weight:900; margin:4px 0;"></div>
+        <div id="typing-word" style="text-align:center; font-family:Consolas,monospace; font-size:2.5rem; font-weight:900; margin:2px 0;"></div>
         <div id="kb-container" style="margin:auto;"></div>
       `;
 
@@ -4702,9 +4849,9 @@
 
         const inst = document.getElementById('finger-instruction');
         if (inst) {
-          inst.innerHTML = `Use o <span style="color:#ffffff; text-decoration:underline;">${f.label}</span> na tecla <strong>"${targetChar}"</strong>!`;
+          inst.innerHTML = `Use o <span style="color:#00f0ff; text-decoration:underline;">${f.label}</span> na tecla <strong>"${targetChar}"</strong>!`;
         }
-        speak(`Use o ${f.label} para apertar a tecla ${targetChar}!`);
+        speak(`Use o ${f.label} para a tecla ${targetChar}!`);
       }
 
       function refreshUI() {
@@ -4724,12 +4871,12 @@
           if (idx >= word.length) {
             addStar(1);
             document.getElementById('typing-word').innerHTML = `🌟 ${word} 🌟`;
-            speak(`Parabéns! Você digitou a palavra ${word} usando os dedinhos certos!`);
+            speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você digitou ${word} certinho!`);
             setTimeout(() => {
               word = WORDS_POOL[Math.floor(Math.random() * WORDS_POOL.length)];
               idx = 0;
               refreshUI();
-            }, 2400);
+            }, 2200);
           } else {
             refreshUI();
           }
@@ -4748,78 +4895,175 @@
     }
 
     // =========================================================================
-    // TREINO DE MOUSE EM 3 FASES (MOVER, CLICAR, ARRASTAR)
+    // TREINO DE MOUSE EM 3 FASES DIVERTIDAS (POINTER EVENTS & REAÇÕES LÚDICAS)
     // =========================================================================
     function renderMouseStage() {
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       const stage = document.getElementById('tech-stage');
-      let phase = 1;
+      let phase = 1; // 1: Mover / Estrelas, 2: Clicar / Balões, 3: Arrastar / Alimentar Jarvis
       let hits = 0;
 
       stage.innerHTML = `
-        <div id="mouse-instruction" style="text-align:center; font-size:1.35rem; font-weight:900; color:#38bdf8; margin-bottom:10px;">
-          Fase 1: Passeie com o mouse e encoste na bola azul!
+        <div id="mouse-instruction" style="text-align:center; font-size:1.25rem; font-weight:900; color:#38bdf8; margin-bottom:8px;">
+          Fase 1: Mova a setinha do mouse até encostar na estrelinha mágica!
         </div>
-        <div id="mouse-arena" style="flex:1; background:#06101f; border:3px solid #0284c7; border-radius:18px; position:relative; overflow:hidden;"></div>
+        <div id="mouse-arena" style="flex:1; min-height:260px; background:#040c18; border:3px solid #0284c7; border-radius:18px; position:relative; overflow:hidden; touch-action:none; box-shadow:inset 0 0 30px rgba(0,240,255,0.15);"></div>
       `;
-      speak('Fase um do mouse: leve a setinha até encostar na bola azul brilhante!');
+      speak('Fase um do mouse: passe a setinha por cima da estrelinha mágica para pegar!');
 
       function spawn() {
         const arena = document.getElementById('mouse-arena');
         if (!arena) return;
         arena.innerHTML = '';
-        const x = Math.floor(Math.random() * (arena.clientWidth - 160)) + 40;
-        const y = Math.floor(Math.random() * (arena.clientHeight - 140)) + 30;
+        const rect = arena.getBoundingClientRect();
+        const maxX = Math.max(60, rect.width - 140);
+        const maxY = Math.max(50, rect.height - 120);
+        const x = Math.floor(Math.random() * maxX) + 30;
+        const y = Math.floor(Math.random() * maxY) + 20;
 
         if (phase === 1) {
-          const orb = document.createElement('div');
-          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:95px; height:95px; border-radius:50%; background:#00f0ff; color:#040914; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:pointer; font-size:1.1rem;`;
-          orb.textContent = 'ENCOSTE';
-          orb.onmouseenter = advance;
-          arena.appendChild(orb);
+          // FASE 1: MOVER / ENCOSTAR NA ESTRELINHA
+          const star = document.createElement('div');
+          star.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:90px; height:90px; border-radius:50%; background:radial-gradient(circle, #fde047 0%, #ca8a04 100%); color:#0f172a; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; border:3px solid #fff; cursor:crosshair; font-size:2.8rem; box-shadow:0 0 25px #fde047; animation:pulseMic 1s infinite; user-select:none;`;
+          star.innerHTML = `<span>⭐</span>`;
+          star.onpointerenter = () => {
+            playTone(880, 120);
+            star.style.transform = 'scale(1.3)';
+            star.style.boxShadow = '0 0 45px #ffffff';
+            advance();
+          };
+          arena.appendChild(star);
         } else if (phase === 2) {
-          const orb = document.createElement('div');
-          orb.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:100px; height:100px; border-radius:50%; background:#22c55e; color:#fff; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:pointer; font-size:1.2rem;`;
-          orb.textContent = 'CLIQUE!';
-          orb.onclick = advance;
-          arena.appendChild(orb);
+          // FASE 2: CLICAR NO BALÃO COLORIDO
+          const balloonColors = [
+            { bg: '#ef4444', icon: '🎈' },
+            { bg: '#3b82f6', icon: '🎈' },
+            { bg: '#10b981', icon: '🎈' },
+            { bg: '#8b5cf6', icon: '🎈' },
+            { bg: '#f59e0b', icon: '🎈' }
+          ];
+          const bInfo = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+          const balloon = document.createElement('div');
+          balloon.style.cssText = `position:absolute; left:${x}px; top:${y}px; width:95px; height:105px; border-radius:50% 50% 50% 50% / 40% 40% 60% 60%; background:${bInfo.bg}; color:#fff; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; border:3px solid #fff; cursor:pointer; font-size:1.1rem; box-shadow:0 0 25px ${bInfo.bg}88; user-select:none; animation:pulseMic 1.2s infinite;`;
+          balloon.innerHTML = `<span style="font-size:2.4rem;">${bInfo.icon}</span><span style="font-size:0.85rem; font-weight:900;">CLIQUE!</span>`;
+          balloon.onclick = () => {
+            playTone(400, 60);
+            setTimeout(() => playTone(800, 100), 50);
+            balloon.innerHTML = `<span style="font-size:3rem;">💥</span>`;
+            balloon.style.transform = 'scale(1.4)';
+            setTimeout(advance, 200);
+          };
+          arena.appendChild(balloon);
         } else {
-          const reactor = document.createElement('div');
-          reactor.style.cssText = `position:absolute; right:50px; top:35%; width:140px; height:140px; border-radius:50%; background:#0c4a6e; border:4px dashed #00f0ff; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:900; font-size:1rem;`;
-          reactor.textContent = 'SOLTE NO\nREATOR';
-          reactor.ondragover = (e) => e.preventDefault();
-          reactor.ondrop = () => advance();
+          // FASE 3: ARRASTAR FRUTINHA ATÉ A BOQUINHA DO JARVIS (COM POINTER EVENTS)
+          const targetArea = document.createElement('div');
+          targetArea.id = 'mouse-jarvis-mouth';
+          targetArea.style.cssText = `position:absolute; right:35px; top:50%; transform:translateY(-50%); width:130px; height:130px; border-radius:50%; background:#0c223f; border:4px dashed #00f0ff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; font-weight:900; box-shadow:0 0 25px rgba(0,240,255,0.3);`;
+          targetArea.innerHTML = `<span style="font-size:3.5rem;">🤖</span><span style="font-size:0.85rem; color:#38bdf8;">SOLTE AQUI!</span>`;
 
-          const battery = document.createElement('div');
-          battery.draggable = true;
-          battery.style.cssText = `position:absolute; left:60px; top:40%; width:100px; height:100px; border-radius:50%; background:#facc15; color:#0f172a; font-weight:900; display:flex; align-items:center; justify-content:center; border:4px solid #fff; cursor:grab; font-size:1.1rem;`;
-          battery.textContent = 'ARRASTE';
+          const draggableApple = document.createElement('div');
+          draggableApple.id = 'mouse-drag-apple';
+          draggableApple.style.cssText = `position:absolute; left:40px; top:50%; transform:translateY(-50%); width:95px; height:95px; border-radius:50%; background:#dc2626; border:3px solid #fecaca; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:grab; box-shadow:0 0 20px rgba(239,68,68,0.7); touch-action:none; user-select:none;`;
+          draggableApple.innerHTML = `<span style="font-size:3rem;">🍎</span><span style="font-size:0.75rem; color:#fff; font-weight:900;">ARRASTE</span>`;
 
-          arena.appendChild(reactor);
-          arena.appendChild(battery);
+          let isDragging = false;
+          let dragOffsetX = 0;
+          let dragOffsetY = 0;
+
+          draggableApple.onpointerdown = (e) => {
+            isDragging = true;
+            try { draggableApple.setPointerCapture(e.pointerId); } catch (err) {}
+            draggableApple.style.cursor = 'grabbing';
+            draggableApple.style.transform = 'scale(1.2)';
+            const appleRect = draggableApple.getBoundingClientRect();
+            dragOffsetX = e.clientX - appleRect.left;
+            dragOffsetY = e.clientY - appleRect.top;
+          };
+
+          draggableApple.onpointermove = (e) => {
+            if (!isDragging) return;
+            const arenaRect = arena.getBoundingClientRect();
+            const posX = e.clientX - arenaRect.left - dragOffsetX;
+            const posY = e.clientY - arenaRect.top - dragOffsetY;
+            draggableApple.style.left = `${Math.max(0, Math.min(arenaRect.width - 95, posX))}px`;
+            draggableApple.style.top = `${Math.max(0, Math.min(arenaRect.height - 95, posY))}px`;
+            draggableApple.style.transform = 'none';
+
+            // Checa proximidade com a boca do robô Jarvis
+            const mouthRect = targetArea.getBoundingClientRect();
+            const currentAppleRect = draggableApple.getBoundingClientRect();
+            const dist = Math.hypot(
+              (currentAppleRect.left + 45) - (mouthRect.left + 65),
+              (currentAppleRect.top + 45) - (mouthRect.top + 65)
+            );
+
+            if (dist < 85) {
+              targetArea.style.borderColor = '#10b981';
+              targetArea.style.background = '#064e3b';
+              targetArea.innerHTML = `<span style="font-size:3.5rem;">😋</span><span style="font-size:0.85rem; color:#34d399;">DELÍCIA!</span>`;
+            } else {
+              targetArea.style.borderColor = '#00f0ff';
+              targetArea.style.background = '#0c223f';
+              targetArea.innerHTML = `<span style="font-size:3.5rem;">🤖</span><span style="font-size:0.85rem; color:#38bdf8;">SOLTE AQUI!</span>`;
+            }
+          };
+
+          draggableApple.onpointerup = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            try { draggableApple.releasePointerCapture(e.pointerId); } catch (err) {}
+            draggableApple.style.cursor = 'grab';
+
+            const mouthRect = targetArea.getBoundingClientRect();
+            const currentAppleRect = draggableApple.getBoundingClientRect();
+            const dist = Math.hypot(
+              (currentAppleRect.left + 45) - (mouthRect.left + 65),
+              (currentAppleRect.top + 45) - (mouthRect.top + 65)
+            );
+
+            if (dist < 90) {
+              // Acertou na boquinha do Jarvis!
+              playTone(523, 100);
+              setTimeout(() => playTone(659, 100), 100);
+              setTimeout(() => playTone(784, 180), 200);
+              speak(`Nham nham nham! Que delícia! Obrigado, ${appState.config.child_name || 'Kaleo'}!`);
+              advance();
+            } else {
+              // Retorna suavemente
+              draggableApple.style.left = '40px';
+              draggableApple.style.top = '50%';
+              draggableApple.style.transform = 'translateY(-50%)';
+              playTone(220, 100);
+            }
+          };
+
+          arena.appendChild(targetArea);
+          arena.appendChild(draggableApple);
         }
       }
 
       function advance() {
-        playTone(659, 100);
         hits++;
         const inst = document.getElementById('mouse-instruction');
         if (phase === 1 && hits >= 3) {
           phase = 2; hits = 0;
-          inst.textContent = 'Fase 2: Agora CLIQUE com o dedinho indicador no círculo verde!';
-          speak('Muito bem! Agora clique com o dedinho indicador no círculo verde!');
+          if (inst) inst.textContent = 'Fase 2: Agora CLIQUE com o dedinho indicador nos balões para estourar!';
+          speak('Muito bem! Agora clique nos balões coloridos para estourar todos eles!');
         } else if (phase === 2 && hits >= 3) {
           phase = 3; hits = 0;
-          inst.textContent = 'Fase 3: Segure o botão na bola amarela e ARRASTE até o Reator!';
-          speak('Excelente! Agora segure a energia amarela e arraste até soltar dentro do Reator!');
+          if (inst) inst.textContent = 'Fase 3: Segure a maçãzinha com o botão do mouse e arraste até o Jarvis comer!';
+          speak('Sensacional! Agora segure a maçãzinha e arraste até a boquinha do Jarvis!');
         } else if (phase === 3 && hits >= 2) {
           addStar(1);
           phase = 1; hits = 0;
-          inst.textContent = '🏆 Mestre do Mouse! Você ganhou uma Estrela Stark!';
-          speak(`Parabéns, ${appState.config.child_name}! Você dominou o mouse!`);
+          if (inst) inst.innerHTML = '🏆 Mestre do Mouse! Você ganhou +1 Estrela Stark!';
+          speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você dominou o mouse e o touchpad perfeitamente!`);
         }
         spawn();
       }
+
+      setTimeout(spawn, 100);
+    }
       setTimeout(spawn, 100);
     }
 
@@ -5084,6 +5328,20 @@
         osc.onended = () => {
           try { osc.disconnect(); filter.disconnect(); gain.disconnect(); } catch (e) {}
         };
+      } else if (inst === 'bateria') {
+        if (freq <= 270) {
+          playDrumSound('kick');
+        } else if (freq <= 310) {
+          playDrumSound('snare');
+        } else if (freq <= 360) {
+          playDrumSound('tom');
+        } else if (freq <= 420) {
+          playDrumSound('clap');
+        } else if (freq <= 460) {
+          playDrumSound('laser');
+        } else {
+          playDrumSound('hihat');
+        }
       } else if (inst === 'bichinhos') {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -5170,7 +5428,7 @@
 
     function openMusicComposer() {
       const body = openModal('🎵 LABORATÓRIO MUSICAL DO JÁRVIS');
-      speak('Bem-vindo ao Laboratório Musical! Escolha seu instrumento favorito, aprenda canções famosas ou invente a sua própria melodia!');
+      speak('Bem-vindo ao Laboratório Musical! Escolha seu instrumento: Piano, Bateria, Bichinhos ou Laser!');
 
       let currentInstrument = 'piano'; // 'piano' | 'bateria' | 'bichinhos' | 'laser'
       let activeMelody = null;
@@ -5178,11 +5436,11 @@
       let recordedNotes = [];
       let isRecording = false;
       let songPlayTimer = null;
+      let selectedSongKey = 'estrelinha';
 
       body.innerHTML = `
-        <!-- BARRA SUPERIOR: ABAS DE INSTRUMENTOS + GRAVADOR + BATIDA -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-          <!-- ABAS DE INSTRUMENTO -->
+        <!-- BARRA DE INSTRUMENTOS SUPER CLEAN -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
           <div style="display:flex; gap:8px; flex-wrap:wrap;" id="inst-tabs">
             <button type="button" class="music-tab-btn active" id="tab-piano">🎹 Piano Mágico</button>
             <button type="button" class="music-tab-btn" id="tab-bateria">🥁 Bateria Stark</button>
@@ -5190,50 +5448,50 @@
             <button type="button" class="music-tab-btn" id="tab-laser">🛸 Laser Espacial</button>
           </div>
 
-          <!-- CONTROLES: BATIDA DE FUNDO & GRAVADOR -->
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="big-btn" style="background:#0ea5e9; font-size:1.05rem;" id="btn-toggle-beat">🥁 Ligar Batida Animada</button>
-            <button type="button" class="big-btn" style="background:#e11d48; font-size:1.05rem;" id="btn-rec-start">🔴 Gravar Minha Música</button>
-            <button type="button" class="big-btn" style="background:#10b981; font-size:1.05rem;" id="btn-rec-play">▶ Tocar Minha Música</button>
-            <button type="button" class="big-btn" style="background:#475569; font-size:1.05rem;" id="btn-rec-clear">🗑️ Limpar</button>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="big-btn" style="background:#0ea5e9; font-size:0.95rem; padding:6px 14px;" id="btn-toggle-beat">🥁 Batida Animada</button>
+            <button type="button" class="big-btn" style="background:#e11d48; font-size:0.95rem; padding:6px 14px;" id="btn-rec-start">🔴 Gravar</button>
+            <button type="button" class="big-btn" style="background:#10b981; font-size:0.95rem; padding:6px 14px;" id="btn-rec-play">▶ Tocar Gravado</button>
           </div>
         </div>
 
-        <!-- BARRA DE MÚSICAS INFANTIS (6 CANÇÕES) -->
-        <div style="background:#0b1528; border:2px solid #334155; border-radius:14px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <span style="font-weight:900; color:#38bdf8; font-size:1.05rem; margin-right:4px;">Canções Infantis:</span>
-          <button type="button" class="big-btn" style="background:#7c3aed; font-size:0.95rem; padding:8px 14px;" id="song-estrela">⭐ Brilha Estrelinha</button>
-          <button type="button" class="big-btn" style="background:#0284c7; font-size:0.95rem; padding:8px 14px;" id="song-aranha">🕷️ Dona Aranha</button>
-          <button type="button" class="big-btn" style="background:#059669; font-size:0.95rem; padding:8px 14px;" id="song-balao">🎈 Cai Cai Balão</button>
-          <button type="button" class="big-btn" style="background:#d97706; font-size:0.95rem; padding:8px 14px;" id="song-parabens">🎂 Parabéns Pra Você</button>
-          <button type="button" class="big-btn" style="background:#dc2626; font-size:0.95rem; padding:8px 14px;" id="song-soldado">🪖 Marcha Soldado</button>
-          <button type="button" class="big-btn" style="background:#c026d3; font-size:0.95rem; padding:8px 14px;" id="song-ciranda">🎡 Ciranda Cirandinha</button>
+        <!-- SELEÇÃO RÁPIDA DE CANÇÕES INFANTIS -->
+        <div style="background:#071224; border:2px solid #1e293b; border-radius:12px; padding:6px 12px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span style="font-weight:900; color:#38bdf8; font-size:0.95rem;">Canções:</span>
+            <button type="button" class="num-pill-btn active" style="font-size:0.95rem; padding:5px 12px;" id="song-estrela">⭐ Estrelinha</button>
+            <button type="button" class="num-pill-btn" style="font-size:0.95rem; padding:5px 12px;" id="song-aranha">🕷️ Dona Aranha</button>
+            <button type="button" class="num-pill-btn" style="font-size:0.95rem; padding:5px 12px;" id="song-balao">🎈 Cai Cai Balão</button>
+            <button type="button" class="num-pill-btn" style="font-size:0.95rem; padding:5px 12px;" id="song-parabens">🎂 Parabéns</button>
+            <button type="button" class="num-pill-btn" style="font-size:0.95rem; padding:5px 12px;" id="song-soldado">🪖 Soldado</button>
+            <button type="button" class="num-pill-btn" style="font-size:0.95rem; padding:5px 12px;" id="song-ciranda">🎡 Ciranda</button>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="big-btn" style="background:#10b981; font-size:1rem; padding:6px 16px; font-weight:900;" id="btn-song-listen">▶️ Tocar com Instrumento Atual</button>
+            <button type="button" class="big-btn" style="background:#f59e0b; font-size:1rem; padding:6px 14px; font-weight:900;" id="btn-song-play-guide">🎯 Aprender (Siga a Estrela)</button>
+          </div>
         </div>
 
-        <!-- CÉU MUSICAL: ÁREA VISUAL COM ESTRELAS E PROMPT GRANDE -->
-        <div id="music-sky" style="flex:1; min-height:160px; background:radial-gradient(ellipse at center, #0a1936 0%, #030712 100%); border:3px solid var(--cyan); border-radius:18px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; box-shadow:inset 0 0 40px rgba(0,240,255,0.15);">
-          <div id="music-prompt" style="font-size:1.85rem; font-weight:900; color:#fde047; text-align:center; text-shadow:0 0 20px rgba(250,204,21,0.6); z-index:2;">
+        <!-- CÉU MUSICAL COMPACTO E DESPOLUÍDO -->
+        <div id="music-sky" style="min-height:95px; max-height:115px; background:radial-gradient(ellipse at center, #091a38 0%, #030712 100%); border:2px solid var(--cyan); border-radius:14px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 14px; box-shadow:inset 0 0 25px rgba(0,240,255,0.2);">
+          <div id="music-prompt" style="font-size:1.4rem; font-weight:900; color:#fde047; text-align:center; text-shadow:0 0 15px rgba(250,204,21,0.6); z-index:2;">
             Toque nas teclas ou tambores abaixo para fazer música!
-          </div>
-          <div id="music-song-actions" style="margin-top:12px; display:none; gap:12px; z-index:3;">
-            <button type="button" class="big-btn" style="background:#10b981; font-size:1.15rem;" id="btn-song-listen">🎧 Ouvir Canção</button>
-            <button type="button" class="big-btn" style="background:#f59e0b; font-size:1.15rem;" id="btn-song-play-guide">🎯 Aprender a Tocar (Siga a Estrela!)</button>
           </div>
           <div id="music-stars-area" style="position:absolute; inset:0; pointer-events:none;"></div>
         </div>
 
-        <!-- TECLADO / TAMBORES DINÂMICOS -->
-        <div id="music-instrument-container" style="margin-top:14px; min-height:180px;"></div>
+        <!-- TECLADO / TAMBORES DINÂMICOS NA BASE -->
+        <div id="music-instrument-container" style="margin-top:10px; min-height:150px; flex:1;"></div>
       `;
 
       function spawnVisualEffect(col, text) {
         const area = document.getElementById('music-stars-area');
         if (!area) return;
         const s = document.createElement('div');
-        s.style.cssText = `position:absolute; left:${Math.random()*75 + 12}%; top:${Math.random()*60 + 15}%; font-size:2.8rem; color:${col}; font-weight:900; filter:drop-shadow(0 0 16px ${col}); animation:pulseMic 0.6s ease-out;`;
+        s.style.cssText = `position:absolute; left:${Math.random()*75 + 12}%; top:${Math.random()*50 + 10}%; font-size:2.2rem; color:${col}; font-weight:900; filter:drop-shadow(0 0 14px ${col}); animation:pulseMic 0.5s ease-out;`;
         s.textContent = text;
         area.appendChild(s);
-        if (area.children.length > 22) area.removeChild(area.firstChild);
+        if (area.children.length > 15) area.removeChild(area.firstChild);
       }
 
       function updateSkyPrompt(text, col = '#fde047') {
@@ -5250,16 +5508,15 @@
         container.innerHTML = '';
 
         if (currentInstrument === 'bateria') {
-          container.style.cssText = 'display:grid; grid-template-columns:repeat(6, 1fr); gap:12px; height:180px;';
+          container.style.cssText = 'display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; height:150px;';
           DRUM_PADS.forEach(pad => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'drum-pad';
-            btn.style.background = pad.col;
-            btn.style.boxShadow = `0 0 20px ${pad.col}66`;
+            btn.style.cssText = `background:${pad.col}; box-shadow:0 0 18px ${pad.col}66; border-radius:16px; border:2px solid #ffffff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center;`;
             btn.innerHTML = `
-              <span style="font-size:2.6rem; margin-bottom:4px;">${pad.icon}</span>
-              <span style="font-size:1.2rem; font-weight:900;">${pad.name}</span>
+              <span style="font-size:2.4rem; margin-bottom:2px;">${pad.icon}</span>
+              <span style="font-size:1.1rem; font-weight:900; color:#fff;">${pad.name}</span>
             `;
             btn.onclick = () => {
               playDrumSound(pad.id);
@@ -5273,7 +5530,7 @@
             container.appendChild(btn);
           });
         } else {
-          container.style.cssText = 'display:grid; grid-template-columns:repeat(8, 1fr); gap:10px; height:180px;';
+          container.style.cssText = 'display:grid; grid-template-columns:repeat(8, 1fr); gap:8px; height:150px;';
           SCALE_NOTES.forEach(([name, freq, col, icon, label, animalKey]) => {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -5281,14 +5538,14 @@
             btn.id = `key-${name.replace('+', 'plus')}`;
 
             if (currentInstrument === 'piano') {
-              btn.style.cssText = `background:${col}; font-size:1.6rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;`;
-              btn.innerHTML = `<span>${name}</span><span style="font-size:1.15rem; opacity:0.85;">★</span>`;
+              btn.style.cssText = `background:${col}; font-size:1.4rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:2px solid #fff; border-radius:14px;`;
+              btn.innerHTML = `<span>${name}</span><span style="font-size:1.1rem; opacity:0.85;">★</span>`;
             } else if (currentInstrument === 'bichinhos') {
-              btn.style.cssText = `background:${col}; font-size:1.35rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;`;
-              btn.innerHTML = `<span style="font-size:2.1rem;">${icon}</span><span>${name}</span><span style="font-size:0.8rem; opacity:0.9;">${label}</span>`;
+              btn.style.cssText = `background:${col}; font-size:1.2rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:2px solid #fff; border-radius:14px;`;
+              btn.innerHTML = `<span style="font-size:2rem;">${icon}</span><span>${name}</span><span style="font-size:0.8rem; opacity:0.9;">${label}</span>`;
             } else {
-              btn.style.cssText = `background:linear-gradient(180deg, #0f172a, ${col}); border:2px solid #38bdf8; font-size:1.5rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; box-shadow:0 0 15px ${col}88;`;
-              btn.innerHTML = `<span>⚡ ${name}</span><span style="font-size:0.9rem; color:#a5f3fc;">LASER</span>`;
+              btn.style.cssText = `background:linear-gradient(180deg, #0f172a, ${col}); border:2px solid #38bdf8; font-size:1.3rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; box-shadow:0 0 15px ${col}88; border-radius:14px;`;
+              btn.innerHTML = `<span>⚡ ${name}</span><span style="font-size:0.85rem; color:#a5f3fc;">LASER</span>`;
             }
 
             btn.onclick = () => onScaleKeyTouch(name, freq, col, icon, label, animalKey);
@@ -5316,11 +5573,9 @@
             if (melodyIdx >= activeMelody.notes.length) {
               addStar(1);
               updateSkyPrompt(`🏆 Parabéns! Você tocou "${activeMelody.title}" todinha!`, '#34d399');
-              speak(`Muito bem, ${appState.config.child_name}! Você tocou a música todinha como um verdadeiro maestro!`);
+              speak(`Muito bem, ${appState.config.child_name || 'Kaleo'}! Você tocou a música todinha como um verdadeiro maestro!`);
               activeMelody = null;
               highlightKey(null);
-              const act = document.getElementById('music-song-actions');
-              if (act) act.style.display = 'none';
             } else {
               highlightKey(activeMelody.notes[melodyIdx][0]);
             }
@@ -5334,7 +5589,7 @@
           if (el) {
             el.style.transform = 'scale(1)';
             el.style.boxShadow = 'none';
-            el.style.border = currentInstrument === 'laser' ? '2px solid #38bdf8' : 'none';
+            el.style.borderColor = '#ffffff';
           }
         });
 
@@ -5343,13 +5598,12 @@
           if (target) {
             target.style.transform = 'scale(1.12)';
             target.style.boxShadow = '0 0 35px #ffffff, 0 0 50px #facc15';
-            target.style.border = '4px solid #ffffff';
+            target.style.borderColor = '#fde047';
             updateSkyPrompt(`Toque na tecla brilhante: ${expectedName}!`, '#ffffff');
           }
         }
       }
 
-      let selectedSongKey = null;
       function selectSong(key) {
         selectedSongKey = key;
         const song = MELODIES[key];
@@ -5357,17 +5611,14 @@
         highlightKey(null);
         if (songPlayTimer) { clearTimeout(songPlayTimer); songPlayTimer = null; }
 
-        if (currentInstrument === 'bateria') {
-          currentInstrument = 'piano';
-          updateTabButtons();
-          renderInstrumentUI();
-        }
+        ['estrela', 'aranha', 'balao', 'parabens', 'soldado', 'ciranda'].forEach(k => {
+          const b = document.getElementById(`song-${k}`);
+          if (b) b.classList.toggle('active', k === key);
+        });
 
-        updateSkyPrompt(`Canção Escolhida: ⭐ ${song.title}`, '#38bdf8');
-        speak(`Vamos brincar com ${song.title}! Escolha ouvir a canção ou aprender a tocar comigo!`);
-
-        const actions = document.getElementById('music-song-actions');
-        if (actions) actions.style.display = 'flex';
+        const instName = currentInstrument === 'bichinhos' ? 'Bichinhos Cantores' : currentInstrument === 'bateria' ? 'Bateria Stark' : currentInstrument === 'laser' ? 'Laser' : 'Piano';
+        updateSkyPrompt(`Canção Escolhida: ⭐ ${song.title} (${instName})`, '#38bdf8');
+        speak(`Vamos brincar com ${song.title} no ${instName}!`);
       }
 
       document.getElementById('song-estrela').onclick = () => selectSong('estrelinha');
@@ -5380,21 +5631,30 @@
       document.getElementById('btn-song-listen').onclick = () => {
         if (!selectedSongKey) return;
         const song = MELODIES[selectedSongKey];
-        speak(`Ouvindo ${song.title}! Veja as estrelinhas brilhando!`);
-        updateSkyPrompt(`🎶 Tocando: ${song.title}...`, '#38bdf8');
+        const instLabel = currentInstrument === 'bichinhos' ? 'Bichinhos Cantores' : currentInstrument === 'bateria' ? 'Bateria Stark' : currentInstrument === 'laser' ? 'Laser Espacial' : 'Piano Mágico';
+        speak(`Ouvindo ${song.title} tocado pelo ${instLabel}!`);
+        updateSkyPrompt(`🎶 Tocando: ${song.title} com ${instLabel}...`, '#38bdf8');
 
         song.notes.forEach(([name, freq, col], i) => {
           setTimeout(() => {
-            playInstrumentSound(currentInstrument, freq, 360);
-            spawnVisualEffect(col, `★ ${name}`);
+            const noteObj = SCALE_NOTES.find(n => n[0].toUpperCase() === name.toUpperCase());
+            const animalKey = noteObj ? noteObj[5] : 'miau';
+            playInstrumentSound(currentInstrument, freq, 360, animalKey);
+
+            if (currentInstrument === 'bichinhos' && noteObj) {
+              spawnVisualEffect(col, `${noteObj[3]} ${noteObj[4]}!`);
+            } else if (currentInstrument === 'bateria') {
+              spawnVisualEffect(col, `🥁 Batida!`);
+            } else {
+              spawnVisualEffect(col, `★ ${name}`);
+            }
             highlightKey(name);
           }, i * 440);
         });
 
         setTimeout(() => {
           highlightKey(null);
-          updateSkyPrompt(`Gostou de ${song.title}? Agora aperte "Aprender a Tocar"!`, '#fde047');
-          speak('Agora é a sua vez! Aperte o botão amarelo de aprender a tocar!');
+          updateSkyPrompt(`Gostou de ${song.title}? Agora aperte "Aprender"!`, '#fde047');
         }, song.notes.length * 440 + 400);
       };
 
@@ -5423,33 +5683,33 @@
         currentInstrument = 'bateria';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Bateria Stark ativada! Bumbo, caixa, prato e tambores para você fazer muito som!');
+        speak('Bateria Stark ativada! Bumbo, caixa, prato e tambores!');
       };
       document.getElementById('tab-bichinhos').onclick = () => {
         currentInstrument = 'bichinhos';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Bichinhos Cantores ativados! Cada tecla é um animalzinho fofo!');
+        speak('Bichinhos Cantores ativados! Cada tecla é um animalzinho fofo que canta!');
       };
       document.getElementById('tab-laser').onclick = () => {
         currentInstrument = 'laser';
         updateTabButtons();
         renderInstrumentUI();
-        speak('Sintetizador Laser ativado! Sons espaciais do Homem de Ferro!');
+        speak('Sintetizador Laser ativado! Sons espaciais!');
       };
 
       const btnBeat = document.getElementById('btn-toggle-beat');
       btnBeat.onclick = () => {
         if (musicBeatInterval) {
           stopMusicRhythmBeat();
-          btnBeat.textContent = '🥁 Ligar Batida Animada';
+          btnBeat.textContent = '🥁 Batida Animada';
           btnBeat.style.background = '#0ea5e9';
           updateSkyPrompt('Batida desligada.', '#94a3b8');
         } else {
           musicBeatStep = 0;
-          btnBeat.textContent = '⏹ Parar Batida Animada';
+          btnBeat.textContent = '⏹ Parar Batida';
           btnBeat.style.background = '#e11d48';
-          speak('Batida animada ligada! Toque seus instrumentos no ritmo da música!');
+          speak('Batida animada ligada! Acompanhe o ritmo!');
           updateSkyPrompt('🥁 Batida Animada Tocando! Acompanhe o ritmo!', '#38bdf8');
 
           musicBeatInterval = setInterval(() => {
@@ -5472,19 +5732,19 @@
         recordedNotes = [];
         activeMelody = null;
         highlightKey(null);
-        updateSkyPrompt('🔴 Gravador ligado! Toque qualquer instrumento para inventar sua música!', '#f43f5e');
-        speak('Gravador ligado! Toque as notas ou os tambores para criar a sua música!');
+        updateSkyPrompt('🔴 Gravador ligado! Toque qualquer instrumento!', '#f43f5e');
+        speak('Gravador ligado! Pode tocar!');
       };
 
       document.getElementById('btn-rec-play').onclick = () => {
         if (!recordedNotes.length) {
-          speak('Grave algumas notas primeiro apertando o botão vermelho de gravar!');
+          speak('Grave algumas notas primeiro apertando o botão vermelho!');
           updateSkyPrompt('Grave algumas notas primeiro apertando no botão vermelho!', '#facc15');
           return;
         }
         isRecording = false;
         speak('Ouvindo a sua melodia!');
-        updateSkyPrompt('🎶 Tocando a música linda que você criou!', '#34d399');
+        updateSkyPrompt('🎶 Tocando a sua música linda!', '#34d399');
 
         recordedNotes.forEach((item, i) => {
           setTimeout(() => {
@@ -5500,8 +5760,7 @@
 
         setTimeout(() => {
           addStar(1);
-          speak(`Que melodia incrível você inventou, ${appState.config.child_name}! Você ganhou mais uma estrela de herói!`);
-          updateSkyPrompt(`🏆 Você ganhou +1 Estrela Stark pela sua música!`, '#fde047');
+          speak(`Que melodia incrível você inventou, ${appState.config.child_name || 'Kaleo'}! Ganhou +1 Estrela!`);
         }, recordedNotes.length * 380 + 400);
       };
 
@@ -6556,44 +6815,51 @@
     }
 
     // =========================================================================
-    // MODAL: JOGOS COGNITIVOS (SEMÁFORO DO CONTROLE INIBITÓRIO & LEITNER)
+    // MODAL: JOGOS COGNITIVOS (BAÚ DO CONHECIMENTO LEITNER & SEMÁFORO)
     // =========================================================================
     function abrirJogosCognitivos() {
-      const body = openModal('🎮 JOGOS DO CÉREBRO & MEMÓRIA');
+      const body = openModal('📦 BAÚ DO CONHECIMENTO & MEMÓRIA DO JARVIS');
       playTone(523, 90);
       body.innerHTML = `
-        <div style="display:flex; gap:10px; margin-bottom:14px;">
-          <button type="button" class="big-btn" style="flex:1; background:#0284c7;" onclick="carregarJogoSemaforo()">
-            🟢🔴 Desafio do Semáforo
+        <div style="display:flex; gap:10px; margin-bottom:12px;">
+          <button type="button" class="big-btn active" id="btn-tab-leitner" style="flex:1; background:#7c3aed; padding:10px; font-size:1.05rem;" onclick="carregarJogoLeitner()">
+            📦 Baú do Conhecimento (Figurinhas & Animais)
           </button>
-          <button type="button" class="big-btn" style="flex:1; background:#7c3aed;" onclick="carregarJogoLeitner()">
-            📦 Baú do Conhecimento
+          <button type="button" class="big-btn" id="btn-tab-semaforo" style="flex:1; background:#0284c7; padding:10px; font-size:1.05rem;" onclick="carregarJogoSemaforo()">
+            🟢🔴 Desafio do Semáforo (Paciência)
           </button>
         </div>
-        <div id="cognicao-game-area" style="min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div id="cognicao-game-area" style="min-height:260px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
           <div style="font-size:1.1rem; color:#cbd5e1; text-align:center;">
-            Escolha um dos jogos acima para treinar o cérebro, a paciência e ganhar moedas!
+            Carregando o Baú de Conhecimento do Jarvis...
           </div>
         </div>
       `;
+      carregarJogoLeitner();
     }
 
     async function carregarJogoSemaforo() {
+      const tabS = document.getElementById('btn-tab-semaforo');
+      const tabL = document.getElementById('btn-tab-leitner');
+      if (tabS) tabS.style.border = '2px solid #00f0ff';
+      if (tabL) tabL.style.border = 'none';
+
       try {
         const res = await fetch('/api/cognicao/semaforo');
         const d = await res.json();
         const area = document.getElementById('cognicao-game-area');
         area.innerHTML = `
-          <div style="font-size:1.2rem; font-weight:900; color:#f8fafc; margin-bottom:12px; text-align:center;">
+          <div style="font-size:1.3rem; font-weight:900; color:#f8fafc; margin-bottom:12px; text-align:center;">
             ${d.instrucao}
           </div>
-          <div id="semaforo-luz" style="width:130px; height:130px; border-radius:50%; background:${d.cor_hex}; box-shadow:0 0 35px ${d.cor_hex}; display:flex; align-items:center; justify-content:center; font-size:3rem; cursor:pointer;" onclick="responderSemaforo('${d.sinal}')">
+          <div id="semaforo-luz" style="width:130px; height:130px; border-radius:50%; background:${d.cor_hex}; box-shadow:0 0 35px ${d.cor_hex}; display:flex; align-items:center; justify-content:center; font-size:3.5rem; cursor:pointer;" onclick="responderSemaforo('${d.sinal}')">
             ${d.sinal === 'VERDE' ? '🟢' : '🛑'}
           </div>
-          <div style="margin-top:14px; font-size:0.9rem; color:#94a3b8;">
-            Atenção: Aja no verde e pare no vermelho!
+          <div style="margin-top:14px; font-size:1rem; color:#fde047; font-weight:800;">
+            Atenção: Aja no verde e espere no vermelho!
           </div>
         `;
+        speak(d.instrucao);
       } catch (e) {}
     }
 
@@ -6615,34 +6881,73 @@
     }
 
     async function carregarJogoLeitner() {
+      const tabS = document.getElementById('btn-tab-semaforo');
+      const tabL = document.getElementById('btn-tab-leitner');
+      if (tabL) tabL.style.border = '2px solid #00f0ff';
+      if (tabS) tabS.style.border = 'none';
+
       try {
         const res = await fetch('/api/cognicao/leitner/sortear');
         const card = await res.json();
         const area = document.getElementById('cognicao-game-area');
         if (!card || !card.pergunta) {
-          area.innerHTML = '<div style="color:#cbd5e1;">Nenhum cartão para revisar agora!</div>';
+          area.innerHTML = '<div style="color:#cbd5e1; font-size:1.2rem;">Carregando baú de ouro...</div>';
           return;
         }
+
+        const caixaLabels = {
+          1: '📦 Caixa 1: Descoberta',
+          2: '⭐ Caixa 2: Quase Memorizado!',
+          3: '🏆 Caixa 3: Baú de Ouro!'
+        };
+        const caixaNome = caixaLabels[card.caixa] || `Caixa ${card.caixa}`;
+
         area.innerHTML = `
-          <div style="font-size:0.85rem; color:#facc15; font-weight:800; margin-bottom:4px;">
-            📦 BAÚ DE CONHECIMENTO — CAIXA ${card.caixa}
+          <!-- CABEÇALHO DO BAÚ COM AS 3 CAIXAS DE LEITNER -->
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%; max-width:540px; margin-bottom:8px; background:#0b192e; border:2px solid #f59e0b; border-radius:12px; padding:6px 14px;">
+            <div style="font-size:0.95rem; color:#fde047; font-weight:900;">${caixaNome}</div>
+            <div style="display:flex; gap:6px;">
+              <span style="font-size:0.85rem; padding:3px 8px; border-radius:6px; background:${card.caixa >= 1 ? '#059669' : '#334155'}; color:#fff; font-weight:800;">Caixa 1</span>
+              <span style="font-size:0.85rem; padding:3px 8px; border-radius:6px; background:${card.caixa >= 2 ? '#0284c7' : '#334155'}; color:#fff; font-weight:800;">Caixa 2</span>
+              <span style="font-size:0.85rem; padding:3px 8px; border-radius:6px; background:${card.caixa >= 3 ? '#d97706' : '#334155'}; color:#fff; font-weight:800;">Caixa 3</span>
+            </div>
           </div>
-          <div style="font-size:1.3rem; font-weight:900; color:#ffffff; margin-bottom:14px; text-align:center;">
-            ${card.pergunta}
+
+          <!-- PERGUNTA GRANDE FALADA PELO JARVIS -->
+          <div style="background:#071224; border:2px solid #38bdf8; border-radius:16px; padding:10px 16px; margin-bottom:12px; width:100%; max-width:540px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <div style="font-size:1.3rem; font-weight:900; color:#ffffff; line-height:1.3;" id="leitner-pergunta-txt">
+              ${card.pergunta}
+            </div>
+            <button type="button" class="big-btn" style="background:#0284c7; font-size:0.9rem; padding:4px 14px; margin-top:2px;" onclick="speak('${escapeJs(card.pergunta)}')">
+              🔊 Ouvir Pergunta
+            </button>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:440px;">
-            ${card.opcoes.map(op => `
-              <button type="button" class="big-btn" style="background:#1e3a8a; padding:14px; font-size:1.15rem;" onclick="responderLeitner(${card.id}, '${op}')">
-                ${op}
-              </button>
-            `).join('')}
+
+          <!-- OPÇÕES GIGANTES COM EMOJIS (2x2) IDEAIS PARA CRIANÇAS -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:540px;" id="leitner-options-grid">
+            ${card.opcoes.map((op, idx) => {
+              const parts = String(op).trim().split(' ');
+              const emoji = parts[0] || '⭐';
+              const label = parts.slice(1).join(' ') || op;
+              return `
+                <button type="button" class="big-btn leitner-opt-card" id="leitner-opt-${idx}" style="background:#0f213d; border:3px solid #38bdf8; border-radius:16px; padding:12px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; transition:all 0.15s ease;" onclick="responderLeitner(${card.id}, '${escapeJs(op)}', 'leitner-opt-${idx}')">
+                  <span style="font-size:3.6rem; line-height:1; filter:drop-shadow(0 2px 8px rgba(0,240,255,0.4));">${emoji}</span>
+                  <span style="font-size:1.15rem; font-weight:900; color:#fde047; text-align:center;">${label}</span>
+                </button>
+              `;
+            }).join('')}
           </div>
         `;
         speak(card.pergunta);
       } catch (e) {}
     }
 
-    async function responderLeitner(cardId, resposta) {
+    async function responderLeitner(cardId, resposta, optBtnId) {
+      const btn = document.getElementById(optBtnId);
+      if (btn) {
+        btn.style.transform = 'scale(1.08)';
+      }
+
       try {
         const res = await fetch('/api/cognicao/leitner/responder', {
           method: 'POST',
@@ -6650,11 +6955,25 @@
           body: JSON.stringify({ card_id: cardId, resposta: resposta })
         });
         const d = await res.json();
-        playTone(d.acertou ? 880 : 330, 140);
+
+        if (d.acertou) {
+          if (btn) {
+            btn.style.borderColor = '#10b981';
+            btn.style.background = '#064e3b';
+          }
+          playTone(523, 100);
+          setTimeout(() => playTone(784, 180), 120);
+        } else {
+          if (btn) {
+            btn.style.borderColor = '#ef4444';
+          }
+          playTone(330, 160);
+        }
+
         showToast(d.mensagem);
         speak(d.mensagem);
         atualizarPoteVisual();
-        setTimeout(carregarJogoLeitner, 2800);
+        setTimeout(carregarJogoLeitner, 2400);
       } catch (e) {}
     }
 
