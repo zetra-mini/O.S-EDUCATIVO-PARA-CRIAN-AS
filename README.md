@@ -1,6 +1,37 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.3 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.4 — Stark Educational System (Para Kaleo Noah)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
+
+---
+
+## 🌟 Novidades da Versão 3.4
+
+### 🎮 1. Catálogo Expandido para 24 Jogos Educativos (6 Páginas 2x2)
+- **Zero Scrollbar no Netbook 1024x600:** Cada página acomoda exatamente 4 jogos em grade 2x2, sem estourar a altura útil da tela.
+- **Novos Jogos Didáticos & Científicos:**
+  - **🪐 Sistema Solar & Simulador de Gravidade:** Pilote naves espaciais, observe planetas e experimente o simulador de gravidade na Terra ($1.0\times$), Lua ($0.16\times$) e Júpiter ($2.5\times$).
+  - **🦁 Reino Animal & Fauna Brasileira:** 12 animais com áudio sintetizado em tempo real, incluindo Onça-Pintada, Mico-Leão-Dourado, Arara-Azul, Lobo-Guará e Tucano.
+  - **⏰ Relógio Mágico & Cronômetro de 30s:** Ensino de horas com mostrador analógico/digital e cronômetro gamificado com contagem regressiva sonora para lavar as mãos e escovar os dentes.
+  - **🕵️ Detetive Stark (Jogo dos 7 Erros):** Desafios visuais com efeitos sonoros e pistas do robô Jarvis.
+  - **🔬 Laboratório de Ciências & Vulcão Químico:** Estados da água (Gelo, Líquido, Vapor), misturador de cores primárias e o experimento do Vulcão Químico (Bicarbonato + Vinagre) com erupção borbulhante e fumaça neon.
+  - **♟️ Academia de Xadrez do Pequeno Mestre:** Mini-tabuleiro interativo ensinando o movimento do Peão, Torre e o famoso salto em "L" do Cavalo.
+  - **🦖 Parque dos Dinossauros & Fósseis Stark:** Sítio paleontológico com escavação de ossos do Tiranossauro Rex, Braquiossauro e Tricerátops, com rugidos pré-históricos e fatos científicos.
+  - **🎨 Lousa Mágica Neon Atualizada:** Novos carimbos colecionáveis (⭐, 🤖, 🚀, 🦖, ❤️, 👑, ⚡).
+
+### 🌤️ 2. Clima e Previsão com Geocodificação Dinâmica em Tempo Real
+- **Sincronização com Open-Meteo:** Dados meteorológicos reais para Campo Largo / PR e qualquer município configurado.
+- **Previsão de Amanhã Inteligente:** Jarvis agora diferencia com precisão perguntas sobre o clima de hoje vs. previsão do tempo de amanhã (temperatura máxima, mínima e probabilidade de chuva).
+- **Resposta por Voz Limpa:** O Jarvis responde a previsão falando naturalmente por voz sem forçar a abertura de janelas ou modais que interrompam a atividade da criança.
+
+### 📱 3. Aplicativo Android 100% Autônomo & Offline (Sem Erro de Porta 8000)
+- **Execução Nativa Direta:** O APK Android agora embute todos os templates, jogos, mascote e folhas de estilo dentro do próprio pacote (`assets/` nativo em `file:///android_asset/hud_jarvis.html`), funcionando de forma **100% autônoma e offline** diretamente no celular da criança, sem precisar de servidor rodando ou de IP na porta 8000.
+- **Persistência Local (localStorage Fallback):** Fichas, moedas, itens da lojinha e histórico de dicção são mantidos localmente no próprio aparelho da criança.
+- **Modo Wi-Fi Opcional com 1 Toque:** Se os pais quiserem conectar o celular ao robô que está rodando no netbook ou PC da casa, basta dar um **toque longo na tela** para abrir o menu de conexão, digitar o IP e alternar na hora.
+
+### 📐 4. Responsividade Mobile & Netbook Kiosk Perfeitas
+- **Mascote Adaptável (`clamp`):** O robô Jarvis redimensiona dinamicamente tanto para celulares quanto para netbooks 1024x600.
+- **Trava Parental (PIN de 4 Dígitos / Desafio de Adulto):** Acesso ao Painel dos Pais protegido no `/pais`.
+- **Cache de RAM de Templates:** O Microdot serve as páginas `/` e `/pais` direto da memória com 0ms de I/O em disco.
 
 ---
 
@@ -115,11 +146,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.3.0.deb` | `sudo dpkg -i jarvis-kids-os_3.3.0.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.3.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.3.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.3.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.3.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.4.3.deb` | `sudo dpkg -i jarvis-kids-os_3.4.3.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.4.3-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.4.3-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.4.3-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.4.3-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -156,7 +187,7 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.3.3.deb
+sudo dpkg -i jarvis-kids-os_3.4.3.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
@@ -231,7 +262,7 @@ sudo dpkg -i jarvis-kids-os_3.3.3.deb
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.3.3.deb`). O sistema inicia 100% automático no boot.
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.4.3.deb`). O sistema inicia 100% automático no boot.
 >
 > O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
 
