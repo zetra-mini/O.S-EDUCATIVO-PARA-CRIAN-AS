@@ -122,6 +122,37 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 ---
 
+## 🐧 Inicialização Automática no Boot (antiX Linux & Netbooks Dedicados)
+
+Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** (especialmente no Acer Aspire One, Asus Eee PC ou PCs antigos) é a experiência de **Console Educativo Dedicado** (estilo videogame ou eletrodoméstico):
+
+### 🔄 Como Funciona Toda Vez que Ligar ou Reiniciar:
+1. **Zero Senhas (Auto-Login Instantâneo):** O sistema faz o login automático direto no usuário da criança pelo gerenciador **SLiM** (`/etc/slim.conf`) ou **LightDM**, sem travar em telas de senha.
+2. **Zero Telas do Linux ou Menus Confusos:** O netbook não abre terminal, painéis ou área de trabalho com ícones soltos.
+3. **Direto no Robô Jarvis (Tela Cheia 1024x600):** O arquivo de inicialização de sessão do antiX (`~/.desktop-session/startup`) sobe o backend Python ultraleve e aciona o navegador em modo quiosque (`--kiosk http://127.0.0.1:8000`) em poucos segundos!
+4. **Volume Destravado Automaticamente:** O áudio dos alto-falantes e o microfone interno são regulados automaticamente em 85% pelo ALSA no boot, garantindo que o Jarvis fale e ouça a criança imediatamente.
+
+### 🛡️ Blindagem Infantil Anti-Fechamento:
+* **Teclas Desativadas:** Teclas e atalhos de sistema que crianças pequenas costumam apertar sem querer (`Alt + F4`, `Alt + Tab`, teclas Windows/Super) são desativados no `~/.icewm/prefoverride` e no Openbox (`rc.xml`).
+* **Watchdog de Persistência:** Caso o navegador seja fechado acidentalmente, um laço de monitoramento reabre o Jarvis automaticamente em 2 segundos.
+* **Protetor de Tela Desativado:** Comandos `xset s off -dpms` impedem que a tela apague no meio de uma historinha ou jogo.
+
+### 🛠️ Scripts Prontos de Configuração:
+* **Instalação Rápida no antiX:**
+  ```bash
+  bash instalar_antix_kiosk.sh
+  ```
+* **Ativação Completa de Persistência & Auto-Login pelo Root:**
+  ```bash
+  sudo bash configurar_boot_automatico.sh
+  ```
+* **Instalação Dedicada de SO Kiosk Mínimo:**
+  ```bash
+  sudo bash deploy/linux_os_kiosk/install_linux_os.sh
+  ```
+
+---
+
 ## 🎮 Catálogo dos 17 Jogos & Atividades Educativas
 
 1. **🎨 Laboratório de Pintura Neon:** Lousa artística com pincéis coloridos e salvamento de desenhos.
