@@ -94,11 +94,15 @@ def get_local_ip() -> str:
 
 
 def json_response(data: Any, status_code: int = 200) -> Response:
-    """Helper ultraleve para respostas JSON com serialização compacta."""
+    """Helper ultraleve para respostas JSON com serialização compacta e permissões de mídia."""
     return Response(
         body=json.dumps(data, ensure_ascii=False),
         status_code=status_code,
-        headers={"Content-Type": "application/json; charset=utf-8"},
+        headers={
+            "Content-Type": "application/json; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "Permissions-Policy": "microphone=(self), camera=(self)",
+        },
     )
 
 
@@ -157,7 +161,10 @@ def index(request: Request):
     """Serve a interface principal do Jarvis em streaming contínuo."""
     gc.collect()
     caminho = os.path.join(TEMPLATES_DIR, "hud_jarvis.html")
-    return send_file(caminho, content_type="text/html; charset=utf-8")
+    resp = send_file(caminho, content_type="text/html; charset=utf-8")
+    resp.headers["Permissions-Policy"] = "microphone=(self), camera=(self)"
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
 
 
 @app.route("/pais")
@@ -165,7 +172,10 @@ def painel_pais(request: Request):
     """Serve o painel dos pais em streaming contínuo."""
     gc.collect()
     caminho = os.path.join(TEMPLATES_DIR, "painel_pais.html")
-    return send_file(caminho, content_type="text/html; charset=utf-8")
+    resp = send_file(caminho, content_type="text/html; charset=utf-8")
+    resp.headers["Permissions-Policy"] = "microphone=(self), camera=(self)"
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
 
 
 @app.route("/favicon.ico")
@@ -441,6 +451,7 @@ def api_cognicao_semaforo_resultado(request: Request):
 
 
 @app.route("/api/cognicao/leitner/sortear", methods=["GET"])
+@app.route("/api/cognicao/leitner/pergunta", methods=["GET"])
 def api_cognicao_leitner_sortear(request: Request):
     card = cognition_mgr.sortear_card_leitner()
     return json_response(card or {})

@@ -610,6 +610,31 @@
       </div>
     </div>
 
+    <!-- DIAGNÓSTICO & DESBLOQUEIO DE MICROFONE -->
+    <div class="card" style="border: 2px solid #38bdf8; background: linear-gradient(180deg, #091a33 0%, #061120 100%);">
+      <div class="card-title">🎙️ Diagnóstico & Desbloqueio do Microfone no Navegador</div>
+      <div style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
+        Os navegadores Chromium (Chrome, Edge, Brave) exigem permissão de mídia e bloqueiam o microfone se acessado via IP sem SSL. Teste abaixo para diagnosticar e liberar a fala com o Jarvis:
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div id="mic-diag-status" style="background:#071224; border:1.5px solid #1e3a63; border-radius:10px; padding:12px; font-size:0.92rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <div>
+            <span style="font-weight:800; color:#38bdf8;">Status do Microfone:</span>
+            <span id="mic-status-label" style="font-weight:900; color:#facc15; margin-left:6px;">Não verificado ainda</span>
+          </div>
+          <button type="button" class="btn btn-primary" style="font-size:0.9rem; padding:8px 18px;" onclick="testarMicrofoneNavegadorAdmin()">
+            🎙️ Testar e Destravar Microfone Agora
+          </button>
+        </div>
+        <div id="mic-instructions-box" style="display:none; background:rgba(239,68,68,0.12); border:1.5px solid #ef4444; border-radius:10px; padding:12px; font-size:0.88rem; color:#fecaca;">
+          <strong>⚠️ Como Desbloquear no Chrome / Navegador:</strong><br/>
+          1. Se estiver acessando de outro computador pelo IP da rede, acesse preferencialmente pelo próprio netbook em: <code style="background:#000; padding:2px 6px; border-radius:4px; color:#38bdf8;">http://localhost:8000</code>.<br/>
+          2. No Chrome, clique no ícone de controles de site (ao lado esquerdo do endereço <code style="background:#000; padding:2px 6px; border-radius:4px; color:#38bdf8;">http://...</code>) e mude <strong>Microfone</strong> para <strong>Permitir</strong>.<br/>
+          3. Ou acesse <code style="background:#000; padding:2px 6px; border-radius:4px; color:#38bdf8;">chrome://settings/content/siteDetails?site=http://localhost:8000</code> e habilite o microfone.
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-title">📋 Registro de Eventos e Auditoria</div>
       <div id="admin-logs-container" style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
@@ -674,6 +699,50 @@
       t.textContent = msg;
       t.style.display = 'block';
       setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    async function testarMicrofoneNavegadorAdmin() {
+      const lbl = document.getElementById('mic-status-label');
+      const instBox = document.getElementById('mic-instructions-box');
+      if (lbl) {
+        lbl.textContent = 'Solicitando acesso ao microfone...';
+        lbl.style.color = '#38bdf8';
+      }
+      if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        if (lbl) {
+          lbl.textContent = '⚠️ Bloqueado: Acesso via IP sem HTTPS. Use http://localhost:8000';
+          lbl.style.color = '#f59e0b';
+        }
+        if (instBox) instBox.style.display = 'block';
+        showToast('Navegador bloqueia microfone por IP sem SSL. Acesse por http://localhost:8000');
+        return;
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (lbl) {
+          lbl.textContent = '❌ API getUserMedia indisponível neste navegador';
+          lbl.style.color = '#ef4444';
+        }
+        if (instBox) instBox.style.display = 'block';
+        showToast('A API de mídia não está acessível.');
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (lbl) {
+          lbl.textContent = '✅ Microfone 100% Liberado e Operacional!';
+          lbl.style.color = '#10b981';
+        }
+        if (instBox) instBox.style.display = 'none';
+        showToast('🎉 Microfone liberado e funcionando com sucesso!');
+        stream.getTracks().forEach(t => t.stop());
+      } catch (err) {
+        if (lbl) {
+          lbl.textContent = `❌ Permissão Negada: ${err.name || 'Erro de Acesso'}`;
+          lbl.style.color = '#ef4444';
+        }
+        if (instBox) instBox.style.display = 'block';
+        showToast('Permissão de microfone negada. Veja as instruções acima.');
+      }
     }
 
     async function carregarEstadoGeral() {

@@ -455,21 +455,27 @@ class DatabaseManager:
                 itens_loja,
             )
 
-        # POPULAR ACESSÓRIOS VESTÍVEIS DO ARMÁRIO DO JARVIS SE VAZIA
-        cursor.execute("SELECT COUNT(*) FROM inventario_acessorios;")
-        if cursor.fetchone()[0] == 0:
-            acessorios = [
-                ("oculos_stark", "Óculos Stark Neon", "Lentes futuristas espelhadas de alta tecnologia!", 15, "🕶️", "olhos", 0, 0),
-                ("coroa_ouro", "Coroa Real de Ouro", "Coroa brilhante de mestre de missões cumpridas!", 25, "👑", "cabeca", 0, 0),
-                ("bone_heroi", "Boné Espacial de Campeão", "Boné estiloso de explorador do universo!", 15, "🧢", "cabeca", 0, 0),
-                ("cachecol_espacial", "Cachecol Quentinho das Estrelas", "Cachecol macio e quentinho com listras douradas!", 12, "🧣", "pescoco", 0, 0),
-                ("headset_gamer", "Headset Gamer Neon Pro", "Fones luminosos com microfone de comunicação galáctica!", 20, "🎧", "cabeca", 0, 0),
-                ("asas_foguete", "Asas de Propulsão Plasma", "Turbinas de voo cósmico para voar super alto!", 30, "🚀", "costas", 0, 0),
-            ]
-            cursor.executemany(
-                "INSERT INTO inventario_acessorios (id, nome, descricao, custo_fichas, icone, categoria, comprado, equipado) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-                acessorios,
-            )
+        # POPULAR ACESSÓRIOS VESTÍVEIS DO ARMÁRIO DO JARVIS (INSERT OR IGNORE)
+        acessorios = [
+            ("oculos_stark", "Óculos Stark Neon", "Lentes futuristas espelhadas de alta tecnologia!", 15, "🕶️", "olhos", 0, 0),
+            ("coroa_ouro", "Coroa Real de Ouro", "Coroa brilhante de mestre de missões cumpridas!", 25, "👑", "cabeca", 0, 0),
+            ("bone_heroi", "Boné Espacial de Campeão", "Boné estiloso de explorador do universo!", 15, "🧢", "cabeca", 0, 0),
+            ("cachecol_espacial", "Cachecol Quentinho das Estrelas", "Cachecol macio e quentinho com listras douradas!", 12, "🧣", "pescoco", 0, 0),
+            ("headset_gamer", "Headset Gamer Neon Pro", "Fones luminosos com microfone de comunicação galáctica!", 20, "🎧", "cabeca", 0, 0),
+            ("asas_foguete", "Asas de Propulsão Plasma", "Turbinas de voo cósmico para voar super alto!", 30, "🚀", "costas", 0, 0),
+            ("capa_heroi", "Capa de Super-Herói Vermelha", "Capa mágica de super campeão com fecho dourado!", 20, "🦸", "costas", 0, 0),
+            ("capacete_astronauta", "Capacete de Astronauta", "Capacete espacial com visor protetor holográfico!", 25, "👨‍🚀", "cabeca", 0, 0),
+            ("escudo_vibranium", "Escudo Mágico Stark", "Escudo brilhante de proteção contra monstrinhos!", 22, "🛡️", "braco", 0, 0),
+            ("gravata_stark", "Gravata Borboleta Elegante", "Gravata azul e amarela super estilosa para festas!", 10, "🎀", "pescoco", 0, 0),
+            ("mascara_ninja", "Máscara Cibernética Ninja", "Máscara de herói misterioso e veloz!", 18, "🥷", "olhos", 0, 0),
+            ("chapeu_mago", "Chapéu de Mago Estelar", "Chapéu azul decorado com estrelas cósmicas!", 20, "🧙", "cabeca", 0, 0),
+            ("espada_laser", "Sabre de Luz Laser Neon", "Espada de plasma luminoso para iluminar a escuridão!", 28, "⚔️", "braco", 0, 0),
+            ("oculos_pixel", "Óculos Pixelados Gamer", "Óculos escuros em cubinhos estilo Minecraft!", 16, "🕶️", "olhos", 0, 0),
+        ]
+        cursor.executemany(
+            "INSERT OR IGNORE INTO inventario_acessorios (id, nome, descricao, custo_fichas, icone, categoria, comprado, equipado) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+            acessorios,
+        )
 
         # POPULAR DATAS COMEMORATIVAS SE VAZIA
         cursor.execute("SELECT COUNT(*) FROM datas_calendario;")
