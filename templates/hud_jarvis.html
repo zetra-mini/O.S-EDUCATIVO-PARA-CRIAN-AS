@@ -22,8 +22,28 @@
       --blue: #3b82f6;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; font-family: "Segoe UI", system-ui, sans-serif; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: transparent !important;
+    }
     input, select { user-select: text; }
+
+    html, body {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+      overflow: hidden !important;
+    }
 
     body {
       background: radial-gradient(circle at center, #091a35 0%, #040914 80%);
@@ -406,9 +426,9 @@
 
     /* BOTÕES DE SELEÇÃO DE CANÇÕES DO LABORATÓRIO MUSICAL (ALTO CONTRASTE SUAVE) */
     .song-pill-btn {
-      background: #0f172a;
-      color: #cbd5e1;
-      border: 1.5px solid #334155;
+      background: #0f1f38 !important;
+      color: #f8fafc !important;
+      border: 2px solid #334155 !important;
       border-radius: 999px;
       padding: 6px 14px;
       font-size: 0.95rem;
@@ -421,46 +441,46 @@
       user-select: none;
     }
     .song-pill-btn:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #ffffff;
+      background: #1e3a63 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
       transform: translateY(-1px);
     }
     .song-pill-btn.active {
-      background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-      border-color: #38bdf8;
+      background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%) !important;
+      border-color: #38bdf8 !important;
       color: #ffffff !important;
-      box-shadow: 0 0 14px rgba(6, 182, 212, 0.45);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.6) !important;
       font-weight: 900;
     }
 
     /* PÍLULAS DE FILTRO DA BIBLIOTECA DE VIRTUDES (SEM SCROLLBAR FEIA) */
     .book-filter-btn {
-      background: #0f172a;
-      color: #cbd5e1;
-      border: 1.5px solid #334155;
+      background: #0f1f38 !important;
+      color: #e2e8f0 !important;
+      border: 1.5px solid #334155 !important;
       border-radius: 999px;
-      padding: 6px 14px;
-      font-size: 0.88rem;
+      padding: 5px 12px;
+      font-size: 0.84rem;
       font-weight: 800;
       white-space: nowrap;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       transition: all 0.18s ease;
       user-select: none;
     }
     .book-filter-btn:hover {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #ffffff;
+      background: #1e3a63 !important;
+      border-color: #38bdf8 !important;
+      color: #ffffff !important;
     }
     .book-filter-btn.active {
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      border-color: #38bdf8;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+      border-color: #38bdf8 !important;
       color: #ffffff !important;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.4) !important;
       font-weight: 900;
     }
     .drum-pad {
@@ -543,13 +563,97 @@
     .btn-back:active { transform: scale(0.95); }
     .modal-body {
       flex: 1;
-      padding: 12px 16px;
+      padding: 8px 12px;
       overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       width: 100%;
-      max-width: 960px;
+      max-width: 980px;
       margin: 0 auto;
+      box-sizing: border-box;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    .modal-body::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    .modal-overlay.zero-scroll .modal-body {
+      overflow: hidden !important;
+      overflow-y: hidden !important;
+      overflow-x: hidden !important;
+    }
+
+    /* ESTILOS ZERO SCROLL — JOGO DO PRATO DOS SUPER CAMPEÕES */
+    .plate-game-split {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+      gap: 10px;
+      width: 100%;
+      height: 100%;
+      max-height: calc(100vh - 68px);
+      box-sizing: border-box;
+      overflow: hidden !important;
+    }
+    .plate-disk-container {
+      width: 175px;
+      height: 175px;
+      border-radius: 50%;
+      background: #0f172a;
+      border: 5px solid #cbd5e1;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), inset 0 0 16px rgba(0, 0, 0, 0.85);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 3px;
+      padding: 4px;
+      box-sizing: border-box;
+      position: relative;
+      margin: 0 auto;
+    }
+    .food-tab-btn {
+      flex: 1;
+      padding: 7px 4px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: #1e293b;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .food-tab-btn.active {
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+      transform: scale(1.02);
+    }
+    .food-choice-card {
+      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+      border: 2px solid #334155;
+      border-radius: 14px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+      user-select: none;
+      min-height: 68px;
+    }
+    .food-choice-card:hover, .food-choice-card:active {
+      transform: scale(1.02);
+      border-color: #38bdf8;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
     }
 
     /* DESAFIO MATEMÁTICO DOS PAIS (100% HTML) */
@@ -1779,12 +1883,13 @@
       background: #0f172a;
       border: 2px solid #334155;
       border-radius: 14px;
-      padding: 12px 14px;
+      padding: 9px 12px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       cursor: pointer;
       transition: transform 0.12s, border-color 0.12s, background 0.12s;
+      min-height: 58px;
     }
     .drawer-card-item:hover, .drawer-card-item:active {
       transform: translateX(6px);
@@ -1792,19 +1897,19 @@
       background: #1e293b;
     }
     .drawer-card-icon {
-      font-size: 2.2rem;
-      min-width: 44px;
+      font-size: 1.9rem;
+      min-width: 40px;
       text-align: center;
     }
     .drawer-card-name {
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       font-weight: 800;
       color: #f8fafc;
     }
     .drawer-card-desc {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: #94a3b8;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
     /* BACKDROP DA GAVETA */
@@ -4404,7 +4509,11 @@
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
       resetVoiceToIdle();
-      document.getElementById('activity-modal').classList.remove('open');
+      const mEl = document.getElementById('activity-modal');
+      if (mEl) {
+        mEl.classList.remove('open');
+        mEl.classList.remove('zero-scroll');
+      }
       document.getElementById('modal-body').innerHTML = '';
       if (restoreVoice) loadState(false);
     }
@@ -4413,9 +4522,14 @@
     // 1. BIBLIOTECA DE HISTÓRIAS INFANTIS (CLÁSSICOS + ELEMENTOS INTERATIVOS)
     // =========================================================================
     let selectedBookCategoryFilter = 'todas';
+    let paginaLivrosAtual = 1;
+    const LIVROS_POR_PAGINA = 4;
 
     async function openBooksLibrary() {
+      const modal = document.getElementById('activity-modal');
+      if (modal) modal.classList.add('zero-scroll');
       const body = openModal('📚 BIBLIOTECA MÁGICA — DESENVOLVIMENTO PESSOAL & VIRTUDES');
+      paginaLivrosAtual = 1;
       try {
         const res = await fetch('/api/livros');
         const data = await res.json();
@@ -4430,43 +4544,58 @@
       speak(`Bem-vindo à Biblioteca de Desenvolvimento Pessoal, ${appState.config.child_name || 'Kaleo'}! Escolha uma história que ensina virtudes de herói ou peça para o Jarvis criar uma inédita!`);
 
       const categories = [
-        { id: 'todas', label: '⭐ Todas as Histórias' },
-        { id: 'resiliencia', label: '🌟 Resiliência & Persistência' },
-        { id: 'coragem', label: '🦁 Coragem & Autoconfiança' },
-        { id: 'paciencia', label: '🐢 Paciência & Calma' },
-        { id: 'gratidao', label: '🎁 Gratidão & Família' },
-        { id: 'disciplina', label: '🥋 Disciplina & Hábitos' },
-        { id: 'curiosidade', label: '💡 Curiosidade & Foco' },
-        { id: 'gentileza', label: '🛡️ Gentileza & Empatia' }
+        { id: 'todas', label: '⭐ Todas' },
+        { id: 'resiliencia', label: '🌟 Resiliência' },
+        { id: 'coragem', label: '🦁 Coragem' },
+        { id: 'paciencia', label: '🐢 Paciência' },
+        { id: 'gratidao', label: '🎁 Gratidão' },
+        { id: 'disciplina', label: '🥋 Disciplina' },
+        { id: 'curiosidade', label: '💡 Curiosidade' },
+        { id: 'gentileza', label: '🛡️ Gentileza' }
       ];
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;">
-          <!-- BANNER COM ESTATÍSTICA E BOTÃO GERAR COM IA -->
-          <div style="background:linear-gradient(135deg, #091c34 0%, #030d1c 100%); border:2px solid #38bdf8; border-radius:16px; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:0 4px 18px rgba(2,132,199,0.25);">
-            <div>
-              <div style="font-size:1.25rem; font-weight:900; color:#ffffff;">📖 Histórias Infantis de Desenvolvimento Pessoal</div>
-              <div style="font-size:0.95rem; color:#bae6fd; margin-top:2px;">
-                Livros lidos hoje: <strong style="color:#facc15;">${appState.books_read_today}</strong> • Cada história ensina uma virtude e libera o Cinema Stark!
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box; overflow:hidden;">
+          
+          <!-- TOPO COMPACTO: TÍTULO, BOTÃO CRIAR COM IA E VIRTUDES (SEM SCROLL) -->
+          <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+              <div style="font-size:1.05rem; font-weight:900; color:#ffffff; display:flex; align-items:center; gap:6px;">
+                <span>📖 Histórias de Virtudes do Kaleo</span>
+                <span style="font-size:0.8rem; background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:999px;">Lidos hoje: ${appState.books_read_today}</span>
               </div>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:1.5px solid #c084fc; font-size:0.88rem; padding:6px 14px; display:flex; align-items:center; gap:6px;" onclick="abrirGeradorHistoriaModal(document.getElementById('modal-body'))">
+                <span>✨ Criar Nova História com o Jarvis</span>
+              </button>
             </div>
-            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; font-size:1.05rem; padding:10px 20px; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(124,58,237,0.4);" onclick="abrirGeradorHistoriaModal(document.getElementById('modal-body'))">
-              <span>✨</span>
-              <span>Criar Nova História com o Jarvis</span>
+
+            <!-- FILTRO DE VIRTUDES (8 BOTÕES COMPACTOS QUE CABEM EM LINHA SEM SCROLLBAR) -->
+            <div style="display:flex; flex-wrap:wrap; gap:5px; justify-content:center;" id="books-category-pills">
+              ${categories.map(c => `
+                <button type="button" class="book-filter-btn ${selectedBookCategoryFilter === c.id ? 'active' : ''}" onclick="filtrarLivrosPorCategoria('${c.id}')">
+                  ${c.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- GRID 2x2 COM 4 HISTÓRIAS GRANDES POR PÁGINA (ZERO SCROLLBAR) -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1; min-height:260px;" id="shelf-grid"></div>
+
+          <!-- RODAPÉ TÁTIL DE PAGINAÇÃO DE LIVROS -->
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:12px; padding:6px 14px;" id="shelf-pagination-footer">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:6px 16px; font-size:0.92rem;" onclick="mudarPaginaLivros(-1)">
+              ◀ Livros Anteriores
+            </button>
+            <span id="shelf-page-info" style="font-size:0.92rem; font-weight:900; color:#38bdf8;">
+              Página 1 de 1
+            </span>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:6px 16px; font-size:0.92rem;" onclick="mudarPaginaLivros(1)">
+              Mais Livros ▶
             </button>
           </div>
 
-          <!-- BARRA DE FILTROS DE VIRTUDES (SEM SCROLLBAR FEIA E SEM FUNDO BRANCO) -->
-          <div style="display:flex; gap:8px; overflow-x:auto; padding:4px 2px 8px; scrollbar-width:none; -ms-overflow-style:none;" id="books-category-pills">
-            ${categories.map(c => `
-              <button type="button" class="book-filter-btn ${selectedBookCategoryFilter === c.id ? 'active' : ''}" onclick="filtrarLivrosPorCategoria('${c.id}')">
-                ${c.label}
-              </button>
-            `).join('')}
-          </div>
         </div>
-
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; flex:1; overflow-y:auto; padding:4px 4px 16px 2px;" id="shelf-grid"></div>
       `;
 
       renderBooksGrid();
@@ -4474,15 +4603,31 @@
 
     function filtrarLivrosPorCategoria(catId) {
       selectedBookCategoryFilter = catId;
+      paginaLivrosAtual = 1;
       playTone(523, 80);
-      document.querySelectorAll('#books-category-pills .book-filter-btn').forEach((btn, idx) => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(catId) || (catId === 'todas' && idx === 0));
+      document.querySelectorAll('#books-category-pills .book-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
       });
+      const activeBtn = Array.from(document.querySelectorAll('#books-category-pills .book-filter-btn')).find(b => b.onclick.toString().includes(catId));
+      if (activeBtn) activeBtn.classList.add('active');
+      renderBooksGrid();
+    }
+
+    function mudarPaginaLivros(delta) {
+      const filtered = appState.books.filter(b => {
+        if (selectedBookCategoryFilter === 'todas') return true;
+        const cat = (b.category || '').toLowerCase();
+        return cat.includes(selectedBookCategoryFilter);
+      });
+      const totalPags = Math.max(1, Math.ceil(filtered.length / LIVROS_POR_PAGINA));
+      paginaLivrosAtual = ((paginaLivrosAtual - 1 + delta + totalPags) % totalPags) + 1;
+      playTone(587, 80);
       renderBooksGrid();
     }
 
     function renderBooksGrid() {
       const grid = document.getElementById('shelf-grid');
+      const pageInfo = document.getElementById('shelf-page-info');
       if (!grid) return;
       grid.innerHTML = '';
 
@@ -4492,42 +4637,57 @@
         return cat.includes(selectedBookCategoryFilter);
       });
 
+      const totalPags = Math.max(1, Math.ceil(filtered.length / LIVROS_POR_PAGINA));
+      if (paginaLivrosAtual > totalPags) paginaLivrosAtual = 1;
+
+      if (pageInfo) {
+        pageInfo.textContent = `Página ${paginaLivrosAtual} de ${totalPags} • (${filtered.length} Histórias)`;
+      }
+
       if (!filtered.length) {
         grid.innerHTML = `
-          <div style="grid-column:1/-1; text-align:center; padding:32px; color:#94a3b8;">
-            <div style="font-size:3rem; margin-bottom:8px;">📖✨</div>
-            <div style="font-size:1.2rem; font-weight:800; color:#facc15;">Nenhum livro encontrado nesta virtude ainda!</div>
-            <div style="font-size:0.95rem; margin-top:4px;">Aperte o botão roxo acima para o Jarvis criar uma história inédita!</div>
+          <div style="grid-column:1/-1; grid-row:1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; color:#94a3b8; text-align:center;">
+            <div style="font-size:2.8rem; margin-bottom:6px;">📖✨</div>
+            <div style="font-size:1.15rem; font-weight:800; color:#facc15;">Nenhum livro encontrado nesta virtude ainda!</div>
+            <div style="font-size:0.9rem; margin-top:4px;">Toque no botão roxo acima para o Jarvis criar uma história inédita!</div>
           </div>
         `;
         return;
       }
 
-      filtered.forEach((b) => {
+      const inicio = (paginaLivrosAtual - 1) * LIVROS_POR_PAGINA;
+      const livrosPagina = filtered.slice(inicio, inicio + LIVROS_POR_PAGINA);
+
+      livrosPagina.forEach((b) => {
         const globalIdx = appState.books.indexOf(b);
         const card = document.createElement('div');
-        card.style.cssText = `background:linear-gradient(145deg, #0d1e38 0%, #061122 100%); border:2px solid ${b.theme_color || '#38bdf8'}; border-radius:18px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; gap:10px; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,0.45); transition:all 0.22s ease; min-height:210px;`;
+        card.style.cssText = `background:linear-gradient(145deg, #0d1e38 0%, #061122 100%); border:2px solid ${b.theme_color || '#38bdf8'}; border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; justify-content:space-between; gap:6px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.4); transition:all 0.15s ease; box-sizing:border-box;`;
         card.innerHTML = `
-          <div>
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:8px;">
-              <span style="font-size:2.8rem; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5));">${b.cover_emoji || '📘'}</span>
-              <span style="background:rgba(15,23,42,0.85); border:1.5px solid ${b.theme_color}; border-radius:999px; padding:4px 10px; font-size:0.75rem; font-weight:800; color:#bae6fd; white-space:nowrap;">
-                ${b.category || 'Desenvolvimento'}
-              </span>
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-size:2.4rem; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.5));">${b.cover_emoji || '📘'}</span>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-bottom:2px;">
+                <span style="background:rgba(15,23,42,0.9); border:1px solid ${b.theme_color || '#38bdf8'}; border-radius:999px; padding:2px 8px; font-size:0.7rem; font-weight:800; color:#bae6fd;">
+                  ${b.category || 'Virtude'}
+                </span>
+                <span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">${b.pages.length} págs</span>
+              </div>
+              <h3 style="font-size:1.02rem; font-weight:900; color:#ffffff; line-height:1.25; margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                ${b.title}
+              </h3>
             </div>
-            <h3 style="font-size:1.18rem; font-weight:900; margin-bottom:6px; color:#ffffff; line-height:1.35; min-height:46px; display:flex; align-items:center;">
-              ${b.title}
-            </h3>
-            ${b.moral ? `<p style="font-size:0.86rem; color:#93c5fd; font-style:italic; line-height:1.35; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">"${b.moral}"</p>` : ''}
           </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.12); padding-top:10px; margin-top:auto;">
-            <span style="font-size:0.85rem; font-weight:700; color:#94a3b8;">${b.pages.length} páginas</span>
-            <button type="button" class="big-btn" style="background:${b.theme_color}; color:#ffffff; font-size:0.92rem; padding:7px 16px; font-weight:900; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.3);">
-              ▶ Ler História
+          ${b.moral ? `<div style="font-size:0.8rem; color:#93c5fd; font-style:italic; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; background:rgba(15,23,42,0.5); padding:3px 6px; border-radius:6px;">"${b.moral}"</div>` : ''}
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="button" class="big-btn" style="background:${b.theme_color || '#0284c7'}; color:#ffffff; font-size:0.85rem; padding:5px 14px; font-weight:900; border-radius:8px; width:100%; text-align:center;">
+              ▶ Ler História Agora
             </button>
           </div>
         `;
         card.onclick = () => openBookPage(document.getElementById('modal-body'), globalIdx, 0);
+        grid.appendChild(card);
+      });
+    }
         grid.appendChild(card);
       });
     }
@@ -6649,13 +6809,33 @@
       { id: 'agua', nome: 'Copo d\'Água Pura', emoji: '💧', grupo: 'fruta', labelGrupo: 'Frutas & Água (Vitaminas)', cor: '#06b6d4', fala: 'Água pura e cristalina é a poção mágica que faz todos os órgãos funcionarem felizes!' }
     ];
 
+    let abaAlimentoAtiva = 'proteina';
+    let ultimoAlimentoFalado = null;
+
+    function trocarAbaAlimento(grupo) {
+      abaAlimentoAtiva = grupo;
+      playTone(587, 70);
+      const modalBody = document.querySelector('#activity-modal .modal-body');
+      if (modalBody) renderizarTelaPrato(modalBody);
+    }
+
+    function navegarAbaAlimento(delta) {
+      const grupos = ['proteina', 'legumes', 'carboidrato', 'fruta'];
+      const idx = grupos.indexOf(abaAlimentoAtiva);
+      const nextIdx = (idx + delta + grupos.length) % grupos.length;
+      trocarAbaAlimento(grupos[nextIdx]);
+    }
+
     function openHealthyFoodGame() {
       playTone(523, 100);
-      const body = openModal('🍎 PRATO COLORIDO DOS SUPER CAMPEÕES');
+      const modal = document.getElementById('activity-modal');
+      if (modal) modal.classList.add('zero-scroll');
+      const body = openModal('🍎 PRATO DOS SUPER CAMPEÕES');
       pratoItensSelecionados = [];
+      abaAlimentoAtiva = 'proteina';
       const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
-      speak(`Bem-vindo ao Prato dos Super Campeões, herói ${childName}! Monte um prato bem colorido com proteínas, legumes, carboidratos e frutinhas para ganhar moedas de ouro!`);
+      speak(`Bem-vindo ao Prato dos Super Campeões, herói ${childName}! Escolha os alimentos ao lado para colocar no seu prato e ganhar moedas de ouro!`);
 
       renderizarTelaPrato(body);
     }
@@ -6672,88 +6852,117 @@
       };
 
       const totalGrupos = Object.values(gruposNoPrato).filter(arr => arr.length > 0).length;
+      const alimentosAba = CATALOGO_ALIMENTOS_JOGO.filter(i => i.grupo === abaAlimentoAtiva);
+
+      const abasInfo = [
+        { id: 'proteina', label: 'Músculos', icone: '💪', cor: '#38bdf8' },
+        { id: 'legumes', label: 'Escudo', icone: '🥦', cor: '#22c55e' },
+        { id: 'carboidrato', label: 'Energia', icone: '⚡', cor: '#f59e0b' },
+        { id: 'fruta', label: 'Vitaminas', icone: '🍓', cor: '#ec4899' }
+      ];
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:16px; max-width:960px; margin:0 auto; padding-bottom:14px;">
-          <!-- CABEÇALHO ORIENTADOR -->
-          <div style="background:linear-gradient(135deg, #09172e 0%, #030a16 100%); border:2px solid #f59e0b; border-radius:20px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:0 8px 24px rgba(245,158,11,0.25);">
-            <div>
-              <div style="font-size:1.35rem; font-weight:900; color:#fde047;">🍽️ Missão: Prato Completo dos 4 Grupos!</div>
-              <div style="font-size:0.95rem; color:#fef3c7; margin-top:2px;">Escolha alimentos abaixo para colocar no prato. Quanto mais colorido, mais forte você fica!</div>
+        <div class="plate-game-split">
+          
+          <!-- COLUNA ESQUERDA: O PRATO E AVALIAÇÃO (COMPACTO E ZERO SCROLL) -->
+          <div style="background:linear-gradient(145deg, #0b1528 0%, #050b14 100%); border:2px solid #38bdf8; border-radius:20px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; gap:8px; box-sizing:border-box;">
+            
+            <!-- TOPO: STATUS E LIMPAR -->
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:1.05rem; font-weight:900; color:#fde047; display:flex; align-items:center; gap:6px;">
+                <span>🍽️ Prato do Kaleo</span>
+                <span style="background:${totalGrupos === 4 ? '#10b981' : '#0284c7'}; color:#fff; font-size:0.8rem; padding:2px 8px; border-radius:999px;">${totalGrupos}/4</span>
+              </div>
+              <button type="button" class="big-btn" style="background:#475569; padding:4px 10px; font-size:0.8rem;" onclick="limparPratoGame()">🗑️ Limpar</button>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:1rem; font-weight:800; color:#38bdf8;">Grupos no Prato:</span>
-              <span style="background:#0284c7; color:#fff; font-weight:900; padding:4px 12px; border-radius:999px; font-size:1.05rem;">${totalGrupos} de 4</span>
-              <button type="button" class="big-btn" style="background:#475569; padding:8px 14px; font-size:0.92rem;" onclick="limparPratoGame()">🗑️ Limpar</button>
-            </div>
-          </div>
 
-          <!-- O GRANDE PRATO CENTRAL EM 4 QUADRANTES COLORIDOS -->
-          <div style="display:flex; justify-content:center; align-items:center; margin:4px 0;">
-            <div id="super-plate-disk" style="width:min(90vw, 360px); height:min(90vw, 360px); border-radius:50%; background:#0f172a; border:8px solid #cbd5e1; box-shadow:0 0 35px rgba(255,255,255,0.2), inset 0 0 25px rgba(0,0,0,0.8); display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:6px; padding:8px; box-sizing:border-box; position:relative; overflow:hidden;">
-              
+            <!-- O PRATO REDONDO COM OS 4 QUADRANTES COLORIDOS -->
+            <div class="plate-disk-container" id="super-plate-disk">
               <!-- QUADRANTE 1: PROTEÍNAS (AZUL) -->
-              <div style="background:rgba(2,132,199,0.18); border:2px dashed #38bdf8; border-radius:100% 0 0 0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; position:relative;">
-                <span style="font-size:0.75rem; font-weight:800; color:#7dd3fc; text-transform:uppercase;">💪 Proteínas</span>
-                <div style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px;">
-                  ${gruposNoPrato.proteina.length ? gruposNoPrato.proteina.map(i => `<span style="font-size:1.9rem; animation:popBounce 0.3s ease;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:1.1rem; opacity:0.35;">🍗🥚</span>'}
+              <div class="plate-quadrant" style="background:rgba(2,132,199,0.22); border:1.5px dashed #38bdf8; border-radius:100% 0 0 0;">
+                <span style="font-size:0.65rem; font-weight:900; color:#7dd3fc; text-transform:uppercase;">💪 Proteínas</span>
+                <div style="display:flex; flex-wrap:wrap; gap:2px; justify-content:center;">
+                  ${gruposNoPrato.proteina.length ? gruposNoPrato.proteina.map(i => `<span style="font-size:1.45rem;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:0.9rem; opacity:0.3;">🍗</span>'}
                 </div>
               </div>
 
-              <!-- QUADRANTE 2: LEGUMES & VERDURAS (VERDE) -->
-              <div style="background:rgba(34,197,94,0.18); border:2px dashed #4ade80; border-radius:0 100% 0 0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; position:relative;">
-                <span style="font-size:0.75rem; font-weight:800; color:#86efac; text-transform:uppercase;">🥦 Legumes</span>
-                <div style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px;">
-                  ${gruposNoPrato.legumes.length ? gruposNoPrato.legumes.map(i => `<span style="font-size:1.9rem; animation:popBounce 0.3s ease;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:1.1rem; opacity:0.35;">🥦🥕</span>'}
+              <!-- QUADRANTE 2: LEGUMES (VERDE) -->
+              <div class="plate-quadrant" style="background:rgba(34,197,94,0.22); border:1.5px dashed #4ade80; border-radius:0 100% 0 0;">
+                <span style="font-size:0.65rem; font-weight:900; color:#86efac; text-transform:uppercase;">🥦 Legumes</span>
+                <div style="display:flex; flex-wrap:wrap; gap:2px; justify-content:center;">
+                  ${gruposNoPrato.legumes.length ? gruposNoPrato.legumes.map(i => `<span style="font-size:1.45rem;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:0.9rem; opacity:0.3;">🥦</span>'}
                 </div>
               </div>
 
-              <!-- QUADRANTE 3: CARBOIDRATOS (AMARELO/LARANJA) -->
-              <div style="background:rgba(245,158,11,0.18); border:2px dashed #facc15; border-radius:0 0 0 100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; position:relative;">
-                <span style="font-size:0.75rem; font-weight:800; color:#fde047; text-transform:uppercase;">⚡ Energia</span>
-                <div style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px;">
-                  ${gruposNoPrato.carboidrato.length ? gruposNoPrato.carboidrato.map(i => `<span style="font-size:1.9rem; animation:popBounce 0.3s ease;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:1.1rem; opacity:0.35;">🍚🥔</span>'}
+              <!-- QUADRANTE 3: ENERGIA (AMARELO) -->
+              <div class="plate-quadrant" style="background:rgba(245,158,11,0.22); border:1.5px dashed #facc15; border-radius:0 0 0 100%;">
+                <span style="font-size:0.65rem; font-weight:900; color:#fde047; text-transform:uppercase;">⚡ Energia</span>
+                <div style="display:flex; flex-wrap:wrap; gap:2px; justify-content:center;">
+                  ${gruposNoPrato.carboidrato.length ? gruposNoPrato.carboidrato.map(i => `<span style="font-size:1.45rem;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:0.9rem; opacity:0.3;">🍚</span>'}
                 </div>
               </div>
 
-              <!-- QUADRANTE 4: FRUTAS & ÁGUA (ROSA/AZUL) -->
-              <div style="background:rgba(236,72,153,0.18); border:2px dashed #f472b6; border-radius:0 0 100% 0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px; position:relative;">
-                <span style="font-size:0.75rem; font-weight:800; color:#fbcfe8; text-transform:uppercase;">🍓 Vitaminas</span>
-                <div style="display:flex; flex-wrap:wrap; gap:4px; justify-content:center; margin-top:4px;">
-                  ${gruposNoPrato.fruta.length ? gruposNoPrato.fruta.map(i => `<span style="font-size:1.9rem; animation:popBounce 0.3s ease;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:1.1rem; opacity:0.35;">🍎💧</span>'}
+              <!-- QUADRANTE 4: VITAMINAS & ÁGUA (ROSA) -->
+              <div class="plate-quadrant" style="background:rgba(236,72,153,0.22); border:1.5px dashed #f472b6; border-radius:0 0 100% 0;">
+                <span style="font-size:0.65rem; font-weight:900; color:#fbcfe8; text-transform:uppercase;">🍓 Vitaminas</span>
+                <div style="display:flex; flex-wrap:wrap; gap:2px; justify-content:center;">
+                  ${gruposNoPrato.fruta.length ? gruposNoPrato.fruta.map(i => `<span style="font-size:1.45rem;" title="${i.nome}">${i.emoji}</span>`).join('') : '<span style="font-size:0.9rem; opacity:0.3;">🍎</span>'}
                 </div>
               </div>
-
             </div>
-          </div>
 
-          <!-- MENSAGEM DO JARVIS EXPLICANDO O ÚLTIMO ALIMENTO -->
-          <div id="prato-jarvis-fala" style="background:#040d1a; border:2px solid #38bdf8; border-radius:16px; padding:12px 18px; text-align:center; font-size:1.1rem; font-weight:800; color:#ffffff; min-height:42px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,0.4);">
-            Toque nos alimentos abaixo para adicionar ao prato do herói!
-          </div>
+            <!-- FALA RESUMIDA DO JARVIS -->
+            <div id="prato-jarvis-fala" style="background:#040c18; border:1.5px solid #38bdf8; border-radius:12px; padding:6px 10px; text-align:center; font-size:0.86rem; font-weight:800; color:#ffffff; min-height:36px; display:flex; align-items:center; justify-content:center; line-height:1.2;">
+              ${ultimoAlimentoFalado ? `<span style="font-size:1.3rem; margin-right:6px;">${ultimoAlimentoFalado.emoji}</span> <span>${ultimoAlimentoFalado.fala}</span>` : 'Toque nos alimentos ao lado para abastecer o prato!'}
+            </div>
 
-          <!-- BOTÃO DE AVALIAÇÃO DO PRATO -->
-          <div style="display:flex; justify-content:center;">
-            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); padding:14px 28px; font-size:1.25rem; font-weight:900; box-shadow:0 0 25px rgba(16,185,129,0.5);" onclick="avaliarPratoFinal()">
-              ✨ AVALIAR MEU PRATO SUPER NUTRITIVO!
+            <!-- BOTÃO GIGANTE DE AVALIAÇÃO -->
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); padding:10px 14px; font-size:1.05rem; font-weight:900; box-shadow:0 0 18px rgba(16,185,129,0.45); width:100%; box-sizing:border-box;" onclick="avaliarPratoFinal()">
+              ✨ AVALIAR MEU PRATO (+15 🪙)
             </button>
           </div>
 
-          <!-- ESTEIRA DE ALIMENTOS PARA ESCOLHER -->
-          <div style="background:rgba(15,23,42,0.9); border:2px solid #334155; border-radius:20px; padding:14px 16px;">
-            <div style="font-size:1.05rem; font-weight:900; color:#e2e8f0; margin-bottom:10px; text-align:center;">
-              👇 Toque nos alimentos para colocar no prato:
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); gap:10px;">
-              ${CATALOGO_ALIMENTOS_JOGO.map(item => `
-                <button type="button" class="btn-food-card" onclick="adicionarAlimentoAoPrato('${item.id}')" style="background:linear-gradient(145deg, #1e293b 0%, #0f172a 100%); border:2px solid ${item.cor}; border-radius:16px; padding:10px 8px; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
-                  <span style="font-size:2.2rem; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.5));">${item.emoji}</span>
-                  <span style="font-size:0.88rem; font-weight:800; color:#ffffff; text-align:center; line-height:1.2;">${item.nome}</span>
-                  <span style="font-size:0.72rem; font-weight:700; color:${item.cor};">${item.labelGrupo.split(' ')[0]}</span>
+          <!-- COLUNA DIREITA: O BUFFET TÁTIL DE ALIMENTOS (ABAS + GRADE 2X2) -->
+          <div style="background:linear-gradient(145deg, #09172e 0%, #040d1a 100%); border:2px solid #1e293b; border-radius:20px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; gap:10px; box-sizing:border-box;">
+            
+            <!-- 4 ABAS DE CATEGORIA SUPER TÁTEIS -->
+            <div style="display:flex; gap:6px; width:100%;">
+              ${abasInfo.map(aba => `
+                <button type="button" class="food-tab-btn ${aba.id === abaAlimentoAtiva ? 'active' : ''}" onclick="trocarAbaAlimento('${aba.id}')" style="${aba.id === abaAlimentoAtiva ? `border-color:${aba.cor}; color:#fff;` : ''}">
+                  <span style="font-size:1.15rem;">${aba.icone}</span>
+                  <span>${aba.label}</span>
                 </button>
               `).join('')}
             </div>
+
+            <!-- GRADE 2X2 COM OS 4 ALIMENTOS DA CATEGORIA (CARDS GRANDES E FÁCEIS) -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1;">
+              ${alimentosAba.map(item => `
+                <div class="food-choice-card" onclick="adicionarAlimentoAoPrato('${item.id}')" style="border-color:${item.cor};">
+                  <span style="font-size:2.6rem; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.5));">${item.emoji}</span>
+                  <div style="display:flex; flex-direction:column;">
+                    <span style="font-size:1.05rem; font-weight:900; color:#ffffff; line-height:1.2;">${item.nome}</span>
+                    <span style="font-size:0.75rem; font-weight:700; color:${item.cor}; margin-top:2px;">Toque para adicionar</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- RODAPÉ TÁTIL: NAVEGAÇÃO DE CATEGORIAS -->
+            <div style="display:flex; align-items:center; justify-content:space-between; padding-top:4px; border-top:1px solid #1e293b;">
+              <button type="button" class="big-btn" style="background:#334155; padding:6px 14px; font-size:0.88rem;" onclick="navegarAbaAlimento(-1)">
+                ◀ Anterior
+              </button>
+              <span style="font-size:0.85rem; font-weight:800; color:#7dd3fc;">
+                Grupo: ${abasInfo.find(a => a.id === abaAlimentoAtiva).icone} ${abasInfo.find(a => a.id === abaAlimentoAtiva).label}
+              </span>
+              <button type="button" class="big-btn" style="background:#334155; padding:6px 14px; font-size:0.88rem;" onclick="navegarAbaAlimento(1)">
+                Próximo ▶
+              </button>
+            </div>
+
           </div>
+
         </div>
       `;
     }
@@ -6769,6 +6978,7 @@
       }
 
       pratoItensSelecionados.push(item);
+      ultimoAlimentoFalado = item;
       playTone(600 + pratoItensSelecionados.length * 40, 90);
 
       const falaBox = document.getElementById('prato-jarvis-fala');
@@ -6783,6 +6993,7 @@
 
     function limparPratoGame() {
       pratoItensSelecionados = [];
+      ultimoAlimentoFalado = null;
       playTone(400, 100);
       const modalBody = document.querySelector('#activity-modal .modal-body');
       if (modalBody) renderizarTelaPrato(modalBody);
