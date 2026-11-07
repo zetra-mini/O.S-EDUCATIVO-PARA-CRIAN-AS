@@ -377,6 +377,27 @@ class JarvisBrain:
                 "dados": {},
             }
 
+        # 12.1 Fonoaudiologia & Dicção / Palavra Nova do Jarvis
+        if any(w in text_lower for w in ["palavra nova", "palavra mágica", "palavra magica", "nova palavra", "mostrar palavra", "sortear palavra"]):
+            reply = f"Bip bip, super-herói {self.name}! O Jarvis vai sortear agora mesmo uma palavra mágica novinha para você treinar a dicção!"
+            return {
+                "ok": True,
+                "intencao": "sortear_palavra_diccao",
+                "resposta_voz": reply,
+                "acao_frontend": "sortear_palavra_diccao",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["fono", "fonoaudiologia", "dicção", "diccao", "trava-língua", "trava lingua", "travalingua", "treinar fala", "aprender a falar"]):
+            reply = f"Abrindo a Academia de Dicção e Fonoaudiologia do Herói, {self.name}! Vamos treinar a boquinha com o Jarvis!"
+            return {
+                "ok": True,
+                "intencao": "abrir_diccao",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_diccao",
+                "dados": {},
+            }
+
         # 13. Clima / Tempo / Estações
         if any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "sol", "estação", "estacoes", "geografia"]):
             try:

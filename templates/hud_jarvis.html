@@ -4272,6 +4272,11 @@
             else if (data.acao_frontend === 'abrir_idiomas') openLanguagesAcademy();
             else if (data.acao_frontend === 'abrir_semaforo') abrirModalSemaforo();
             else if (data.acao_frontend === 'abrir_emocoes') openEmotionsCenter();
+            else if (data.acao_frontend === 'abrir_diccao') openSpeechTrainingGame();
+            else if (data.acao_frontend === 'sortear_palavra_diccao') {
+              openSpeechTrainingGame();
+              setTimeout(() => sortearNovaPalavraMagicaJarvis(), 350);
+            }
 
             // O MICROFONE PERMANECE 100% DESLIGADO! ZERO WAKE-WORD. ZERO REINÍCIO OCULTO.
           }
@@ -8495,6 +8500,7 @@
     let abaDiccaoAtiva = 'silabas'; // 'silabas' | 'palavras' | 'travalinguas'
     let indiceDiccaoAtual = 0;
     let palavrasTreinadasHoje = 0;
+    let palavraSurpresaAtiva = false;
 
     const TREINO_DICCAO_BANCO = {
       silabas: [
@@ -8506,6 +8512,7 @@
           destaque: 'RA - RE - RI - RO - RU',
           dica: 'Vibre a pontinha da língua no céu da boca: R-R-R-A!',
           fala_lenta: 'A... RA... RA... Muito bem! A arara voa alto e canta alegre!',
+          fala_silabas: 'A... [pausa]... RA... [pausa]... RA!',
           icone: '🦜',
           cor: '#f59e0b'
         },
@@ -8517,17 +8524,19 @@
           destaque: 'RA - RE - RI - RO - RU',
           dica: 'Solte o arzinho na garganta como um gatinho ronronando: R-R-R-A-TO!',
           fala_lenta: 'RA... TO... Que dicção forte de super herói!',
+          fala_silabas: 'RA... [pausa]... TO!',
           icone: '🐭',
           cor: '#ef4444'
         },
         {
           id: 's3',
-          titulo: 'Encontro Consonantal TR & PR',
+          titulo: 'Encontro Consonantal PR (Lábios + R)',
           palavra: 'PRA - TO',
           silabas: ['PRA', 'TO'],
           destaque: 'PRA - PRE - PRI - PRO - PRU',
-          dica: 'Junte os lábios no P e solte no R: P-R-A!',
+          dica: 'Junte os lábios no P e solte tremendo no R: P-R-A!',
           fala_lenta: 'PRA... TO... O prato dos campeões com comidinha saudável!',
+          fala_silabas: 'PRA... [pausa]... TO!',
           icone: '🍽️',
           cor: '#10b981'
         },
@@ -8537,8 +8546,9 @@
           palavra: 'SA - PO',
           silabas: ['SA', 'PO'],
           destaque: 'SA - SE - SI - SO - SU',
-          dica: 'Dê um sorrisinho e solte o vento pelos dentes: S-S-S-A!',
+          dica: 'Dê um sorrisinho e solte o vento pelos dentinhos: S-S-S-A!',
           fala_lenta: 'SA... PO... O sapinho pula bem alto na lagoa!',
+          fala_silabas: 'SA... [pausa]... PO!',
           icone: '🐸',
           cor: '#06b6d4'
         },
@@ -8548,10 +8558,239 @@
           palavra: 'CHO - CO - LA - TE',
           silabas: ['CHO', 'CO', 'LA', 'TE'],
           destaque: 'CHA - CHE - CHI - CHO - CHU',
-          dica: 'Faça o biquinho do trenzinho: CH-CH-CH!',
+          dica: 'Faça o biquinho do trenzinho soprando ar: CH-CH-CH!',
           fala_lenta: 'CHO... CO... LA... TE... Que delícia de palavra!',
+          fala_silabas: 'CHO... [pausa]... CO... [pausa]... LA... [pausa]... TE!',
           icone: '🍫',
           cor: '#8b5cf6'
+        },
+        {
+          id: 's6',
+          titulo: 'Som do R Brando no Jacaré',
+          palavra: 'JA - CA - RÉ',
+          silabas: ['JA', 'CA', 'RÉ'],
+          destaque: 'JÁ & RÉ (Ponta da Língua)',
+          dica: 'Língua rápida no céu da boca para o som do RÉ!',
+          fala_lenta: 'JA... CA... RÉ... O jacaré nada na lagoa com os olhinhos de fora!',
+          fala_silabas: 'JA... [pausa]... CA... [pausa]... RÉ!',
+          icone: '🐊',
+          cor: '#10b981'
+        },
+        {
+          id: 's7',
+          titulo: 'Som do Coração (R Brando + ÇÃO)',
+          palavra: 'CO - RA - ÇÃO',
+          silabas: ['CO', 'RA', 'ÇÃO'],
+          destaque: 'Som do Amor & Força',
+          dica: 'Ponta da língua no RA e som nasal no ÇÃO!',
+          fala_lenta: 'CO... RA... ÇÃO... Tum, tum, tum! Coraçãozinho feliz e saudável!',
+          fala_silabas: 'CO... [pausa]... RA... [pausa]... ÇÃO!',
+          icone: '❤️',
+          cor: '#ef4444'
+        },
+        {
+          id: 's8',
+          titulo: 'O Robô Jarvis (R Forte na Garganta)',
+          palavra: 'RO - BÔ',
+          silabas: ['RO', 'BÔ'],
+          destaque: 'RO - RE - RI - RO - RU',
+          dica: 'Voz firme de robô herói: RO-BÔ!',
+          fala_lenta: 'RO... BÔ... Bip bip! O robô Jarvis é o seu fiel amigo!',
+          fala_silabas: 'RO... [pausa]... BÔ!',
+          icone: '🤖',
+          cor: '#38bdf8'
+        },
+        {
+          id: 's9',
+          titulo: 'Encontro Consonantal TR (Língua Rápida)',
+          palavra: 'TRA - TOR',
+          silabas: ['TRA', 'TOR'],
+          destaque: 'TRA - TRE - TRI - TRO - TRU',
+          dica: 'Toque a pontinha da língua nos dentes de cima e solte no R: T-R-A!',
+          fala_lenta: 'TRA... TOR... O trator valente cuidando da fazendinha!',
+          fala_silabas: 'TRA... [pausa]... TOR!',
+          icone: '🚜',
+          cor: '#f59e0b'
+        },
+        {
+          id: 's10',
+          titulo: 'Encontro Consonantal DR (Dentes + R)',
+          palavra: 'DRA - GÃO',
+          silabas: ['DRA', 'GÃO'],
+          destaque: 'DRA - DRE - DRI - DRO - DRU',
+          dica: 'Língua atrás dos dentinhos no D e vibra no R: D-R-A!',
+          fala_lenta: 'DRA... GÃO... O dragão amigo cospe faíscas mágicas de alegria!',
+          fala_silabas: 'DRA... [pausa]... GÃO!',
+          icone: '🐉',
+          cor: '#f97316'
+        },
+        {
+          id: 's11',
+          titulo: 'Encontro Consonantal BR (Lábios Explosivos)',
+          palavra: 'BRA - SIL',
+          silabas: ['BRA', 'SIL'],
+          destaque: 'BRA - BRE - BRI - BRO - BRU',
+          dica: 'Exploda os lábios no B e faça a língua vibrar no R: B-R-A!',
+          fala_lenta: 'BRA... SIL... Nossa terra linda e cheia de heróis!',
+          fala_silabas: 'BRA... [pausa]... SIL!',
+          icone: '🇧🇷',
+          cor: '#10b981'
+        },
+        {
+          id: 's12',
+          titulo: 'Encontro Consonantal FR (Dentes no Lábio)',
+          palavra: 'FRU - TA',
+          silabas: ['FRU', 'TA'],
+          destaque: 'FRA - FRE - FRI - FRO - FRU',
+          dica: 'Coloque os dentinhos de cima no lábio de baixo e solte no R: F-R-U!',
+          fala_lenta: 'FRU... TA... Comidinha saudável, colorida e deliciosa!',
+          fala_silabas: 'FRU... [pausa]... TA!',
+          icone: '🍎',
+          cor: '#ef4444'
+        },
+        {
+          id: 's13',
+          titulo: 'Encontro Consonantal CR (Garganta + R)',
+          palavra: 'CRA - VO',
+          silabas: ['CRA', 'VO'],
+          destaque: 'CRA - CRE - CRI - CRO - CRU',
+          dica: 'Arzinho na garganta no C e vibra no R: C-R-A!',
+          fala_lenta: 'CRA... VO... A flor cheirosa do jardim encantado!',
+          fala_silabas: 'CRA... [pausa]... VO!',
+          icone: '🌸',
+          cor: '#ec4899'
+        },
+        {
+          id: 's14',
+          titulo: 'Encontro Consonantal GR (Garganta Forte)',
+          palavra: 'GRA - DE',
+          silabas: ['GRA', 'DE'],
+          destaque: 'GRA - GRE - GRI - GRO - GRU',
+          dica: 'Som fundo na garganta no G e vibração no R: G-R-A!',
+          fala_lenta: 'GRA... DE... O portão seguro da nossa fortaleza!',
+          fala_silabas: 'GRA... [pausa]... DE!',
+          icone: '🚪',
+          cor: '#64748b'
+        },
+        {
+          id: 's15',
+          titulo: 'Encontro Consonantal PL (Língua Alta)',
+          palavra: 'PLA - NE - TA',
+          silabas: ['PLA', 'NE', 'TA'],
+          destaque: 'PLA - PLE - PLI - PLO - PLU',
+          dica: 'Lábios juntos no P e suba a ponta da língua no céu da boca para o L: P-L-A!',
+          fala_lenta: 'PLA... NE... TA... O planeta Terra azul girando no cosmos!',
+          fala_silabas: 'PLA... [pausa]... NE... [pausa]... TA!',
+          icone: '🪐',
+          cor: '#38bdf8'
+        },
+        {
+          id: 's16',
+          titulo: 'Encontro Consonantal FL (Sopro + L)',
+          palavra: 'FLAU - TA',
+          silabas: ['FLAU', 'TA'],
+          destaque: 'FLA - FLE - FLI - FLO - FLU',
+          dica: 'Dentinho no lábio e língua subindo suave: F-L-A!',
+          fala_lenta: 'FLAU... TA... Melodia mágica e suave no ar!',
+          fala_silabas: 'FLAU... [pausa]... TA!',
+          icone: '🪈',
+          cor: '#a855f7'
+        },
+        {
+          id: 's17',
+          titulo: 'Encontro Consonantal GL (Língua no Céu da Boca)',
+          palavra: 'GLO - BO',
+          silabas: ['GLO', 'BO'],
+          destaque: 'GLA - GLE - GLI - GLO - GLU',
+          dica: 'Som no fundo da garganta no G e pontinha da língua no L: G-L-O!',
+          fala_lenta: 'GLO... BO... O mapa do mundo em uma esfera mágica!',
+          fala_silabas: 'GLO... [pausa]... BO!',
+          icone: '🌍',
+          cor: '#0ea5e9'
+        },
+        {
+          id: 's18',
+          titulo: 'Encontro Consonantal CL (Estalo + L)',
+          palavra: 'CLU - BE',
+          silabas: ['CLU', 'BE'],
+          destaque: 'CLA - CLE - CLI - CLO - CLU',
+          dica: 'Estalo no C e ponta da língua esticada no L: C-L-U!',
+          fala_lenta: 'CLU... BE... O clube dos super-heróis e exploradores!',
+          fala_silabas: 'CLU... [pausa]... BE!',
+          icone: '⛺',
+          cor: '#14b8a6'
+        },
+        {
+          id: 's19',
+          titulo: 'Encontro Consonantal BL (Lábios + Língua)',
+          palavra: 'BLU - SA',
+          silabas: ['BLU', 'SA'],
+          destaque: 'BLA - BLE - BLI - BLO - BLU',
+          dica: 'Junte os lábios no B e suba a língua para o L: B-L-U!',
+          fala_lenta: 'BLU... SA... Roupinha macia e quentinha de herói!',
+          fala_silabas: 'BLU... [pausa]... SA!',
+          icone: '👕',
+          cor: '#6366f1'
+        },
+        {
+          id: 's20',
+          titulo: 'Som da Abelhinha Z (Vibração Contínua)',
+          palavra: 'ZE - BRA',
+          silabas: ['ZE', 'BRA'],
+          destaque: 'ZA - ZE - ZI - ZO - ZU',
+          dica: 'Dentes juntos e faça zumbido de abelhinha: Z-Z-Z-E!',
+          fala_lenta: 'ZE... BRA... As listras pretas e brancas mais velozes da savana!',
+          fala_silabas: 'ZE... [pausa]... BRA!',
+          icone: '🦓',
+          cor: '#94a3b8'
+        },
+        {
+          id: 's21',
+          titulo: 'Som do Chiado Suave J',
+          palavra: 'JA - NE - LA',
+          silabas: ['JA', 'NE', 'LA'],
+          destaque: 'JA - JE - JI - JO - JU',
+          dica: 'Biquinho suave e dentes juntos soprando: J-J-J-A!',
+          fala_lenta: 'JA... NE... LA... Abra a janela para o sol iluminar o dia!',
+          fala_silabas: 'JA... [pausa]... NE... [pausa]... LA!',
+          icone: '🪟',
+          cor: '#eab308'
+        },
+        {
+          id: 's22',
+          titulo: 'Som do Chiado X (Sopro de Segredo)',
+          palavra: 'XÍ - CA - RA',
+          silabas: ['XÍ', 'CA', 'RA'],
+          destaque: 'XA - XE - XI - XO - XU',
+          dica: 'Faça o som de pedir silêncio bem macio: X-X-X-Í!',
+          fala_lenta: 'XÍ... CA... RA... Chazinho gostoso na xícara quentinha!',
+          fala_silabas: 'XÍ... [pausa]... CA... [pausa]... RA!',
+          icone: '☕',
+          cor: '#f97316'
+        },
+        {
+          id: 's23',
+          titulo: 'Dígrafo LH (Língua e Bochechas)',
+          palavra: 'CO - E - LHO',
+          silabas: ['CO', 'E', 'LHO'],
+          destaque: 'LHA - LHE - LHI - LHO - LHU',
+          dica: 'Apoie a língua larga no céu da boca para o som do LHO!',
+          fala_lenta: 'CO... E... LHO... Orelhinhas compridas e pulos bem fofinhos!',
+          fala_silabas: 'CO... [pausa]... E... [pausa]... LHO!',
+          icone: '🐰',
+          cor: '#f43f5e'
+        },
+        {
+          id: 's24',
+          titulo: 'Dígrafo NH (Som que Sai pelo Nariz)',
+          palavra: 'GOL - FI - NHO',
+          silabas: ['GOL', 'FI', 'NHO'],
+          destaque: 'NHA - NHE - NHI - NHO - NHU',
+          dica: 'Sinta o arzinho vibrar no narizinho ao falar: NHO!',
+          fala_lenta: 'GOL... FI... NHO... O amigo inteligente que salta nas ondas azuis!',
+          fala_silabas: 'GOL... [pausa]... FI... [pausa]... NHO!',
+          icone: '🐬',
+          cor: '#06b6d4'
         }
       ],
       palavras: [
@@ -8563,6 +8802,7 @@
           destaque: '4 Sílabas Poderosas',
           dica: 'Bata uma palminha para cada pedacinho: AS - TRO - NAU - TA!',
           fala_lenta: 'AS... TRO... NAU... TA... Rumo ao espaço sideral com o Jarvis!',
+          fala_silabas: 'AS... [pausa]... TRO... [pausa]... NAU... [pausa]... TA!',
           icone: '👨‍🚀',
           cor: '#38bdf8'
         },
@@ -8573,7 +8813,8 @@
           silabas: ['BOR', 'BO', 'LE', 'TA'],
           destaque: '4 Sílabas Suaves',
           dica: 'Abra bem a boca nas vogais O e E: BOR - BO - LE - TA!',
-          fala_lenta: 'BOR... BO... LE... TA... As asas voam no jardim!',
+          fala_lenta: 'BOR... BO... LE... TA... As asas voam com leveza no jardim!',
+          fala_silabas: 'BOR... [pausa]... BO... [pausa]... LE... [pausa]... TA!',
           icone: '🦋',
           cor: '#ec4899'
         },
@@ -8584,7 +8825,8 @@
           silabas: ['DI', 'NOS', 'SAU', 'RO'],
           destaque: '4 Sílabas Fortes',
           dica: 'Fale com voz de dinossauro corajoso: DI - NOS - SAU - RO!',
-          fala_lenta: 'DI... NOS... SAU... RO... Rugido forte de herói!',
+          fala_lenta: 'DI... NOS... SAU... RO... Rugido forte de super herói!',
+          fala_silabas: 'DI... [pausa]... NOS... [pausa]... SAU... [pausa]... RO!',
           icone: '🦖',
           cor: '#22c55e'
         },
@@ -8595,9 +8837,322 @@
           silabas: ['HE', 'LI', 'CÓP', 'TE', 'RO'],
           destaque: '5 Sílabas Desafiadoras',
           dica: 'Respire fundo e articule devagar: HE - LI - CÓP - TE - RO!',
-          fala_lenta: 'HE... LI... CÓP... TE... RO... As hélices estão girando nos céus!',
+          fala_lenta: 'HE... LI... CÓP... TE... RO... As hélices estão girando velozes nos céus!',
+          fala_silabas: 'HE... [pausa]... LI... [pausa]... CÓP... [pausa]... TE... [pausa]... RO!',
           icone: '🚁',
           cor: '#f97316'
+        },
+        {
+          id: 'p5',
+          titulo: 'O Desafio Lendário (7 Sílabas!)',
+          palavra: 'PA - RA - LE - LE - PÍ - PE - DO',
+          silabas: ['PA', 'RA', 'LE', 'LE', 'PÍ', 'PE', 'DO'],
+          destaque: '7 Sílabas - Mestre Supremo!',
+          dica: 'O maior desafio de dicção do mundo! Fale sílaba por sílaba com calma!',
+          fala_lenta: 'PA... RA... LE... LE... PÍ... PE... DO... Uau! Dicção épica de herói!',
+          fala_silabas: 'PA... [pausa]... RA... [pausa]... LE... [pausa]... LE... [pausa]... PÍ... [pausa]... PE... [pausa]... DO!',
+          icone: '🧱',
+          cor: '#a855f7'
+        },
+        {
+          id: 'p6',
+          titulo: 'Amigo do Rio (5 Sílabas)',
+          palavra: 'HI - PO - PÓ - TA - MO',
+          silabas: ['HI', 'PO', 'PÓ', 'TA', 'MO'],
+          destaque: '5 Sílabas com PÓ Forte',
+          dica: 'Dê bastante força no PÓ do meio: HI - PO - PÓ - TA - MO!',
+          fala_lenta: 'HI... PO... PÓ... TA... MO... Nadando no rio com toda a tranquilidade!',
+          fala_silabas: 'HI... [pausa]... PO... [pausa]... PÓ... [pausa]... TA... [pausa]... MO!',
+          icone: '🦛',
+          cor: '#64748b'
+        },
+        {
+          id: 'p7',
+          titulo: 'Chifre de Herói (5 Sílabas)',
+          palavra: 'RI - NO - CE - RON - TE',
+          silabas: ['RI', 'NO', 'CE', 'RON', 'TE'],
+          destaque: '5 Sílabas - R Forte + Som Nasal',
+          dica: 'R forte no começo e som nasal no RON: RI - NO - CE - RON - TE!',
+          fala_lenta: 'RI... NO... CE... RON... TE... Passos firmes na savana!',
+          fala_silabas: 'RI... [pausa]... NO... [pausa]... CE... [pausa]... RON... [pausa]... TE!',
+          icone: '🦏',
+          cor: '#475569'
+        },
+        {
+          id: 'p8',
+          titulo: 'Máquina das Obras (5 Sílabas)',
+          palavra: 'ES - CA - VA - DEI - RA',
+          silabas: ['ES', 'CA', 'VA', 'DEI', 'RA'],
+          destaque: '5 Sílabas com Ditongo DEI',
+          dica: 'Junte o D-E-I com clareza: ES - CA - VA - DEI - RA!',
+          fala_lenta: 'ES... CA... VA... DEI... RA... Cavando túneis e construindo pontes!',
+          fala_silabas: 'ES... [pausa]... CA... [pausa]... VA... [pausa]... DEI... [pausa]... RA!',
+          icone: '🚜',
+          cor: '#eab308'
+        },
+        {
+          id: 'p9',
+          titulo: 'Explorador dos Mares (4 Sílabas)',
+          palavra: 'SUB - MA - RI - NO',
+          silabas: ['SUB', 'MA', 'RI', 'NO'],
+          destaque: '4 Sílabas Subaquáticas',
+          dica: 'Encerre o som no B antes do MA: SUB - MA - RI - NO!',
+          fala_lenta: 'SUB... MA... RI... NO... Mergulhando no fundo do oceano azul!',
+          fala_silabas: 'SUB... [pausa]... MA... [pausa]... RI... [pausa]... NO!',
+          icone: '🛥️',
+          cor: '#0284c7'
+        },
+        {
+          id: 'p10',
+          titulo: 'Amiga Centenária (4 Sílabas)',
+          palavra: 'TAR - TA - RU - GA',
+          silabas: ['TAR', 'TA', 'RU', 'GA'],
+          destaque: '4 Sílabas - TAR e RU',
+          dica: 'Língua no TAR e ponta da língua no RU: TAR - TA - RU - GA!',
+          fala_lenta: 'TAR... TA... RU... GA... Devagar e sempre, vencendo todas as corridas!',
+          fala_silabas: 'TAR... [pausa]... TA... [pausa]... RU... [pausa]... GA!',
+          icone: '🐢',
+          cor: '#16a34a'
+        },
+        {
+          id: 'p11',
+          titulo: 'Mestre dos Disfarces (4 Sílabas)',
+          palavra: 'CA - MA - LE - ÃO',
+          silabas: ['CA', 'MA', 'LE', 'ÃO'],
+          destaque: '4 Sílabas com Som Nasal ÃO',
+          dica: 'Solte o ar no ÃO com o narizinho aberto: CA - MA - LE - ÃO!',
+          fala_lenta: 'CA... MA... LE... ÃO... Mudando de cor para se misturar nas folhas!',
+          fala_silabas: 'CA... [pausa]... MA... [pausa]... LE... [pausa]... ÃO!',
+          icone: '🦎',
+          cor: '#84cc16'
+        },
+        {
+          id: 'p12',
+          titulo: 'Palavra de Aplausos (5 Sílabas)',
+          palavra: 'ES - PE - TA - CU - LAR',
+          silabas: ['ES', 'PE', 'TA', 'CU', 'LAR'],
+          destaque: '5 Sílabas Brilhantes',
+          dica: 'Fale com energia e entusiasmo: ES - PE - TA - CU - LAR!',
+          fala_lenta: 'ES... PE... TA... CU... LAR... Você é um campeão!',
+          fala_silabas: 'ES... [pausa]... PE... [pausa]... TA... [pausa]... CU... [pausa]... LAR!',
+          icone: '✨',
+          cor: '#fbbf24'
+        },
+        {
+          id: 'p13',
+          titulo: 'Nosso Campeão (4 Sílabas)',
+          palavra: 'SU - PER - HE - RÓI',
+          silabas: ['SU', 'PER', 'HE', 'RÓI'],
+          destaque: '4 Sílabas de Coragem',
+          dica: 'Destaque o som do RÓI no final: SU - PER - HE - RÓI!',
+          fala_lenta: 'SU... PER... HE... RÓI... Capa ao vento e coração valente!',
+          fala_silabas: 'SU... [pausa]... PER... [pausa]... HE... [pausa]... RÓI!',
+          icone: '🦸',
+          cor: '#ef4444'
+        },
+        {
+          id: 'p14',
+          titulo: 'Desenho de Estrelas (4 Sílabas)',
+          palavra: 'CONS - TE - LA - ÇÃO',
+          silabas: ['CONS', 'TE', 'LA', 'ÇÃO'],
+          destaque: '4 Sílabas Astronômicas',
+          dica: 'Arzinho no CONS e som nasal no ÇÃO: CONS - TE - LA - ÇÃO!',
+          fala_lenta: 'CONS... TE... LA... ÇÃO... Estrelas brilhando unidas no céu noturno!',
+          fala_silabas: 'CONS... [pausa]... TE... [pausa]... LA... [pausa]... ÇÃO!',
+          icone: '🌌',
+          cor: '#6366f1'
+        },
+        {
+          id: 'p15',
+          titulo: 'Poder de Mudança (4 Sílabas)',
+          palavra: 'TRANS - FOR - MA - ÇÃO',
+          silabas: ['TRANS', 'FOR', 'MA', 'ÇÃO'],
+          destaque: '4 Sílabas com TR e ÇÃO',
+          dica: 'Articule bem o TRANS no início: TRANS - FOR - MA - ÇÃO!',
+          fala_lenta: 'TRANS... FOR... MA... ÇÃO... Ativando o poder máximo do herói!',
+          fala_silabas: 'TRANS... [pausa]... FOR... [pausa]... MA... [pausa]... ÇÃO!',
+          icone: '⚡',
+          cor: '#facc15'
+        },
+        {
+          id: 'p16',
+          titulo: 'Pedalando com Vento (4 Sílabas)',
+          palavra: 'BI - CI - CLE - TA',
+          silabas: ['BI', 'CI', 'CLE', 'TA'],
+          destaque: '4 Sílabas com CLE',
+          dica: 'Atenção especial no som do CLE: BI - CI - CLE - TA!',
+          fala_lenta: 'BI... CI... CLE... TA... Pedalando alegre pelo parque!',
+          fala_silabas: 'BI... [pausa]... CI... [pausa]... CLE... [pausa]... TA!',
+          icone: '🚲',
+          cor: '#06b6d4'
+        },
+        {
+          id: 'p17',
+          titulo: 'Tromba Poderosa (4 Sílabas)',
+          palavra: 'E - LE - FAN - TE',
+          silabas: ['E', 'LE', 'FAN', 'TE'],
+          destaque: '4 Sílabas Amigáveis',
+          dica: 'Vogal E aberta no começo e som nasal no FAN: E - LE - FAN - TE!',
+          fala_lenta: 'E... LE... FAN... TE... O maior amigo de tromba comprida!',
+          fala_silabas: 'E... [pausa]... LE... [pausa]... FAN... [pausa]... TE!',
+          icone: '🐘',
+          cor: '#94a3b8'
+        },
+        {
+          id: 'p18',
+          titulo: 'Sete Cores no Céu (4 Sílabas)',
+          palavra: 'AR - CO - Í - RIS',
+          silabas: ['AR', 'CO', 'Í', 'RIS'],
+          destaque: '4 Sílabas com Í Destacado',
+          dica: 'Dê uma paradinha no Í: AR - CO - Í - RIS!',
+          fala_lenta: 'AR... CO... Í... RIS... As sete cores da chuva e do sol!',
+          fala_silabas: 'AR... [pausa]... CO... [pausa]... Í... [pausa]... RIS!',
+          icone: '🌈',
+          cor: '#ec4899'
+        },
+        {
+          id: 'p19',
+          titulo: 'Cérebro Eletrônico (4 Sílabas)',
+          palavra: 'COM - PU - TA - DOR',
+          silabas: ['COM', 'PU', 'TA', 'DOR'],
+          destaque: '4 Sílabas Tecnológicas',
+          dica: 'Pronuncie o DOR final com a língua firme: COM - PU - TA - DOR!',
+          fala_lenta: 'COM... PU... TA... DOR... Processando bits e criando jogos!',
+          fala_silabas: 'COM... [pausa]... PU... [pausa]... TA... [pausa]... DOR!',
+          icone: '💻',
+          cor: '#38bdf8'
+        },
+        {
+          id: 'p20',
+          titulo: 'Alô Amigos! (4 Sílabas)',
+          palavra: 'TE - LE - FO - NE',
+          silabas: ['TE', 'LE', 'FO', 'NE'],
+          destaque: '4 Sílabas Sonoras',
+          dica: 'Articule cada vogal com clareza: TE - LE - FO - NE!',
+          fala_lenta: 'TE... LE... FO... NE... Trim trim! Ligação especial para você!',
+          fala_silabas: 'TE... [pausa]... LE... [pausa]... FO... [pausa]... NE!',
+          icone: '📞',
+          cor: '#10b981'
+        },
+        {
+          id: 'p21',
+          titulo: 'Lente dos Cientistas (4 Sílabas)',
+          palavra: 'MI - CROS - CÓ - PIO',
+          silabas: ['MI', 'CROS', 'CÓ', 'PIO'],
+          destaque: '4 Sílabas com CROS',
+          dica: 'Capriche no encontro consonantal CROS: MI - CROS - CÓ - PIO!',
+          fala_lenta: 'MI... CROS... CÓ... PIO... Olhando os segredos pequenininhos da ciência!',
+          fala_silabas: 'MI... [pausa]... CROS... [pausa]... CÓ... [pausa]... PIO!',
+          icone: '🔬',
+          cor: '#a855f7'
+        },
+        {
+          id: 'p22',
+          titulo: 'Luz da Tempestade (4 Sílabas)',
+          palavra: 'RE - LÂM - PA - GO',
+          silabas: ['RE', 'LÂM', 'PA', 'GO'],
+          destaque: '4 Sílabas Velozes',
+          dica: 'R forte no começo e som nasal no LÂM: RE - LÂM - PA - GO!',
+          fala_lenta: 'RE... LÂM... PA... GO... Raio de luz brilhando nas nuvens!',
+          fala_silabas: 'RE... [pausa]... LÂM... [pausa]... PA... [pausa]... GO!',
+          icone: '⚡',
+          cor: '#facc15'
+        },
+        {
+          id: 'p23',
+          titulo: 'Pintinhas Vermelhas (4 Sílabas)',
+          palavra: 'JO - A - NI - NHA',
+          silabas: ['JO', 'A', 'NI', 'NHA'],
+          destaque: '4 Sílabas com NHA',
+          dica: 'Separe o JO do A e solte o ar no NHA: JO - A - NI - NHA!',
+          fala_lenta: 'JO... A... NI... NHA... Pequenina e linda no meio das flores!',
+          fala_silabas: 'JO... [pausa]... A... [pausa]... NI... [pausa]... NHA!',
+          icone: '🐞',
+          cor: '#ef4444'
+        },
+        {
+          id: 'p24',
+          titulo: 'Fruta Refrescante (4 Sílabas)',
+          palavra: 'ME - LAN - CI - A',
+          silabas: ['ME', 'LAN', 'CI', 'A'],
+          destaque: '4 Sílabas Doces',
+          dica: 'Som nasal no LAN e vogal pura no A: ME - LAN - CI - A!',
+          fala_lenta: 'ME... LAN... CI... A... Vermelhinha, doce e suculenta!',
+          fala_silabas: 'ME... [pausa]... LAN... [pausa]... CI... [pausa]... A!',
+          icone: '🍉',
+          cor: '#10b981'
+        },
+        {
+          id: 'p25',
+          titulo: 'Voo Macio do Céu (4 Sílabas)',
+          palavra: 'PA - RA - QUE - DAS',
+          silabas: ['PA', 'RA', 'QUE', 'DAS'],
+          destaque: '4 Sílabas Aéreas',
+          dica: 'Língua leve no RA e arzinho no DAS: PA - RA - QUE - DAS!',
+          fala_lenta: 'PA... RA... QUE... DAS... Flutuando suave como uma pluma no ar!',
+          fala_silabas: 'PA... [pausa]... RA... [pausa]... QUE... [pausa]... DAS!',
+          icone: '🪂',
+          cor: '#38bdf8'
+        },
+        {
+          id: 'p26',
+          titulo: 'Ouro e Moedas (3 Sílabas)',
+          palavra: 'TE - SOU - RO',
+          silabas: ['TE', 'SOU', 'RO'],
+          destaque: '3 Sílabas Brilhantes',
+          dica: 'Ditongo SOU e pontinha da língua no RO: TE - SOU - RO!',
+          fala_lenta: 'TE... SOU... RO... As moedas douradas do Pote Real!',
+          fala_silabas: 'TE... [pausa]... SOU... [pausa]... RO!',
+          icone: '💎',
+          cor: '#f59e0b'
+        },
+        {
+          id: 'p27',
+          titulo: 'Fogo Rumo à Lua (3 Sílabas)',
+          palavra: 'FO - GUE - TE',
+          silabas: ['FO', 'GUE', 'TE'],
+          destaque: '3 Sílabas Espaciais',
+          dica: 'Junte o som do GUE com firmeza: FO - GUE - TE!',
+          fala_lenta: 'FO... GUE... TE... Três, dois, um! Decolagem espacial!',
+          fala_silabas: 'FO... [pausa]... GUE... [pausa]... TE!',
+          icone: '🚀',
+          cor: '#ef4444'
+        },
+        {
+          id: 'p28',
+          titulo: 'Fortaleza dos Reis (3 Sílabas)',
+          palavra: 'CAS - TE - LO',
+          silabas: ['CAS', 'TE', 'LO'],
+          destaque: '3 Sílabas Fortes',
+          dica: 'Arzinho no CAS e língua alta no LO: CAS - TE - LO!',
+          fala_lenta: 'CAS... TE... LO... Torres altas e pontes levadiças!',
+          fala_silabas: 'CAS... [pausa]... TE... [pausa]... LO!',
+          icone: '🏰',
+          cor: '#8b5cf6'
+        },
+        {
+          id: 'p29',
+          titulo: 'Aço dos Cavaleiros (3 Sílabas)',
+          palavra: 'ES - PA - DA',
+          silabas: ['ES', 'PA', 'DA'],
+          destaque: '3 Sílabas de Defesa',
+          dica: 'Som do ES e boca aberta no PA-DA: ES - PA - DA!',
+          fala_lenta: 'ES... PA... DA... A espada mágica da coragem e do bem!',
+          fala_silabas: 'ES... [pausa]... PA... [pausa]... DA!',
+          icone: '⚔️',
+          cor: '#0ea5e9'
+        },
+        {
+          id: 'p30',
+          titulo: 'Jornada Extraordinária (4 Sílabas)',
+          palavra: 'A - VEN - TU - RA',
+          silabas: ['A', 'VEN', 'TU', 'RA'],
+          destaque: '4 Sílabas de Exploração',
+          dica: 'Som nasal no VEN e ponta da língua no RA: A - VEN - TU - RA!',
+          fala_lenta: 'A... VEN... TU... RA... Novos mundos e muitas descobertas com o Jarvis!',
+          fala_silabas: 'A... [pausa]... VEN... [pausa]... TU... [pausa]... RA!',
+          icone: '🗺️',
+          cor: '#10b981'
         }
       ],
       travalinguas: [
@@ -8609,6 +9164,7 @@
           destaque: 'Treino de R Forte e Rápido',
           dica: 'Fale devagarzinho primeiro e depois tente falar sem tropeçar!',
           fala_lenta: 'O... rato... roeu... a... roupa... do... rei... de... Roma!',
+          fala_silabas: 'O... [pausa]... ra-to... [pausa]... ro-eu... [pausa]... a... rou-pa... [pausa]... do... rei... de... Ro-ma!',
           icone: '👑',
           cor: '#eab308'
         },
@@ -8620,6 +9176,7 @@
           destaque: 'Treino de TR e PR',
           dica: 'Cuidado para não enrolar a língua nos pratinhos!',
           fala_lenta: 'Três... pratos... de... trigo... para... três... tigres... tristes!',
+          fala_silabas: 'Três... [pausa]... pra-tos... [pausa]... de... tri-go... [pausa]... pa-ra... três... ti-gres... tris-tes!',
           icone: '🐯',
           cor: '#f97316'
         },
@@ -8631,16 +9188,126 @@
           destaque: 'Treino do som do S',
           dica: 'O sapo cantando e o saco batendo papo!',
           fala_lenta: 'Olha... o... sapo... dentro... do... saco... o... saco... com... o... sapo... dentro!',
+          fala_silabas: 'O-lha... [pausa]... o... sa-po... [pausa]... den-tro... do... sa-co!',
           icone: '🛍️',
           cor: '#10b981'
+        },
+        {
+          id: 't4',
+          titulo: 'Trava-Língua do Doce Mais Doce',
+          palavra: 'O doce perguntou pro doce: qual é o doce mais doce?',
+          silabas: ['O', 'do-ce', 'per-gun-tou', 'pro', 'do-ce:'],
+          destaque: 'Treino do Som de D',
+          dica: 'Língua atrás dos dentinhos em todos os DOCES!',
+          fala_lenta: 'O doce perguntou pro doce: qual é o doce mais doce? O doce respondeu pro doce que o doce de batata doce é o doce mais doce!',
+          fala_silabas: 'O... [pausa]... do-ce... [pausa]... per-gun-tou... [pausa]... pro... do-ce!',
+          icone: '🍬',
+          cor: '#ec4899'
+        },
+        {
+          id: 't5',
+          titulo: 'Trava-Língua da Aranha e da Rã',
+          palavra: 'A aranha arranha a rã, a rã arranha a aranha!',
+          silabas: ['A', 'a-ra-nha', 'ar-ra-nha', 'a', 'rã!'],
+          destaque: 'Treino de R Brando & R Forte',
+          dica: 'Diferencie o RA brando de aranha do RRA forte de arranha!',
+          fala_lenta: 'A... aranha... arranha... a... rã... a... rã... arranha... a... aranha!',
+          fala_silabas: 'A... [pausa]... a-ra-nha... [pausa]... ar-ra-nha... [pausa]... a... rã!',
+          icone: '🕷️',
+          cor: '#8b5cf6'
+        },
+        {
+          id: 't6',
+          titulo: 'Trava-Língua do Sabiá Assobiador',
+          palavra: 'Sabia que a mãe do sabiá sabia que o sabiá sabia assobiar?',
+          silabas: ['Sa-bi-a', 'que', 'o', 'sa-bi-á', 'sa-bi-a', 'as-so-bi-ar?'],
+          destaque: 'Treino de S Sibilante',
+          dica: 'Sorria bastante em cada som de SA, BI e Á!',
+          fala_lenta: 'Sabia... que... a... mãe... do... sabiá... sabia... que... o... sabiá... sabia... assobiar?',
+          fala_silabas: 'Sa-bi-a... [pausa]... que... o... sa-bi-á... [pausa]... sa-bi-a... [pausa]... as-so-bi-ar?',
+          icone: '🐦',
+          cor: '#06b6d4'
+        },
+        {
+          id: 't7',
+          titulo: 'Trava-Língua da Pia e do Gato',
+          palavra: 'Pinga a pia, apara o prato! Pia a pia, apara o gato!',
+          silabas: ['Pin-ga', 'a', 'pi-a,', 'a-pa-ra', 'o', 'pra-to!'],
+          destaque: 'Treino de P e PR',
+          dica: 'Junte os lábios bem apertadinhos no P!',
+          fala_lenta: 'Pinga... a... pia... apara... o... prato... pia... a... pia... apara... o... gato!',
+          fala_silabas: 'Pin-ga... [pausa]... a... pi-a... [pausa]... a-pa-ra... o... pra-to!',
+          icone: '🐱',
+          cor: '#f59e0b'
+        },
+        {
+          id: 't8',
+          titulo: 'Trava-Língua do Tempo',
+          palavra: 'O tempo perguntou pro tempo quanto tempo o tempo tem!',
+          silabas: ['O', 'tem-po', 'per-gun-tou', 'pro', 'tem-po!'],
+          destaque: 'Treino de T e Som Nasal',
+          dica: 'Diga todos os TEMPOS sem deixar a língua escorregar!',
+          fala_lenta: 'O... tempo... perguntou... pro... tempo... quanto... tempo... o... tempo... tem!',
+          fala_silabas: 'O... [pausa]... tem-po... [pausa]... per-gun-tou... [pausa]... pro... tem-po!',
+          icone: '⏳',
+          cor: '#38bdf8'
+        },
+        {
+          id: 't9',
+          titulo: 'Trava-Língua dos Mafagafos',
+          palavra: 'Um ninho de mafagafos com sete mafagafinhos!',
+          silabas: ['Um', 'ni-nho', 'de', 'ma-fa-ga-fos!'],
+          destaque: 'Treino de F e G',
+          dica: 'Quem desmafagafar os mafagafinhos, bom desmafagafador será!',
+          fala_lenta: 'Um... ninho... de... mafagafos... com... sete... mafagafinhos!',
+          fala_silabas: 'Um... [pausa]... ni-nho... [pausa]... de... ma-fa-ga-fos!',
+          icone: '🐣',
+          cor: '#10b981'
+        },
+        {
+          id: 't10',
+          titulo: 'Trava-Língua da Farofa Fofa',
+          palavra: 'Farofa feita com muita farinha fofa!',
+          silabas: ['Fa-ro-fa', 'fei-ta', 'com', 'fa-ri-nha', 'fo-fa!'],
+          destaque: 'Treino do Som F (Dente no Lábio)',
+          dica: 'Sopre o arzinho suavemente em todos os Fês!',
+          fala_lenta: 'Farofa... feita... com... muita... farinha... fofa... faz... fofoca!',
+          fala_silabas: 'Fa-ro-fa... [pausa]... fei-ta... [pausa]... com... fa-ri-nha... fo-fa!',
+          icone: '🥣',
+          cor: '#f97316'
+        },
+        {
+          id: 't11',
+          titulo: 'Trava-Língua da Bota no Bote',
+          palavra: 'Bote a bota no bote e tire o pote do bote!',
+          silabas: ['Bo-te', 'a', 'bo-ta', 'no', 'bo-te!'],
+          destaque: 'Treino de B e P Oclusivos',
+          dica: 'Lábios juntos e ritmo animado: Bote a bota!',
+          fala_lenta: 'Bote... a... bota... no... bote... e... tire... o... pote... do... bote!',
+          fala_silabas: 'Bo-te... [pausa]... a... bo-ta... [pausa]... no... bo-te!',
+          icone: '⛵',
+          cor: '#0ea5e9'
+        },
+        {
+          id: 't12',
+          titulo: 'Trava-Língua do Peito de Pedro',
+          palavra: 'Pedro tem o peito preto, o peito de Pedro é preto!',
+          silabas: ['Pe-dro', 'tem', 'o', 'pei-to', 'pre-to!'],
+          destaque: 'Treino de P e PR',
+          dica: 'Não confunda peito com preto! Muita atenção!',
+          fala_lenta: 'Pedro... tem... o... peito... preto... o... peito... de... Pedro... é... preto!',
+          fala_silabas: 'Pe-dro... [pausa]... tem... o... pei-to... [pausa]... pre-to!',
+          icone: '🐧',
+          cor: '#64748b'
         }
       ]
     };
 
     function openSpeechTrainingGame() {
+      palavraSurpresaAtiva = false;
       pushModalScreen('🗣️ FONOAUDIOLOGIA & DICÇÃO DO HERÓI', (body) => {
         playTone(523, 90);
-        speak(`Bem-vindo à Academia de Fala e Dicção, ${appState.config.child_name || 'Kaleo'}! Vamos treinar a boquinha e falar palavras incríveis!`);
+        speak(`Bem-vindo à Academia de Fala e Dicção, ${appState.config.child_name || 'Kaleo'}! Vamos treinar a boquinha e falar palavras incríveis! Clique no botão roxo se quiser que o Jarvis escolha uma palavra nova para você!`);
         renderSpeechTrainingBody(body);
       }, true);
     }
@@ -8651,72 +9318,88 @@
       const item = listaAtual[indiceDiccaoAtual];
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box; overflow:hidden;">
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- TOPO: ABAS DE CATEGORIA DE DICÇÃO -->
+          <!-- TOPO: ABAS DE CATEGORIA DE DICÇÃO + BOTÃO SURPRESA DO JARVIS -->
           <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
-            <div style="display:flex; gap:8px;">
-              <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.92rem; font-weight:800; ${abaDiccaoAtiva === 'silabas' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('silabas')">
-                🗣️ Sílabas & Sons (R, L, S, CH)
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.88rem; font-weight:800; ${abaDiccaoAtiva === 'silabas' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('silabas')">
+                🗣️ Sílabas & Sons (${TREINO_DICCAO_BANCO.silabas.length})
               </button>
-              <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.92rem; font-weight:800; ${abaDiccaoAtiva === 'palavras' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('palavras')">
-                ⭐ Palavras Poderosas
+              <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.88rem; font-weight:800; ${abaDiccaoAtiva === 'palavras' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('palavras')">
+                ⭐ Palavras Poderosas (${TREINO_DICCAO_BANCO.palavras.length})
               </button>
-              <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.92rem; font-weight:800; ${abaDiccaoAtiva === 'travalinguas' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('travalinguas')">
-                🎪 Trava-Línguas Divertidos
+              <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.88rem; font-weight:800; ${abaDiccaoAtiva === 'travalinguas' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('travalinguas')">
+                🎪 Trava-Línguas (${TREINO_DICCAO_BANCO.travalinguas.length})
               </button>
             </div>
-            <span style="font-size:0.85rem; font-weight:800; background:#064e3b; color:#a7f3d0; border:1px solid #10b981; padding:4px 10px; border-radius:999px;">
-              🌟 Palavras praticadas: ${palavrasTreinadasHoje}
-            </span>
+
+            <!-- BOTÃO DE DESTAQUE: NOVA PALAVRA SURPRESA DO JARVIS -->
+            <button type="button" class="big-btn" id="btn-jarvis-palavra-nova" style="padding:6px 14px; font-size:0.92rem; font-weight:900; background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #2563eb 100%); border:2px solid #c084fc; box-shadow:0 0 16px rgba(192, 132, 252, 0.45); color:#ffffff; display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="sortearNovaPalavraMagicaJarvis()">
+              <span>✨ Nova Palavra Surpresa do Jarvis!</span>
+              <span style="font-size:1.15rem;">🤖</span>
+            </button>
           </div>
 
           <!-- ÁREA CENTRAL DO TREINO (CARD GIGANTE DE ALTO CONTRASTE) -->
-          <div style="background:linear-gradient(145deg, #0b1a33 0%, #060e1e 100%); border:3px solid ${item.cor}; border-radius:20px; padding:18px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; flex:1; min-height:260px; box-shadow:0 0 30px ${item.cor}33; text-align:center;">
+          <div style="background:linear-gradient(145deg, #0b1a33 0%, #060e1e 100%); border:3px solid ${item.cor}; border-radius:18px; padding:12px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; min-height:220px; max-height:360px; box-shadow:0 0 28px ${item.cor}33; text-align:center; box-sizing:border-box; overflow:hidden;">
             
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="font-size:3.5rem; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));">${item.icone}</span>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center;">
+              <span style="font-size:3rem; line-height:1; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));">${item.icone}</span>
               <div>
-                <span style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">${item.destaque}</span>
-                <div style="font-size:1.15rem; font-weight:900; color:#ffffff; margin-top:4px;">${item.titulo}</div>
+                <div style="display:flex; gap:6px; align-items:center; justify-content:center;">
+                  <span style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:900;">${item.destaque}</span>
+                  ${palavraSurpresaAtiva ? `<span style="background:linear-gradient(135deg,#7c3aed,#ec4899); color:#ffffff; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:900; border:1px solid #f472b6; animation:pulse 1.5s infinite;">✨ ESCOLHIDA PELO JARVIS!</span>` : ''}
+                </div>
+                <div style="font-size:1.1rem; font-weight:900; color:#ffffff; margin-top:3px;">${item.titulo}</div>
               </div>
             </div>
 
             <!-- SÍLABAS EM DESTAQUE NEON GIGANTE -->
-            <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:4px 0;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin:2px 0;">
               ${item.silabas.map(s => `
-                <div style="background:#030712; border:2.5px solid ${item.cor}; color:#ffffff; font-size:2.2rem; font-weight:900; padding:8px 18px; border-radius:14px; box-shadow:0 0 16px ${item.cor}66; letter-spacing:1px;">
+                <div style="background:#030712; border:2.5px solid ${item.cor}; color:#ffffff; font-size:1.85rem; font-weight:900; padding:6px 14px; border-radius:12px; box-shadow:0 0 14px ${item.cor}55; letter-spacing:1px;">
                   ${s}
                 </div>
               `).join('')}
             </div>
 
             <!-- DICA FONOAUDIOLÓGICA DE FALA -->
-            <div style="background:rgba(15,23,42,0.8); border:1.5px solid #334155; border-radius:12px; padding:8px 16px; max-width:620px; color:#e2e8f0; font-size:0.95rem; font-weight:700;">
+            <div style="background:rgba(15,23,42,0.85); border:1.5px solid #334155; border-radius:10px; padding:6px 14px; max-width:640px; color:#e2e8f0; font-size:0.88rem; font-weight:700; line-height:1.3;">
               💡 <strong>Dica da Boquinha:</strong> ${item.dica}
             </div>
 
             <!-- BOTÕES DE AÇÃO: OUVIR E FALAR COM O JARVIS -->
-            <div style="display:flex; gap:12px; justify-content:center; width:100%; max-width:540px; margin-top:4px;">
-              <button type="button" class="big-btn" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #38bdf8; padding:10px 16px; font-size:1.02rem; font-weight:900;" onclick="ouvirJarvisFalarPalavra('${item.fala_lenta.replace(/'/g, "\\'")}')">
-                🔊 Ouvir o Jarvis Falar
+            <div style="display:flex; gap:8px; justify-content:center; width:100%; max-width:580px; margin-top:2px; flex-wrap:wrap;">
+              <button type="button" class="big-btn" style="flex:1; min-width:140px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #38bdf8; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="ouvirJarvisFalarPalavra('${item.fala_lenta.replace(/'/g, "\\'")}')">
+                🔊 Ouvir o Jarvis
               </button>
-              <button type="button" class="big-btn" id="btn-diccao-falar" style="flex:1; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; padding:10px 16px; font-size:1.02rem; font-weight:900;" onclick="treinarMinhaVozDiccao('${item.palavra.replace(/'/g, "\\'")}')">
-                🎙️ Minha Vez de Falar!
+              <button type="button" class="big-btn" style="flex:1; min-width:140px; background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); border:2px solid #818cf8; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="ouvirJarvisSilabaPorSilaba('${item.fala_silabas ? item.fala_silabas.replace(/'/g, "\\'") : item.fala_lenta.replace(/'/g, "\\'")}')">
+                🔉 Sílaba por Sílaba
+              </button>
+              <button type="button" class="big-btn" id="btn-diccao-falar" style="flex:1.2; min-width:160px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="treinarMinhaVozDiccao('${item.palavra.replace(/'/g, "\\'")}')">
+                🎙️ Minha Vez de Falar! (+5🪙)
               </button>
             </div>
 
           </div>
 
-          <!-- RODAPÉ DE NAVEGAÇÃO TÁTIL -->
-          <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:14px; padding:8px 16px;">
-            <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:8px 18px; font-size:0.95rem; font-weight:900;" onclick="mudarItemDiccao(-1)">
+          <!-- RODAPÉ DE NAVEGAÇÃO TÁTIL & ATALHO ALEATÓRIO -->
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:12px; padding:6px 14px; gap:8px;">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:6px 14px; font-size:0.88rem; font-weight:900;" onclick="mudarItemDiccao(-1)">
               ◀ Palavra Anterior
             </button>
-            <span style="font-size:0.95rem; font-weight:900; color:#38bdf8;">
-              Item ${indiceDiccaoAtual + 1} de ${listaAtual.length}
-            </span>
-            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:8px 18px; font-size:0.95rem; font-weight:900;" onclick="mudarItemDiccao(1)">
+            
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg,#0d9488,#0f766e); border:1.5px solid #2dd4bf; padding:5px 12px; font-size:0.85rem; font-weight:900;" onclick="sortearPalavraAleatoriaCategoria()">
+                🎲 Outra Palavra
+              </button>
+              <span style="font-size:0.88rem; font-weight:900; color:#38bdf8;">
+                Item ${indiceDiccaoAtual + 1} de ${listaAtual.length}
+              </span>
+            </div>
+
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:6px 14px; font-size:0.88rem; font-weight:900;" onclick="mudarItemDiccao(1)">
               Próxima Palavra ▶
             </button>
           </div>
@@ -8728,6 +9411,7 @@
     function alternarAbaDiccao(aba) {
       abaDiccaoAtiva = aba;
       indiceDiccaoAtual = 0;
+      palavraSurpresaAtiva = false;
       playTone(587, 80);
       const body = document.getElementById('modal-body');
       if (body) renderSpeechTrainingBody(body);
@@ -8736,9 +9420,69 @@
     function mudarItemDiccao(delta) {
       const listaAtual = TREINO_DICCAO_BANCO[abaDiccaoAtiva] || TREINO_DICCAO_BANCO.silabas;
       indiceDiccaoAtual = ((indiceDiccaoAtual + delta + listaAtual.length) % listaAtual.length);
+      palavraSurpresaAtiva = false;
       playTone(659, 80);
       const body = document.getElementById('modal-body');
       if (body) renderSpeechTrainingBody(body);
+    }
+
+    function sortearPalavraAleatoriaCategoria() {
+      const listaAtual = TREINO_DICCAO_BANCO[abaDiccaoAtiva] || TREINO_DICCAO_BANCO.silabas;
+      if (listaAtual.length <= 1) return;
+      let novoIndice = indiceDiccaoAtual;
+      while (novoIndice === indiceDiccaoAtual) {
+        novoIndice = Math.floor(Math.random() * listaAtual.length);
+      }
+      indiceDiccaoAtual = novoIndice;
+      palavraSurpresaAtiva = false;
+      playTone(784, 80);
+      const body = document.getElementById('modal-body');
+      if (body) renderSpeechTrainingBody(body);
+    }
+
+    // =========================================================================
+    // NOVA PALAVRA SURPRESA DO JARVIS! (REQUISITO EXPLÍCITO DO USUÁRIO)
+    // =========================================================================
+    function sortearNovaPalavraMagicaJarvis() {
+      pararTodosAudiosESpeech();
+
+      // Arpeggio mágico ascendente
+      playTone(523, 70);
+      setTimeout(() => playTone(659, 70), 80);
+      setTimeout(() => playTone(784, 120), 160);
+
+      soltarCoracoes();
+
+      // Efeito visual na carinha do robô Jarvis
+      const mouthSmile = document.getElementById('pou-mouth-smile');
+      const eyesHappy = document.getElementById('robot-eyes-happy');
+      if (eyesHappy) eyesHappy.style.display = 'block';
+
+      // Sorteia aleatoriamente entre 'palavras' (70% de chance) ou 'silabas' (30% de chance)
+      const sorteioAba = Math.random() < 0.7 ? 'palavras' : 'silabas';
+      abaDiccaoAtiva = sorteioAba;
+      const lista = TREINO_DICCAO_BANCO[sorteioAba];
+      
+      let novoIndice = Math.floor(Math.random() * lista.length);
+      if (novoIndice === indiceDiccaoAtual && lista.length > 1) {
+        novoIndice = (novoIndice + 1) % lista.length;
+      }
+      indiceDiccaoAtual = novoIndice;
+      palavraSurpresaAtiva = true;
+
+      const item = lista[indiceDiccaoAtual];
+      const nomeCriança = appState.config.child_name || 'Kaleo';
+
+      const body = document.getElementById('modal-body');
+      if (body) renderSpeechTrainingBody(body);
+
+      // Frase animada e pausada dita pelo robô Jarvis
+      const textoSorteio = `Bip bip, super-herói ${nomeCriança}! O Jarvis escolheu uma palavra mágica nova para você treinar a dicção: ${item.silabas ? item.silabas.join('... ') : item.palavra}! ${item.dica} Vamos falar juntos?`;
+      speak(textoSorteio, {
+        onEnd: () => {
+          if (eyesHappy && voiceState !== 'speaking') eyesHappy.style.display = 'none';
+        }
+      });
     }
 
     function ouvirJarvisFalarPalavra(frase) {
@@ -8747,13 +9491,21 @@
       speak(frase);
     }
 
+    function ouvirJarvisSilabaPorSilaba(fraseSilabas) {
+      pararTodosAudiosESpeech();
+      playTone(659, 80);
+      // Substitui [pausa] por vírgula e reticências para ritmo cadenciado
+      const cadencia = fraseSilabas.replace(/\[pausa\]/g, '... ');
+      speak(cadencia);
+    }
+
     async function treinarMinhaVozDiccao(palavraAlvo) {
       pararTodosAudiosESpeech();
       playTone(880, 150);
       soltarCoracoes();
       palavrasTreinadasHoje++;
 
-      // Efeito visual na boca do robô
+      // Efeito visual na boca e olhos do robô
       const mouthSmile = document.getElementById('pou-mouth-smile');
       const eyesHappy = document.getElementById('robot-eyes-happy');
       if (eyesHappy) eyesHappy.style.display = 'block';
