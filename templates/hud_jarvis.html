@@ -3101,16 +3101,23 @@
       }
     ];
 
+    let ultimoMomentoVozCentralJogos = 0;
+
     function openGamesMenuModal(pag = 1) {
       paginaJogosModalAtual = pag;
+      // Fala apenas de forma breve e no máximo 1 vez a cada 90s para evitar qualquer repetição desnecessária
+      const agora = Date.now();
+      if (agora - ultimoMomentoVozCentralJogos > 90000) {
+        ultimoMomentoVozCentralJogos = agora;
+        speak('Central de Jogos e Estudos!');
+      }
       pushModalScreen('🎮 JOGOS, ESTUDOS & AVENTURAS DO KALEO', (body) => {
         renderGamesMenuBody(body);
       }, true);
     }
 
     function renderGamesMenuBody(body) {
-      speak(`Central de Jogos e Estudos! Escolha uma aventura ou estudo de herói!`);
-
+      // ZERO chamadas de speak() aqui dentro: mudar de página ou clicar em "Voltar" nunca repete a fala!
       const jogosPagina = JOGOS_KATALOGO.filter(j => j.pagina === paginaJogosModalAtual);
 
       body.innerHTML = `
@@ -4867,8 +4874,14 @@
     let selectedBookCategoryFilter = 'todas';
     let paginaLivrosAtual = 1;
     const LIVROS_POR_PAGINA = 4;
+    let ultimoMomentoVozBiblioteca = 0;
 
     function openBooksLibrary() {
+      const agora = Date.now();
+      if (agora - ultimoMomentoVozBiblioteca > 90000) {
+        ultimoMomentoVozBiblioteca = agora;
+        speak(`Biblioteca de Virtudes do ${appState.config.child_name || 'Kaleo'}!`);
+      }
       pushModalScreen('📚 BIBLIOTECA MÁGICA — DESENVOLVIMENTO PESSOAL & VIRTUDES', async (body) => {
         paginaLivrosAtual = 1;
         try {
@@ -4891,8 +4904,7 @@
     }
 
     function renderBooksShelf(body) {
-      speak(`Bem-vindo à Biblioteca de Desenvolvimento Pessoal, ${appState.config.child_name || 'Kaleo'}! Escolha uma história que ensina virtudes de herói ou peça para o Jarvis criar uma inédita!`);
-
+      // Fala apenas ao abrir a biblioteca inicialmente (não repete ao voltar de um livro lido)
       const categories = [
         { id: 'todas', label: '⭐ Todas' },
         { id: 'resiliencia', label: '🌟 Resiliência' },
