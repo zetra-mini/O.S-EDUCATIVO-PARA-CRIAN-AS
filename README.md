@@ -146,11 +146,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.4.3.deb` | `sudo dpkg -i jarvis-kids-os_3.4.3.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.4.3-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.4.3-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.4.3-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.4.3-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.4.4.deb` | `sudo dpkg -i jarvis-kids-os_3.4.4.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.4.4-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.4.4-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.4.4-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.4.4-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -187,7 +187,7 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.4.3.deb
+sudo dpkg -i jarvis-kids-os_3.4.4.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
@@ -262,7 +262,7 @@ sudo dpkg -i jarvis-kids-os_3.4.3.deb
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.4.3.deb`). O sistema inicia 100% automático no boot.
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.4.4.deb`). O sistema inicia 100% automático no boot.
 >
 > O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
 

@@ -10574,22 +10574,22 @@
     }
 
 
-    // =========================================================================
+        // =========================================================================
     // JOGO 19: REINO ANIMAL & SONS DA NATUREZA (BIÓLOGO STARK)
     // =========================================================================
     const BANCO_ANIMAIS_STARK = [
-      { id: 'leao', nome: 'Leão Majestoso', icon: '🦁', habitat: 'Savana Africana', curiosidade: 'O leão é conhecido como o rei dos animais! O seu rugido forte pode ser ouvido a até 8 quilômetros de distância na savana!' },
-      { id: 'elefante', nome: 'Elefante Gentil', icon: '🐘', habitat: 'Florestas & Savanas', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba comprida para beber água, cheirar e até abraçar os filhotes!' },
-      { id: 'golfinho', nome: 'Golfinho Curioso', icon: '🐬', habitat: 'Oceanos Azuis', curiosidade: 'Um dos animais mais inteligentes e alegres dos oceanos! Eles conversam com assobios e adoram dar saltos acrobáticos!' },
-      { id: 'sapo', nome: 'Sapinho Cantor', icon: '🐸', habitat: 'Lagoas e Rios', curiosidade: 'Os sapos cantam na beira d água para chamar os amigos e ajudam a natureza comendo insetos e mosquitinhos!' },
-      { id: 'arara', nome: 'Arara Azul 🇧🇷', icon: '🦜', habitat: 'Pantanal & Florestas do Brasil', curiosidade: 'Uma das aves mais deslumbrantes da fauna brasileira! Ela tem penas azul-cobalto e voa em casais que ficam juntos a vida inteira!' },
-      { id: 'mico', nome: 'Mico-Leão-Dourado 🇧🇷', icon: '🐒', habitat: 'Mata Atlântica do Brasil', curiosidade: 'Um tesouro nacional com juba dourada e brilhante! Ele é super veloz pulando de galho em galho na floresta!' },
-      { id: 'onca', nome: 'Onça-Pintada 🇧🇷', icon: '🐆', habitat: 'Floresta Amazônica & Pantanal', curiosidade: 'O maior felino das Américas e rei das florestas brasileiras! Ela adora nadar nos rios e tem uma força espetacular!' },
-      { id: 'jacare', nome: 'Jacaré do Pantanal 🇧🇷', icon: '🐊', habitat: 'Rios e Pantanal do Brasil', curiosidade: 'Ele adora tomar sol na beira do rio para aquecer o corpinho e nada com muita agilidade usando sua cauda potente!' },
-      { id: 'passaro', nome: 'Passarinho Cantador', icon: '🐦', habitat: 'Copas das Árvores', curiosidade: 'Eles acordam bem cedinho cantando para avisar a floresta que o sol nasceu e um novo dia começou!' },
-      { id: 'cavalo', nome: 'Cavalo Veloz', icon: '🐴', habitat: 'Fazendas e Campos', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
-      { id: 'coruja', nome: 'Coruja Sábia', icon: '🦉', habitat: 'Noite na Floresta', curiosidade: 'As corujas têm olhos gigantescos que enxergam no escuro e conseguem girar o pescoço quase uma volta inteira!' },
-      { id: 'baleia', nome: 'Baleia Gigante', icon: '🐋', habitat: 'Fundo do Mar', curiosidade: 'As baleias são gigantes gentis dos oceanos e cantam canções profundas que viajam por centenas de quilômetros na água!' }
+      { id: 'leao', nome: 'Leão Majestoso', icon: '🦁', habitat: 'Savana Africana', somNome: 'Rugido Potente', falaOnomatopeia: 'Rrrroaaar! Esse é o rugido forte e imponente do Leão, o rei da savana!', curiosidade: 'O leão é conhecido como o rei dos animais! O seu rugido forte pode ser ouvido a até 8 quilômetros de distância!' },
+      { id: 'elefante', nome: 'Elefante Gentil', icon: '🐘', habitat: 'Florestas & Savanas', somNome: 'Trombeta da Tromba', falaOnomatopeia: 'Fuuuummm! O elefante tocou a sua tromba bem alto para chamar os amigos!', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba comprida para beber água, cheirar e abraçar os filhotes!' },
+      { id: 'sapo', nome: 'Sapinho Cantor', icon: '🐸', habitat: 'Lagoas e Rios', somNome: 'Coaxar da Lagoa', falaOnomatopeia: 'Cróac, cróac! O sapinho está coaxando alegre na beira da água!', curiosidade: 'Os sapos cantam na beira da água e ajudam o planeta comendo insetos e mosquitinhos!' },
+      { id: 'cavalo', nome: 'Cavalo Veloz', icon: '🐴', habitat: 'Campos e Fazendas', somNome: 'Relincho Alegre', falaOnomatopeia: 'Iiiirrrrí-hó-hó! O cavalo relinchou veloz e galopou pelo campo!', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
+      { id: 'passaro', nome: 'Passarinho Cantador', icon: '🐦', habitat: 'Copas das Árvores', somNome: 'Chilreio Matinal', falaOnomatopeia: 'Piu-piu! Fiiu-fiiu! O passarinho acordou cantando na janela para avisar que o sol nasceu!', curiosidade: 'Eles acordam bem cedinho cantando para avisar a floresta que um novo dia cheio de luz começou!' },
+      { id: 'arara', nome: 'Arara Azul 🇧🇷', icon: '🦜', habitat: 'Pantanal & Florestas do Brasil', somNome: 'Canto da Selva', falaOnomatopeia: 'Krrráaa-krrráaa! A linda arara azul voou sobre as árvores do Brasil cantando bem alto!', curiosidade: 'Uma das aves mais deslumbrantes da fauna brasileira! Ela tem penas azul-cobalto e voa sempre em casal!' },
+      { id: 'mico', nome: 'Mico-Leão-Dourado 🇧🇷', icon: '🐒', habitat: 'Mata Atlântica do Brasil', somNome: 'Guincho Saltitante', falaOnomatopeia: 'Ih-ih-ih-á-á! O mico-leão-dourado deu uma gargalhada saltando pelos galhos altos!', curiosidade: 'Um tesouro nacional com juba dourada e brilhante! Ele é super veloz pulando de galho em galho!' },
+      { id: 'onca', nome: 'Onça-Pintada 🇧🇷', icon: '🐆', habitat: 'Floresta Amazônica & Pantanal', somNome: 'Esturro da Selva', falaOnomatopeia: 'Grrrrr-haaaar! A onça-pintada esturrou na floresta com suas patas silenciosas e fortes!', curiosidade: 'O maior felino das Américas e rei das florestas brasileiras! Ela adora nadar nos rios e é super forte!' },
+      { id: 'coruja', nome: 'Coruja Sábia', icon: '🦉', habitat: 'Noite na Floresta', somNome: 'Pio Noturno', falaOnomatopeia: 'Uuuu-uuuu! A corujinha piou suave no galho com seus grandes olhos brilhantes!', curiosidade: 'As corujas têm olhos enormes que enxergam no escuro e conseguem girar o pescoço quase uma volta inteira!' },
+      { id: 'golfinho', nome: 'Golfinho Curioso', icon: '🐬', habitat: 'Oceanos Azuis', somNome: 'Assobios & Cliques', falaOnomatopeia: 'I-i-i-i-tchurr! O golfinho assobiou alegre e deu um salto acrobático fora da água!', curiosidade: 'Um dos animais mais inteligentes e amigáveis dos oceanos! Eles conversam com assobios mágicos!' },
+      { id: 'jacare', nome: 'Jacaré do Pantanal 🇧🇷', icon: '🐊', habitat: 'Rios e Pantanal do Brasil', somNome: 'Rugido Subaquático', falaOnomatopeia: 'Grrr-tchuff! O jacaré deu um mergulho poderoso com sua cauda forte!', curiosidade: 'Ele adora tomar sol na beira do rio para aquecer o corpinho e nada com muita agilidade usando sua cauda potente!' },
+      { id: 'baleia', nome: 'Baleia Gigante', icon: '🐋', habitat: 'Fundo do Mar', somNome: 'Canto dos Oceanos', falaOnomatopeia: 'Uuuuooommm! A grande baleia azul cantou uma canção que viaja por todo o oceano!', curiosidade: 'As baleias são gigantes gentis dos oceanos e cantam canções profundas que viajam por centenas de quilômetros!' }
     ];
 
     let animalSelecionadoIdx = 0;
@@ -10608,7 +10608,7 @@
         <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
           
           <!-- GRID DE ÍCONES DOS ANIMAIS -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(70px, 1fr)); gap:6px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(68px, 1fr)); gap:6px;">
             ${BANCO_ANIMAIS_STARK.map((item, idx) => `
               <button type="button" class="big-btn" style="padding:8px 4px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:3px; ${idx === animalSelecionadoIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarAnimal(${idx})">
                 <span style="font-size:1.8rem; line-height:1;">${item.icon}</span>
@@ -10618,20 +10618,20 @@
           </div>
 
           <!-- CARD PRINCIPAL DO ANIMAL -->
-          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:3px solid #10b981; border-radius:20px; padding:16px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
-            <div style="font-size:4.5rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
+          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:3px solid #10b981; border-radius:20px; padding:14px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
+            <div style="font-size:4.2rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
             
             <div>
               <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
-              <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-top:4px;">${a.nome}</div>
+              <div style="font-size:1.5rem; font-weight:900; color:#ffffff; margin-top:4px;">${a.nome}</div>
             </div>
 
-            <div style="font-size:1.02rem; color:#d1fae5; max-width:600px; line-height:1.4; background:rgba(0,0,0,0.35); padding:10px 16px; border-radius:12px;">
+            <div style="font-size:0.95rem; color:#d1fae5; max-width:580px; line-height:1.4; background:rgba(0,0,0,0.35); padding:8px 14px; border-radius:12px;">
               ${a.curiosidade}
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
-              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}')">
+              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}', true)">
                 🔊 Tocar o Som do ${a.nome.split(' ')[0]}
               </button>
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:2px solid #fde047; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="iniciarDesafioSomAnimal()">
@@ -10649,92 +10649,99 @@
     function selecionarAnimal(idx) {
       animalSelecionadoIdx = idx;
       const a = BANCO_ANIMAIS_STARK[idx];
-      tocarSomAnimalStark(a.id);
+      tocarSomAnimalStark(a.id, true);
       const b = document.querySelector('.modal-body');
       if (b) renderAnimalSoundsBody(b);
     }
 
-    function tocarSomAnimalStark(tipo) {
+    function tocarSomAnimalStark(tipo, falar = true) {
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        destravarAudioNavegador();
+        const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+
         if (tipo === 'leao') {
-          // Rugido grave modulado
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(140, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 1.2);
-          gain.gain.setValueAtTime(0.3, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+          osc.frequency.setValueAtTime(140, now);
+          osc.frequency.exponentialRampToValueAtTime(45, now + 1.2);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 1.2);
           osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 1.2);
+          osc.start(now); osc.stop(now + 1.2);
         } else if (tipo === 'elefante') {
-          // Tromba ascendente
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(260, ctx.currentTime);
-          osc.frequency.linearRampToValueAtTime(520, ctx.currentTime + 0.8);
-          gain.gain.setValueAtTime(0.25, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.8);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 0.8);
-        } else if (tipo === 'passaro') {
-          // Trinado agudo
-          [1600, 2100, 1800, 2400].forEach((f, i) => {
-            setTimeout(() => playTone(f, 60), i * 70);
-          });
-        } else if (tipo === 'sapo') {
-          // Coaxar em 2 tempos
-          playTone(130, 90);
-          setTimeout(() => playTone(110, 110), 120);
-        } else if (tipo === 'golfinho') {
-          // Cliques ultra-rápidos
-          [2400, 2900, 3200, 2700, 3400].forEach((f, i) => {
-            setTimeout(() => playTone(f, 40), i * 50);
-          });
-        } else if (tipo === 'cavalo') {
-          // Relincho vibrato
-          [440, 520, 660, 580, 500].forEach((f, i) => {
-            setTimeout(() => playTone(f, 80), i * 75);
-          });
-        } else if (tipo === 'coruja') {
-          // Duplo pio suave
-          playTone(420, 140);
-          setTimeout(() => playTone(360, 180), 220);
-        } else if (tipo === 'arara') {
-          // Grito da arara (duplo sweep estridente)
-          playTone(980, 100);
-          setTimeout(() => playTone(820, 120), 120);
-        } else if (tipo === 'mico') {
-          // Chittering do mico-leão
-          [880, 1100, 950, 1200].forEach((f, i) => setTimeout(() => playTone(f, 40), i * 50));
-        } else if (tipo === 'onca') {
-          // Esturro forte da onça
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(110, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 1.0);
-          gain.gain.setValueAtTime(0.35, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.0);
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(560, now + 0.9);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.9);
           osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 1.0);
+          osc.start(now); osc.stop(now + 0.9);
+        } else if (tipo === 'sapo') {
+          playTone(130, 90, 'triangle');
+          setTimeout(() => playTone(105, 110, 'triangle'), 130);
+        } else if (tipo === 'cavalo') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(380, now + 0.85);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.85);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 0.85);
+        } else if (tipo === 'passaro') {
+          [1800, 2400, 2100, 2700].forEach((f, i) => {
+            setTimeout(() => playTone(f, 55, 'sine', 0.22), i * 65);
+          });
+        } else if (tipo === 'arara') {
+          playTone(980, 110, 'sawtooth', 0.25);
+          setTimeout(() => playTone(840, 130, 'sawtooth', 0.22), 130);
+        } else if (tipo === 'mico') {
+          [900, 1200, 1050, 1300].forEach((f, i) => {
+            setTimeout(() => playTone(f, 40, 'triangle', 0.2), i * 50);
+          });
+        } else if (tipo === 'onca') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(120, now);
+          osc.frequency.exponentialRampToValueAtTime(32, now + 1.1);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 1.1);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 1.1);
+        } else if (tipo === 'coruja') {
+          playTone(420, 150, 'sine', 0.25);
+          setTimeout(() => playTone(360, 200, 'sine', 0.22), 240);
+        } else if (tipo === 'golfinho') {
+          [2600, 3100, 3400, 2800, 3600].forEach((f, i) => {
+            setTimeout(() => playTone(f, 35, 'sine', 0.2), i * 45);
+          });
         } else if (tipo === 'jacare') {
-          // Borbulhas e som grave do jacaré
-          playTone(90, 180);
-          setTimeout(() => playTone(75, 200), 190);
+          playTone(85, 180, 'triangle', 0.3);
+          setTimeout(() => playTone(70, 220, 'triangle', 0.25), 190);
         } else {
-          // Baleia profunda
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(90, ctx.currentTime);
-          osc.frequency.linearRampToValueAtTime(180, ctx.currentTime + 1.4);
-          gain.gain.setValueAtTime(0.3, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.4);
+          osc.frequency.setValueAtTime(90, now);
+          osc.frequency.linearRampToValueAtTime(180, now + 0.8);
+          osc.frequency.linearRampToValueAtTime(75, now + 1.4);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 1.4);
           osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 1.4);
+          osc.start(now); osc.stop(now + 1.4);
+        }
+
+        if (falar) {
+          const animalObj = BANCO_ANIMAIS_STARK.find(x => x.id === tipo);
+          if (animalObj && animalObj.falaOnomatopeia) {
+            setTimeout(() => speak(animalObj.falaOnomatopeia), 400);
+          }
         }
       } catch(e) {
         playTone(440, 150);
@@ -10744,7 +10751,6 @@
     function iniciarDesafioSomAnimal() {
       const idxSorteado = Math.floor(Math.random() * BANCO_ANIMAIS_STARK.length);
       const correto = BANCO_ANIMAIS_STARK[idxSorteado];
-      // Escolhe 2 outros animais aleatórios diferentes
       const outros = BANCO_ANIMAIS_STARK.filter(x => x.id !== correto.id).sort(() => 0.5 - Math.random()).slice(0, 2);
       const opcoes = [correto, ...outros].sort(() => 0.5 - Math.random());
 
@@ -10753,7 +10759,7 @@
       box.style.display = 'block';
       box.innerHTML = `
         <div style="font-size:1.05rem; font-weight:900; color:#fde047; margin-bottom:6px;">🎧 OUÇA O SOM E ADIVINHE QUAL É O BICHO:</div>
-        <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 14px; border-radius:10px; font-weight:900; margin-bottom:8px;" onclick="tocarSomAnimalStark('${correto.id}')">
+        <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 14px; border-radius:10px; font-weight:900; margin-bottom:8px;" onclick="tocarSomAnimalStark('${correto.id}', false)">
           🔊 Tocar o Som Novamente
         </button>
         <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
@@ -10764,7 +10770,7 @@
           `).join('')}
         </div>
       `;
-      tocarSomAnimalStark(correto.id);
+      tocarSomAnimalStark(correto.id, false);
       speak(`Ouça com atenção o som que o Jarvis tocou e descubra qual é o animal!`);
     }
 
@@ -10792,40 +10798,75 @@
 
 
     // =========================================================================
-    // JOGO 20: O RELÓGIO MÁGICO DO TEMPO & HORAS
+    // JOGO 20: O RELÓGIO MÁGICO DO TEMPO & HORAS (COM MOSTRADOR INTERATIVO)
     // =========================================================================
-    let horaRelogioAtual = 12;
+    let horaRelogioAtual = 8;
     let minutoRelogioAtual = 0;
     let missaoRelogioCorrente = null;
 
     function openMagicClockGame() {
       pushModalScreen('⏰ O RELÓGIO MÁGICO DO TEMPO & HORAS', (body) => {
         playTone(587, 100);
-        speak(`Bem-vindo ao Relógio do Tempo, ${appState.config.child_name || 'Kaleo'}! Vamos aprender as horas, os minutos e os momentos do dia!`);
+        speak(`Bem-vindo ao Relógio Mágico, ${appState.config.child_name || 'Kaleo'}! Clique nos números do relógio para mudar a hora e ver o dia virar noite!`);
         renderMagicClockBody(body);
       }, true);
     }
 
     function renderMagicClockBody(body) {
       const isDia = horaRelogioAtual >= 6 && horaRelogioAtual < 18;
-      const isNoite = !isDia;
+      const isManha = horaRelogioAtual >= 6 && horaRelogioAtual < 12;
+      const isTarde = horaRelogioAtual >= 12 && horaRelogioAtual < 18;
+      const isEntardecer = horaRelogioAtual >= 17 && horaRelogioAtual < 19;
+      
+      let periodoIcon = '☀️';
+      let periodoTitulo = 'Manhã Ensolarada';
+      let periodoDesc = 'Hora de acordar, tomar café reforçado e brincar bastante!';
+      let ceuBg = 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)';
+      let ceuBorder = '#7dd3fc';
+
+      if (isManha) {
+        periodoIcon = '🌅';
+        periodoTitulo = 'Manhã Ensolarada';
+        periodoDesc = 'O galo cantou! O sol nasceu e o dia começou com alegria!';
+        ceuBg = 'linear-gradient(90deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%)';
+        ceuBorder = '#38bdf8';
+      } else if (isEntardecer) {
+        periodoIcon = '🌇';
+        periodoTitulo = 'Pôr do Sol Dourado';
+        periodoDesc = 'O céu está alaranjado! O sol está se despedindo para dar lugar à lua!';
+        ceuBg = 'linear-gradient(90deg, #b45309 0%, #ea580c 50%, #f97316 100%)';
+        ceuBorder = '#fdba74';
+      } else if (isTarde) {
+        periodoIcon = '☀️';
+        periodoTitulo = 'Tarde dos Campeões';
+        periodoDesc = 'Sol brilhando no topo do céu! Hora de almoçar, estudar e se divertir!';
+        ceuBg = 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)';
+        ceuBorder = '#7dd3fc';
+      } else {
+        periodoIcon = '🌌';
+        periodoTitulo = 'Noite Estrelada';
+        periodoDesc = 'A lua e as estrelas brilham no céu! Hora do soninho dos heróis!';
+        ceuBg = 'linear-gradient(90deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)';
+        ceuBorder = '#818cf8';
+      }
+
       const horaStr = String(horaRelogioAtual).padStart(2, '0');
       const minStr = String(minutoRelogioAtual).padStart(2, '0');
       
       // Ângulos dos ponteiros (360 graus)
-      const anguloMin = minutoRelogioAtual * 6; // 360 / 60 = 6
-      const anguloHora = ((horaRelogioAtual % 12) * 30) + (minutoRelogioAtual * 0.5); // 360 / 12 = 30
+      const anguloMin = minutoRelogioAtual * 6;
+      const anguloHora = ((horaRelogioAtual % 12) * 30) + (minutoRelogioAtual * 0.5);
 
       body.innerHTML = `
         <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
           
-          <!-- BANNER DO CÉU (DIA / NOITE) -->
-          <div style="display:flex; justify-content:space-between; align-items:center; background:${isDia ? 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)' : 'linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%)'}; border-radius:12px; padding:8px 16px; border:2px solid ${isDia ? '#7dd3fc' : '#818cf8'}; color:#fff;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:1.8rem;">${isDia ? '☀️' : '🌙'}</span>
+          <!-- BANNER DO CÉU (DIA / TARDE / NOITE) -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:${ceuBg}; border-radius:14px; padding:8px 16px; border:2px solid ${ceuBorder}; color:#fff; box-shadow:0 0 20px rgba(0,0,0,0.3);">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:2rem;">${periodoIcon}</span>
               <div>
-                <div style="font-size:0.95rem; font-weight:900;">${isDia ? 'Céu de Dia Ensolarado' : 'Céu da Noite Estrelada'}</div>
-                <div style="font-size:0.75rem; color:#e0f2fe;">${isDia ? 'Hora de brincar, aprender e se alimentar bem!' : 'Hora de descansar o corpinho e dormir!'}</div>
+                <div style="font-size:1.02rem; font-weight:900;">${periodoTitulo}</div>
+                <div style="font-size:0.75rem; color:#f0f9ff;">${periodoDesc}</div>
               </div>
             </div>
             <!-- DISPLAY DIGITAL NEON -->
@@ -10834,61 +10875,89 @@
             </div>
           </div>
 
-          <!-- ÁREA DO RELÓGIO ANALÓGICO VETORIAL -->
+          <!-- ÁREA DO RELÓGIO ANALÓGICO VETORIAL INTERATIVO -->
           <div style="display:flex; justify-content:center; align-items:center; flex:1; position:relative;">
-            <svg viewBox="0 0 200 200" style="width:200px; height:200px; filter:drop-shadow(0 0 16px rgba(56,189,248,0.35));">
-              <!-- Borda do Relógio -->
-              <circle cx="100" cy="100" r="94" fill="#0f172a" stroke="#38bdf8" stroke-width="6" />
-              <circle cx="100" cy="100" r="88" fill="#030712" stroke="#1e293b" stroke-width="2" />
+            <svg viewBox="0 0 220 220" style="width:210px; height:210px; filter:drop-shadow(0 0 16px rgba(56,189,248,0.35)); user-select:none;">
+              <!-- Borda Externa -->
+              <circle cx="110" cy="110" r="102" fill="#0f172a" stroke="#38bdf8" stroke-width="6" />
+              <circle cx="110" cy="110" r="94" fill="#020617" stroke="#1e293b" stroke-width="2" />
               
-              <!-- Marcadores de 1 a 12 -->
+              <!-- Marcadores Clicáveis de 1 a 12 -->
               ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => {
                 const ang = (n * 30 - 90) * (Math.PI / 180);
-                const x = 100 + 72 * Math.cos(ang);
-                const y = 100 + 72 * Math.sin(ang) + 5;
-                return `<text x="${x}" y="${y}" font-size="13" font-weight="900" fill="#facc15" text-anchor="middle">${n}</text>`;
+                const x = 110 + 76 * Math.cos(ang);
+                const y = 110 + 76 * Math.sin(ang) + 5;
+                const isHoraSel = (horaRelogioAtual % 12 === n % 12);
+                return `
+                  <g style="cursor:pointer;" onclick="definirHoraDireta(${n})">
+                    <circle cx="${x}" cy="${y - 5}" r="13" fill="${isHoraSel ? '#38bdf8' : '#1e293b'}" stroke="${isHoraSel ? '#ffffff' : '#475569'}" stroke-width="1.5" />
+                    <text x="${x}" y="${y - 1}" font-size="11" font-weight="900" fill="${isHoraSel ? '#030712' : '#facc15'}" text-anchor="middle">${n}</text>
+                  </g>
+                `;
               }).join('')}
 
-              <!-- Ponteiro das Horas (Curto, Dourado/Vermelho) -->
-              <g transform="rotate(${anguloHora} 100 100)">
-                <line x1="100" y1="100" x2="100" y2="52" stroke="#ef4444" stroke-width="6" stroke-linecap="round" />
+              <!-- Ponteiro das Horas (Curto, Vermelho Neon) -->
+              <g transform="rotate(${anguloHora} 110 110)">
+                <line x1="110" y1="110" x2="110" y2="60" stroke="#ef4444" stroke-width="7" stroke-linecap="round" />
               </g>
 
               <!-- Ponteiro dos Minutos (Comprido, Azul Ciano) -->
-              <g transform="rotate(${anguloMin} 100 100)">
-                <line x1="100" y1="100" x2="100" y2="30" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" />
+              <g transform="rotate(${anguloMin} 110 110)">
+                <line x1="110" y1="110" x2="110" y2="36" stroke="#38bdf8" stroke-width="4.5" stroke-linecap="round" />
               </g>
 
-              <!-- Pino Central -->
-              <circle cx="100" cy="100" r="6" fill="#facc15" stroke="#ffffff" stroke-width="2" />
+              <!-- Pino Central Dourado -->
+              <circle cx="110" cy="110" r="7" fill="#facc15" stroke="#ffffff" stroke-width="2" />
             </svg>
           </div>
 
-          <!-- BOTÕES DE CONTROLE DO TEMPO -->
+          <!-- ATALHOS DE ROTINA INFANTIL (1 CLIQUE) -->
+          <div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #38bdf8; color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="definirHoraMinuto(7, 0)">
+              🌅 07:00 Acordar
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #facc15; color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="definirHoraMinuto(8, 0)">
+              🥣 08:00 Café
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #22c55e; color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="definirHoraMinuto(12, 0)">
+              ☀️ 12:00 Almoço
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #a855f7; color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="definirHoraMinuto(15, 30)">
+              🎨 15:30 Brincar
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #06b6d4; color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="definirHoraMinuto(19, 0)">
+              🛁 19:00 Banho
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #818cf8; color:#fff; padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="definirHoraMinuto(20, 30)">
+              🌙 20:30 Dormir
+            </button>
+          </div>
+
+          <!-- BOTÕES DE AJUSTE FINO (+/-) -->
           <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #38bdf8; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarHoraRelogio(-1)">
+            <button type="button" class="big-btn" style="background:#0f172a; border:1px solid #38bdf8; color:#38bdf8; padding:5px 12px; border-radius:10px; font-weight:800;" onclick="ajustarHoraRelogio(-1)">
               -1 Hora
             </button>
-            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #38bdf8; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarHoraRelogio(1)">
+            <button type="button" class="big-btn" style="background:#0f172a; border:1px solid #38bdf8; color:#38bdf8; padding:5px 12px; border-radius:10px; font-weight:800;" onclick="ajustarHoraRelogio(1)">
               +1 Hora
             </button>
-            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #facc15; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarMinutoRelogio(-15)">
+            <button type="button" class="big-btn" style="background:#0f172a; border:1px solid #facc15; color:#facc15; padding:5px 12px; border-radius:10px; font-weight:800;" onclick="ajustarMinutoRelogio(-15)">
               -15 Min
             </button>
-            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #facc15; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarMinutoRelogio(15)">
+            <button type="button" class="big-btn" style="background:#0f172a; border:1px solid #facc15; color:#facc15; padding:5px 12px; border-radius:10px; font-weight:800;" onclick="ajustarMinutoRelogio(15)">
               +15 Min
             </button>
           </div>
 
           <!-- AÇÕES DO JOGO: FALAR A HORA & MISSÃO DA ROTINA -->
-          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:2px;">
-            <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="ouvirHoraRelogio()">
+          <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:2px;">
+            <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:7px 14px; border-radius:12px; font-weight:900;" onclick="ouvirHoraRelogio()">
               🔊 Jarvis Fala as Horas
             </button>
-            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="iniciarMissaoRotinaRelogio()">
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:7px 14px; border-radius:12px; font-weight:900;" onclick="iniciarMissaoRotinaRelogio()">
               🎯 Missão da Rotina (+5 🪙)
             </button>
-            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border:2px solid #fdba74; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="iniciarDesafioCronometroHeroi()">
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border:2px solid #fdba74; color:#fff; padding:7px 14px; border-radius:12px; font-weight:900;" onclick="iniciarDesafioCronometroHeroi()">
               ⚡ Desafio dos 30s (+5 🪙)
             </button>
           </div>
@@ -10897,6 +10966,25 @@
           <div id="missao-relogio-box" style="display:none; background:#0f172a; border:2px solid #a855f7; border-radius:12px; padding:10px; text-align:center;"></div>
         </div>
       `;
+    }
+
+    function definirHoraDireta(num) {
+      if (horaRelogioAtual >= 12 && num < 12) {
+        horaRelogioAtual = num + 12;
+      } else {
+        horaRelogioAtual = num;
+      }
+      playTone(523 + num * 25, 70);
+      const b = document.querySelector('.modal-body');
+      if (b) renderMagicClockBody(b);
+    }
+
+    function definirHoraMinuto(h, m) {
+      horaRelogioAtual = h;
+      minutoRelogioAtual = m;
+      playTone(659, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderMagicClockBody(b);
     }
 
     function ajustarHoraRelogio(delta) {
@@ -10921,7 +11009,6 @@
       speak(fala);
     }
 
-    
     let timerDesafio30s = null;
     function iniciarDesafioCronometroHeroi() {
       const box = document.getElementById('missao-relogio-box');
@@ -10966,7 +11053,7 @@
       const rotinas = [
         { hora: 12, min: 0, titulo: 'Hora do Almoço dos Campeões', dica: 'Coloque o relógio em 12:00 para almoçar!' },
         { hora: 7, min: 0, titulo: 'Hora de Acordar e Espreguiçar', dica: 'O sol nasceu! Coloque o relógio em 07:00!' },
-        { hora: 20, min: 0, titulo: 'Hora de Escovar os Dentes e Dormir', dica: 'Hora da caminha! Coloque o relógio em 20:00!' },
+        { hora: 20, min: 30, titulo: 'Hora de Escovar os Dentes e Dormir', dica: 'Hora da caminha! Coloque o relógio em 20:30!' },
         { hora: 15, min: 30, titulo: 'Hora do Lanchinho da Tarde', dica: 'Lanche gostoso! Coloque o relógio em 15:30!' }
       ];
       missaoRelogioCorrente = rotinas[Math.floor(Math.random() * rotinas.length)];
@@ -11010,13 +11097,13 @@
     // JOGO 21: DETETIVE STARK: JOGO DOS 7 ERROS / OLHOS DE ÁGUIA
     // =========================================================================
     const ERROS_DETETIVE = [
-      { id: 1, x: 28, y: 32, nome: 'Estrela Espacial Extra' },
-      { id: 2, x: 74, y: 22, nome: 'Planeta Dourado na Janela' },
-      { id: 3, x: 50, y: 56, nome: 'Emblema Stark no Robô' },
-      { id: 4, x: 18, y: 78, nome: 'Florzinha Neon no Vaso' },
-      { id: 5, x: 82, y: 80, nome: 'Moeda Mágica Escondida' },
-      { id: 6, x: 38, y: 26, nome: 'Nuvem Lilás no Céu' },
-      { id: 7, x: 62, y: 82, nome: 'Parafuso Dourado no Chão' }
+      { id: 1, x: 22, y: 20, nome: 'Céu (Sol vs Lua Sorridente)', iconeA: '☀️', iconeB: '🌙' },
+      { id: 2, x: 80, y: 20, nome: 'Espaço (Foguete vs Disco Voador)', iconeA: '🚀', iconeB: '🛸' },
+      { id: 3, x: 50, y: 24, nome: 'Antena do Robô (Lâmpada vs Raio)', iconeA: '💡', iconeB: '⚡' },
+      { id: 4, x: 50, y: 52, nome: 'Peito do Robô (Coração vs Estrela)', iconeA: '❤️', iconeB: '⭐' },
+      { id: 5, x: 18, y: 80, nome: 'Vaso de Plantas (Flor vs Cacto)', iconeA: '🌸', iconeB: '🌵' },
+      { id: 6, x: 50, y: 84, nome: 'Chão do Laboratório (Engrenagem vs Moeda)', iconeA: '⚙️', iconeB: '🪙' },
+      { id: 7, x: 82, y: 80, nome: 'Parede Direita (Janela vs Quadro)', iconeA: '🪟', iconeB: '🎨' }
     ];
     let errosDetetiveEncontrados = [];
 
@@ -11046,32 +11133,41 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1;">
             
             <!-- CENA A (ORIGINAL) -->
-            <div style="background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden;">
-              <span style="position:absolute; top:6px; left:8px; background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px;">Cena Original</span>
-              <div style="font-size:5rem; line-height:1;">🤖</div>
-              <div style="display:flex; gap:14px; font-size:2rem; margin-top:10px;">
-                <span>🪴</span><span>⚙️</span><span>🪟</span><span>🚀</span>
-              </div>
+            <div style="background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; user-select:none;">
+              <span style="position:absolute; top:6px; left:8px; background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px; z-index:5;">Cena A (Original)</span>
+              
+              <!-- Elementos Visuais Fixos na Cena A -->
+              <div style="position:absolute; left:22%; top:20%; transform:translate(-50%, -50%); font-size:2.2rem;">☀️</div>
+              <div style="position:absolute; left:80%; top:20%; transform:translate(-50%, -50%); font-size:2.2rem;">🚀</div>
+              <div style="position:absolute; left:50%; top:24%; transform:translate(-50%, -50%); font-size:1.8rem;">💡</div>
+              <div style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:5rem; line-height:1; pointer-events:none;">🤖</div>
+              <div style="position:absolute; left:50%; top:52%; transform:translate(-50%, -50%); font-size:1.6rem;">❤️</div>
+              <div style="position:absolute; left:18%; top:80%; transform:translate(-50%, -50%); font-size:2.2rem;">🌸</div>
+              <div style="position:absolute; left:50%; top:84%; transform:translate(-50%, -50%); font-size:2rem;">⚙️</div>
+              <div style="position:absolute; left:82%; top:80%; transform:translate(-50%, -50%); font-size:2.2rem;">🪟</div>
             </div>
 
             <!-- CENA B (COM ERROS PARA CLICAR) -->
-            <div id="cena-erros-b" style="background:#020617; border:2px solid #a855f7; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; cursor:crosshair;">
-              <span style="position:absolute; top:6px; left:8px; background:#7c3aed; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px;">Clique nos 7 Erros Aqui!</span>
-              <div style="font-size:5rem; line-height:1;">🤖</div>
-              <div style="display:flex; gap:14px; font-size:2rem; margin-top:10px;">
-                <span>🪴</span><span>🪙</span><span>⭐</span><span>🚀</span>
-              </div>
+            <div id="cena-erros-b" style="background:#020617; border:2px solid #a855f7; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; user-select:none;">
+              <span style="position:absolute; top:6px; left:8px; background:#7c3aed; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px; z-index:5;">Cena B (Clique nos 7 Erros Aqui!)</span>
+              
+              <!-- Robô ao fundo sem interceptar cliques -->
+              <div style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:5rem; line-height:1; pointer-events:none; z-index:1;">🤖</div>
 
-              <!-- PONTOS CLICÁVEIS DOS ERROS -->
-              ${ERROS_DETETIVE.map(e => `
-                <div style="position:absolute; left:${e.x}%; top:${e.y}%; width:44px; height:44px; transform:translate(-50%, -50%); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="clicarErroDetetive(${e.id})">
-                  ${errosDetetiveEncontrados.includes(e.id) ? `
-                    <div style="width:34px; height:34px; border:3px solid #22c55e; background:rgba(34,197,94,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:1.1rem; box-shadow:0 0 12px #22c55e;">✓</div>
-                  ` : `
-                    <div style="width:28px; height:28px; border:1px dashed rgba(255,255,255,0.25); border-radius:50%;"></div>
-                  `}
-                </div>
-              `).join('')}
+              <!-- PONTOS CLICÁVEIS DOS 7 ERROS COM Z-INDEX ALTO E TOQUE AMPLO -->
+              ${ERROS_DETETIVE.map(e => {
+                const encontrado = errosDetetiveEncontrados.includes(e.id);
+                return `
+                  <div style="position:absolute; left:${e.x}%; top:${e.y}%; width:58px; height:58px; transform:translate(-50%, -50%); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:50; pointer-events:auto;" onclick="clicarErroDetetive(${e.id})">
+                    <div style="font-size:2.2rem; pointer-events:none;">${e.iconeB}</div>
+                    ${encontrado ? `
+                      <div style="position:absolute; width:52px; height:52px; border:3px solid #22c55e; background:rgba(34,197,94,0.35); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:1.4rem; box-shadow:0 0 16px #22c55e; pointer-events:none;">✓</div>
+                    ` : `
+                      <div style="position:absolute; width:48px; height:48px; border:2px dashed rgba(255,255,255,0.3); border-radius:50%; pointer-events:none;"></div>
+                    `}
+                  </div>
+                `;
+              }).join('')}
             </div>
           </div>
         </div>
@@ -11113,16 +11209,18 @@
 
 
     // =========================================================================
-    // JOGO 22: LABORATÓRIO DE MISTURAS & CIÊNCIAS
+    // JOGO 22: LABORATÓRIO DE MISTURAS & CIÊNCIAS (CORES E VULCÃO 100% FUNCIONAIS)
     // =========================================================================
-    let abaCienciaAtiva = 'cores'; // 'cores', 'agua', 'ima'
+    let abaCienciaAtiva = 'cores'; // 'cores', 'agua', 'ima', 'vulcao'
     let coresSelecionadasLab = [];
     let resultadoMisturaLab = null;
+    let ingredientesVulcao = { bicarbonato: false, corante: false, vinagre: false };
+    let vulcaoEmErupcao = false;
 
     function openScienceLabGame() {
       pushModalScreen('🔬 LABORATÓRIO DE MISTURAS & CIÊNCIAS', (body) => {
         playTone(659, 100);
-        speak(`Bem-vindo ao Laboratório Científico Stark, cientista ${appState.config.child_name || 'Kaleo'}! Vamos misturar poções mágicas, transformar a água e brincar com ímãs!`);
+        speak(`Bem-vindo ao Laboratório Científico Stark, cientista ${appState.config.child_name || 'Kaleo'}! Vamos misturar poções mágicas, criar a erupção do vulcão e brincar com ímãs!`);
         renderScienceLabBody(body);
       }, true);
     }
@@ -11132,9 +11230,12 @@
         <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
           
           <!-- ABAS DE EXPERIMENTOS CIENTÍFICOS -->
-          <div style="display:flex; justify-content:center; gap:8px;">
+          <div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">
             <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'cores' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('cores')">
               🎨 Mistura de Cores
+            </button>
+            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'vulcao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('vulcao')">
+              🌋 O Vulcão de Lava
             </button>
             <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'agua' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('agua')">
               🧊 Estados da Água
@@ -11142,14 +11243,11 @@
             <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'ima' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('ima')">
               🧲 O Super Ímã
             </button>
-            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'vulcao' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('vulcao')">
-              🌋 O Vulcão de Lava
-            </button>
           </div>
 
           <!-- ÁREA DO EXPERIMENTO ATIVO -->
-          <div style="background:#030712; border:3px solid #38bdf8; border-radius:18px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center;">
-            ${abaCienciaAtiva === 'cores' ? renderExperimentoCores() : (abaCienciaAtiva === 'agua' ? renderExperimentoAgua() : (abaCienciaAtiva === 'ima' ? renderExperimentoIma() : renderExperimentoVulcao()))}
+          <div style="background:#030712; border:3px solid #38bdf8; border-radius:18px; padding:14px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;">
+            ${abaCienciaAtiva === 'cores' ? renderExperimentoCores() : (abaCienciaAtiva === 'vulcao' ? renderExperimentoVulcao() : (abaCienciaAtiva === 'agua' ? renderExperimentoAgua() : renderExperimentoIma()))}
           </div>
         </div>
       `;
@@ -11163,28 +11261,54 @@
     }
 
     function renderExperimentoCores() {
-      return `
-        <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">🧪 O Caldeirão de Cores Primárias</div>
-        <div style="font-size:0.9rem; color:#94a3b8;">Escolha dois tubos coloridos e aperte em "Misturar no Caldeirão"!</div>
+      const opcoesCores = [
+        { id: 'vermelho', nome: 'Vermelho', bg: '#ef4444', icone: '🔴' },
+        { id: 'azul', nome: 'Azul', bg: '#3b82f6', icone: '🔵' },
+        { id: 'amarelo', nome: 'Amarelo', bg: '#eab308', icone: '🟡' },
+        { id: 'branco', nome: 'Branco', bg: '#f8fafc', color: '#000', icone: '⚪' },
+        { id: 'preto', nome: 'Preto', bg: '#1e293b', icone: '⚫' },
+        { id: 'verde', nome: 'Verde', bg: '#22c55e', icone: '🟢' }
+      ];
 
-        <div style="display:flex; gap:16px; justify-content:center; margin:8px 0;">
-          <button type="button" class="big-btn" style="padding:12px 18px; border-radius:14px; background:#ef4444; color:#fff; font-weight:900; border:${coresSelecionadasLab.includes('vermelho') ? '4px solid #fff' : '2px solid transparent'};" onclick="selecionarCorLab('vermelho')">
-            🔴 Vermelho
+      return `
+        <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">🧪 O Caldeirão de Cores Mágicas</div>
+        <div style="font-size:0.85rem; color:#94a3b8;">Escolha duas cores para misturar no caldeirão ou use uma receita mágica!</div>
+
+        <!-- 6 TUBOS COLORIDOS -->
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:6px 0;">
+          ${opcoesCores.map(c => `
+            <button type="button" class="big-btn" style="padding:8px 14px; border-radius:12px; background:${c.bg}; color:${c.color || '#fff'}; font-weight:900; font-size:0.85rem; border:${coresSelecionadasLab.includes(c.id) ? '4px solid #fff; box-shadow:0 0 14px #fff;' : '2px solid transparent'};" onclick="selecionarCorLab('${c.id}')">
+              ${c.icone} ${c.nome}
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- RECEITAS RÁPIDAS -->
+        <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" class="big-btn" style="background:#831843; border:1px solid #f472b6; color:#fbcfe8; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('vermelho', 'branco')">
+            🌸 Criar Rosa
           </button>
-          <button type="button" class="big-btn" style="padding:12px 18px; border-radius:14px; background:#3b82f6; color:#fff; font-weight:900; border:${coresSelecionadasLab.includes('azul') ? '4px solid #fff' : '2px solid transparent'};" onclick="selecionarCorLab('azul')">
-            🔵 Azul
+          <button type="button" class="big-btn" style="background:#581c87; border:1px solid #c084fc; color:#e9d5ff; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('azul', 'vermelho')">
+            🟣 Criar Roxo
           </button>
-          <button type="button" class="big-btn" style="padding:12px 18px; border-radius:14px; background:#eab308; color:#fff; font-weight:900; border:${coresSelecionadasLab.includes('amarelo') ? '4px solid #fff' : '2px solid transparent'};" onclick="selecionarCorLab('amarelo')">
-            🟡 Amarelo
+          <button type="button" class="big-btn" style="background:#7c2d12; border:1px solid #fb923c; color:#ffedd5; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('amarelo', 'vermelho')">
+            🟠 Criar Laranja
+          </button>
+          <button type="button" class="big-btn" style="background:#134e4a; border:1px solid #2dd4bf; color:#ccfbf1; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('azul', 'verde')">
+            🌊 Criar Turquesa
+          </button>
+          <button type="button" class="big-btn" style="background:#365314; border:1px solid #a3e635; color:#ecfccb; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('verde', 'amarelo')">
+            🍏 Criar Verde Limão
           </button>
         </div>
 
-        <button type="button" class="big-btn" style="background:#8b5cf6; border:2px solid #c084fc; color:#fff; padding:8px 24px; border-radius:12px; font-weight:900;" onclick="misturarCoresLab()">
+        <!-- BOTÃO DE MISTURAR -->
+        <button type="button" class="big-btn" style="background:#8b5cf6; border:2px solid #c084fc; color:#fff; padding:8px 24px; border-radius:12px; font-weight:900; margin-top:6px;" onclick="misturarCoresLab()">
           ✨ Misturar Poção Mágica!
         </button>
 
         ${resultadoMisturaLab ? `
-          <div style="background:${resultadoMisturaLab.bg}; border:3px solid #fff; border-radius:16px; padding:12px 24px; color:#fff; font-size:1.3rem; font-weight:900; animation:pulse 1s; box-shadow:0 0 25px ${resultadoMisturaLab.bg}; margin-top:8px;">
+          <div style="background:${resultadoMisturaLab.bg}; border:3px solid #fff; border-radius:16px; padding:10px 20px; color:#fff; font-size:1.15rem; font-weight:900; animation:pulse 1s; box-shadow:0 0 25px ${resultadoMisturaLab.bg}; margin-top:4px;">
             ${resultadoMisturaLab.texto}
           </div>
         ` : ''}
@@ -11203,25 +11327,55 @@
       if (b) renderScienceLabBody(b);
     }
 
+    function aplicarReceitaCor(c1, c2) {
+      coresSelecionadasLab = [c1, c2];
+      misturarCoresLab();
+    }
+
     async function misturarCoresLab() {
       if (coresSelecionadasLab.length < 2) {
-        speak('Selecione duas cores primárias para misturar!');
+        speak('Selecione duas cores coloridas para misturar!');
         return;
       }
       playTone(660, 100);
-      const c = coresSelecionadasLab.sort().join('+');
+      const c = [...coresSelecionadasLab].sort().join('+');
+      
       let res = { bg: '#22c55e', texto: '🟢 Criou a cor VERDE!' };
-      let fala = 'Azul misturado com amarelo se transforma no lindo verde da natureza!';
+      let fala = 'Mistura realizada com sucesso!';
 
       if (c === 'amarelo+azul') {
-        res = { bg: '#22c55e', texto: '🟢 AZUL + AMARELO = VERDE!' };
-        fala = 'Azul com amarelo se transforma no verde brilhante!';
+        res = { bg: '#22c55e', texto: '🟢 AZUL + AMARELO = VERDE DA NATUREZA!' };
+        fala = 'Azul com amarelo se transforma no verde brilhante da natureza!';
       } else if (c === 'azul+vermelho') {
         res = { bg: '#7c3aed', texto: '🟣 VERMELHO + AZUL = ROXO / VIOLETA!' };
-        fala = 'Vermelho com azul se transforma no roxo mágico dos magos!';
+        fala = 'Vermelho com azul se transforma no lindo roxo dos magos!';
       } else if (c === 'amarelo+vermelho') {
-        res = { bg: '#f97316', texto: '🟠 VERMELHO + AMARELO = LARANJA!' };
+        res = { bg: '#f97316', texto: '🟠 VERMELHO + AMARELO = LARANJA DO SOL!' };
         fala = 'Vermelho com amarelo se transforma no laranja vibrante do fogo!';
+      } else if (c === 'branco+vermelho') {
+        res = { bg: '#f472b6', texto: '🌸 VERMELHO + BRANCO = ROSA ALGODÃO DOCE!' };
+        fala = 'O branco clareou o vermelho e criou o rosa super fofinho!';
+      } else if (c === 'azul+branco') {
+        res = { bg: '#38bdf8', texto: '🩵 AZUL + BRANCO = AZUL CELESTE DO CÉU!' };
+        fala = 'O branco transformou o azul no azul celeste do céu de verão!';
+      } else if (c === 'amarelo+branco') {
+        res = { bg: '#fef08a', color: '#000', texto: '🍦 AMARELO + BRANCO = AMARELO BAUNILHA!' };
+        fala = 'O branco suavizou o amarelo criando um tom cremoso de baunilha!';
+      } else if (c === 'amarelo+verde') {
+        res = { bg: '#84cc16', texto: '🍏 VERDE + AMARELO = VERDE LIMÃO BRILHANTE!' };
+        fala = 'Verde com amarelo se transforma no verde limão super refrescante!';
+      } else if (c === 'azul+verde') {
+        res = { bg: '#06b6d4', texto: '🌊 AZUL + VERDE = TURQUESA DO OCEANO!' };
+        fala = 'Azul com verde criou o turquesa cristalino do fundo do mar!';
+      } else if (c === 'preto+vermelho') {
+        res = { bg: '#78350f', texto: '🍫 VERMELHO + PRETO = MARROM CHOCOLATE!' };
+        fala = 'O preto escureceu o vermelho criando a cor deliciosa do chocolate!';
+      } else if (c === 'branco+preto') {
+        res = { bg: '#64748b', texto: '🩶 BRANCO + PRETO = CINZA METÁLICO STARK!' };
+        fala = 'Branco e preto formam o cinza metálico da armadura do Stark!';
+      } else if (c === 'verde+vermelho') {
+        res = { bg: '#592c10', texto: '🌰 VERMELHO + VERDE = MARROM TERRA!' };
+        fala = 'Vermelho misturado com verde cria a cor marrom da terra fértil!';
       }
 
       resultadoMisturaLab = res;
@@ -11232,6 +11386,100 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantidade: 5, motivo: 'ciencia_cores' })
+      }).catch(() => null);
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+
+      const b = document.querySelector('.modal-body');
+      if (b) renderScienceLabBody(b);
+    }
+
+    function renderExperimentoVulcao() {
+      return `
+        <div style="font-size:1.2rem; font-weight:900; color:#f97316;">🌋 O Vulcão Químico de Lava Stark</div>
+        <div style="font-size:0.85rem; color:#94a3b8;">Clique nos 3 ingredientes ou aperte no botão vermelho para fazer o vulcão entrar em erupção!</div>
+
+        <!-- 3 INGREDIENTES CLICÁVEIS -->
+        <div style="display:flex; gap:8px; margin:8px 0; justify-content:center; flex-wrap:wrap;">
+          <button type="button" class="big-btn" style="padding:8px 14px; border-radius:12px; ${ingredientesVulcao.bicarbonato ? 'background:#15803d; border:2px solid #86efac;' : 'background:#1e293b; border:1px solid #64748b;'} color:#fff; font-weight:800;" onclick="adicionarIngredienteVulcao('bicarbonato')">
+            ${ingredientesVulcao.bicarbonato ? '✓ ⚪ Bicarbonato Adicionado' : '⚪ 1. Colocar Bicarbonato'}
+          </button>
+          <button type="button" class="big-btn" style="padding:8px 14px; border-radius:12px; ${ingredientesVulcao.corante ? 'background:#15803d; border:2px solid #86efac;' : 'background:#1e293b; border:1px solid #64748b;'} color:#fff; font-weight:800;" onclick="adicionarIngredienteVulcao('corante')">
+            ${ingredientesVulcao.corante ? '✓ 🔴 Corante Adicionado' : '🔴 2. Pingar Corante'}
+          </button>
+          <button type="button" class="big-btn" style="padding:8px 14px; border-radius:12px; ${ingredientesVulcao.vinagre ? 'background:#15803d; border:2px solid #86efac;' : 'background:#1e293b; border:1px solid #64748b;'} color:#fff; font-weight:800;" onclick="adicionarIngredienteVulcao('vinagre')">
+            ${ingredientesVulcao.vinagre ? '✓ 🧪 Vinagre Adicionado' : '🧪 3. Despejar Vinagre'}
+          </button>
+        </div>
+
+        <!-- VULCÃO VISUAL ILUSTRADO -->
+        <div id="vulcao-anim-box" style="position:relative; width:220px; height:120px; display:flex; align-items:center; justify-content:center; margin:4px 0;">
+          <div style="font-size:5.5rem; line-height:1; user-select:none;">🌋</div>
+          ${vulcaoEmErupcao ? `
+            <div style="position:absolute; top:-20px; font-size:3rem; animation:pulse 0.4s infinite;">💥🔥✨</div>
+            <div style="position:absolute; top:-40px; font-size:2rem; animation:pulse 0.8s infinite;">💨💨</div>
+          ` : ''}
+        </div>
+
+        <!-- BOTÃO DE DISPARO DA ERUPÇÃO -->
+        <button type="button" class="big-btn" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border:3px solid #f87171; color:#fff; padding:10px 26px; border-radius:14px; font-weight:900; font-size:1.1rem; box-shadow:0 0 20px rgba(239,68,68,0.5); cursor:pointer;" onclick="dispararErupcaoVulcao()">
+          💥 DISPARAR ERUPÇÃO DE LAVA!
+        </button>
+
+        <div id="vulcao-desc-view" style="font-size:0.95rem; color:#fef08a; font-weight:800; max-width:540px; margin-top:4px;">
+          ${vulcaoEmErupcao ? '💥 ERUPÇÃO TOTAL! O gás empurrou a lava vermelha e borbulhante para fora do vulcão!' : 'Clique no botão acima para iniciar a incrível reação química do vulcão!'}
+        </div>
+      `;
+    }
+
+    function adicionarIngredienteVulcao(tipo) {
+      ingredientesVulcao[tipo] = true;
+      playTone(523, 80);
+      if (tipo === 'bicarbonato') {
+        speak('Pó de bicarbonato branco adicionado dentro da cratera do vulcão!');
+      } else if (tipo === 'corante') {
+        speak('Corante vermelho adicionado para a lava ficar bem vermelha e brilhante!');
+      } else {
+        speak('Vinagre adicionado! Prepare-se para a erupção!');
+      }
+
+      if (ingredientesVulcao.bicarbonato && ingredientesVulcao.corante && ingredientesVulcao.vinagre) {
+        dispararErupcaoVulcao();
+      } else {
+        const b = document.querySelector('.modal-body');
+        if (b) renderScienceLabBody(b);
+      }
+    }
+
+    async function dispararErupcaoVulcao() {
+      vulcaoEmErupcao = true;
+      ingredientesVulcao = { bicarbonato: true, corante: true, vinagre: true };
+      
+      try {
+        destravarAudioNavegador();
+        const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.linearRampToValueAtTime(140, now + 0.5);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 1.5);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 1.5);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now); osc.stop(now + 1.5);
+      } catch(e) {}
+
+      playCelebrationFanfare();
+      dispararChuvaCoracoes();
+      speak(`CABUUUM! O vulcão entrou em erupção total! As bolhas de gás do bicarbonato com vinagre fizeram a lava subir e escorrer pela montanha! Experimento fantástico!`);
+      showToast('🌋 Erupção Espetacular! +5 Moedas!');
+      
+      await fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 5, motivo: 'experimento_vulcao' })
       }).catch(() => null);
       const pEl = document.getElementById('pote-fichas-val');
       if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
@@ -11327,77 +11575,32 @@
       } else {
         playTone(220, 100);
         v.innerHTML = '🧲 ❌ 🪵';
-        d.innerHTML = `<span style="color:#ef4444;">NÃO ATRAIU!</span> Ímãs não atraem madeira ou plástico.`;
-        speak('Ímãs só atraem metais como o ferro! Madeira e plástico não grudam!');
+        d.innerHTML = `<span style="color:#ef4444;">NÃO ATRAIU!</span> Ímãs não atraem madeira ou borracha.`;
+        speak('Ímãs só atraem metais como o ferro! Madeira e borracha não grudam!');
       }
     }
 
 
-
-    function renderExperimentoVulcao() {
-      return `
-        <div style="font-size:1.2rem; font-weight:900; color:#f97316;">🌋 O Vulcão Químico Stark</div>
-        <div style="font-size:0.9rem; color:#94a3b8;">Misture os ingredientes para criar uma erupção de lava mágica!</div>
-
-        <div style="display:flex; gap:10px; margin:10px 0; justify-content:center; flex-wrap:wrap;">
-          <span style="background:#1e293b; color:#cbd5e1; padding:6px 12px; border-radius:10px; font-weight:800; border:1px solid #64748b;">⚪ Bicarbonato</span>
-          <span style="font-size:1.4rem;">➕</span>
-          <span style="background:#1e293b; color:#cbd5e1; padding:6px 12px; border-radius:10px; font-weight:800; border:1px solid #64748b;">🧪 Vinagre</span>
-          <span style="font-size:1.4rem;">➕</span>
-          <span style="background:#1e293b; color:#ef4444; padding:6px 12px; border-radius:10px; font-weight:800; border:1px solid #ef4444;">🔴 Corante Vermelho</span>
-        </div>
-
-        <button type="button" class="big-btn" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border:2px solid #f87171; color:#fff; padding:10px 24px; border-radius:12px; font-weight:900; font-size:1.05rem;" onclick="dispararErupcaoVulcao()">
-          💥 ENTRAR EM ERUPÇÃO!
-        </button>
-
-        <div id="vulcao-anim-view" style="font-size:4.5rem; line-height:1; margin-top:8px;">🌋</div>
-        <div id="vulcao-desc-view" style="font-size:1rem; color:#fef08a; font-weight:800; max-width:520px;">
-          Clique no botão vermelho para fazer o vulcão soltar lava colorida!
-        </div>
-      `;
-    }
-
-    async function dispararErupcaoVulcao() {
-      const v = document.getElementById('vulcao-anim-view');
-      const d = document.getElementById('vulcao-desc-view');
-      if (!v || !d) return;
-
-      playCelebrationFanfare();
-      dispararChuvaCoracoes();
-      v.innerHTML = '🌋💥🔥✨';
-      v.style.animation = 'pulseMic 0.5s infinite';
-      d.innerHTML = `<span style="color:#ef4444; font-size:1.2rem;">ERUPÇÃO TOTAL!</span> O bicarbonato reagiu com o vinagre criando bolhas de gás que empurraram a lava vermelha para cima!`;
-
-      speak(`Cuidado com a lava quentinha! O bicarbonato se juntou com o vinagre e criou milhares de bolhinhas de gás, fazendo o vulcão entrar em erupção! Experimento científico nota dez!`);
-      showToast('🌋 Erupção Espetacular! +5 Moedas!');
-      await fetch('/api/fichas/bonificar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 5, motivo: 'experimento_vulcao' })
-      }).catch(() => null);
-      const pEl = document.getElementById('pote-fichas-val');
-      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
-    }
-
     // =========================================================================
-    // JOGO 23: ACADEMIA DE XADREZ DO PEQUENO MESTRE
+    // JOGO 23: ACADEMIA DE XADREZ DO PEQUENO MESTRE (PEÇA SE MOVE AO CLICAR NA ESTRELA)
     // =========================================================================
     const PECAS_XADREZ = [
-      { id: 'peao', nome: 'Peão Valente', icon: '♙', cor: '#38bdf8', movimento: 'Anda 1 casinha para frente, mas captura o inimigo na diagonal!', dica: 'O soldadinho fiel do reino!' },
-      { id: 'torre', nome: 'Torre Forte', icon: '♖', cor: '#f59e0b', movimento: 'Anda em linha reta (para frente, trás, direita ou esquerda) quantas casas quiser!', dica: 'A fortaleza que nunca desvia!' },
       { id: 'cavalo', nome: 'Cavalo Saltador', icon: '♘', cor: '#10b981', movimento: 'O único que PULA por cima das outras peças! Anda no formato da letra L (duas casas retas e uma para o lado)!', dica: 'Pula barreiras como mágica!' },
+      { id: 'torre', nome: 'Torre Forte', icon: '♖', cor: '#f59e0b', movimento: 'Anda em linha reta (para frente, trás, direita ou esquerda) quantas casas quiser!', dica: 'A fortaleza que nunca desvia!' },
       { id: 'bispo', nome: 'Bispo Veloz', icon: '♗', cor: '#8b5cf6', movimento: 'Anda nas diagonais mantendo sempre a mesma cor da casinha onde nasceu!', dica: 'O raio das diagonais!' },
+      { id: 'peao', nome: 'Peão Valente', icon: '♙', cor: '#38bdf8', movimento: 'Anda 1 casinha para frente, mas captura o inimigo na diagonal!', dica: 'O soldadinho fiel do reino!' },
       { id: 'rainha', nome: 'Rainha Poderosa', icon: '♕', cor: '#ec4899', movimento: 'A peça mais forte! Anda em linhas retas e diagonais para onde quiser!', dica: 'A protetora de todo o reino!' },
       { id: 'rei', nome: 'Rei Real', icon: '♔', cor: '#eab308', movimento: 'Anda 1 casinha em qualquer direção. Deve ser protegido com todo amor!', dica: 'O coração do tabuleiro!' }
     ];
 
-    let pecaXadrezIdx = 2; // Começa no Cavalo (favorito das crianças)
+    let pecaXadrezIdx = 0; // Começa no Cavalo (favorito das crianças)
+    let posPecaXadrez = { r: 2, c: 2 }; // Posição atual da peça no tabuleiro 5x5
 
     function openChessAcademyGame() {
+      posPecaXadrez = { r: 2, c: 2 };
       pushModalScreen('♟️ ACADEMIA DE XADREZ DO PEQUENO MESTRE', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo ao Reino do Xadrez, pequeno grande mestre ${appState.config.child_name || 'Kaleo'}! Vamos aprender o movimento do Cavalo, da Torre e de todas as peças!`);
+        speak(`Bem-vindo ao Reino do Xadrez, pequeno grande mestre ${appState.config.child_name || 'Kaleo'}! Clique nas estrelinhas verdes para ver a peça se mover pelo tabuleiro!`);
         renderChessAcademyBody(body);
       }, true);
     }
@@ -11405,36 +11608,39 @@
     function renderChessAcademyBody(body) {
       const p = PECAS_XADREZ[pecaXadrezIdx];
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
           
           <!-- SELETOR DE PEÇAS DE XADREZ -->
           <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:6px;">
             ${PECAS_XADREZ.map((item, idx) => `
               <button type="button" class="big-btn" style="padding:6px 2px; border-radius:12px; display:flex; flex-direction:column; align-items:center; ${idx === pecaXadrezIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarPecaXadrez(${idx})">
-                <span style="font-size:2rem; line-height:1; color:#fff;">${item.icon}</span>
+                <span style="font-size:1.8rem; line-height:1; color:#fff;">${item.icon}</span>
                 <span style="font-size:0.75rem; font-weight:800; color:#e2e8f0;">${item.nome.split(' ')[0]}</span>
               </button>
             `).join('')}
           </div>
 
           <!-- MINI-TABULEIRO INTERATIVO DE DESAFIO (5x5) -->
-          <div style="background:#030712; border:3px solid ${p.cor}; border-radius:18px; padding:12px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
-            <div style="font-size:1.3rem; font-weight:900; color:#fff;">${p.icon} ${p.nome} — ${p.dica}</div>
+          <div style="background:#030712; border:3px solid ${p.cor}; border-radius:18px; padding:10px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
+            <div style="font-size:1.2rem; font-weight:900; color:#fff;">${p.icon} ${p.nome} — ${p.dica}</div>
             
-            <div style="font-size:0.95rem; color:#38bdf8; max-width:550px; text-align:center;">
+            <div style="font-size:0.9rem; color:#38bdf8; max-width:550px; text-align:center;">
               ${p.movimento}
             </div>
 
             <!-- TABULEIRO 5x5 ESTILIZADO -->
-            <div style="display:grid; grid-template-columns:repeat(5, 42px); grid-template-rows:repeat(5, 42px); gap:2px; background:#0f172a; padding:4px; border:2px solid #38bdf8; border-radius:10px;">
+            <div style="display:grid; grid-template-columns:repeat(5, 44px); grid-template-rows:repeat(5, 44px); gap:2px; background:#0f172a; padding:4px; border:2px solid #38bdf8; border-radius:10px; user-select:none;">
               ${gerarCasasTabuleiroXadrez(p)}
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
-              <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900;" onclick="ouvirDicaXadrez()">
-                🔊 Ouvir Dica da Peça
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:2px;">
+              <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #64748b; color:#fff; padding:5px 12px; border-radius:10px; font-size:0.85rem; font-weight:800;" onclick="reiniciarPosicaoXadrez()">
+                🔄 Voltar ao Centro
               </button>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #86efac; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900;" onclick="concluirDesafioXadrez()">
+              <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:5px 14px; border-radius:10px; font-size:0.85rem; font-weight:900;" onclick="ouvirDicaXadrez()">
+                🔊 Dica da Peça
+              </button>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #86efac; color:#fff; padding:5px 14px; border-radius:10px; font-size:0.85rem; font-weight:900;" onclick="concluirDesafioXadrez()">
                 ⭐ Desafio Concluído! (+5 🪙)
               </button>
             </div>
@@ -11444,35 +11650,36 @@
     }
 
     function gerarCasasTabuleiroXadrez(peca) {
-      // Cria 25 casas (5x5). O centro é (2,2)
       let html = '';
       for (let r = 0; r < 5; r++) {
         for (let c = 0; c < 5; c++) {
           const isPar = (r + c) % 2 === 0;
           const bg = isPar ? '#1e293b' : '#0f172a';
-          const isCenter = r === 2 && c === 2;
+          const isPecaAtual = (r === posPecaXadrez.r && c === posPecaXadrez.c);
 
-          // Se for o cavalo no centro, as casas válidas em L são:
           let isValido = false;
-          if (peca.id === 'cavalo') {
-            const dr = Math.abs(r - 2);
-            const dc = Math.abs(c - 2);
-            isValido = (dr === 1 && dc === 2) || (dr === 2 && dc === 1);
-          } else if (peca.id === 'torre') {
-            isValido = (r === 2 || c === 2) && !isCenter;
-          } else if (peca.id === 'bispo') {
-            isValido = (Math.abs(r - 2) === Math.abs(c - 2)) && !isCenter;
-          } else if (peca.id === 'peao') {
-            isValido = (r === 1 && c === 2);
-          } else if (peca.id === 'rei') {
-            isValido = (Math.abs(r - 2) <= 1 && Math.abs(c - 2) <= 1) && !isCenter;
-          } else if (peca.id === 'rainha') {
-            isValido = (r === 2 || c === 2 || Math.abs(r - 2) === Math.abs(c - 2)) && !isCenter;
+          if (!isPecaAtual) {
+            const dr = Math.abs(r - posPecaXadrez.r);
+            const dc = Math.abs(c - posPecaXadrez.c);
+
+            if (peca.id === 'cavalo') {
+              isValido = (dr === 1 && dc === 2) || (dr === 2 && dc === 1);
+            } else if (peca.id === 'torre') {
+              isValido = (r === posPecaXadrez.r || c === posPecaXadrez.c);
+            } else if (peca.id === 'bispo') {
+              isValido = (dr === dc);
+            } else if (peca.id === 'peao') {
+              isValido = (r === posPecaXadrez.r - 1 && c === posPecaXadrez.c);
+            } else if (peca.id === 'rei') {
+              isValido = (dr <= 1 && dc <= 1);
+            } else if (peca.id === 'rainha') {
+              isValido = (r === posPecaXadrez.r || c === posPecaXadrez.c || dr === dc);
+            }
           }
 
           html += `
-            <div style="background:${isValido ? 'rgba(34,197,94,0.35)' : bg}; border:${isValido ? '2px solid #22c55e' : '1px solid rgba(255,255,255,0.05)'}; display:flex; align-items:center; justify-content:center; cursor:${isValido ? 'pointer' : 'default'}; border-radius:4px;" onclick="${isValido ? `clicarMovimentoXadrez('${peca.id}')` : ''}">
-              ${isCenter ? `<span style="font-size:1.8rem; line-height:1; color:#fff;">${peca.icon}</span>` : (isValido ? '<span style="font-size:0.9rem; color:#22c55e; font-weight:900;">⭐</span>' : '')}
+            <div style="background:${isValido ? 'rgba(34,197,94,0.35)' : bg}; border:${isValido ? '2px solid #22c55e' : (isPecaAtual ? '2px solid #facc15' : '1px solid rgba(255,255,255,0.05)')}; display:flex; align-items:center; justify-content:center; cursor:${isValido ? 'pointer' : 'default'}; border-radius:4px;" ${isValido ? `onclick="moverPecaXadrez(${r}, ${c})"` : ''}>
+              ${isPecaAtual ? `<span style="font-size:2rem; line-height:1; color:#fff; filter:drop-shadow(0 0 8px #facc15); animation:pulse 1s infinite;">${peca.icon}</span>` : (isValido ? '<span style="font-size:1.1rem; color:#22c55e; font-weight:900; animation:pulse 0.8s infinite;">⭐</span>' : '')}
             </div>
           `;
         }
@@ -11482,7 +11689,31 @@
 
     function selecionarPecaXadrez(idx) {
       pecaXadrezIdx = idx;
+      posPecaXadrez = { r: 2, c: 2 };
       playTone(440 + idx * 50, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderChessAcademyBody(b);
+    }
+
+    function reiniciarPosicaoXadrez() {
+      posPecaXadrez = { r: 2, c: 2 };
+      playTone(523, 70);
+      const b = document.querySelector('.modal-body');
+      if (b) renderChessAcademyBody(b);
+    }
+
+    function moverPecaXadrez(r, c) {
+      posPecaXadrez = { r, c };
+      playTone(320, 80, 'triangle');
+      showToast('✓ A peça se moveu para a nova casa!');
+      
+      const p = PECAS_XADREZ[pecaXadrezIdx];
+      if (p.id === 'cavalo') {
+        speak('Pulo em L perfeito do cavalo!');
+      } else {
+        speak(`Muito bem! Você moveu o ${p.nome.split(' ')[0]} para a nova posição!`);
+      }
+
       const b = document.querySelector('.modal-body');
       if (b) renderChessAcademyBody(b);
     }
@@ -11491,12 +11722,6 @@
       const p = PECAS_XADREZ[pecaXadrezIdx];
       playTone(660, 90);
       speak(`${p.nome}! ${p.movimento}`);
-    }
-
-    function clicarMovimentoXadrez(tipo) {
-      playTone(880, 100);
-      showToast('✓ Movimento Perfeito do Xadrez!');
-      speak('Pulo perfeito! Você moveu a peça para a casa correta!');
     }
 
     async function concluirDesafioXadrez() {
@@ -11515,31 +11740,40 @@
 
 
     // =========================================================================
-    // JOGO 24: PARQUE DOS DINOSSAUROS & FÓSSEIS STARK
+    // JOGO 24: PARQUE DOS DINOSSAUROS & FÓSSEIS STARK (ESCAVAÇÃO LIVRE E 100% FUNCIONAL)
     // =========================================================================
     const BANCO_DINOSSAUROS = [
       { id: 'trex', nome: 'Tiranossauro Rex', icon: '🦖', dieta: 'Carnívoro Feroz', tamanho: '12 metros', curiosidade: 'O rei dos dinossauros! Tinha mais de 50 dentes enormes e afiados, e a mordida mais forte de todos os tempos!' },
       { id: 'brachio', nome: 'Braquiossauro Gigante', icon: '🦕', dieta: 'Herbívoro Amigo', tamanho: '25 metros', curiosidade: 'Pescoço gigantesco para comer as folhas mais altas das árvores! Ele pesava o mesmo que 10 elefantes juntos!' },
-      { id: 'trici', nome: 'Tricerátops Valente', icon: '🦏', dieta: 'Herbívoro com Chifres', tamanho: '9 metros', curiosidade: 'Ele tinha três chifres pontudos e um escudo de osso na cabeça para se proteger de outros predadores!' },
-      { id: 'raptor', nome: 'Velociraptor Ágil', icon: '⚡', dieta: 'Carnívoro Veloz', tamanho: '2 metros', curiosidade: 'Ele corria muito rápido, como um raio na selva! Era esperto e caçava em bandos de amigos dinos!' },
+      { id: 'trici', nome: 'Tricerátops Valente', icon: '🦏', dieta: 'Herbívoro com Chifres', tamanho: '9 metros', curiosidade: 'Ele tinha três chifres pontudos e um escudo de osso na cabeça para se proteger de predadores!' },
+      { id: 'raptor', nome: 'Velociraptor Ágil', icon: '⚡', dieta: 'Carnívoro Veloz', tamanho: '2 metros', curiosidade: 'Ele corria muito rápido, como um raio na selva! Era super esperto e caçava em bandos!' },
       { id: 'ptero', nome: 'Pterodáctilo Alado', icon: '🦅', dieta: 'Pescador Voador', tamanho: '6 metros de asas', curiosidade: 'O mestre dos céus pré-históricos! Ele planava sobre os lagos e pegava peixinhos com seu bico comprido!' }
     ];
 
+    const PARTES_FOSSIL_DINO = [
+      { id: 0, nome: 'Crânio Gigante', icone: '💀' },
+      { id: 1, nome: 'Dentes Afiados', icone: '🦷' },
+      { id: 2, nome: 'Coluna Vertebral', icone: '🦴' },
+      { id: 3, nome: 'Costelas Pré-Históricas', icone: '🦴' },
+      { id: 4, nome: 'Garras da Pata', icone: '🐾' },
+      { id: 5, nome: 'Cauda Poderosa', icone: '🦴' }
+    ];
+
     let dinoIdx = 0;
-    let blocosEscavadosDino = 0;
+    let blocosDinoEscavadosSet = new Set();
 
     function openDinosaurFossilsGame() {
-      blocosEscavadosDino = 0;
+      blocosDinoEscavadosSet.clear();
       pushModalScreen('🦖 PARQUE DOS DINOSSAUROS & FÓSSEIS STARK', (body) => {
         playTone(440, 100);
-        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Kaleo'}! Pegue seu pincel e seu martelo! Vamos desenterrar fósseis de dinossauros gigantes!`);
+        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Kaleo'}! Pegue seu pincel e seu martelo! Clique nas pedras para desenterrar os 6 ossos do dinossauro!`);
         renderDinosaurFossilsBody(body);
       }, true);
     }
 
     function renderDinosaurFossilsBody(body) {
       const d = BANCO_DINOSSAUROS[dinoIdx];
-      const completo = blocosEscavadosDino >= 6;
+      const completo = blocosDinoEscavadosSet.size >= 6;
 
       body.innerHTML = `
         <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
@@ -11554,38 +11788,42 @@
           </div>
 
           <!-- SÍTIO DE ESCAVAÇÃO ARQUEOLÓGICA -->
-          <div style="background:radial-gradient(circle at center, #451a03 0%, #1c0a00 100%); border:3px solid #f59e0b; border-radius:18px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;">
+          <div style="background:radial-gradient(circle at center, #451a03 0%, #1c0a00 100%); border:3px solid #f59e0b; border-radius:18px; padding:14px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;">
             
             <div style="display:flex; gap:8px; align-items:center;">
               <span style="background:#78350f; color:#fde047; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">${d.dieta}</span>
               <span style="background:#1e293b; color:#cbd5e1; padding:2px 8px; border-radius:999px; font-size:0.8rem;">📏 ${d.tamanho}</span>
             </div>
 
-            <div style="font-size:1.6rem; font-weight:900; color:#fff;">${d.nome}</div>
+            <div style="font-size:1.5rem; font-weight:900; color:#fff;">${d.nome}</div>
 
             <!-- ESQUELETO OU DINOSSAURO COMPLETO -->
-            <div style="font-size:5rem; line-height:1; animation:${completo ? 'bounce 1s infinite' : 'pulse 2s infinite'};">
+            <div style="font-size:4.8rem; line-height:1; animation:${completo ? 'bounce 1s infinite' : 'pulse 2s infinite'};">
               ${completo ? d.icon : '🦴'}
             </div>
 
-            <div style="font-size:0.95rem; color:#fde68a; max-width:550px; background:rgba(0,0,0,0.4); padding:8px 14px; border-radius:10px;">
-              ${completo ? d.curiosidade : 'Clique nas rochas pré-históricas abaixo para escavar com o pincel e desenterrar os ossos!'}
+            <div style="font-size:0.92rem; color:#fde68a; max-width:550px; background:rgba(0,0,0,0.4); padding:6px 12px; border-radius:10px;">
+              ${completo ? d.curiosidade : `Ossos Desenterrados: ${blocosDinoEscavadosSet.size} de 6. Clique em qualquer pedra abaixo para escavar!`}
             </div>
 
-            <!-- BLOCOS DE ROCHA PARA ESCAVAR (6 BLOCOS) -->
-            ${!completo ? `
-              <div style="display:grid; grid-template-columns:repeat(6, 48px); gap:6px;">
-                ${Array.from({length: 6}).map((_, i) => `
-                  <button type="button" class="big-btn" style="height:48px; border-radius:10px; ${i < blocosEscavadosDino ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'}" onclick="escavarBlocoDino(${i})">
-                    ${i < blocosEscavadosDino ? '🦴' : '⛏️'}
+            <!-- 6 SÍTIOS DE ESCAVAÇÃO LIVRES -->
+            <div style="display:grid; grid-template-columns:repeat(6, minmax(44px, 54px)); gap:6px; margin:4px 0;">
+              ${PARTES_FOSSIL_DINO.map((p, i) => {
+                const escavado = blocosDinoEscavadosSet.has(i);
+                return `
+                  <button type="button" class="big-btn" style="height:50px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
+                    <span style="font-size:1.3rem; line-height:1;">${escavado ? p.icone : '⛏️'}</span>
+                    <span style="font-size:0.65rem; font-weight:800; margin-top:2px;">${escavado ? '✓ Limpo' : 'Pedra'}</span>
                   </button>
-                `).join('')}
-              </div>
-            ` : `
-              <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:10px 22px; border-radius:14px; font-weight:900; font-size:1.05rem;" onclick="comemorarDinoCompleto()">
-                🎉 Fóssil 100% Desenterrado! (+10 🪙)
+                `;
+              }).join('')}
+            </div>
+
+            ${completo ? `
+              <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:8px 20px; border-radius:12px; font-weight:900; font-size:1rem; margin-top:4px;" onclick="comemorarDinoCompleto()">
+                🎉 Fóssil 100% Completo! (+10 🪙)
               </button>
-            `}
+            ` : ''}
           </div>
         </div>
       `;
@@ -11593,23 +11831,40 @@
 
     function selecionarDino(idx) {
       dinoIdx = idx;
-      blocosEscavadosDino = 0;
+      blocosDinoEscavadosSet.clear();
       playTone(440, 80);
       const b = document.querySelector('.modal-body');
       if (b) renderDinosaurFossilsBody(b);
     }
 
     function escavarBlocoDino(idx) {
-      if (idx !== blocosEscavadosDino) return;
-      blocosEscavadosDino++;
-      playTone(320 + blocosEscavadosDino * 60, 90);
-      showToast(`⛏️ Escavando fóssil... ${blocosEscavadosDino} de 6 limpos!`);
+      if (blocosDinoEscavadosSet.has(idx)) return;
+      blocosDinoEscavadosSet.add(idx);
+      
+      const parte = PARTES_FOSSIL_DINO[idx];
+      playTone(280 + blocosDinoEscavadosSet.size * 60, 90, 'triangle');
+      showToast(`⛏️ ${parte.nome} desenterrado! (${blocosDinoEscavadosSet.size}/6)`);
 
-      if (blocosEscavadosDino >= 6) {
+      if (blocosDinoEscavadosSet.size >= 6) {
+        try {
+          destravarAudioNavegador();
+          const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+          const now = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(120, now);
+          osc.frequency.exponentialRampToValueAtTime(30, now + 1.2);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 1.2);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(now); osc.stop(now + 1.2);
+        } catch(e) {}
+
         playCelebrationFanfare();
         dispararChuvaCoracoes();
         const d = BANCO_DINOSSAUROS[dinoIdx];
-        speak(`Incrível! O esqueleto do ${d.nome} foi completamente desenterrado! Ele ganhou vida!`);
+        speak(`Fantástico, paleontólogo! Você desenterrou todos os 6 ossos do ${d.nome}! O esqueleto do dinossauro ganhou vida!`);
       }
 
       const b = document.querySelector('.modal-body');
@@ -11630,6 +11885,7 @@
       const pEl = document.getElementById('pote-fichas-val');
       if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
     }
+
 
     // =========================================================================
     // BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS)
