@@ -29,9 +29,16 @@ def iniciar_servidor_se_necessario():
         return None
 
     print(f"🚀 Iniciando servidor backend do Jarvis Kids OS na porta {PORT}...")
-    server_script = os.path.join(PROJECT_DIR, "run_server.py")
-    if not os.path.exists(server_script):
-        server_script = os.path.join(BASE_DIR, "run_server.py")
+    candidates = [
+        os.path.join(PROJECT_DIR, "run_server.py"),
+        os.path.join(BASE_DIR, "run_server.py"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "run_server.py"),
+        os.path.join(os.getcwd(), "run_server.py"),
+    ]
+    server_script = next((c for c in candidates if os.path.exists(c)), None)
+    if not server_script:
+        print("❌ Arquivo run_server.py não foi localizado!")
+        return None
 
     proc = subprocess.Popen(
         [sys.executable, server_script, str(PORT)],

@@ -1,6 +1,13 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-APP_ROOT="$( cd "$DIR/../../.." && pwd )"
+
+# Detecta se está rodando dentro do bundle .app ou no repositório de desenvolvimento
+RESOURCE_APP="$( cd "$DIR/../Resources/app" 2>/dev/null && pwd )"
+if [ -n "$RESOURCE_APP" ] && [ -f "$RESOURCE_APP/run_server.py" ]; then
+    APP_ROOT="$RESOURCE_APP"
+else
+    APP_ROOT="$( cd "$DIR/../../.." && pwd )"
+fi
 
 # Garante PATH adequado no macOS
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
