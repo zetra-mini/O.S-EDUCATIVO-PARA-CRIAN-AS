@@ -19,6 +19,58 @@ UPLOADS_DIR = os.path.join(BASE_DIR, "static", "uploads_recados")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 
+def otimizar_video_480p(filepath: str) -> str:
+    """
+    Otimiza e redimensiona vídeos para no máximo 480px de largura/altura,
+    com taxa de quadros (24 fps) e bitrate leve (~500k) para não sobrecarregar
+    o hardware modesto do Netbook (Intel Atom N450 / GMA 3150 / 1GB RAM / tela 1024x600).
+    Converte para MP4 H.264 Baseline com moov atom faststart.
+    """
+    import shutil
+    import subprocess
+
+    ffmpeg_bin = shutil.which("ffmpeg")
+    if not ffmpeg_bin or not os.path.exists(filepath):
+        return filepath
+
+    dir_name, base_name = os.path.split(filepath)
+    name, _ = os.path.splitext(base_name)
+    output_path = os.path.join(dir_name, f"{name}_480p.mp4")
+
+    cmd = [
+        ffmpeg_bin,
+        "-y",
+        "-i", filepath,
+        "-vf", "scale=w=480:h=360:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2",
+        "-r", "24",
+        "-c:v", "libx264",
+        "-profile:v", "baseline",
+        "-level", "3.0",
+        "-pix_fmt", "yuv420p",
+        "-b:v", "500k",
+        "-maxrate", "600k",
+        "-bufsize", "1200k",
+        "-preset", "veryfast",
+        "-c:a", "aac",
+        "-b:a", "64k",
+        "-movflags", "+faststart",
+        output_path,
+    ]
+
+    try:
+        res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25)
+        if res.returncode == 0 and os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+            try:
+                os.remove(filepath)
+            except Exception:
+                pass
+            return output_path
+    except Exception as e:
+        print(f"Aviso: Otimização de vídeo 480p não aplicada (usando original): {e}")
+
+    return filepath
+
+
 class FamilyMessagesManager:
     """Gerencia o envio, entrega e confirmação de leitura das mensagens da família."""
 
@@ -71,6 +123,12 @@ class FamilyMessagesManager:
             file_bytes = base64.b64decode(b64_data)
             with open(filepath, "wb") as f:
                 f.write(file_bytes)
+
+            # Se for vídeo, otimiza e redimensiona para o limite de 480px do hardware do netbook
+            if tipo == "video":
+                caminho_otimizado = otimizar_video_480p(filepath)
+                filename = os.path.basename(caminho_otimizado)
+
             url_relativa = f"/static/uploads_recados/{filename}"
             return (tipo, url_relativa)
         except Exception as e:
