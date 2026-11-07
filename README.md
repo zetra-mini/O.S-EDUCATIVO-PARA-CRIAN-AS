@@ -4,6 +4,15 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 
 ---
 
+## 📸 Capturas de Tela do Sistema em Execução
+
+| 🤖 Tela Principal — HUD Jarvis Kids | 🎮 Gaveta de Jogos & Estudos |
+| :---: | :---: |
+| ![HUD Jarvis](docs/screenshots/jarvis_hud_principal.jpg) | ![Menu de Jogos e Estudos](docs/screenshots/menu_jogos_estudos.jpg) |
+| *Mascote Jarvis interativo com clima em tempo real, economia de moedas, cômodos Pou e botão flutuante* | *Gaveta retrátil de atividades: Histórias Mágicas, Alfabetização Fônica, Mãos de Contar, Idiomas e Música* |
+
+---
+
 ## 🖥️ Especificações de Hardware & Requisitos do Sistema
 
 O **J.A.R.V.I.S. Kids OS** nasceu com uma premissa de engenharia intransigente: **dar vida útil e propósito nobre a computadores antigos e modestos**, transformando um netbook esquecido em um superassistente educativo com inteligência artificial para o aprendizado e desenvolvimento de uma criança.

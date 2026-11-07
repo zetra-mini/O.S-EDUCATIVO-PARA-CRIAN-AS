@@ -1,570 +1,538 @@
-import tkinter as tk
+"""
+Módulo de Biblioteca Dinâmica de Livros & Histórias de Desenvolvimento Pessoal Infantil.
+- Catálogo nativo focado em virtudes formativas (Resiliência, Coragem, Paciência, Gratidão, Trabalho em Equipe, Disciplina).
+- Suporte a livros dinâmicos gerados por IA ou criados pelos pais no banco SQLite.
+- Páginas com método fônico interativo (palavra em destaque, dica de toque e sons).
+"""
+
+import json
+import uuid
+import re
+from typing import List, Dict, Any, Optional
+from banco_dados import db
 
 
-BOOKS = [
+# ==============================================================================
+# CATÁLOGO NATIVO DE HISTÓRIAS DE DESENVOLVIMENTO PESSOAL INFANTIL
+# ==============================================================================
+
+DEFAULT_DEVELOPMENT_BOOKS = [
     {
-        "id": "tres_porquinhos",
-        "title": "Os Três Porquinhos e a Casa Forte",
-        "theme_color": "#d97706",
-        "cover_emoji": "🐷",
+        "id": "estrelinha_resiliente",
+        "title": "A Estrelinha que Nunca Desistia",
+        "theme_color": "#f59e0b",
+        "cover_emoji": "⭐",
+        "category": "Resiliência & Persistência",
+        "moral": "Errar faz parte do aprendizado! Tentar de novo com paciência nos faz brilhar ainda mais forte!",
         "pages": [
             {
-                "scene": "pig_straw",
-                "word": "PALHA",
-                "tap_hint": "Toque no porquinho para ouvir o focinho!",
-                "tap_sound": "oink",
-                "text": "O primeiro porquinho fez uma casinha de PALHA fofa. Ele cantava alegre: 'Minha casa ficou pronta rapidinho!'",
-            },
-            {
-                "scene": "pig_wood",
-                "word": "MADEIRA",
-                "tap_hint": "Toque na casinha para bater na madeira!",
-                "tap_sound": "knock",
-                "text": "O segundo porquinho juntou galhos e fez uma casa de MADEIRA. 'Aqui eu fico seguro para brincar!'",
-            },
-            {
-                "scene": "pig_brick",
-                "word": "TIJOLO",
-                "tap_hint": "Toque na parede forte de ferro e tijolo!",
-                "tap_sound": "clang",
-                "text": "O terceiro porquinho trabalhou bastante e construiu uma casa forte de TIJOLO e ferro Stark!",
-            },
-            {
-                "scene": "wolf_blow",
-                "word": "SOPRAR",
-                "tap_hint": "Toque no lobinho para respirar fundo com ele!",
-                "tap_sound": "blow",
-                "text": "O lobo assoprou forte, mas a casa de tijolos nem se mexeu! Os porquinhos convidaram o lobo para um lanche e viraram amigos!",
-            },
-        ],
-    },
-    {
-        "id": "chapeuzinho_floresta",
-        "title": "Chapeuzinho e a Floresta dos Amigos",
-        "theme_color": "#dc2626",
-        "cover_emoji": "👧",
-        "pages": [
-            {
-                "scene": "basket_flowers",
-                "word": "CESTA",
-                "tap_hint": "Toque na cestinha para ver as frutinhas!",
+                "scene": "little_star",
+                "word": "BRILHAR",
+                "tap_hint": "Toque na estrelinha para fazê-la piscar!",
                 "tap_sound": "twinkle",
-                "text": "Chapeuzinho Vermelho colocou maçãs doces e frutinhas na sua CESTA para levar para a vovó querida.",
+                "text": "No alto do céu escuro, a pequena Estrelinha Tetê tentava BRILHAR com toda a força, mas seu brilho ainda era fraquinho como uma vela."
             },
             {
-                "scene": "tree_birds",
-                "word": "FLORESTA",
-                "tap_hint": "Toque nos passarinhos para ouvi-los cantar!",
-                "tap_sound": "chirp",
-                "text": "Pelo caminho na FLORESTA colorida, os passarinhos cantavam e as borboletas dançavam em volta do capuz vermelho.",
-            },
-            {
-                "scene": "wolf_friendly",
-                "word": "LOBO",
-                "tap_hint": "Toque no lobinho amigo!",
-                "tap_sound": "howl_soft",
-                "text": "Ela encontrou um LOBO amigável que adorava flores. Ele ajudou a colher margaridas amarelas para a vovó!",
-            },
-            {
-                "scene": "grandma_tea",
-                "word": "ABRAÇO",
-                "tap_hint": "Toque no coração do abraço!",
-                "tap_sound": "heartbeat",
-                "text": "Na casa da vovó, todos tomaram chá quentinho e deram um grande ABRAÇO apertado e carinhoso!",
-            },
-        ],
-    },
-    {
-        "id": "leao_ratinho",
-        "title": "O Leão e o Ratinho Valente",
-        "theme_color": "#16a34a",
-        "cover_emoji": "🦁",
-        "pages": [
-            {
-                "scene": "lion_sleep",
-                "word": "LEÃO",
-                "tap_hint": "Toque no leão para ouvir o soninho dele!",
-                "tap_sound": "snore",
-                "text": "O grande LEÃO tirava uma soneca debaixo da árvore. Um ratinho curioso passou correndo perto da sua juba.",
-            },
-            {
-                "scene": "mouse_small",
-                "word": "RATINHO",
-                "tap_hint": "Toque no ratinho para ouvir: 'Queek queek'!",
-                "tap_sound": "squeak",
-                "text": "O leão acordou, mas o pequeno RATINHO pediu com jeitinho: 'Por favor, amigo, um dia eu posso ajudar você!'",
-            },
-            {
-                "scene": "lion_net",
-                "word": "AJUDA",
-                "tap_hint": "Toque nos dentinhos do ratinho roendo!",
-                "tap_sound": "nibble",
-                "text": "Dias depois, o leão ficou preso numa corda. O ratinho ouviu e correu para dar AJUDA, roendo os nós bem rapidinho!",
-            },
-            {
-                "scene": "friends_smile",
-                "word": "AMIGOS",
-                "tap_hint": "Toque nas estrelas da amizade!",
-                "tap_sound": "cheer",
-                "text": "O leão agradeceu de coração: 'Mesmo pequenininho, você é um herói!' E os dois se tornaram grandes AMIGOS!",
-            },
-        ],
-    },
-    {
-        "id": "dino_tito",
-        "title": "O Dinossauro Tito que Adorava Abraços",
-        "theme_color": "#0284c7",
-        "cover_emoji": "🦖",
-        "pages": [
-            {
-                "scene": "tito_dino",
-                "word": "DINO",
-                "tap_hint": "Toque no Tito para ouvir um rugidinho amigável!",
-                "tap_sound": "roar_cute",
-                "text": "Tito era um DINO verde muito forte, mas o que ele mais gostava no mundo inteiro não era rugir: era dar abraços!",
-            },
-            {
-                "scene": "tall_neck",
-                "word": "GIGANTE",
-                "tap_hint": "Toque no pescoço do Braquiossauro!",
-                "tap_sound": "bell",
-                "text": "Quando o Braquiossauro GIGANTE ficava cansado de comer folhinhas no alto, Tito dava um abraço no pé dele para alegrar!",
-            },
-            {
-                "scene": "pterodactyl",
-                "word": "VOAR",
-                "tap_hint": "Toque nas asinhas do pterodáctilo!",
+                "scene": "star_fall",
+                "word": "TENTAR",
+                "tap_hint": "Toque no vento amigo que sopra coragem!",
                 "tap_sound": "swoosh",
-                "text": "Até o passarinho pré-histórico que adorava VOAR lá no céu descia na grama para receber o carinho de Tito.",
+                "text": "Ela tentou uma vez, duas vezes e até tropeçou numa nuvem! Mas a Lua sussurrou: 'Não desista! TENTAR de novo é o segredo dos fortes!'"
             },
             {
-                "scene": "dino_party",
-                "word": "ALEGRIA",
-                "tap_hint": "Toque na festa para comemorar!",
-                "tap_sound": "party",
-                "text": "Na floresta dos dinossauros, o abraço quentinho de Tito espalhava paz, amor e muita ALEGRIA para todos!",
-            },
-        ],
-    },
-    {
-        "id": "pequeno_astronauta",
-        "title": "O Pequeno Astronauta e a Estrela Dourada",
-        "theme_color": "#7c3aed",
-        "cover_emoji": "🚀",
-        "pages": [
-            {
-                "scene": "rocket_launch",
-                "word": "FOGUETE",
-                "tap_hint": "Toque no foguete para a contagem: 3, 2, 1, Decolar!",
-                "tap_sound": "rocket_boost",
-                "text": "Três, dois, um... FOGUETE ligado! O pequeno astronauta Stark decolou rumbando ao céu azul cheio de estrelas!",
-            },
-            {
-                "scene": "moon_cheese",
-                "word": "LUA",
-                "tap_hint": "Toque na Lua brilhante!",
-                "tap_sound": "moon_glow",
-                "text": "Ele deu uma volta inteira na LUA brilhante e viu que a Terra lá embaixo parece uma bola de gude azul e verde.",
-            },
-            {
-                "scene": "star_friend",
-                "word": "ESTRELA",
-                "tap_hint": "Toque na estrelinha piscando!",
-                "tap_sound": "twinkle_bell",
-                "text": "Uma ESTRELA dourada e sorridente piscou para ele: 'Obrigada pela visita, astronauta! Continue sonhando alto!'",
-            },
-            {
-                "scene": "earth_bed",
-                "word": "DORMIR",
-                "tap_hint": "Toque na caminha quentinha!",
-                "tap_sound": "lullaby",
-                "text": "De volta para casa, era hora de guardar o capacete, abraçar o ursinho e DORMIR para ter sonhos mágicos!",
-            },
-        ],
-    },
-    {
-        "id": "dragao_calma",
-        "title": "Faisquinha: O Dragãozinho que Aprendeu a Soprar",
-        "theme_color": "#059669",
-        "cover_emoji": "🐲",
-        "pages": [
-            {
-                "scene": "fire_tower",
-                "word": "BRAVO",
-                "tap_hint": "Toque nos bloquinhos que caíram!",
-                "tap_sound": "tumble",
-                "text": "Faisquinha estava montando uma torre linda, mas quando um bloquinho escorregou, ele ficou muito BRAVO!",
-            },
-            {
-                "scene": "mom_dragon",
-                "word": "SENTIR",
-                "tap_hint": "Toque no coração da mamãe dragoa!",
+                "scene": "star_breath",
+                "word": "FORÇA",
+                "tap_hint": "Toque no coração da estrelinha respirando fundo!",
                 "tap_sound": "heartbeat",
-                "text": "A mamãe ensinou: 'Todo mundo pode SENTIR raiva, mas podemos respirar como heróis para o fogo não queimar!'",
+                "text": "Tetê respirou fundo, concentrou toda a sua FORÇA de vontade e acreditou no seu potencial. Ela sorriu e deu um pulinho no céu!"
             },
             {
-                "scene": "flower_candle",
-                "word": "RESPIRAR",
-                "tap_hint": "Toque na flor para cheirar e na vela para soprar!",
-                "tap_sound": "breath_soft",
-                "text": "Puxe o ar pelo nariz cheirando a florzinha, e solte devagar pela boca soprando a vela para RESPIRAR!",
-            },
-            {
-                "scene": "peace_dragon",
-                "word": "CALMA",
-                "tap_hint": "Toque na estrela da calma!",
-                "tap_sound": "zen_chime",
-                "text": "Com a CALMA de volta no peito, Faisquinha deu uma gargalhada gostosa e construiu um castelo ainda mais alto!",
-            },
-        ],
+                "scene": "star_super_glow",
+                "word": "CAMPEÃ",
+                "tap_hint": "Toque na luz dourada da vitória!",
+                "tap_sound": "cheer",
+                "text": "Zuuuum! Uma luz dourada iluminou toda a galáxia! A estrelinha virou uma CAMPEÃ que nunca desiste de brilhar!"
+            }
+        ]
     },
     {
-        "id": "aventura_stark_decide",
-        "title": "A Grande Aventura Espacial de Kaleo (Você Decide!)",
-        "theme_color": "#e11d48",
-        "cover_emoji": "⚡",
-        "is_interactive": True,
+        "id": "leaozinho_corajoso",
+        "title": "O Leãozinho Leo e a Coragem no Coração",
+        "theme_color": "#ea580c",
+        "cover_emoji": "🦁",
+        "category": "Coragem & Autoconfiança",
+        "moral": "Coragem não é a ausência de medo: é dar o primeiro passo mesmo com o coração batendo forte!",
         "pages": [
             {
-                "scene": "stark_hangar",
-                "word": "FOGUETE",
-                "tap_hint": "Toque no Reator Arc para ligar os motores!",
-                "tap_sound": "rocket_boost",
-                "text": "O alarme Stark tocou! Járvis disse: 'Kaleo, os propulsores estão prontos para a nossa missão! Para onde vamos viajar?'",
-                "decision": {
-                    "question": "Para onde você quer viajar agora?",
-                    "options": [
-                        {
-                            "label": "🦖 Planeta dos Dinos",
-                            "icon": "🦖",
-                            "sound": "roar_cute",
-                            "next_text": "Você acelerou o foguete em direção ao Planeta dos Dinossauros! O T-Rex Tito acenou com alegria e dividiu frutinhas mágicas com você!",
-                            "next_word": "AMIGOS"
-                        },
-                        {
-                            "label": "🌟 Planeta dos Robôs",
-                            "icon": "🤖",
-                            "sound": "zen_chime",
-                            "next_text": "Você ligou os propulsores velozes rumo ao Planeta dos Robôs! Robôs dançarinos tocaram uma música divertida e deram uma capa dourada para você!",
-                            "next_word": "MÚSICA"
-                        }
-                    ]
-                }
+                "scene": "lion_cave",
+                "word": "MEDO",
+                "tap_hint": "Toque na patinha do leãozinho para dar apoio!",
+                "tap_sound": "roar_cute",
+                "text": "O leãozinho Leo tinha um coração enorme, mas sentia MEDO de atravessar a ponte de madeira alta sobre o riozinho azul."
             },
             {
-                "scene": "friends_smile",
-                "word": "VITÓRIA",
-                "tap_hint": "Toque na armadura para celebrar a vitória!",
-                "tap_sound": "cheer",
-                "text": "Com a missão cumprida, Kaleo voltou para casa aterrissando suavemente. Járvis exclamou: 'Você é o maior super-herói do universo!'",
+                "scene": "bird_friend",
+                "word": "AMIGO",
+                "tap_hint": "Toque no passarinho cantador!",
+                "tap_sound": "chirp",
+                "text": "Um passarinho AMIGO pousou na sua juba e disse: 'Olhe para a frente, Leo! Um passinho de cada vez e você consegue!'"
             },
-        ],
+            {
+                "scene": "lion_step",
+                "word": "CORAGEM",
+                "tap_hint": "Toque na ponte firme de madeira!",
+                "tap_sound": "knock",
+                "text": "Leo colocou a primeira pata... depois a segunda... A CORAGEM cresceu dentro do peito como um sol quentinho!"
+            },
+            {
+                "scene": "lion_proud",
+                "word": "VITÓRIA",
+                "tap_hint": "Toque no rugido alegre de herói!",
+                "tap_sound": "cheer",
+                "text": "Ele chegou ao outro lado! Sentiu a doce VITÓRIA de ter superado seu próprio medo e abraçou todos os amiguinhos!"
+            }
+        ]
     },
+    {
+        "id": "tartaruga_calma",
+        "title": "A Tartaruga Sábia e o Segredo da Calma",
+        "theme_color": "#10b981",
+        "cover_emoji": "🐢",
+        "category": "Paciência & Controle Emocional",
+        "moral": "Quem tem paciência e sabe respirar quando está bravo encontra as melhores soluções do mundo!",
+        "pages": [
+            {
+                "scene": "turtle_hurry",
+                "word": "PRESSA",
+                "tap_hint": "Toque no coelhinho correndo sem parar!",
+                "tap_sound": "bell",
+                "text": "Na floresta, o coelho vivia em extrema PRESSA, correndo de um lado para o outro sem prestar atenção nas flores do caminho."
+            },
+            {
+                "scene": "turtle_breath",
+                "word": "CALMA",
+                "tap_hint": "Toque na tartaruga respirando bem devagar!",
+                "tap_sound": "blow",
+                "text": "A sábia tartaruga Tulipa ensinou: 'Quando a raiva ou a agonia baterem, respire com CALMA... Puxe o ar cheirando uma flor!'"
+            },
+            {
+                "scene": "turtle_step",
+                "word": "PACIÊNCIA",
+                "tap_hint": "Toque nas pegadinhas firmes na terra!",
+                "tap_sound": "knock",
+                "text": "Passo a passo, com muita PACIÊNCIA, Tulipa chegou ao topo da montanha e viu o mais belo pôr do sol dourado."
+            },
+            {
+                "scene": "peace_forest",
+                "word": "PAZ",
+                "tap_hint": "Toque no coração tranquilo!",
+                "tap_sound": "heartbeat",
+                "text": "O coelho aprendeu a lição. Descobriu que um coração sereno e em PAZ é o maior superpoder que alguém pode ter!"
+            }
+        ]
+    },
+    {
+        "id": "bau_gratidao",
+        "title": "O Baú Mágico da Gratidão",
+        "theme_color": "#8b5cf6",
+        "cover_emoji": "🎁",
+        "category": "Gratidão & Família",
+        "moral": "Agradecer pela comida, pela saúde, pelo brinquedo e pelo abraço da família enche o nosso coração de alegria verdadeira!",
+        "pages": [
+            {
+                "scene": "chest_closed",
+                "word": "BAÚ",
+                "tap_hint": "Toque na fechadura dourada do baú!",
+                "tap_sound": "twinkle",
+                "text": "Kaleu encontrou um BAÚ de madeira mágica no seu quarto. A fechadura só abria quando alguém dizia três coisas boas do dia!"
+            },
+            {
+                "scene": "chest_food",
+                "word": "OBRIGADO",
+                "tap_hint": "Toque no prato de comidinha gostosa!",
+                "tap_sound": "bell",
+                "text": "Kaleu sorriu: 'OBRIGADO pelo prato gostoso que o papai e a mamãe prepararam para me deixar forte e saudável!'"
+            },
+            {
+                "scene": "chest_hug",
+                "word": "CARINHO",
+                "tap_hint": "Toque no abraço da família!",
+                "tap_sound": "heartbeat",
+                "text": "'Obrigado pela caminha macia e por todo o CARINHO que eu recebo todos os dias!' Uma luz dourada começou a brilhar no baú!"
+            },
+            {
+                "scene": "chest_open",
+                "word": "ALEGRIA",
+                "tap_hint": "Toque nas moedinhas de luz que saem do baú!",
+                "tap_sound": "party",
+                "text": "O baú se abriu! Dentro dele não havia ouro, mas uma doce onda de ALEGRIA que abraçou a casa inteira!"
+            }
+        ]
+    },
+    {
+        "id": "ponte_amizade",
+        "title": "A Ponte dos Bichinhos Construtores",
+        "theme_color": "#0284c7",
+        "cover_emoji": "🌉",
+        "category": "Trabalho em Equipe & Empatia",
+        "moral": "Juntos nós somos muito mais fortes! Dividir as tarefas e ajudar o amigo constrói coisas incríveis!",
+        "pages": [
+            {
+                "scene": "river_gap",
+                "word": "RIO",
+                "tap_hint": "Toque na água do rio correndo!",
+                "tap_sound": "swoosh",
+                "text": "Um grande RIO separava os esquilinhos dos castores. Ninguém conseguia pular tão longe sozinho para brincar junto."
+            },
+            {
+                "scene": "team_idea",
+                "word": "JUNTOS",
+                "tap_hint": "Toque nos animaizinhos dando as mãos!",
+                "tap_sound": "cheer",
+                "text": "O castor sugeriu: 'E se trabalharmos JUNTOS? Eu corto a madeira firme e vocês carregam as folhas para amarrar!'"
+            },
+            {
+                "scene": "bridge_build",
+                "word": "AJUDAR",
+                "tap_hint": "Toque nas madeirinhas sendo encaixadas!",
+                "tap_sound": "clang",
+                "text": "Cada bichinho fez a sua parte. AJUDAR com alegria fez o trabalho render rápido e sem ninguém se cansar demais."
+            },
+            {
+                "scene": "bridge_finish",
+                "word": "AMIZADE",
+                "tap_hint": "Toque na ponte concluída com bandeirinhas!",
+                "tap_sound": "party",
+                "text": "A ponte ficou pronta! E eles a batizaram de Ponte da AMIZADE, onde todos celebram o valor da união!"
+            }
+        ]
+    },
+    {
+        "id": "pequeno_samurai",
+        "title": "O Pequeno Samurai dos Hábitos Fortes",
+        "theme_color": "#dc2626",
+        "cover_emoji": "🥋",
+        "category": "Disciplina & Hábitos Fortes",
+        "moral": "Arrumar a cama, guardar os brinquedos e praticar um pouquinho todo dia é o segredo de quem se torna um mestre!",
+        "pages": [
+            {
+                "scene": "samurai_room",
+                "word": "ORDEM",
+                "tap_hint": "Toque na caminha sendo arrumada!",
+                "tap_sound": "bell",
+                "text": "O pequeno samurai acordava com o nascer do sol e começava sua primeira missão: colocar ORDEM e beleza no seu quarto."
+            },
+            {
+                "scene": "samurai_train",
+                "word": "TREINAR",
+                "tap_hint": "Toque na espada de treino de bambu!",
+                "tap_sound": "clang",
+                "text": "Todo dia ele dedicava 15 minutinhos para TREINAR o equilíbrio e a leitura. Nem um dia a mais, nem um dia a menos!"
+            },
+            {
+                "scene": "samurai_focus",
+                "word": "FOCO",
+                "tap_hint": "Toque no olhar atento do guerreiro!",
+                "tap_sound": "heartbeat",
+                "text": "Com FOCO no que estava fazendo, ele guardava cada brinquedo no seu lugar e cuidava com respeito de tudo o que tinha."
+            },
+            {
+                "scene": "samurai_master",
+                "word": "MESTRE",
+                "tap_hint": "Toque na faixa dourada de honra!",
+                "tap_sound": "cheer",
+                "text": "O grande mestre sorriu e disse: 'Você se tornou um verdadeiro MESTRE! Pois quem domina seus hábitos domina seu destino!'"
+            }
+        ]
+    },
+    {
+        "id": "cientista_ideias",
+        "title": "O Pequeno Cientista Stark e a Lâmpada das Ideias",
+        "theme_color": "#06b6d4",
+        "cover_emoji": "💡",
+        "category": "Foco & Curiosidade",
+        "moral": "Ter curiosidade, fazer perguntas inteligentes e inventar coisas boas torna o mundo um lugar incrível!",
+        "pages": [
+            {
+                "scene": "stark_lab",
+                "word": "INVENTAR",
+                "tap_hint": "Toque nos circuitos brilhantes da bancada!",
+                "tap_sound": "twinkle",
+                "text": "No laboratório do robô Jarvis, o pequeno cientista adorava INVENTAR máquinas para ajudar as pessoas e cuidar dos animais."
+            },
+            {
+                "scene": "question_mark",
+                "word": "PORQUÊ",
+                "tap_hint": "Toque no ponto de interrogação flutuante!",
+                "tap_sound": "bell",
+                "text": "Ele nunca tinha vergonha de perguntar: 'Por que o céu é azul? Por que as folhas respiram?' A pergunta PORQUÊ é a chave da ciência!"
+            },
+            {
+                "scene": "light_bulb",
+                "word": "IDEIA",
+                "tap_hint": "Toque na lâmpada mágica acendendo!",
+                "tap_sound": "cheer",
+                "text": "Plim! Uma grande IDEIA acendeu na sua cabeça: um regador automático de plantinhas movido a luz do Sol!"
+            },
+            {
+                "scene": "robot_applause",
+                "word": "GENIAL",
+                "tap_hint": "Toque no robô Jarvis aplaudindo!",
+                "tap_sound": "party",
+                "text": "O Jarvis comemorou com luzes neon: 'Você é um herói GENIAL, Kaleu! A sua curiosidade vai transformar o mundo!'"
+            }
+        ]
+    },
+    {
+        "id": "escudo_gentileza",
+        "title": "O Escudo Mágico das Palavras Gentis",
+        "theme_color": "#ec4899",
+        "cover_emoji": "🛡️",
+        "category": "Gentileza & Empatia",
+        "moral": "Dizer 'por favor', 'com licença' e 'você consegue' acalma qualquer briga e cura corações tristes!",
+        "pages": [
+            {
+                "scene": "sad_friend",
+                "word": "TRISTE",
+                "tap_hint": "Toque na nuvenzinha cinza que vai embora!",
+                "tap_sound": "howl_soft",
+                "text": "No parquinho, o ursinho Bidu estava TRISTE porque seu castelinho de areia havia caído no chão."
+            },
+            {
+                "scene": "kind_word",
+                "word": "BONDADE",
+                "tap_hint": "Toque no coração que se aproxima!",
+                "tap_sound": "heartbeat",
+                "text": "Kaleu se aproximou com BONDADE e disse: 'Não fique triste, Bidu! Nós podemos construir outro castelo ainda mais bonito juntos!'"
+            },
+            {
+                "scene": "smile_magic",
+                "word": "SORRISO",
+                "tap_hint": "Toque no solzinho voltando a brilhar!",
+                "tap_sound": "twinkle",
+                "text": "Uma palavra gentil foi como mágica! O ursinho abriu um largo SORRISO e os dois começaram a moldar torres de areia!"
+            },
+            {
+                "scene": "magic_shield",
+                "word": "SUPERPODER",
+                "tap_hint": "Toque no escudo brilhante de flores!",
+                "tap_sound": "cheer",
+                "text": "Kaleu descobriu seu maior escudo: a gentileza é um SUPERPODER que cura corações e espalha luz por onde passa!"
+            }
+        ]
+    }
 ]
 
 
-def draw_book_illustration(canvas: tk.Canvas, scene: str):
-    """Desenha ilustrações vetoriais vibrantes para cada página no Tkinter (Acer Aspire One)."""
-    canvas.delete("all")
-    w = int(canvas["width"])
-    h = int(canvas["height"])
-    cx, cy = w // 2, h // 2
+# ==============================================================================
+# CLASSE GERENCIADORA DA BIBLIOTECA DINÂMICA
+# ==============================================================================
 
-    # Fundo estrelado
-    for sx, sy in [(30, 25), (w - 40, 30), (50, h - 30), (w - 50, h - 35), (cx - 70, 20), (cx + 80, 25)]:
-        canvas.create_oval(sx - 3, sy - 3, sx + 3, sy + 3, fill="#fef08a", outline="")
+class DynamicLibraryManager:
+    """Gerencia livros nativos e livros dinâmicos criados por IA ou pelos pais no SQLite."""
 
-    if "pig" in scene or scene == "wolf_blow":
-        canvas.create_oval(cx - 50, cy - 40, cx + 50, cy + 50, fill="#f472b6", outline="#ffffff", width=3)
-        canvas.create_oval(cx - 24, cy - 6, cx + 24, cy + 24, fill="#ec4899", outline="#ffffff", width=2)
-        canvas.create_oval(cx - 12, cy + 4, cx - 4, cy + 14, fill="#040914")
-        canvas.create_oval(cx + 4, cy + 4, cx + 12, cy + 14, fill="#040914")
-        canvas.create_oval(cx - 22, cy - 24, cx - 12, cy - 14, fill="#040914")
-        canvas.create_oval(cx + 12, cy - 24, cx + 22, cy - 14, fill="#040914")
-    elif "lion" in scene:
-        canvas.create_oval(cx - 65, cy - 65, cx + 65, cy + 65, fill="#d97706", outline="#fbbf24", width=4)
-        canvas.create_oval(cx - 42, cy - 42, cx + 42, cy + 42, fill="#facc15", outline="#ffffff", width=2)
-        canvas.create_polygon(cx - 8, cy + 6, cx + 8, cy + 6, cx, cy + 16, fill="#78350f")
-    elif "dino" in scene or scene == "tito_dino":
-        canvas.create_oval(cx - 52, cy - 50, cx + 52, cy + 52, fill="#22c55e", outline="#ffffff", width=4)
-        canvas.create_oval(cx - 22, cy - 20, cx - 10, cy - 8, fill="#040914")
-        canvas.create_oval(cx + 10, cy - 20, cx + 22, cy - 8, fill="#040914")
-        canvas.create_arc(cx - 25, cy - 6, cx + 25, cy + 34, start=200, extent=140, style="arc", outline="#040914", width=4)
-    elif "rocket" in scene or "moon" in scene or "star" in scene:
-        canvas.create_polygon(cx, cy - 58, cx - 28, cy + 24, cx + 28, cy + 24, fill="#ef4444", outline="#ffffff", width=3)
-        canvas.create_oval(cx - 14, cy - 18, cx + 14, cy + 10, fill="#38bdf8", outline="#ffffff", width=2)
-        canvas.create_polygon(cx - 16, cy + 26, cx, cy + 64, cx + 16, cy + 26, fill="#facc15", outline="")
-    else:
-        canvas.create_oval(cx - 50, cy - 50, cx + 50, cy + 50, fill="#ec4899", outline="#ffffff", width=3)
-        canvas.create_oval(cx - 20, cy - 18, cx - 8, cy - 6, fill="#040914")
-        canvas.create_oval(cx + 8, cy - 18, cx + 20, cy - 6, fill="#040914")
-        canvas.create_arc(cx - 24, cy - 6, cx + 24, cy + 28, start=200, extent=140, style="arc", outline="#040914", width=4)
+    def __init__(self, database=db):
+        self.db = database
+        self._inicializar_tabela()
 
+    def _inicializar_tabela(self):
+        """Garante a existência da tabela livros_dinamicos no SQLite."""
+        self.db.executar_escrita("""
+            CREATE TABLE IF NOT EXISTS livros_dinamicos (
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                theme_color TEXT NOT NULL,
+                cover_emoji TEXT NOT NULL,
+                category TEXT NOT NULL,
+                moral TEXT NOT NULL,
+                pages_json TEXT NOT NULL,
+                origem TEXT DEFAULT 'ia',
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
 
-class BookLibraryModal:
-    """Modal da Biblioteca Stark com histórias clássicas enriquecidas e efeitos sonoros."""
+    def obter_todos_os_livros(self) -> List[Dict[str, Any]]:
+        """Retorna todos os livros: catálogo fixo de desenvolvimento pessoal + dinâmicos do SQLite."""
+        todos = list(DEFAULT_DEVELOPMENT_BOOKS)
 
-    def __init__(self, os_app):
-        self.os_app = os_app
-        self.win = os_app._create_activity_window("📚 BIBLIOTECA HOLOGRÁFICA STARK (HISTÓRIAS INFANTIS)")
-        self.current_book = None
-        self.page_idx = 0
-
-        self.body = tk.Frame(self.win, bg=os_app.BG_DARK)
-        self.body.pack(fill="both", expand=True, padx=20, pady=12)
-
-        self._render_shelf()
-
-    def _clear_body(self):
-        for w in self.body.winfo_children():
-            w.destroy()
-
-    def _render_shelf(self):
-        self._clear_body()
-        read_today = self.os_app.media_mgr.get_books_read_today()
-
-        banner = tk.Frame(self.body, bg="#0c1e35", highlightthickness=2, highlightbackground="#38bdf8", pady=8, padx=14)
-        banner.pack(fill="x", pady=(0, 10))
-
-        tk.Label(
-            banner,
-            text=f"📖 Livros lidos hoje: {read_today}   |   Toque em uma capa colorida para ouvir e fuçar a história!",
-            fg="#f0f9ff",
-            bg="#0c1e35",
-            font=("Arial", 12, "bold"),
-        ).pack()
-
-        shelf = tk.Frame(self.body, bg=self.os_app.BG_DARK)
-        shelf.pack(fill="both", expand=True)
-
-        for idx, book in enumerate(BOOKS):
-            r, c = divmod(idx, 3)
-            shelf.columnconfigure(c, weight=1)
-            shelf.rowconfigure(r, weight=1)
-
-            card = tk.Frame(
-                shelf,
-                bg=book.get("theme_color", "#0284c7"),
-                highlightthickness=3,
-                highlightbackground="#e0f2fe",
-                padx=12,
-                pady=12,
-                cursor="hand2",
-            )
-            card.grid(row=r, column=c, sticky="nsew", padx=8, pady=8)
-
-            ico = tk.Label(
-                card,
-                text=book.get("cover_emoji", "📘"),
-                fg="#ffffff",
-                bg=book.get("theme_color", "#0284c7"),
-                font=("Arial", 36),
-            )
-            ico.pack()
-
-            lbl = tk.Label(
-                card,
-                text=book["title"],
-                fg="#ffffff",
-                bg=book.get("theme_color", "#0284c7"),
-                font=("Arial", 13, "bold"),
-                wraplength=260,
-                justify="center",
-            )
-            lbl.pack(expand=True)
-
-            sub = tk.Label(
-                card,
-                text=f"{len(book['pages'])} páginas • Toque para ler!",
-                fg="#f0f9ff",
-                bg=book.get("theme_color", "#0284c7"),
-                font=("Arial", 10),
-            )
-            sub.pack()
-
-            for w in (card, ico, lbl, sub):
-                w.bind("<Button-1>", lambda _e, b=book: self._open_book(b))
-
-        self.os_app.say(
-            f"Biblioteca de Histórias, {self.os_app.brain.name}! Toque em qualquer livrinho colorido para ouvir!"
+        # Busca livros do banco
+        rows = self.db.consultar_todos(
+            "SELECT id, title, theme_color, cover_emoji, category, moral, pages_json, origem FROM livros_dinamicos ORDER BY criado_em DESC;"
         )
 
-    def _open_book(self, book: dict):
-        self.current_book = book
-        self.page_idx = 0
-        self._render_page()
+        for r in rows:
+            try:
+                pages = json.loads(r["pages_json"])
+                todos.append({
+                    "id": r["id"],
+                    "title": r["title"],
+                    "theme_color": r["theme_color"],
+                    "cover_emoji": r["cover_emoji"],
+                    "category": r["category"],
+                    "moral": r["moral"],
+                    "pages": pages,
+                    "origem": r.get("origem", "dinamico")
+                })
+            except Exception:
+                pass
 
-    def _render_page(self):
-        self._clear_body()
-        book = self.current_book
-        pages = book["pages"]
-        page = pages[self.page_idx]
+        return todos
 
-        top_info = tk.Frame(self.body, bg=self.os_app.BG_DARK)
-        top_info.pack(fill="x", pady=(0, 6))
+    def obter_livro_por_id(self, book_id: str) -> Optional[Dict[str, Any]]:
+        """Busca um livro específico por ID."""
+        for b in self.obter_todos_os_livros():
+            if b["id"] == book_id:
+                return b
+        return None
 
-        tk.Button(
-            top_info,
-            text="📚 Outros Livros",
-            bg="#1e293b",
-            fg="#ffffff",
-            font=("Arial", 11, "bold"),
-            relief="flat",
-            padx=12,
-            pady=4,
-            command=self._render_shelf,
-        ).pack(side="left")
+    def salvar_novo_livro(self, livro: Dict[str, Any]) -> bool:
+        """Salva um livro criado pelos pais ou gerado pela IA no SQLite."""
+        if not livro.get("id"):
+            livro["id"] = f"livro_{uuid.uuid4().hex[:8]}"
 
-        tk.Label(
-            top_info,
-            text=f"{book['title']}  —  Página {self.page_idx + 1} de {len(pages)}",
-            fg="#38bdf8",
-            bg=self.os_app.BG_DARK,
-            font=("Arial", 13, "bold"),
-        ).pack(side="right")
+        pages_json = json.dumps(livro.get("pages", []), ensure_ascii=False)
 
-        book_frame = tk.Frame(
-            self.body, bg="#0b192c", highlightthickness=3, highlightbackground=book.get("theme_color", "#0284c7")
-        )
-        book_frame.pack(fill="both", expand=True, pady=6)
+        res = self.db.executar_escrita("""
+            INSERT OR REPLACE INTO livros_dinamicos 
+            (id, title, theme_color, cover_emoji, category, moral, pages_json, origem, criado_em)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);
+        """, (
+            livro["id"],
+            livro.get("title", "História Especial"),
+            livro.get("theme_color", "#0284c7"),
+            livro.get("cover_emoji", "📖"),
+            livro.get("category", "Desenvolvimento Pessoal"),
+            livro.get("moral", "Uma lição de sabedoria e amor."),
+            pages_json,
+            livro.get("origem", "ia")
+        ))
+        return res is not None
 
-        left_art = tk.Frame(book_frame, bg="#081221", width=330)
-        left_art.pack(side="left", fill="y", padx=12, pady=12)
+    def excluir_livro_dinamico(self, book_id: str) -> bool:
+        """Exclui um livro customizado do banco."""
+        res = self.db.executar_escrita("DELETE FROM livros_dinamicos WHERE id = ?;", (book_id,))
+        return res is not None
 
-        art_canvas = tk.Canvas(left_art, width=300, height=220, bg="#081221", highlightthickness=0, cursor="hand2")
-        art_canvas.pack(pady=6)
-        draw_book_illustration(art_canvas, page.get("scene", "star"))
+    def gerar_historia_ia(self, tema: str = "Resiliência", child_name: str = "Kaleo") -> Dict[str, Any]:
+        """
+        Gera uma nova história dinâmica focada em desenvolvimento pessoal.
+        Garante estrutura de 4 páginas com palavras de apoio e moral prática.
+        """
+        temas_map = {
+            "resiliencia": {
+                "title": f"A Grande Aventura de Superação de {child_name}",
+                "emoji": "🌟",
+                "color": "#f59e0b",
+                "category": "Resiliência & Persistência",
+                "moral": f"Mesmo quando algo dá errado, {child_name} respira fundo e tenta com amor até conseguir!",
+                "p1": ("DESAFIO", f"{child_name} encontrou um grande DESAFIO no castelo de blocos que caiu no chão.", "puzzle"),
+                "p2": ("RESPIRAR", f"Ele parou para RESPIRAR fundo três vezes e acalmar o coraçãozinho.", "blow"),
+                "p3": ("TENTAR", f"Com muita paciência, começou a TENTAR de novo colocando peça por peça firme.", "knock"),
+                "p4": ("SUCESSO", f"Que maravilha! O castelo ficou mais alto e forte! Um grande SUCESSO!", "cheer"),
+            },
+            "coragem": {
+                "title": f"{child_name} e a Capa da Coragem",
+                "emoji": "🦸",
+                "color": "#ea580c",
+                "category": "Coragem & Autoconfiança",
+                "moral": f"A verdadeira força está dentro do coração de {child_name}!",
+                "p1": ("ESCURO", f"A noite chegou e a sombra na parede parecia assustadora no ESCURO do quarto.", "howl_soft"),
+                "p2": ("LANTERNA", f"{child_name} pegou sua LANTERNA mágica e acendeu uma luz corajosa.", "twinkle"),
+                "p3": ("VERDADE", f"Ele viu a VERDADE: a sombra era só o seu ursinho de pelúcia na estante!", "cheer"),
+                "p4": ("CORAGEM", f"Ele sorriu no travesseiro, sabendo que a CORAGEM protege todos os seus sonhos!", "heartbeat"),
+            },
+            "gratidao": {
+                "title": f"O Dia Dourado de Gratidão de {child_name}",
+                "emoji": "☀️",
+                "color": "#8b5cf6",
+                "category": "Gratidão & Família",
+                "moral": "Agradecer pelas pessoas que nos amam e pelas coisas boas faz a vida brilhar!",
+                "p1": ("MANHÃ", f"{child_name} acordou com o raio de sol entrando na janela logo pela MANHÃ.", "twinkle"),
+                "p2": ("AGRADECER", f"Ele resolveu AGRADECER pelo abraço carinhoso da família antes do café.", "heartbeat"),
+                "p3": ("COMPARTILHAR", f"No parquinho, decidiu COMPARTILHAR seu brinquedo favorito com um amigo novo.", "bell"),
+                "p4": ("FELICIDADE", f"O coração ficou leve e saltitante! É a magia da pura FELICIDADE!", "party"),
+            },
+            "paciencia": {
+                "title": f"{child_name} e a Sementinha Mágica",
+                "emoji": "🌱",
+                "color": "#10b981",
+                "category": "Paciência & Calma",
+                "moral": "Tudo tem seu tempo para crescer! Saber esperar com carinho faz as flores mais lindas brotarem!",
+                "p1": ("SEMENTE", f"{child_name} colocou uma pequena SEMENTE na terra fofa do vasinho.", "bell"),
+                "p2": ("REGAR", f"Todo dia ele ia REGAR com gotinhas d'água fresca e muito cuidado.", "swoosh"),
+                "p3": ("ESPERAR", f"Ele aprendeu a ESPERAR pacientemente sem puxar a plantinha antes da hora.", "blow"),
+                "p4": ("FLOR", f"Plim! Brotou uma FLOR linda e perfumada, coroando a paciência de herói!", "cheer"),
+            },
+            "disciplina": {
+                "title": f"{child_name} e a Rotina do Campeão",
+                "emoji": "🏆",
+                "color": "#dc2626",
+                "category": "Disciplina & Hábitos",
+                "moral": "Pequenas vitórias todo dia constroem os maiores campeões do mundo!",
+                "p1": ("ARRUMAR", f"A primeira vitória do dia foi ARRUMAR a caminha com capricho de herói.", "knock"),
+                "p2": ("ALIMENTAR", f"Na mesa, soube se ALIMENTAR com comidinha saudável para crescer forte.", "bell"),
+                "p3": ("ESTUDAR", f"Depois dedicou um tempinho para ESTUDAR as letrinhas e os números.", "twinkle"),
+                "p4": ("VITÓRIA", f"O Jarvis tocou uma fanfarra: é a grande VITÓRIA da dedicação e foco!", "party"),
+            }
+        }
 
-        art_canvas.bind("<Button-1>", lambda _e: self._trigger_tap_spot(page))
+        chave_busca = "resiliencia"
+        tema_low = tema.lower()
+        for k in temas_map:
+            if k in tema_low:
+                chave_busca = k
+                break
 
-        # Palavra-chave gigante para tocar e soletrar
-        word_btn = tk.Button(
-            left_art,
-            text=f"🔤 {page['word']}",
-            bg="#facc15",
-            fg="#0f172a",
-            font=("Arial", 22, "bold"),
-            relief="raised",
-            bd=4,
-            padx=16,
-            pady=6,
-            cursor="hand2",
-            command=lambda w=page["word"]: self._spell_word(w),
-        )
-        word_btn.pack(pady=4)
+        dados = temas_map[chave_busca]
+        novo_id = f"historia_{chave_busca}_{uuid.uuid4().hex[:6]}"
 
-        tk.Label(
-            left_art,
-            text=page.get("tap_hint", "Toque no desenho para fuçar!"),
-            fg="#38bdf8",
-            bg="#081221",
-            font=("Arial", 10, "bold"),
-            wraplength=280,
-            justify="center",
-        ).pack(pady=2)
+        novo_livro = {
+            "id": novo_id,
+            "title": dados["title"],
+            "theme_color": dados["color"],
+            "cover_emoji": dados["emoji"],
+            "category": dados["category"],
+            "moral": dados["moral"],
+            "origem": "ia_dinamica",
+            "pages": [
+                {
+                    "scene": f"p1_{chave_busca}",
+                    "word": dados["p1"][0],
+                    "tap_hint": f"Toque para explorar a cena de {dados['p1'][0].lower()}!",
+                    "tap_sound": dados["p1"][2],
+                    "text": dados["p1"][1]
+                },
+                {
+                    "scene": f"p2_{chave_busca}",
+                    "word": dados["p2"][0],
+                    "tap_hint": f"Toque para descobrir o segredo de {dados['p2'][0].lower()}!",
+                    "tap_sound": dados["p2"][2],
+                    "text": dados["p2"][1]
+                },
+                {
+                    "scene": f"p3_{chave_busca}",
+                    "word": dados["p3"][0],
+                    "tap_hint": f"Toque e sinta a força da palavra {dados['p3'][0].lower()}!",
+                    "tap_sound": dados["p3"][2],
+                    "text": dados["p3"][1]
+                },
+                {
+                    "scene": f"p4_{chave_busca}",
+                    "word": dados["p4"][0],
+                    "tap_hint": f"Toque na grande comemoração final de {dados['p4'][0].lower()}!",
+                    "tap_sound": dados["p4"][2],
+                    "text": dados["p4"][1]
+                }
+            ]
+        }
 
-        right_txt = tk.Frame(book_frame, bg="#0b192c")
-        right_txt.pack(side="left", fill="both", expand=True, padx=18, pady=18)
+        # Salva no banco de dados para persistência infinita
+        self.salvar_novo_livro(novo_livro)
+        return novo_livro
 
-        tk.Label(
-            right_txt,
-            text=page["text"],
-            fg="#ffffff",
-            bg="#0b192c",
-            font=("Arial", 21, "bold"),
-            wraplength=540,
-            justify="left",
-        ).pack(expand=True, fill="both")
 
-        nav = tk.Frame(self.body, bg=self.os_app.BG_DARK)
-        nav.pack(fill="x", pady=(8, 0))
+# Instância global
+library_mgr = DynamicLibraryManager()
 
-        if self.page_idx > 0:
-            tk.Button(
-                nav,
-                text="⬅ Anterior",
-                bg="#334155",
-                fg="#ffffff",
-                font=("Arial", 13, "bold"),
-                padx=16,
-                pady=10,
-                command=self._prev_page,
-            ).pack(side="left")
-
-        tk.Button(
-            nav,
-            text="🔊 Ouvir de Novo",
-            bg="#0284c7",
-            fg="#ffffff",
-            font=("Arial", 13, "bold"),
-            padx=18,
-            pady=10,
-            command=lambda: self.os_app.say(page["text"]),
-        ).pack(side="left", padx=10)
-
-        if self.page_idx < len(pages) - 1:
-            tk.Button(
-                nav,
-                text="Próxima Página ➡",
-                bg="#10b981",
-                fg="#ffffff",
-                font=("Arial", 14, "bold"),
-                padx=22,
-                pady=10,
-                command=self._next_page,
-            ).pack(side="right")
-        else:
-            tk.Button(
-                nav,
-                text="🏆 Concluir Livro e Ganhar Medalha!",
-                bg="#eab308",
-                fg="#0f172a",
-                font=("Arial", 14, "bold"),
-                padx=20,
-                pady=10,
-                command=self._finish_book,
-            ).pack(side="right")
-
-        self.os_app.voice.play_tone(587, 110)
-        self.os_app.say(page["text"])
-
-    def _trigger_tap_spot(self, page: dict):
-        self.os_app.voice.play_tone(784, 140)
-        sound = page.get("tap_sound", "")
-        if sound == "oink":
-            self.os_app.say("Oinc oinc! O porquinho está alegre e seguro!")
-        elif sound == "roar_cute":
-            self.os_app.say("Ruaaaar! Eu sou o Tito, o dinossauro dos abraços!")
-        elif sound == "rocket_boost":
-            self.os_app.say("Propulsores ligados! Zuuuuuuum!")
-        elif sound == "blow":
-            self.os_app.say("Fuuuuuu! O vento soprou bem forte!")
-        elif sound == "squeak":
-            self.os_app.say("Queek queek! O ratinho valente correu para ajudar!")
-        else:
-            self.os_app.say(page.get("tap_hint", "Você tocou no desenho mágico!"))
-
-    def _spell_word(self, word: str):
-        letters = " ... ".join(list(word.replace(" ", "")))
-        self.os_app.voice.play_tone(659, 100)
-        self.os_app.say(f"A palavra é {word}! Letrinhas: {letters}. {word}!")
-
-    def _prev_page(self):
-        if self.page_idx > 0:
-            self.page_idx -= 1
-            self._render_page()
-
-    def _next_page(self):
-        if self.page_idx < len(self.current_book["pages"]) - 1:
-            self.page_idx += 1
-            self._render_page()
-
-    def _finish_book(self):
-        total_today = self.os_app.media_mgr.record_book_read(self.current_book["id"])
-        self.os_app._add_star()
-        self.os_app._add_star()
-        self.os_app.update_books_badge()
-        self.os_app.say(
-            f"Parabéns, {self.os_app.brain.name}! Você terminou o livro {self.current_book['title']} e ganhou duas estrelas de super leitor! Você já leu {total_today} livro hoje!"
-        )
-        self._render_shelf()
+# Exportação direta para retrocompatibilidade
+BOOKS = library_mgr.obter_todos_os_livros()

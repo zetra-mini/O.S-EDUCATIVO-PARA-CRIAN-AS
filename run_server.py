@@ -39,7 +39,7 @@ from banco_dados import (
     obter_resumo_progresso_idiomas,
     registrar_log,
 )
-from biblioteca_livros import BOOKS
+from biblioteca_livros import BOOKS, library_mgr
 from clima_estacoes import weather_mgr
 from cognicao_jogos import cognition_mgr
 from datas_comemorativas import calendar_mgr
@@ -231,7 +231,7 @@ def api_state(request: Request):
             "sos_action": REMOTE_STATE["sos_action"],
             "media_permission": perm,
             "books_read_today": media_mgr.get_books_read_today(),
-            "books": BOOKS,
+            "books": library_mgr.obter_todos_os_livros(),
             "voice_profiles": {k: v["label"] for k, v in VOICE_PROFILES.items()},
             "pet": pet_mgr.obter_status(),
             "pote": token_mgr.obter_status_pote(),
@@ -813,6 +813,36 @@ def api_book_finished(request: Request):
     token_mgr.creditar_estrela(1)
     pet_mgr.brincar(15, "Leitura de Livro")
     return json_response({"ok": True, "books_read_today": count})
+
+
+@app.route("/api/livros", methods=["GET"])
+def api_livros_listar(request: Request):
+    return json_response({"ok": True, "livros": library_mgr.obter_todos_os_livros()})
+
+
+@app.route("/api/livros/gerar", methods=["POST"])
+def api_livros_gerar(request: Request):
+    data = request.json or {}
+    tema = data.get("tema", "Resiliência")
+    child_name = data.get("child_name") or brain.config.get("child_name", "Kaleo")
+    novo = library_mgr.gerar_historia_ia(tema=tema, child_name=child_name)
+    token_mgr.creditar_fichas(5, f"Criação de Nova História: {novo.get('title')}", "EDUCATIVO")
+    return json_response({"ok": True, "livro": novo})
+
+
+@app.route("/api/livros/criar", methods=["POST"])
+def api_livros_criar(request: Request):
+    data = request.json or {}
+    sucesso = library_mgr.salvar_novo_livro(data)
+    return json_response({"ok": sucesso})
+
+
+@app.route("/api/livros/excluir", methods=["POST"])
+def api_livros_excluir(request: Request):
+    data = request.json or {}
+    book_id = data.get("id", "")
+    sucesso = library_mgr.excluir_livro_dinamico(book_id)
+    return json_response({"ok": sucesso})
 
 
 @app.route("/api/media/tick", methods=["POST"])

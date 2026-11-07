@@ -3,67 +3,130 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>J.A.R.V.I.S. Kids — Controle dos Pais & Presença Paterna</title>
+  <title>J.A.R.V.I.S. Kids — Painel Administrativo dos Pais</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
   <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #091326;
+      --card-border: #1e3a5f;
+      --cyan: #00f0ff;
+      --cyan-dim: #0284c7;
+      --gold: #facc15;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body {
-      background: #040914;
-      color: #f8fafc;
-      padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      max-width: 600px;
+      gap: 14px;
+      max-width: 960px;
       margin: 0 auto;
     }
-    header {
-      text-align: center;
-      padding: 14px;
-      background: #0f172a;
-      border: 2px solid #00f0ff;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0, 240, 255, 0.2);
-    }
-    h1 { font-size: 1.35rem; color: #00f0ff; letter-spacing: 0.04em; }
-    .sub { font-size: 0.85rem; color: #94a3b8; margin-top: 4px; }
 
-    .card {
-      background: #0b1526;
-      border: 2px solid #1e3a5f;
-      border-radius: 16px;
-      padding: 16px;
+    header {
+      background: #0f172a;
+      border: 2px solid var(--cyan);
+      border-radius: 18px;
+      padding: 16px 20px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
       gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2);
     }
-    .card-title {
-      font-size: 1.05rem;
-      font-weight: 900;
-      color: #facc15;
+    .header-info h1 { font-size: 1.35rem; color: var(--cyan); font-weight: 900; letter-spacing: 0.5px; }
+    .header-info .sub { font-size: 0.88rem; color: var(--text-muted); margin-top: 2px; }
+    .btn-top-hub {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-top-hub:hover { background: #0284c7; color: #fff; }
+
+    /* BARRA DE ABAS NAVEGÁVEIS */
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .tab-btn {
+      background: #0c182e;
+      border: 2px solid #1e293b;
+      color: #94a3b8;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 8px;
     }
+    .tab-btn:hover { color: #fff; border-color: #38bdf8; }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+      border-color: var(--cyan);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+
+    /* SEÇÕES DE CONTEÚDO */
+    .tab-pane { display: none; flex-direction: column; gap: 14px; }
+    .tab-pane.active { display: flex; }
+
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .stat-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
     }
     .stat-box {
       background: #071120;
-      border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 10px;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px;
       text-align: center;
     }
-    .stat-val { font-size: 1.45rem; font-weight: 900; color: #38bdf8; }
-    .stat-lbl { font-size: 0.72rem; color: #94a3b8; margin-top: 2px; }
+    .stat-val { font-size: 1.7rem; font-weight: 900; color: #38bdf8; }
+    .stat-lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 700; }
 
     .btn {
-      width: 100%;
-      padding: 12px;
+      padding: 12px 18px;
       border: none;
       border-radius: 12px;
       font-size: 1rem;
@@ -76,715 +139,626 @@
       transition: transform 0.1s, opacity 0.15s;
     }
     .btn:active { transform: scale(0.97); }
-    .btn-bonus { background: #10b981; color: #fff; }
-    .btn-pause { background: #f97316; color: #fff; }
-    .btn-resume { background: #0284c7; color: #fff; }
-    .btn-night { background: #8b5cf6; color: #fff; }
-    .btn-sos { background: #e11d48; color: #fff; font-size: 0.95rem; }
-    .btn-update { background: #7c3aed; color: #fff; font-size: 1rem; }
-    .btn-send { background: #0284c7; color: #fff; }
-
-    .action-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    /* ESTILOS DOS LOGS E DIAGNÓSTICO */
-    .diag-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .diag-item {
-      background: #071120;
-      border: 1px solid #1e293b;
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 0.8rem;
-    }
-    .diag-title { color: #94a3b8; font-size: 0.7rem; }
-    .diag-value { color: #38bdf8; font-weight: bold; font-size: 0.9rem; margin-top: 2px; }
-    .log-filter-btn {
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #94a3b8;
-      cursor: pointer;
-    }
-    .log-filter-btn.active {
-      background: #0284c7;
-      color: #fff;
-      border-color: #38bdf8;
-    }
-    .log-entry {
-      background: #071120;
-      border-left: 4px solid #3b82f6;
-      border-radius: 6px;
-      padding: 8px 10px;
-      margin-bottom: 6px;
-      font-size: 0.78rem;
-    }
-    .log-entry.log-ERRO { border-left-color: #ef4444; }
-    .log-entry.log-ALERTA { border-left-color: #f59e0b; }
-    .log-entry.log-INFO { border-left-color: #10b981; }
-    .badge-nivel {
-      display: inline-block;
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    .badge-ERRO { background: #ef4444; color: #fff; }
-    .badge-ALERTA { background: #f59e0b; color: #000; }
-    .badge-INFO { background: #10b981; color: #fff; }
+    .btn-primary { background: #0284c7; color: #fff; }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-warning { background: #f59e0b; color: #000; }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-purple { background: #7c3aed; color: #fff; }
 
     input, textarea, select {
       width: 100%;
       background: #071120;
-      border: 1px solid #334155;
+      border: 1.5px solid #334155;
       color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.92rem;
-    }
-
-    .msg-item {
-      background: #071120;
-      border: 1px solid #334155;
+      padding: 10px 14px;
       border-radius: 10px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      outline: none;
+      box-sizing: border-box;
     }
-    .status-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      align-self: flex-start;
-    }
-    .status-ENVIADA { background: #854d0e; color: #fef08a; }
-    .status-RECEBIDA { background: #1e3a8a; color: #93c5fd; }
-    .status-ABERTA { background: #065f46; color: #6ee7b7; }
+    input:focus, textarea:focus, select:focus { border-color: var(--cyan); }
 
     .toast {
       position: fixed;
-      bottom: 20px;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      background: #1e293b;
-      border: 2px solid #00f0ff;
+      background: #0f172a;
+      border: 2px solid var(--cyan);
       color: #fff;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border-radius: 999px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      font-weight: 800;
+      font-size: 0.95rem;
       display: none;
-      z-index: 1000;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      z-index: 2000;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.8);
       text-align: center;
     }
+
+    /* HISTÓRICO DE MENSAGENS */
+    .msg-item {
+      background: #071120;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.88rem;
+    }
+
+    /* LOGS */
+    .log-entry {
+      background: #071120;
+      border-left: 4px solid #38bdf8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+    .log-ERRO { border-left-color: #ef4444; }
+    .log-ALERTA { border-left-color: #f59e0b; }
+    .log-INFO { border-left-color: #10b981; }
   </style>
 </head>
 <body>
+  <!-- HEADER DO PAINEL -->
   <header>
-    <h1>⚙ J.A.R.V.I.S. PAIS</h1>
-    <div class="sub" id="child-name-display">Controle Remoto de Kaleo Noah</div>
+    <div class="header-info">
+      <h1>⚙️ J.A.R.V.I.S. KIDS — PAINEL ADMINISTRATIVO</h1>
+      <div class="sub">Controle dos Pais, Inteligência Artificial, Horários & Desenvolvimento Pessoal</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <a href="/" class="btn-top-hub">🤖 Voltar ao Robô Jarvis</a>
+    </div>
   </header>
 
-  <!-- STATUS DO DIA: LIVROS, VÍDEO E FICHAS -->
-  <div class="card">
-    <div class="card-title">📊 Status de Hoje</div>
-    <div class="stat-grid">
-      <div class="stat-box">
-        <div class="stat-val" id="val-books">0</div>
-        <div class="stat-lbl">📖 Livros Lidos</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="val-cinema">0m</div>
-        <div class="stat-lbl">⏱ Vídeos Restantes</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="val-fichas" style="color:#facc15;">0</div>
-        <div class="stat-lbl">🪙 Moedas no Pote</div>
-      </div>
-    </div>
-  </div>
+  <!-- ABAS DE NAVEGAÇÃO -->
+  <nav class="tabs-bar">
+    <button type="button" class="tab-btn active" onclick="switchAdminTab('status')">📊 Visão Geral & Presença</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('ia')">🤖 Motores de IA & Provedores</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('perfil')">👦 Filho & Voz Neural</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('midia')">🎬 Cinema & Horários</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('livros')">📚 Histórias & Desenvolvimento</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('diag')">🛠️ Diagnóstico & Logs</button>
+  </nav>
 
-  <!-- PRESENÇA PATERNA: RECADOS SECRETOS -->
-  <div class="card">
-    <div class="card-title">💌 Recados Secretos dos Pais</div>
-    <div style="font-size:0.85rem; color:#94a3b8;">
-      Envie uma mensagem de incentivo ou carinho que abrirá como envelope brilhante no netbook do Kaleu:
-    </div>
-    <textarea id="txt-recado" rows="2" placeholder="Ex: Oi, meu campeão! O papai tá orgulhoso de você hoje!"></textarea>
-    <button type="button" class="btn btn-send" onclick="enviarRecado()">
-      🚀 Enviar Recado Especial
-    </button>
-    <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:160px; overflow-y:auto;"></div>
-  </div>
-
-  <!-- AÇÕES RÁPIDAS & CONTROLE -->
-  <div class="card">
-    <div class="card-title">⚡ Ações Rápidas</div>
-    <div class="action-grid">
-      <button type="button" class="btn btn-bonus" onclick="giveBonus(15)">
-        🎁 +15m Vídeo
-      </button>
-      <button type="button" class="btn btn-pause" id="btn-pause-toggle" onclick="togglePause()">
-        🍽️ Pausar Tela
-      </button>
-    </div>
-    <button type="button" class="btn btn-night" onclick="toggleNight()">
-      🌙 Alternar Modo Noturno
-    </button>
-  </div>
-
-  <!-- SOS INTERVENÇÃO & MEDIAÇÃO DE CONFLITOS -->
-  <div class="card">
-    <div class="card-title">🛡️ SOS Intervenção (Sem Brigas)</div>
-    <div style="font-size:0.85rem; color:#94a3b8;">
-      Se o clima esquentar ou a criança resistir, acione o Jarvis para mediar a transição com escolha dirigida:
-    </div>
-    <div class="action-grid">
-      <button type="button" class="btn btn-sos" onclick="dispararSos('guardar_brinquedos')">
-        🧸 Guardar Brinquedos
-      </button>
-      <button type="button" class="btn btn-sos" onclick="dispararSos('escovar_dentes')">
-        🦷 Escovar Dentes
-      </button>
-      <button type="button" class="btn btn-sos" onclick="dispararSos('calma')">
-        🌸 Acalmar / Respirar
-      </button>
-      <button type="button" class="btn btn-sos" onclick="dispararSos('dormir')">
-        🌙 Hora do Sono
-      </button>
-    </div>
-  </div>
-
-  <!-- REFEIÇÕES DO MUNDO REAL -->
-  <div class="card">
-    <div class="card-title">🍽️ Validar Refeição Real (+Moedas)</div>
-    <div class="action-grid">
-      <button type="button" class="btn" style="background:#059669; color:#fff;" onclick="validarRefeicao('almoco_completo')">
-        🍽️ Comeu Almoço (+15)
-      </button>
-      <button type="button" class="btn" style="background:#16a34a; color:#fff;" onclick="validarRefeicao('comeu_fruta')">
-        🍎 Comeu Fruta (+10)
-      </button>
-      <button type="button" class="btn" style="background:#0284c7; color:#fff;" onclick="validarRefeicao('provou_novo')">
-        🥦 Provou Novo (+20)
-      </button>
-      <button type="button" class="btn" style="background:#0369a1; color:#fff;" onclick="validarRefeicao('bebeu_agua')">
-        💧 Bebeu Água (+5)
-      </button>
-    </div>
-  </div>
-
-  <!-- MOTOR DE INTELIGÊNCIA ARTIFICIAL -->
-  <div class="card">
-    <div class="card-title">🤖 Cérebro de IA do Jarvis</div>
-    <div style="font-size:0.85rem; color:#94a3b8;">
-      Selecione qual motor de inteligência artificial o Jarvis utiliza para responder as dúvidas do Kaleu:
-    </div>
-    <div style="display:flex; flex-direction:column; gap:8px;">
-      <select id="sel-ia-provider" onchange="alterarProvedorRemoto(this.value)">
-        <option value="ollama">🦙 IA Local Llama 3.2 (100% Grátis no Netbook via Ollama)</option>
-        <option value="gemini">✨ Google Gemini Cloud (Requer chave no HUD)</option>
-        <option value="opencode">⚡ OpenCode CLI (LAN / Localhost)</option>
-        <option value="groq">⚡ Groq Cloud (Llama 3.3 70B gratuito)</option>
-        <option value="openai">🤖 OpenAI ChatGPT (GPT-4o Mini)</option>
-        <option value="offline">🛡️ Modo 100% Offline (Sem Wi-Fi / Respostas prontas)</option>
-      </select>
-      <button type="button" class="btn btn-send" style="padding:10px;" onclick="testarIARemota()">
-        🧪 Testar Conexão de IA
-      </button>
-      <div id="ia-test-result" style="display:none; font-size:0.8rem; padding:8px 12px; border-radius:8px; background:#071120; border:1px solid #1e293b;"></div>
-    </div>
-  </div>
-
-  <!-- PERFIL DE VOZ NEURAL DO JARVIS (PRIORIDADE ABSOLUTA) -->
-  <div class="card">
-    <div class="card-title">🎙️ Voz Neural do Jarvis (PT-BR)</div>
-    <div style="font-size:0.85rem; color:#94a3b8;">
-      Prioridade estrita de voz independente do motor de inteligência artificial (Llama, Gemini ou OpenAI):
-    </div>
-    <div style="display:flex; flex-direction:column; gap:8px;">
-      <select id="sel-voice-profile" onchange="alterarVozRemota(this.value)">
-        <option value="jarvis_antonio">J.A.R.V.I.S. Neural (Antonio PT-BR — Masculino Amigável)</option>
-        <option value="amiga_thalita">Amiga Gemini Neural (Thalita PT-BR — Expressiva e Calorosa)</option>
-        <option value="amiga_francisca">Contadora de Histórias (Francisca PT-BR — Doce e Calma)</option>
-        <option value="gemini_puck">Google Gemini Studio TTS — Puck (Alegre)</option>
-        <option value="gemini_sulafat">Google Gemini Studio TTS — Sulafat (Acolhedora)</option>
-      </select>
-      <button type="button" class="btn" style="background:#7c3aed; color:#fff; padding:10px;" onclick="testarVozRemota()">
-        🔊 Testar Voz do Jarvis no Netbook
-      </button>
-      <div id="voice-test-result" style="display:none; font-size:0.8rem; padding:8px 12px; border-radius:8px; background:#071120; border:1px solid #1e293b;"></div>
-    </div>
-  </div>
-
-  <!-- LOGS DO SISTEMA & DIAGNÓSTICO DE FALHAS -->
-  <div class="card" id="card-logs">
-    <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-      <span>📜 Diagnóstico & Logs de Falhas</span>
-      <button type="button" class="btn" style="width:auto; padding:4px 10px; font-size:0.75rem; background:#0284c7; color:#fff;" onclick="executarDiagnostico()">
-        🩺 Diagnóstico
-      </button>
-    </div>
-
-    <!-- PAINEL DE SAÚDE DO SISTEMA EM TEMPO REAL -->
-    <div class="diag-grid" id="diag-painel-grid">
-      <div class="diag-item">
-        <div class="diag-title">💾 SQLite WAL</div>
-        <div class="diag-value" id="diag-sqlite-status">Carregando...</div>
-      </div>
-      <div class="diag-item">
-        <div class="diag-title">🧠 Memória RAM Backend</div>
-        <div class="diag-value" id="diag-ram-status">-- MB</div>
-      </div>
-      <div class="diag-item">
-        <div class="diag-title">🤖 Provedor de IA</div>
-        <div class="diag-value" id="diag-ia-status">--</div>
-      </div>
-      <div class="diag-item">
-        <div class="diag-title">🔋 Bateria do Netbook</div>
-        <div class="diag-value" id="diag-bateria-status">--%</div>
+  <!-- ========================================================================= -->
+  <!-- ABA 1: STATUS DO DIA & PRESENÇA PATERNA -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane active" id="pane-status">
+    <div class="card">
+      <div class="card-title">📊 Resumo do Dia em Tempo Real</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="val-books">0</div>
+          <div class="stat-lbl">📖 Livros Lidos Hoje</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-cinema">0m</div>
+          <div class="stat-lbl">⏱ Vídeos Restantes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-fichas" style="color:var(--gold);">0</div>
+          <div class="stat-lbl">🪙 Moedas no Pote</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-bateria">100%</div>
+          <div class="stat-lbl">🔋 Bateria Netbook</div>
+        </div>
       </div>
     </div>
 
-    <!-- FILTROS DE LOGS -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:4px; flex-wrap:wrap;">
-      <div style="display:flex; gap:4px;">
-        <button type="button" class="log-filter-btn active" id="filter-todos" onclick="filtrarLogs('')">Todos</button>
-        <button type="button" class="log-filter-btn" id="filter-erro" onclick="filtrarLogs('ERRO')">🔴 Erros</button>
-        <button type="button" class="log-filter-btn" id="filter-alerta" onclick="filtrarLogs('ALERTA')">🟡 Alertas</button>
-        <button type="button" class="log-filter-btn" id="filter-info" onclick="filtrarLogs('INFO')">🟢 Info</button>
+    <!-- RECADOS SECRETOS DOS PAIS -->
+    <div class="card">
+      <div class="card-title">💌 Presença Paterna: Recados Secretos</div>
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        Envie uma mensagem de incentivo ou carinho que abrirá como envelope brilhante no netbook do seu filho:
       </div>
-      <div style="display:flex; gap:6px;">
-        <button type="button" class="btn" style="width:auto; padding:4px 8px; font-size:0.72rem; background:#334155; color:#f1f5f9;" onclick="carregarLogs()">
-          🔄 Atualizar
+      <textarea id="txt-recado" rows="2" placeholder="Ex: Oi, meu campeão! O papai está muito orgulhoso da sua dedicação hoje! Te amo!"></textarea>
+      <button type="button" class="btn btn-primary" onclick="enviarRecado()">
+        🚀 Enviar Recado Especial para o Netbook
+      </button>
+      <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:160px; overflow-y:auto;"></div>
+    </div>
+
+    <!-- AÇÕES RÁPIDAS -->
+    <div class="card">
+      <div class="card-title">⚡ Ações Rápidas Imediatas</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+        <button type="button" class="btn btn-success" onclick="giveBonus(15)">
+          🎁 Liberar +15m Cinema
         </button>
-        <button type="button" class="btn" style="width:auto; padding:4px 8px; font-size:0.72rem; background:#991b1b; color:#fff;" onclick="limparLogs()">
-          🧹 Limpar
+        <button type="button" class="btn btn-warning" id="btn-pause-toggle" onclick="togglePause()">
+          🍽️ Pausar Tela Agora
+        </button>
+        <button type="button" class="btn btn-purple" onclick="toggleNight()">
+          🌙 Modo Noturno / Sono
         </button>
       </div>
     </div>
+  </div>
 
-    <!-- CAMPO DE BUSCA -->
-    <input type="text" id="txt-busca-logs" placeholder="🔍 Filtrar logs por palavra ou módulo (ex: voz, sqlite, gemini)..." 
-      style="width:100%; box-sizing:border-box; background:#071120; border:1px solid #334155; border-radius:8px; padding:8px 10px; color:#f1f5f9; font-size:0.8rem; margin-bottom:10px;"
-      oninput="buscarLogs()">
+  <!-- ========================================================================= -->
+  <!-- ABA 2: MOTORES DE INTELIGÊNCIA ARTIFICIAL & CHAVES -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-ia">
+    <div class="card">
+      <div class="card-title">🤖 Configuração de Inteligência Artificial</div>
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        O J.A.R.V.I.S. Kids OS suporta processamento prioritário via OpenCode CLI, IA local com Ollama ou APIs em nuvem.
+      </div>
 
-    <!-- LISTA DE LOGS -->
-    <div id="lista-logs" style="max-height:280px; overflow-y:auto; padding-right:4px;">
-      <div style="color:#64748b; font-size:0.8rem; text-align:center; padding:15px;">Carregando histórico de logs...</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px;" id="ai-tabs-admin">
+        <button type="button" class="btn btn-purple" id="atab-opencode" onclick="selecionarProvedorAdmin('opencode')">⚡ OpenCode CLI</button>
+        <button type="button" class="btn" style="background:#334155; color:#fff;" id="atab-ollama" onclick="selecionarProvedorAdmin('ollama')">🏠 IA Local (Ollama)</button>
+        <button type="button" class="btn btn-primary" id="atab-gemini" onclick="selecionarProvedorAdmin('gemini')">✨ Google Gemini</button>
+        <button type="button" class="btn btn-success" id="atab-openai" onclick="selecionarProvedorAdmin('openai')">🤖 OpenAI ChatGPT</button>
+        <button type="button" class="btn btn-warning" id="atab-groq" onclick="selecionarProvedorAdmin('groq')">⚡ Groq Cloud</button>
+      </div>
+
+      <div id="admin-provider-box" style="background:#071120; border:1px solid #1e293b; border-radius:14px; padding:16px;"></div>
+
+      <div id="admin-ai-status" style="display:none; padding:12px; border-radius:10px; font-weight:800; font-size:0.95rem;"></div>
+
+      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
+        💾 Salvar Configurações de IA
+      </button>
     </div>
   </div>
 
-  <!-- ATUALIZAÇÃO DO SISTEMA VIA GITHUB -->
-  <div class="card">
-    <div class="card-title">🔄 Manutenção Remota do Sistema</div>
-    <div style="font-size:0.85rem; color:#94a3b8;">
-      Puxa a versão mais recente do código diretamente do GitHub e reinicia o Jarvis em 5 segundos:
+  <!-- ========================================================================= -->
+  <!-- ABA 3: PERFIL DO FILHO & VOZ NEURAL PT-BR -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-perfil">
+    <div class="card">
+      <div class="card-title">👦 Perfil da Criança & Personalização</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px;">
+        <div>
+          <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Nome da Criança (chamado pelo Jarvis):</label>
+          <input id="adm-child-name" style="margin-top:4px;" placeholder="Ex: Kaleo Noah" />
+        </div>
+        <div>
+          <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Perfil de Voz Neural PT-BR:</label>
+          <div style="display:flex; gap:8px; margin-top:4px;">
+            <select id="adm-voice-profile" style="flex:1;">
+              <option value="jarvis_antonio">Antônio Neural (Estilo Jarvis Stark Elegante)</option>
+              <option value="amiga_thalita">Thalita Neural (Acolhedora e Doce)</option>
+              <option value="amiga_francisca">Francisca Neural (Alegre e Serena)</option>
+            </select>
+            <button type="button" class="btn btn-purple" style="padding:8px 16px;" onclick="testarVozAdmin()">🔊 Testar</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
+        💾 Salvar Perfil & Voz
+      </button>
     </div>
-    <button type="button" class="btn btn-update" onclick="atualizarSistema()">
-      ☁️ Atualizar Jarvis via GitHub
-    </button>
   </div>
 
-  <div class="toast" id="toast">Ação concluída com sucesso!</div>
+  <!-- ========================================================================= -->
+  <!-- ABA 4: CINEMA STARK & CONTROLE DE MÍDIAS -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-midia">
+    <div class="card">
+      <div class="card-title">🎬 Cinema Stark: YouTube Kids & Netflix Infantil</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px;">
+        <div>
+          <label style="font-size:0.88rem; color:var(--text-muted);">Link Direto YouTube Kids:</label>
+          <input id="adm-yt-url" style="margin-top:4px;" value="https://www.youtubekids.com" />
+        </div>
+        <div>
+          <label style="font-size:0.88rem; color:var(--text-muted);">Link Direto Netflix Kids:</label>
+          <input id="adm-nf-url" style="margin-top:4px;" value="https://www.netflix.com/Kids" />
+        </div>
+      </div>
 
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-top:8px;">
+        <div>
+          <label style="color:var(--gold); font-size:0.88rem; font-weight:700;">Início Cinema (HH:MM):</label>
+          <input id="adm-start-time" value="16:00" style="margin-top:4px;" />
+        </div>
+        <div>
+          <label style="color:var(--gold); font-size:0.88rem; font-weight:700;">Fim Cinema (HH:MM):</label>
+          <input id="adm-end-time" value="17:00" style="margin-top:4px;" />
+        </div>
+        <div>
+          <label style="color:var(--gold); font-size:0.88rem; font-weight:700;">Limite Diário (minutos):</label>
+          <input id="adm-daily-mins" type="number" value="25" style="margin-top:4px;" />
+        </div>
+      </div>
+
+      <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:8px;">
+        <input type="checkbox" id="adm-req-book" style="width:20px; height:20px;" checked />
+        📚 Exigir a leitura de pelo menos 1 livro mágico antes de liberar YouTube / Netflix
+      </label>
+
+      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
+        💾 Salvar Regras de Cinema
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 5: BIBLIOTECA DINÂMICA DE HISTÓRIAS DE DESENVOLVIMENTO PESSOAL -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-livros">
+    <div class="card">
+      <div class="card-title">✨ Gerar Nova História de Desenvolvimento Pessoal com IA</div>
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        O Jarvis cria na hora fábulas ilustradas com virtudes de vida, páginas interativas e palavras-chave fônicas:
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
+        <select id="adm-livro-tema" style="flex:2; min-width:200px;">
+          <option value="resiliencia">🌟 Resiliência (Tentar de novo e nunca desistir)</option>
+          <option value="coragem">🦁 Coragem (Vencer medos e dar o primeiro passo)</option>
+          <option value="paciencia">🐢 Paciência (Saber esperar e respirar com calma)</option>
+          <option value="gratidao">🎁 Gratidão (Agradecer pelo abraço, comida e família)</option>
+          <option value="disciplina">🥋 Disciplina (Arrumar a cama e praticar todo dia)</option>
+        </select>
+        <button type="button" class="btn btn-purple" style="flex:1; min-width:180px;" onclick="gerarLivroIaAdmin()">
+          ✨ Gerar História Agora
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📚 Acervo Ativo de Histórias na Estante</div>
+      <div id="admin-books-list" style="display:flex; flex-direction:column; gap:10px; max-height:360px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 6: DIAGNÓSTICO DO SISTEMA & LOGS -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-diag">
+    <div class="card">
+      <div class="card-title">🛠️ Saúde do Netbook & Integridade</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="diag-bateria">100%</div>
+          <div class="stat-lbl">🔋 Nível de Bateria</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="diag-ia-status" style="color:#10b981; font-size:1.25rem;">Ativo</div>
+          <div class="stat-lbl">🤖 Status do Cérebro</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="diag-logs-erros" style="color:#38bdf8;">0</div>
+          <div class="stat-lbl">⚠️ Erros Recentes</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Registro de Eventos e Auditoria</div>
+      <div id="admin-logs-container" style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast-msg"></div>
+
+  <!-- JAVASCRIPT DO PAINEL ADMINISTRATIVO -->
   <script>
-    let isPaused = false;
-    let nightActive = false;
+    let currentAdminProvider = 'opencode';
+    let adminConfig = {};
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => t.style.display = 'none', 3000);
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.tabs-bar .tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tabs-bar .tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+      const targetPane = document.getElementById(`pane-${tabId}`);
+      if (targetPane) targetPane.classList.add('active');
+      if (tabId === 'livros') carregarLivrosAdmin();
+      if (tabId === 'diag') carregarLogsAdmin();
     }
 
-    async function refresh() {
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    async function carregarEstadoGeral() {
       try {
         const res = await fetch('/api/state');
         const data = await res.json();
-        document.getElementById('child-name-display').textContent = `Controle Remoto de ${data.config.child_name || 'Kaleo Noah'}`;
+        adminConfig = data.config || {};
+
         document.getElementById('val-books').textContent = data.books_read_today || 0;
-
-        const remSec = (data.media_permission && data.media_permission.remaining_sec) || 0;
-        document.getElementById('val-cinema').textContent = `${Math.ceil(remSec / 60)} min`;
-
-        if (data.pote) {
-          document.getElementById('val-fichas').textContent = data.pote.saldo || 0;
+        const rem = data.media_permission ? data.media_permission.remaining_seconds : 0;
+        document.getElementById('val-cinema').textContent = `${Math.floor(rem / 60)}m`;
+        document.getElementById('val-fichas').textContent = data.pote ? data.pote.saldo : 0;
+        if (data.bateria) {
+          document.getElementById('val-bateria').textContent = `${data.bateria.porcentagem}%`;
+          document.getElementById('diag-bateria').textContent = `${data.bateria.porcentagem}%`;
         }
 
-        isPaused = !!data.remote_paused;
-        nightActive = !!data.night_mode;
+        // Preenche campos
+        document.getElementById('adm-child-name').value = adminConfig.child_name || 'Kaleo Noah';
+        if (adminConfig.voice_profile) document.getElementById('adm-voice-profile').value = adminConfig.voice_profile;
+        document.getElementById('adm-yt-url').value = adminConfig.youtube_url || 'https://www.youtubekids.com';
+        document.getElementById('adm-nf-url').value = adminConfig.netflix_url || 'https://www.netflix.com/Kids';
+        document.getElementById('adm-start-time').value = adminConfig.media_start_time || '16:00';
+        document.getElementById('adm-end-time').value = adminConfig.media_end_time || '17:00';
+        document.getElementById('adm-daily-mins').value = adminConfig.media_daily_minutes || 25;
+        document.getElementById('adm-req-book').checked = !!adminConfig.require_book_before_media;
 
-        const btnP = document.getElementById('btn-pause-toggle');
-        if (isPaused) {
-          btnP.className = 'btn btn-resume';
-          btnP.textContent = '▶️ Retomar Tela do Netbook';
-        } else {
-          btnP.className = 'btn btn-pause';
-          btnP.textContent = '🍽️ Pausar Tela (Almoço / Jantar)';
-        }
-
-        carregarMensagens();
+        currentAdminProvider = adminConfig.active_provider || 'opencode';
+        selecionarProvedorAdmin(currentAdminProvider);
       } catch (e) {}
     }
 
-    async function carregarMensagens() {
+    function selecionarProvedorAdmin(prov) {
+      currentAdminProvider = prov;
+      const box = document.getElementById('admin-provider-box');
+      const c = adminConfig;
+
+      document.querySelectorAll('#ai-tabs-admin button').forEach(b => b.style.opacity = '0.5');
+      const activeTabBtn = document.getElementById(`atab-${prov}`);
+      if (activeTabBtn) activeTabBtn.style.opacity = '1';
+
+      if (prov === 'opencode') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#c084fc; margin-bottom:6px;">⚡ OpenCode CLI (Recomendado):</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <input id="adm-prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="Modelo (ex: google/gemini-2.0-flash)" style="flex:1;" />
+            <input id="adm-prov-server" value="${c.opencode_server || ''}" placeholder="Servidor LAN (opcional: http://192.168.1.X:4096)" style="flex:1;" />
+            <button type="button" class="btn btn-purple" onclick="testarConexaoIa()">⚡ Testar OpenCode</button>
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8;">Executa <code>opencode run</code> diretamente no netbook ou conecta via rede local.</div>
+        `;
+      } else if (prov === 'ollama') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#38bdf8; margin-bottom:6px;">🏠 Ollama Localhost (Zero Custos / 100% Offline):</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <input id="adm-prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" placeholder="http://127.0.0.1:11434" style="flex:1;" />
+            <select id="adm-prov-model" style="flex:1;">
+              <option value="llama3.2:1b" ${(c.ollama_model === 'llama3.2:1b' || !c.ollama_model) ? 'selected' : ''}>🦙 Llama 3.2 (1B - Meta IA Local)</option>
+              <option value="qwen2.5:0.5b" ${c.ollama_model === 'qwen2.5:0.5b' ? 'selected' : ''}>⚡ Qwen 2.5 (0.5B - Ultra-Leve)</option>
+            </select>
+            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">🦙 Testar Ollama</button>
+          </div>
+        `;
+      } else if (prov === 'gemini') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#60a5fa; margin-bottom:6px;">✨ Google Gemini Cloud:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input id="adm-prov-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave AIzaSy... do Gemini'}" style="flex:1;" />
+            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">✨ Testar Gemini</button>
+          </div>
+        `;
+      } else if (prov === 'openai') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#34d399; margin-bottom:6px;">🤖 OpenAI ChatGPT:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input id="adm-prov-key" type="password" placeholder="${c.has_openai_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave sk-... da OpenAI'}" style="flex:1;" />
+            <button type="button" class="btn btn-success" onclick="testarConexaoIa()">🤖 Testar ChatGPT</button>
+          </div>
+        `;
+      } else if (prov === 'groq') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#fb923c; margin-bottom:6px;">⚡ Groq Cloud Llama:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input id="adm-prov-key" type="password" placeholder="${c.has_groq_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave gsk_... da Groq'}" style="flex:1;" />
+            <button type="button" class="btn btn-warning" onclick="testarConexaoIa()">⚡ Testar Groq</button>
+          </div>
+        `;
+      }
+    }
+
+    async function testarConexaoIa() {
+      const keyInp = document.getElementById('adm-prov-key');
+      const urlInp = document.getElementById('adm-prov-url');
+      const modInp = document.getElementById('adm-prov-model');
+      const servInp = document.getElementById('adm-prov-server');
+
+      const payload = {
+        provider: currentAdminProvider,
+        api_key: keyInp ? keyInp.value.trim() : (servInp ? servInp.value.trim() : ''),
+        model: modInp ? modInp.value.trim() : '',
+        ollama_url: urlInp ? urlInp.value.trim() : ''
+      };
+
+      const sBox = document.getElementById('admin-ai-status');
+      sBox.style.display = 'block';
+      sBox.style.background = '#1e293b';
+      sBox.style.color = '#fff';
+      sBox.textContent = `⏳ Conectando e testando ${currentAdminProvider.toUpperCase()}...`;
+
       try {
-        const res = await fetch('/api/admin/mensagens/status');
-        const msgs = await res.json();
+        const res = await fetch('/api/provider/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        sBox.style.background = data.ok ? '#065f46' : '#7f1d1d';
+        sBox.textContent = data.ok ? `✅ Sucesso! Resposta: "${data.message}"` : `⚠️ Erro: ${data.message}`;
+      } catch (err) {
+        sBox.style.background = '#7f1d1d';
+        sBox.textContent = 'Falha ao comunicar com o servidor do Jarvis.';
+      }
+    }
+
+    async function salvarConfiguracoesAdmin() {
+      const payload = {
+        child_name: document.getElementById('adm-child-name').value.trim() || 'Kaleo Noah',
+        active_provider: currentAdminProvider,
+        voice_profile: document.getElementById('adm-voice-profile').value,
+        youtube_url: document.getElementById('adm-yt-url').value.trim(),
+        netflix_url: document.getElementById('adm-nf-url').value.trim(),
+        media_start_time: document.getElementById('adm-start-time').value.trim(),
+        media_end_time: document.getElementById('adm-end-time').value.trim(),
+        media_daily_minutes: parseInt(document.getElementById('adm-daily-mins').value, 10) || 25,
+        require_book_before_media: document.getElementById('adm-req-book').checked
+      };
+
+      const keyInp = document.getElementById('adm-prov-key');
+      const servInp = document.getElementById('adm-prov-server');
+      if (currentAdminProvider === 'opencode' && servInp) payload.opencode_server = servInp.value.trim();
+      if (keyInp && keyInp.value.trim()) {
+        if (currentAdminProvider === 'gemini') payload.gemini_api_key = keyInp.value.trim();
+        else if (currentAdminProvider === 'openai') payload.openai_api_key = keyInp.value.trim();
+        else if (currentAdminProvider === 'groq') payload.groq_api_key = keyInp.value.trim();
+      }
+
+      const modInp = document.getElementById('adm-prov-model');
+      if (modInp && modInp.value.trim()) {
+        if (currentAdminProvider === 'opencode') payload.opencode_model = modInp.value.trim();
+        else if (currentAdminProvider === 'ollama') payload.ollama_model = modInp.value.trim();
+      }
+
+      const urlInp = document.getElementById('adm-prov-url');
+      if (urlInp && urlInp.value.trim()) payload.ollama_url = urlInp.value.trim();
+
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        showToast('✅ Configurações salvas e aplicadas com sucesso!');
+        await carregarEstadoGeral();
+      } catch (e) {
+        showToast('Erro ao salvar configurações.');
+      }
+    }
+
+    async function testarVozAdmin() {
+      const prof = document.getElementById('adm-voice-profile').value;
+      const n = document.getElementById('adm-child-name').value.trim() || 'Kaleo';
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: `Olá, família! Esta é a voz do Jarvis falando com o herói ${n}!`, voice_profile: prof })
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      } catch (e) {}
+    }
+
+    async function giveBonus(mins) {
+      await fetch('/api/media/bonus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ minutes: mins }) });
+      showToast(`🎁 +${mins} minutos concedidos com sucesso!`);
+      await carregarEstadoGeral();
+    }
+
+    async function togglePause() {
+      await fetch('/api/remote/pause', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      showToast('Comando de pausa alternado com sucesso!');
+    }
+
+    async function toggleNight() {
+      await fetch('/api/remote/night', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      showToast('Modo noturno alternado!');
+    }
+
+    async function enviarRecado() {
+      const txt = document.getElementById('txt-recado').value.trim();
+      if (!txt) return;
+      await fetch('/api/mensagens/enviar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ autor: 'Papai e Mamãe', texto: txt })
+      });
+      document.getElementById('txt-recado').value = '';
+      showToast('💌 Recado secreto enviado com sucesso!');
+      carregarRecados();
+    }
+
+    async function carregarRecados() {
+      try {
+        const res = await fetch('/api/mensagens/historico');
+        const list = await res.json();
         const box = document.getElementById('historico-mensagens');
-        if (!msgs || msgs.length === 0) {
-          box.innerHTML = '<div style="color:#64748b; font-size:0.8rem;">Nenhum recado enviado ainda.</div>';
-          return;
-        }
-        box.innerHTML = msgs.slice(0, 4).map(m => `
+        box.innerHTML = list.map(m => `
           <div class="msg-item">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span class="status-badge status-${m.status}">${m.status === 'ABERTA' ? '✓ Visto pelo Kaleu' : m.status}</span>
-              <span style="font-size:0.75rem; color:#64748b;">${m.data_envio || ''}</span>
-            </div>
-            <div style="color:#f1f5f9; margin-top:2px;">"${m.conteudo_texto || 'Mídia enviada'}"</div>
-            ${m.data_abertura ? `<div style="font-size:0.72rem; color:#34d399;">Ouvido às ${m.data_abertura.split(' ')[1] || m.data_abertura}</div>` : ''}
+            <div style="font-weight:bold; color:#facc15;">${m.autor} • <span style="font-size:0.75rem; color:#94a3b8;">${m.data_envio || ''}</span></div>
+            <div>${m.texto}</div>
           </div>
         `).join('');
       } catch (e) {}
     }
 
-    async function enviarRecado() {
-      const txt = document.getElementById('txt-recado').value.trim();
-      if (!txt) {
-        showToast('Digite uma mensagem carinhosa antes de enviar!');
-        return;
-      }
+    async function carregarLivrosAdmin() {
       try {
-        const res = await fetch('/api/admin/mensagem/enviar', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ remetente: 'Papai', tipo: 'texto', texto: txt })
-        });
-        const d = await res.json();
-        if (d.sucesso) {
-          showToast('💌 Recado enviado! O envelope apareceu no netbook!');
-          document.getElementById('txt-recado').value = '';
-          carregarMensagens();
-        }
-      } catch (e) {
-        showToast('Erro ao enviar recado.');
-      }
-    }
-
-    async function dispararSos(acao) {
-      try {
-        await fetch('/api/admin/sos', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ acao: acao })
-        });
-        showToast(`🛡️ Intervenção ativada na tela do Kaleu!`);
-      } catch (e) {
-        showToast('Erro ao disparar intervenção.');
-      }
-    }
-
-    async function validarRefeicao(tipo) {
-      try {
-        const res = await fetch('/api/alimentos/refeicao_real', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ tipo: tipo })
-        });
-        const d = await res.json();
-        showToast(d.mensagem || 'Refeição validada com sucesso!');
-        refresh();
-      } catch (e) {
-        showToast('Erro ao validar refeição.');
-      }
-    }
-
-    async function giveBonus(mins) {
-      try {
-        await fetch('/api/media/bonus', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ minutes: mins })
-        });
-        showToast(`+${mins} min concedidos com sucesso!`);
-        refresh();
-      } catch (e) {
-        showToast('Erro ao conceder bônus.');
-      }
-    }
-
-    async function togglePause() {
-      try {
-        if (!isPaused) {
-          await fetch('/api/remote/pause', { method: 'POST' });
-          showToast('Tela do netbook pausada com carinho!');
-        } else {
-          await fetch('/api/remote/resume', { method: 'POST' });
-          showToast('Tela do netbook retomada!');
-        }
-        refresh();
-      } catch (e) {
-        showToast('Erro na comunicação.');
-      }
-    }
-
-    async function toggleNight() {
-      try {
-        await fetch('/api/remote/night', { method: 'POST' });
-        showToast('Modo noturno alternado!');
-        refresh();
-      } catch (e) {
-        showToast('Erro na comunicação.');
-      }
-    }
-
-    async function atualizarSistema() {
-      if (!confirm('Deseja baixar a versão mais recente do GitHub e reiniciar o Jarvis Kids OS?')) {
-        return;
-      }
-      try {
-        showToast('⏳ Atualizando sistema... Reiniciando em 5 segundos!');
-        await fetch('/api/admin/sistema/atualizar', { method: 'POST' });
-      } catch (e) {
-        showToast('Atualização iniciada!');
-      }
-    }
-
-    async function alterarVozRemota(voice) {
-      try {
-        await fetch('/api/config', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ voice_profile: voice })
-        });
-        showToast('🎙️ Voz do Jarvis alterada com prioridade absoluta!');
-      } catch (e) {
-        showToast('Erro ao trocar voz');
-      }
-    }
-
-    async function testarVozRemota() {
-      const voice = document.getElementById('sel-voice-profile').value;
-      const resBox = document.getElementById('voice-test-result');
-      resBox.style.display = 'block';
-      resBox.innerHTML = '⏳ Sintetizando teste no perfil de voz selecionado...';
-      try {
-        const res = await fetch('/api/tts', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            text: 'Olá! Sou o Járvis. Minha voz está definida com prioridade total em qualquer motor de IA!',
-            voice_profile: voice
-          })
-        });
-        if (res.status === 200) {
-          resBox.innerHTML = '✅ Voz sintetizada com sucesso no backend!';
-          resBox.style.borderColor = '#10b981';
-        } else {
-          resBox.innerHTML = '⚠️ Resposta recebida do servidor. Voz configurada!';
-          resBox.style.borderColor = '#f59e0b';
-        }
-      } catch (e) {
-        resBox.innerHTML = '❌ Erro ao testar voz.';
-      }
-    }
-
-    async function alterarProvedorRemoto(prov) {
-      try {
-        await fetch('/api/config', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ active_provider: prov })
-        });
-        showToast('🤖 Provedor de IA alterado para: ' + prov.toUpperCase());
-        executarDiagnostico();
-      } catch (e) {
-        showToast('Erro ao trocar provedor');
-      }
-    }
-
-    async function testarIARemota() {
-      const prov = document.getElementById('sel-ia-provider').value;
-      const resBox = document.getElementById('ia-test-result');
-      resBox.style.display = 'block';
-      resBox.innerHTML = '⏳ Testando conexão com ' + prov + '...';
-      try {
-        const res = await fetch('/api/provider/test', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ provider: prov })
-        });
-        const d = await res.json();
-        resBox.innerHTML = (d.ok ? '✅ ' : '❌ ') + d.message;
-        resBox.style.borderColor = d.ok ? '#10b981' : '#ef4444';
-        executarDiagnostico();
-      } catch (e) {
-        resBox.innerHTML = '❌ Erro ao conectar ao servidor.';
-      }
-    }
-
-    let filtroNivelAtual = '';
-    let termoBuscaAtual = '';
-
-    async function executarDiagnostico() {
-      try {
-        const res = await fetch('/api/admin/diagnostico');
-        const diag = await res.json();
-        
-        // SQLite
-        const sqlEl = document.getElementById('diag-sqlite-status');
-        if (sqlEl) {
-          sqlEl.innerHTML = `<span style="color:#34d399;">${diag.sqlite.journal_mode || 'WAL'}</span> (${diag.sqlite.tabelas} tab)`;
-        }
-
-        // RAM
-        const ramEl = document.getElementById('diag-ram-status');
-        if (ramEl) {
-          const mb = diag.memoria.ram_mb || 0;
-          ramEl.innerHTML = `<span style="color:${mb < 30 ? '#34d399' : '#f59e0b'}">${mb} MB</span>`;
-        }
-
-        // IA & Voz
-        const iaEl = document.getElementById('diag-ia-status');
-        if (iaEl) {
-          iaEl.textContent = (diag.ia.provedor || 'offline').toUpperCase();
-        }
-        const selIa = document.getElementById('sel-ia-provider');
-        if (selIa && diag.ia && diag.ia.provedor) {
-          selIa.value = diag.ia.provedor;
-        }
-
-        // Voz Neural Selecionada
-        try {
-          const stRes = await fetch('/api/state');
-          const stData = await stRes.json();
-          const selVoice = document.getElementById('sel-voice-profile');
-          if (selVoice && stData.config && stData.config.voice_profile) {
-            selVoice.value = stData.config.voice_profile;
-          }
-        } catch (e) {}
-
-        // Bateria
-        const batEl = document.getElementById('diag-bateria-status');
-        if (batEl) {
-          const bat = diag.bateria;
-          batEl.innerHTML = `${bat.porcentagem}% ${bat.carregando ? '⚡' : '🔋'}`;
-        }
-
-        showToast('🩺 Diagnóstico de saúde atualizado!');
-      } catch (e) {
-        showToast('Erro ao obter diagnóstico.');
-      }
-    }
-
-    async function carregarLogs() {
-      const box = document.getElementById('lista-logs');
-      try {
-        let url = `/api/admin/logs?limite=100`;
-        if (filtroNivelAtual) url += `&nivel=${encodeURIComponent(filtroNivelAtual)}`;
-        if (termoBuscaAtual) url += `&busca=${encodeURIComponent(termoBuscaAtual)}`;
-
-        const res = await fetch(url);
+        const res = await fetch('/api/livros');
         const data = await res.json();
-        const logs = data.logs || [];
-
-        if (logs.length === 0) {
-          box.innerHTML = '<div style="color:#64748b; font-size:0.8rem; text-align:center; padding:15px;">Nenhum log registrado para este filtro.</div>';
-          return;
-        }
-
-        box.innerHTML = logs.map(l => {
-          const dataHora = l.data_hora ? l.data_hora.split('.')[0] : '';
-          return `
-            <div class="log-entry log-${l.nivel}">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span class="badge-nivel badge-${l.nivel}">${l.nivel}</span>
-                  <span style="font-weight:bold; color:#e2e8f0; font-size:0.75rem;">[${l.modulo}]</span>
-                </div>
-                <span style="color:#64748b; font-size:0.7rem;">${dataHora}</span>
+        const box = document.getElementById('admin-books-list');
+        box.innerHTML = (data.livros || []).map(b => `
+          <div style="background:#071120; border:1px solid #1e293b; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:2.2rem;">${b.cover_emoji || '📖'}</span>
+              <div>
+                <div style="font-size:1.05rem; font-weight:900; color:#fff;">${b.title}</div>
+                <div style="font-size:0.82rem; color:#bae6fd;">${b.category || 'Desenvolvimento'} • ${b.pages.length} páginas</div>
+                ${b.moral ? `<div style="font-size:0.78rem; color:#fde047; font-style:italic;">"${b.moral}"</div>` : ''}
               </div>
-              <div style="color:#f8fafc; font-size:0.8rem; margin-top:2px;">${escapeHtml(l.mensagem)}</div>
-              ${l.detalhes ? `
-                <details style="margin-top:4px; font-size:0.72rem; color:#94a3b8;">
-                  <summary style="cursor:pointer; color:#38bdf8;">Ver detalhes técnicos</summary>
-                  <pre style="background:#020617; padding:6px; border-radius:4px; overflow-x:auto; margin-top:3px; white-space:pre-wrap;">${escapeHtml(l.detalhes)}</pre>
-                </details>
-              ` : ''}
             </div>
-          `;
-        }).join('');
-      } catch (e) {
-        box.innerHTML = '<div style="color:#ef4444; font-size:0.8rem; text-align:center;">Falha ao carregar logs.</div>';
-      }
+            ${b.origem === 'ia_dinamica' ? `
+              <button type="button" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;" onclick="excluirLivroAdmin('${b.id}')">Excluir</button>
+            ` : `<span style="font-size:0.78rem; color:#38bdf8; font-weight:800;">[Nativo]</span>`}
+          </div>
+        `).join('');
+      } catch (e) {}
     }
 
-    function filtrarLogs(nivel) {
-      filtroNivelAtual = nivel;
-      ['todos', 'erro', 'alerta', 'info'].forEach(n => {
-        const btn = document.getElementById(`filter-${n}`);
-        if (btn) btn.classList.remove('active');
-      });
-      const atv = document.getElementById(`filter-${nivel.toLowerCase() || 'todos'}`);
-      if (atv) atv.classList.add('active');
-      carregarLogs();
-    }
-
-    let buscaTimeout = null;
-    function buscarLogs() {
-      clearTimeout(buscaTimeout);
-      buscaTimeout = setTimeout(() => {
-        const txt = document.getElementById('txt-busca-logs').value.trim();
-        termoBuscaAtual = txt;
-        carregarLogs();
-      }, 300);
-    }
-
-    async function limparLogs() {
-      if (!confirm('Deseja realmente limpar todo o histórico de logs do sistema?')) return;
+    async function gerarLivroIaAdmin() {
+      const tema = document.getElementById('adm-livro-tema').value;
+      const child = document.getElementById('adm-child-name').value.trim() || 'Kaleo';
+      showToast('⏳ Criando fábula de desenvolvimento pessoal com IA...');
       try {
-        await fetch('/api/admin/logs/limpar', { method: 'POST' });
-        showToast('🧹 Histórico de logs limpo com sucesso!');
-        carregarLogs();
-        executarDiagnostico();
+        const res = await fetch('/api/livros/gerar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tema, child_name: child })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showToast(`✅ Livro "${data.livro.title}" criado e adicionado à estante!`);
+          carregarLivrosAdmin();
+        }
       } catch (e) {
-        showToast('Erro ao limpar logs.');
+        showToast('Erro ao gerar história.');
       }
     }
 
-    function escapeHtml(text) {
-      if (!text) return '';
-      return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    async function excluirLivroAdmin(bookId) {
+      if (!confirm('Deseja realmente remover esta história?')) return;
+      await fetch('/api/livros/excluir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bookId })
+      });
+      showToast('História removida.');
+      carregarLivrosAdmin();
     }
 
-    refresh();
-    executarDiagnostico();
-    carregarLogs();
-    setInterval(refresh, 5000);
-    setInterval(carregarLogs, 15000);
+    async function carregarLogsAdmin() {
+      try {
+        const res = await fetch('/api/logs');
+        const logs = await res.json();
+        const box = document.getElementById('admin-logs-container');
+        box.innerHTML = logs.map(l => `
+          <div class="log-entry log-${l.nivel || 'INFO'}">
+            <strong>[${l.data_hora || ''}] ${l.modulo || 'SISTEMA'} (${l.nivel}):</strong> ${l.mensagem}
+          </div>
+        `).join('');
+        document.getElementById('diag-logs-erros').textContent = logs.filter(l => l.nivel === 'ERRO').length;
+      } catch (e) {}
+    }
+
+    // Inicialização
+    carregarEstadoGeral();
+    carregarRecados();
+    setInterval(carregarEstadoGeral, 10000);
   </script>
 </body>
 </html>

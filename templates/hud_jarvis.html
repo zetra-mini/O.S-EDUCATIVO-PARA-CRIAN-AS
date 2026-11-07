@@ -4238,31 +4238,199 @@
     // =========================================================================
     // 1. BIBLIOTECA DE HISTÓRIAS INFANTIS (CLÁSSICOS + ELEMENTOS INTERATIVOS)
     // =========================================================================
-    function openBooksLibrary() {
-      const body = openModal('📚 BIBLIOTECA DE HISTÓRIAS MÁGICAS');
+    let selectedBookCategoryFilter = 'todas';
+
+    async function openBooksLibrary() {
+      const body = openModal('📚 BIBLIOTECA MÁGICA — DESENVOLVIMENTO PESSOAL & VIRTUDES');
+      try {
+        const res = await fetch('/api/livros');
+        const data = await res.json();
+        if (data && data.livros && data.livros.length) {
+          appState.books = data.livros;
+        }
+      } catch (e) {}
       renderBooksShelf(body);
     }
 
     function renderBooksShelf(body) {
-      speak(`Bem-vindo à Biblioteca de Histórias, ${appState.config.child_name}! Toque em qualquer capa colorida para ouvir e brincar!`);
+      speak(`Bem-vindo à Biblioteca de Desenvolvimento Pessoal, ${appState.config.child_name || 'Kaleo'}! Escolha uma história que ensina virtudes de herói ou peça para o Jarvis criar uma inédita!`);
+
+      const categories = [
+        { id: 'todas', label: '⭐ Todas as Histórias' },
+        { id: 'resiliencia', label: '🌟 Resiliência & Persistência' },
+        { id: 'coragem', label: '🦁 Coragem & Autoconfiança' },
+        { id: 'paciencia', label: '🐢 Paciência & Calma' },
+        { id: 'gratidao', label: '🎁 Gratidão & Família' },
+        { id: 'disciplina', label: '🥋 Disciplina & Hábitos' },
+        { id: 'curiosidade', label: '💡 Curiosidade & Foco' },
+        { id: 'gentileza', label: '🛡️ Gentileza & Empatia' }
+      ];
+
       body.innerHTML = `
-        <div style="background:#0c1e35; border:2px solid #38bdf8; border-radius:14px; padding:12px 18px; margin-bottom:14px; text-align:center; font-size:1.15rem; font-weight:800;">
-          📖 Livros lidos hoje: ${appState.books_read_today} &nbsp;|&nbsp; Ler pelo menos 1 livro por dia libera superpoderes e o Cinema Stark!
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;">
+          <!-- BANNER COM ESTATÍSTICA E BOTÃO GERAR COM IA -->
+          <div style="background:linear-gradient(135deg, #091c34 0%, #030d1c 100%); border:2px solid #38bdf8; border-radius:16px; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; box-shadow:0 4px 18px rgba(2,132,199,0.25);">
+            <div>
+              <div style="font-size:1.25rem; font-weight:900; color:#ffffff;">📖 Histórias Infantis de Desenvolvimento Pessoal</div>
+              <div style="font-size:0.95rem; color:#bae6fd; margin-top:2px;">
+                Livros lidos hoje: <strong style="color:#facc15;">${appState.books_read_today}</strong> • Cada história ensina uma virtude e libera o Cinema Stark!
+              </div>
+            </div>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; font-size:1.05rem; padding:10px 20px; display:flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(124,58,237,0.4);" onclick="abrirGeradorHistoriaModal(document.getElementById('modal-body'))">
+              <span>✨</span>
+              <span>Criar Nova História com o Jarvis</span>
+            </button>
+          </div>
+
+          <!-- BARRA DE FILTROS DE VIRTUDES -->
+          <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin;" id="books-category-pills">
+            ${categories.map(c => `
+              <button type="button" class="num-pill-btn ${selectedBookCategoryFilter === c.id ? 'active' : ''}" style="white-space:nowrap; padding:6px 14px; font-size:0.92rem; font-weight:800;" onclick="filtrarLivrosPorCategoria('${c.id}')">
+                ${c.label}
+              </button>
+            `).join('')}
+          </div>
         </div>
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; flex:1;" id="shelf-grid"></div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; flex:1; max-height:60vh; overflow-y:auto; padding-right:4px;" id="shelf-grid"></div>
       `;
+
+      renderBooksGrid();
+    }
+
+    function filtrarLivrosPorCategoria(catId) {
+      selectedBookCategoryFilter = catId;
+      playTone(523, 80);
+      document.querySelectorAll('#books-category-pills button').forEach((btn, idx) => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(catId) || (catId === 'todas' && idx === 0));
+      });
+      renderBooksGrid();
+    }
+
+    function renderBooksGrid() {
       const grid = document.getElementById('shelf-grid');
-      appState.books.forEach((b, idx) => {
-        const card = document.createElement('div');
-        card.style.cssText = `background:${b.theme_color}; border:3px solid #e0f2fe; border-radius:18px; padding:18px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.4);`;
-        card.innerHTML = `
-          <div style="font-size:3.5rem; margin-bottom:6px;">${b.cover_emoji || '📘'}</div>
-          <h3 style="font-size:1.3rem; font-weight:900; margin-bottom:6px; color:#fff;">${b.title}</h3>
-          <p style="font-size:0.95rem; font-weight:700; color:#f0f9ff; opacity:0.95;">${b.pages.length} páginas • Toque para abrir!</p>
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const filtered = appState.books.filter(b => {
+        if (selectedBookCategoryFilter === 'todas') return true;
+        const cat = (b.category || '').toLowerCase();
+        return cat.includes(selectedBookCategoryFilter);
+      });
+
+      if (!filtered.length) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:32px; color:#94a3b8;">
+            <div style="font-size:3rem; margin-bottom:8px;">📖✨</div>
+            <div style="font-size:1.2rem; font-weight:800; color:#facc15;">Nenhum livro encontrado nesta virtude ainda!</div>
+            <div style="font-size:0.95rem; margin-top:4px;">Aperte o botão roxo acima para o Jarvis criar uma história inédita!</div>
+          </div>
         `;
-        card.onclick = () => openBookPage(body, idx, 0);
+        return;
+      }
+
+      filtered.forEach((b) => {
+        const globalIdx = appState.books.indexOf(b);
+        const card = document.createElement('div');
+        card.style.cssText = `background:linear-gradient(145deg, #0d1e38 0%, #061122 100%); border:2.5px solid ${b.theme_color || '#38bdf8'}; border-radius:20px; padding:18px; display:flex; flex-direction:column; justify-content:space-between; gap:12px; cursor:pointer; box-shadow:0 8px 22px rgba(0,0,0,0.45); transition:all 0.25s ease; position:relative; overflow:hidden;`;
+        card.innerHTML = `
+          <div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:3.2rem; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.5));">${b.cover_emoji || '📘'}</span>
+              <span style="background:${b.theme_color}33; border:1px solid ${b.theme_color}; border-radius:999px; padding:3px 10px; font-size:0.75rem; font-weight:800; color:#fff;">
+                ${b.category || 'Desenvolvimento'}
+              </span>
+            </div>
+            <h3 style="font-size:1.25rem; font-weight:900; margin-bottom:6px; color:#ffffff; line-height:1.3;">${b.title}</h3>
+            ${b.moral ? `<p style="font-size:0.88rem; color:#bae6fd; font-style:italic; line-height:1.35; margin-bottom:8px;">"${b.moral}"</p>` : ''}
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+            <span style="font-size:0.85rem; font-weight:700; color:#94a3b8;">${b.pages.length} páginas</span>
+            <button type="button" class="big-btn" style="background:${b.theme_color}; font-size:0.92rem; padding:6px 14px; font-weight:900; border-radius:10px;">
+              ▶ Ler História
+            </button>
+          </div>
+        `;
+        card.onclick = () => openBookPage(document.getElementById('modal-body'), globalIdx, 0);
         grid.appendChild(card);
       });
+    }
+
+    function abrirGeradorHistoriaModal(body) {
+      playTone(587, 100);
+      const childName = appState.config.child_name || 'Kaleo';
+
+      const virtudes = [
+        { id: 'resiliencia', nome: '🌟 Resiliência & Persistência', desc: 'Aprender que errar nos faz crescer e tentar de novo com amor!' },
+        { id: 'coragem', nome: '🦁 Coragem & Autoconfiança', desc: 'Vencer medos, acreditar em si mesmo e dar o primeiro passo!' },
+        { id: 'paciencia', nome: '🐢 Paciência & Calma', desc: 'Saber esperar e respirar fundo quando a agonia bater!' },
+        { id: 'gratidao', nome: '🎁 Gratidão & Família', desc: 'Agradecer pelas pessoas queridas, saúde e comidinha gostosa!' },
+        { id: 'disciplina', nome: '🥋 Hábitos & Disciplina', desc: 'Arrumar a cama, cuidar dos brinquedos e estudar todo dia!' }
+      ];
+
+      body.innerHTML = `
+        <div style="max-width:760px; margin:0 auto; padding:12px; display:flex; flex-direction:column; gap:16px;">
+          <div style="background:#09192f; border:2px solid #7c3aed; border-radius:18px; padding:16px; text-align:center;">
+            <div style="font-size:2.8rem; margin-bottom:4px;">✨📖</div>
+            <div style="font-size:1.4rem; font-weight:900; color:#c084fc;">Gerador de Histórias com o Robô Jarvis</div>
+            <div style="font-size:1.02rem; color:#e0e7ff; margin-top:4px;">
+              Qual virtude de herói você quer aprender na nova história para o herói <strong>${childName}</strong>?
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr; gap:10px;" id="virtudes-list">
+            ${virtudes.map(v => `
+              <button type="button" class="big-btn" style="background:#0f1f38; border:2px solid #3b82f6; border-radius:14px; padding:14px 18px; text-align:left; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;" onclick="executarGeracaoHistoria('${v.id}')">
+                <div>
+                  <div style="font-size:1.2rem; font-weight:900; color:#facc15;">${v.nome}</div>
+                  <div style="font-size:0.9rem; color:#94a3b8; margin-top:2px;">${v.desc}</div>
+                </div>
+                <span style="font-size:1.6rem; color:#38bdf8;">➔</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <button type="button" class="big-btn" style="background:#334155; padding:10px 18px;" onclick="renderBooksShelf(document.getElementById('modal-body'))">
+            ⬅ Voltar para a Estante
+          </button>
+        </div>
+      `;
+
+      speak(`Qual virtude de herói você quer aprender na nova história, ${childName}? Escolha entre Resiliência, Coragem, Paciência, Gratidão ou Disciplina!`);
+    }
+
+    async function executarGeracaoHistoria(temaId) {
+      const body = document.getElementById('modal-body');
+      const childName = appState.config.child_name || 'Kaleo';
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px; gap:18px; text-align:center;">
+          <div style="font-size:4rem; animation:pulseMic 1.2s infinite;">🤖✨</div>
+          <div style="font-size:1.45rem; font-weight:900; color:#38bdf8;">O Jarvis está escrevendo e ilustrando uma história mágica inédita para ${childName}...</div>
+          <div style="font-size:1.05rem; color:#94a3b8;">Criando lição de vida, palavras mágicas e desafios ilustrados!</div>
+        </div>
+      `;
+
+      speak(`O Jarvis está escrevendo e ilustrando uma história mágica inédita sobre esse tema para você, ${childName}! Aguarde um segundinho!`);
+
+      try {
+        const res = await fetch('/api/livros/gerar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tema: temaId, child_name: childName })
+        });
+        const data = await res.json();
+        if (data && data.ok && data.livro) {
+          appState.books.unshift(data.livro);
+          playSfxSuccess();
+          speak(`Prontinho, ${childName}! A sua nova história foi criada com muito carinho e já está na estante! Vamos ler juntos!`);
+          openBookPage(body, 0, 0);
+          return;
+        }
+      } catch (err) {}
+
+      speak('Ops! Tive um pequeno soluço cósmico, mas vamos voltar para os livros da estante!');
+      renderBooksShelf(body);
     }
 
     const SCENE_ICONS = {
@@ -4271,7 +4439,15 @@
       lion_sleep: '🦁💤', mouse_small: '🐭🧀', lion_net: '🦁🪢', friends_smile: '🦁🐭',
       tito_dino: '🦖💚', tall_neck: '🦕🌿', pterodactyl: '🦅☁️', dino_party: '🦖🎉',
       rocket_launch: '🚀✨', moon_cheese: '🌙⭐', star_friend: '🌟😊', earth_bed: '🌍🛏️',
-      fire_tower: '🐲🧱', mom_dragon: '🐲💖', flower_candle: '🌸🕯️', peace_dragon: '🐲🌈'
+      fire_tower: '🐲🧱', mom_dragon: '🐲💖', flower_candle: '🌸🕯️', peace_dragon: '🐲🌈',
+      little_star: '⭐✨', star_fall: '💫☁️', star_breath: '💖🌬️', star_super_glow: '🌟🏆',
+      lion_cave: '🦁🏔️', bird_friend: '🐦🎶', lion_step: '🦁🌉', lion_proud: '🦁👑',
+      turtle_hurry: '🐰💨', turtle_breath: '🐢🌸', turtle_step: '🐢⛰️', peace_forest: '🌳🧘',
+      chest_closed: '🎁🔒', chest_food: '🍲😋', chest_hug: '👨‍👩‍👦❤️', chest_open: '✨🎉',
+      river_gap: '🌊🏞️', team_idea: '🤝💡', bridge_build: '🔨🪵', bridge_finish: '🌉🎈',
+      samurai_room: '🥋🛏️', samurai_train: '⚔️🧘', samurai_focus: '🎯📦', samurai_master: '🏆👑',
+      stark_lab: '🤖💡', question_mark: '❓🔭', light_bulb: '💡⚡', robot_applause: '🤖👏',
+      sad_friend: '🐻🌧️', kind_word: '💖🗣️', smile_magic: '🐻☀️', magic_shield: '🛡️🌺'
     };
 
     function openBookPage(body, bookIdx, pageIdx) {
@@ -4364,7 +4540,8 @@
           appState.books_read_today = d.books_read_today;
           document.getElementById('books-badge').textContent = `📖 Livros hoje: ${d.books_read_today}`;
           addStar(2);
-          speak(`Parabéns, ${appState.config.child_name}! Você leu o livro inteiro e ganhou duas estrelas de Super Leitor!`);
+          const moralTexto = book.moral ? ` E a grande lição de hoje é: ${book.moral}` : '';
+          speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
           renderBooksShelf(body);
         };
       }
@@ -5818,6 +5995,7 @@
             <button type="button" class="big-btn" style="background:#0ea5e9; font-size:0.95rem; padding:6px 14px;" id="btn-toggle-beat">🥁 Batida Animada</button>
             <button type="button" class="big-btn" style="background:#e11d48; font-size:0.95rem; padding:6px 14px;" id="btn-rec-start">🔴 Gravar</button>
             <button type="button" class="big-btn" style="background:#10b981; font-size:0.95rem; padding:6px 14px;" id="btn-rec-play">▶ Tocar Gravado</button>
+            <button type="button" class="big-btn" style="background:#475569; font-size:0.95rem; padding:6px 12px;" id="btn-rec-clear">🗑️ Limpar</button>
           </div>
         </div>
 
@@ -5847,7 +6025,7 @@
         </div>
 
         <!-- TECLADO / TAMBORES DINÂMICOS NA BASE -->
-        <div id="music-instrument-container" style="margin-top:10px; min-height:150px; flex:1;"></div>
+        <div id="music-instrument-container" style="margin-top:10px; min-height:165px; flex:1; width:100%; box-sizing:border-box;"></div>
       `;
 
       function spawnVisualEffect(col, text) {
@@ -5874,12 +6052,12 @@
         container.innerHTML = '';
 
         if (currentInstrument === 'bateria') {
-          container.style.cssText = 'display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; height:150px;';
+          container.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:10px; min-height:160px; width:100%; box-sizing:border-box; margin-top:8px;';
           DRUM_PADS.forEach(pad => {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'drum-pad';
-            btn.style.cssText = `background:${pad.col}; box-shadow:0 0 18px ${pad.col}66; border-radius:16px; border:2px solid #ffffff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center;`;
+            btn.style.cssText = `background:${pad.col}; box-shadow:0 0 18px ${pad.col}66; border-radius:16px; border:2px solid #ffffff; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:120px;`;
             btn.innerHTML = `
               <span style="font-size:2.4rem; margin-bottom:2px;">${pad.icon}</span>
               <span style="font-size:1.1rem; font-weight:900; color:#fff;">${pad.name}</span>
@@ -5896,7 +6074,7 @@
             container.appendChild(btn);
           });
         } else {
-          container.style.cssText = 'display:grid; grid-template-columns:repeat(8, 1fr); gap:8px; height:150px;';
+          container.style.cssText = 'display:grid; grid-template-columns:repeat(8, 1fr); gap:8px; min-height:160px; width:100%; box-sizing:border-box; margin-top:8px;';
           SCALE_NOTES.forEach(([name, freq, col, icon, label, animalKey]) => {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -5904,13 +6082,13 @@
             btn.id = `key-${name.replace('+', 'plus')}`;
 
             if (currentInstrument === 'piano') {
-              btn.style.cssText = `background:${col}; font-size:1.4rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:2px solid #fff; border-radius:14px;`;
+              btn.style.cssText = `background:${col}; font-size:1.4rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:2px solid #fff; border-radius:14px; min-height:130px;`;
               btn.innerHTML = `<span>${name}</span><span style="font-size:1.1rem; opacity:0.85;">★</span>`;
             } else if (currentInstrument === 'bichinhos') {
-              btn.style.cssText = `background:${col}; font-size:1.2rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:2px solid #fff; border-radius:14px;`;
+              btn.style.cssText = `background:${col}; font-size:1.2rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:2px solid #fff; border-radius:14px; min-height:130px;`;
               btn.innerHTML = `<span style="font-size:2rem;">${icon}</span><span>${name}</span><span style="font-size:0.8rem; opacity:0.9;">${label}</span>`;
             } else {
-              btn.style.cssText = `background:linear-gradient(180deg, #0f172a, ${col}); border:2px solid #38bdf8; font-size:1.3rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; box-shadow:0 0 15px ${col}88; border-radius:14px;`;
+              btn.style.cssText = `background:linear-gradient(180deg, #0f172a, ${col}); border:2px solid #38bdf8; font-size:1.3rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; box-shadow:0 0 15px ${col}88; border-radius:14px; min-height:130px;`;
               btn.innerHTML = `<span>⚡ ${name}</span><span style="font-size:0.85rem; color:#a5f3fc;">LASER</span>`;
             }
 
@@ -5919,6 +6097,9 @@
           });
         }
       }
+
+      // Desenha imediatamente ao abrir
+      renderInstrumentUI();
 
       function onScaleKeyTouch(name, freq, col, icon, label, animalKey) {
         playInstrumentSound(currentInstrument, freq, 320, animalKey);
@@ -6136,12 +6317,15 @@
         }, recordedNotes.length * 380 + 400);
       };
 
-      document.getElementById('btn-rec-clear').onclick = () => {
-        recordedNotes = [];
-        isRecording = false;
-        updateSkyPrompt('Gravador limpo. Pronto para uma nova música!', '#94a3b8');
-        speak('Gravador limpo! Pronto para uma nova criação musical!');
-      };
+      const btnRecClear = document.getElementById('btn-rec-clear');
+      if (btnRecClear) {
+        btnRecClear.onclick = () => {
+          recordedNotes = [];
+          isRecording = false;
+          updateSkyPrompt('Gravador limpo. Pronto para uma nova música!', '#94a3b8');
+          speak('Gravador limpo! Pronto para uma nova criação musical!');
+        };
+      }
 
       renderInstrumentUI();
     }
@@ -6192,11 +6376,11 @@
 
           <!-- CARD OFICIAL NETFLIX INFANTIL -->
           <button type="button" class="big-btn" id="btn-nf" style="background:linear-gradient(145deg, #140505 0%, #080202 100%); border:3px solid #E50914; border-radius:24px; padding:24px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; box-shadow:0 12px 32px rgba(229,9,20,0.35); transition:all 0.25s ease;">
-            <div style="padding:4px; display:flex; align-items:center; justify-content:center;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="52" height="68" viewBox="0 0 111 160" style="filter:drop-shadow(0 6px 18px rgba(229,9,20,0.75));">
+            <div style="background:#000000; border:2px solid rgba(229,9,20,0.6); border-radius:18px; padding:8px 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(229,9,20,0.5); min-height:72px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 111 160" width="48" height="64" style="overflow:visible; display:block;">
                 <path fill="#B1060E" d="M0 0h34.6v160H0z"/>
                 <path fill="#B1060E" d="M76.4 0H111v160H76.4z"/>
-                <path fill="#E50914" d="M0 0h34.6l41.8 160H41.8z"/>
+                <path fill="#E50914" d="M0 0h34.6l41.8 160H41.8z" filter="drop-shadow(0 0 4px rgba(0,0,0,0.9))"/>
               </svg>
             </div>
             <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:1px;">NETFLIX INFANTIL</div>
@@ -7008,280 +7192,93 @@
 
     async function openParentsPanel() {
       await loadState(false);
-      const body = openModal('⚙ PAINEL DOS PAIS — PROVEDORES DE IA, VOZ & NETFLIX KIDS');
-      const c = appState.config;
-      let selectedProvider = c.active_provider || 'gemini';
-
-      const voiceOptionsHtml = Object.entries(appState.voice_profiles).map(([k, label]) =>
-        `<option value="${k}" ${c.voice_profile === k ? 'selected' : ''}>${label}</option>`
-      ).join('');
+      const body = openModal('⚙️ ÁREA DOS PAIS & CONTROLE RÁPIDO');
+      const c = appState.config || {};
+      const rem = appState.media_permission ? (appState.media_permission.remaining_seconds || 0) : 0;
+      const remMin = Math.floor(rem / 60);
 
       body.innerHTML = `
-        <div style="max-width:860px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:14px; background:#0f172a; padding:22px 26px; border-radius:18px; border:1px solid #334155;">
+        <div style="max-width:720px; margin:0 auto; width:100%; display:flex; flex-direction:column; gap:16px; padding:12px;">
 
-          <div id="parents-status-box" style="display:none; padding:12px 16px; border-radius:10px; font-weight:800;"></div>
-
-          <!-- CONTROLE REMOTO NO CELULAR (MESMO WI-FI) -->
-          <div style="background:#071120; border:2px solid #00f0ff; border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-            <div>
-              <div style="font-size:1.15rem; font-weight:900; color:#00f0ff;">📱 Controle Remoto no Celular (Mesmo Wi-Fi)</div>
-              <div style="font-size:0.88rem; color:#cbd5e1; margin-top:2px;">
-                Abra no seu smartphone para ver status, dar bônus de cinema ou pausar para o almoço:
-              </div>
-              <div style="font-family:Consolas,monospace; font-size:1.1rem; font-weight:900; color:#facc15; margin-top:4px;">
-                ${appState.remote_url || ('http://' + (appState.local_ip || '127.0.0.1') + ':5090/pais')}
-              </div>
+          <!-- BOTÃO PRINCIPAL: ABRIR PAINEL ADMINISTRATIVO COMPLETO -->
+          <div style="background:linear-gradient(135deg, #091c38 0%, #030c1a 100%); border:2.5px solid #00f0ff; border-radius:20px; padding:20px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px; box-shadow:0 8px 30px rgba(0,240,255,0.25);">
+            <div style="font-size:3.2rem; filter:drop-shadow(0 4px 10px rgba(0,240,255,0.4));">🛡️⚙️</div>
+            <div style="font-size:1.45rem; font-weight:900; color:#ffffff;">Painel Administrativo dos Pais</div>
+            <div style="font-size:0.98rem; color:#bae6fd; max-width:540px; line-height:1.4;">
+              O painel administrativo reúne as configurações de IA (OpenCode, Gemini, OpenAI, Ollama), controle de tempo do YouTube/Netflix, personalização de histórias e diagnósticos.
             </div>
-            <a href="${appState.remote_url || '/pais'}" target="_blank" style="background:#0284c7; color:#fff; text-decoration:none; padding:10px 18px; border-radius:12px; font-weight:900; font-size:0.95rem;">
-              Abrir Painel dos Pais ↗
+            <a href="/pais" target="_blank" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#ffffff; text-decoration:none; padding:14px 28px; border-radius:14px; font-weight:900; font-size:1.15rem; display:flex; align-items:center; gap:8px; box-shadow:0 6px 20px rgba(2,132,199,0.5); margin-top:4px;">
+              <span>🚀</span>
+              <span>Abrir Painel Administrativo (/pais) ↗</span>
             </a>
           </div>
 
-          <!-- SELETOR DINÂMICO DE PROVEDORES DE IA -->
-          <div style="background:#091326; border:2px solid #3b82f6; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;">
-            <h3 style="color:#60a5fa; font-size:1.15rem; font-weight:900;">🤖 Escolha o Motor de Inteligência Artificial:</h3>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;" id="ai-provider-tabs">
-              <button type="button" class="big-btn" style="background:#7c3aed;" id="tab-opencode">⚡ OpenCode CLI (Prioritário)</button>
-              <button type="button" class="big-btn" style="background:#475569;" id="tab-ollama">🏠 IA Local (Ollama)</button>
-              <button type="button" class="big-btn" style="background:#2563eb;" id="tab-gemini">✨ Google Gemini</button>
-              <button type="button" class="big-btn" style="background:#ea580c;" id="tab-groq">⚡ Groq Cloud</button>
-              <button type="button" class="big-btn" style="background:#059669;" id="tab-openai">🤖 OpenAI ChatGPT</button>
+          <!-- STATUS RÁPIDO DO DIA -->
+          <div style="background:#071224; border:2px solid #1e293b; border-radius:18px; padding:16px;">
+            <div style="font-size:1.1rem; font-weight:900; color:#facc15; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <span>📊</span>
+              <span>Resumo de Hoje • ${c.child_name || 'Kaleo'}</span>
             </div>
-
-            <!-- CONTAINER DINÂMICO PARA CADA PROVEDOR -->
-            <div id="provider-details-box" style="background:#0f172a; border:1px solid #334155; border-radius:12px; padding:14px;"></div>
-          </div>
-
-          <!-- DADOS DA CRIANÇA E VOZ -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div>
-              <label style="font-size:0.92rem; color:#cbd5e1; font-weight:700;">Nome da Criança (falado pelo JARVIS):</label>
-              <input id="cfg-name" value="${c.child_name}" style="width:100%; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:4px;" />
-            </div>
-            <div>
-              <label style="font-size:0.92rem; color:#cbd5e1; font-weight:700;">Perfil de Voz Neural PT-BR:</label>
-              <div style="display:flex; gap:8px; margin-top:4px;">
-                <select id="cfg-voice-profile" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
-                  ${voiceOptionsHtml}
-                </select>
-                <button type="button" class="big-btn" style="background:#7c3aed; padding:8px 14px;" id="btn-test-voice">🔊</button>
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; text-align:center;">
+              <div style="background:#0b192e; border:1px solid #334155; border-radius:12px; padding:12px;">
+                <div style="font-size:1.8rem; font-weight:900; color:#38bdf8;">${appState.books_read_today}</div>
+                <div style="font-size:0.85rem; color:#94a3b8; font-weight:700;">📖 Livros Lidos</div>
+              </div>
+              <div style="background:#0b192e; border:1px solid #334155; border-radius:12px; padding:12px;">
+                <div style="font-size:1.8rem; font-weight:900; color:#34d399;">${remMin}m</div>
+                <div style="font-size:0.85rem; color:#94a3b8; font-weight:700;">⏱ Vídeo Restante</div>
+              </div>
+              <div style="background:#0b192e; border:1px solid #334155; border-radius:12px; padding:12px;">
+                <div style="font-size:1.8rem; font-weight:900; color:#fde047;">${document.getElementById('pote-fichas-val')?.textContent || 20}</div>
+                <div style="font-size:0.85rem; color:#94a3b8; font-weight:700;">🪙 Moedas no Pote</div>
               </div>
             </div>
           </div>
 
-          <!-- CONTROLE DE HORÁRIO NETFLIX & YOUTUBE KIDS -->
-          <div style="background:#131d31; border:1px solid #475569; border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px;">
-            <h4 style="color:#fde047; font-size:1.05rem; font-weight:800;">🎬 Cinema Stark (Controle de Vídeos Infantis):</h4>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-              <div>
-                <label style="font-size:0.88rem; color:#cbd5e1;">Link Direto YouTube Kids:</label>
-                <input id="cfg-yt-url" value="${c.youtube_url || 'https://www.youtubekids.com'}" style="width:100%; padding:8px 10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
-              </div>
-              <div>
-                <label style="font-size:0.88rem; color:#cbd5e1;">Link Direto Perfil Netflix Kids:</label>
-                <input id="cfg-nf-url" value="${c.netflix_url || 'https://www.netflix.com/Kids'}" style="width:100%; padding:8px 10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
-              </div>
+          <!-- AÇÕES RÁPIDAS DIRETAS -->
+          <div style="background:#071224; border:2px solid #1e293b; border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:10px;">
+            <div style="font-size:1.1rem; font-weight:900; color:#38bdf8; display:flex; align-items:center; gap:8px;">
+              <span>⚡</span>
+              <span>Ações Rápidas Imediatas</span>
             </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-              <div>
-                <label style="color:#fde047; font-size:0.88rem; font-weight:700;">Início Cinema (HH:MM):</label>
-                <input id="cfg-start" value="${c.media_start_time}" style="width:100%; padding:8px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
-              </div>
-              <div>
-                <label style="color:#fde047; font-size:0.88rem; font-weight:700;">Fim Cinema (HH:MM):</label>
-                <input id="cfg-end" value="${c.media_end_time}" style="width:100%; padding:8px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
-              </div>
-              <div>
-                <label style="color:#fde047; font-size:0.88rem; font-weight:700;">Limite Diário (minutos):</label>
-                <input id="cfg-mins" type="number" value="${c.media_daily_minutes}" style="width:100%; padding:8px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569; margin-top:3px;" />
-              </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+              <button type="button" class="big-btn" style="background:#059669; font-size:1.02rem; padding:12px 14px;" id="btn-quick-bonus">
+                🎁 +15 min de Cinema
+              </button>
+              <button type="button" class="big-btn" style="background:#ea580c; font-size:1.02rem; padding:12px 14px;" id="btn-quick-pause">
+                🍽️ Pausar Tela / Liberar
+              </button>
+              <button type="button" class="big-btn" style="background:#6366f1; font-size:1.02rem; padding:12px 14px;" id="btn-quick-night">
+                🌙 Alternar Modo Noturno
+              </button>
             </div>
-
-            <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer;">
-              <input type="checkbox" id="cfg-req-book" ${c.require_book_before_media ? 'checked' : ''} />
-              📚 Exigir ler pelo menos 1 livro antes de liberar YouTube / Netflix
-            </label>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; flex-wrap:wrap; gap:10px;">
-            <button type="button" class="big-btn" style="background:#0284c7; font-size:0.95rem;" id="btn-bonus">🎁 Liberar +15 min de Cinema Agora</button>
-            <button type="button" class="big-btn" style="background:#10b981; font-size:1.1rem; padding:12px 26px;" id="btn-save-cfg">💾 Salvar Configurações</button>
-          </div>
+          <button type="button" class="big-btn" style="background:#334155; padding:12px; font-size:1.05rem; margin-top:4px;" onclick="closeModal()">
+            ⬅ Voltar ao Jarvis Kids
+          </button>
         </div>
       `;
 
-      function renderProviderDetails(prov) {
-        selectedProvider = prov;
-        const box = document.getElementById('provider-details-box');
-        document.querySelectorAll('#ai-provider-tabs button').forEach(b => b.style.opacity = '0.5');
-
-        if (prov === 'opencode') {
-          document.getElementById('tab-opencode').style.opacity = '1';
-          box.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:800; color:#c084fc;">⚡ OpenCode CLI (Localhost & LAN):</span>
-              <span style="color:#a855f7; font-size:0.85rem; font-weight:700;">Motor Prioritário Recomendado</span>
-            </div>
-            <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-              <input id="prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="Modelo (ex: google/gemini-2.0-flash ou opencode/mimo-v2.6-flash-free)" style="flex:1; min-width:200px; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-              <input id="prov-key" value="${c.opencode_server || ''}" placeholder="Servidor LAN (opcional: http://192.168.1.X:4096)" style="flex:1; min-width:200px; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-              <button type="button" class="big-btn" style="background:#7c3aed;" id="btn-test-prov">⚡ Testar OpenCode</button>
-            </div>
-            <div style="font-size:0.82rem; color:#94a3b8;">
-              💡 Executa o utilitário <code>opencode run</code>. Pode rodar 100% no netbook ou conectar ao OpenCode de um PC mais potente na mesma rede Wi-Fi via servidor LAN!
-            </div>
-          `;
-        } else if (prov === 'gemini') {
-          document.getElementById('tab-gemini').style.opacity = '1';
-          box.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:800; color:#60a5fa;">Chave Google Gemini (GEMINI_API_KEY):</span>
-              <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#38bdf8; font-size:0.85rem; font-weight:700;">🔑 Obter chave grátis no Google AI Studio ↗</a>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <input id="prov-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave AIzaSy... do Gemini'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-              <button type="button" class="big-btn" style="background:#2563eb;" id="btn-test-prov">✨ Testar Gemini</button>
-            </div>
-          `;
-        } else if (prov === 'openai') {
-          document.getElementById('tab-openai').style.opacity = '1';
-          box.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:800; color:#34d399;">Chave OpenAI ChatGPT (sk-...):</span>
-              <a href="https://platform.openai.com/api-keys" target="_blank" style="color:#34d399; font-size:0.85rem; font-weight:700;">🔑 Obter chave OpenAI ↗</a>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <input id="prov-key" type="password" placeholder="${c.has_openai_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave sk-... da OpenAI'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-              <button type="button" class="big-btn" style="background:#059669;" id="btn-test-prov">🤖 Testar ChatGPT</button>
-            </div>
-          `;
-        } else if (prov === 'groq') {
-          document.getElementById('tab-groq').style.opacity = '1';
-          box.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:800; color:#fb923c;">Chave Groq Cloud (gsk_...):</span>
-              <a href="https://console.groq.com/keys" target="_blank" style="color:#fb923c; font-size:0.85rem; font-weight:700;">🔑 Obter chave Groq grátis ↗</a>
-            </div>
-            <div style="display:flex; gap:8px;">
-              <input id="prov-key" type="password" placeholder="${c.has_groq_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave gsk_... da Groq'}" style="flex:1; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-              <button type="button" class="big-btn" style="background:#ea580c;" id="btn-test-prov">⚡ Testar Groq</button>
-            </div>
-          `;
-        } else if (prov === 'ollama') {
-          document.getElementById('tab-ollama').style.opacity = '1';
-          box.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:800; color:#38bdf8;">🏠 Ollama IA Local (100% Localhost / Sem Custos):</span>
-              <span style="color:#4ade80; font-size:0.85rem; font-weight:700;">Zero envio de dados / Grátis</span>
-            </div>
-            <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
-              <input id="prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" placeholder="http://127.0.0.1:11434" style="flex:1; min-width:180px; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;" />
-              <select id="prov-model" style="flex:1; min-width:180px; padding:10px; border-radius:8px; background:#1e293b; color:#fff; border:1px solid #475569;">
-                <option value="llama3.2:1b" ${(c.ollama_model === 'llama3.2:1b' || !c.ollama_model) ? 'selected' : ''}>🦙 Llama 3.2 (1B - Meta IA Local)</option>
-                <option value="qwen2.5:0.5b" ${c.ollama_model === 'qwen2.5:0.5b' ? 'selected' : ''}>⚡ Qwen 2.5 (0.5B - Ultra-Leve Netbook)</option>
-              </select>
-              <button type="button" class="big-btn" style="background:#0284c7;" id="btn-test-prov">🦙 Testar Llama Local</button>
-            </div>
-            <div style="font-size:0.82rem; color:#94a3b8;">
-              💡 Funciona direto no seu computador via Ollama! Não consome créditos nem precisa de internet.
-            </div>
-          `;
-        }
-
-        document.getElementById('btn-test-prov').onclick = async () => {
-          const keyInput = document.getElementById('prov-key');
-          const urlInput = document.getElementById('prov-url');
-          const modInput = document.getElementById('prov-model');
-          const payload = {
-            provider: prov,
-            api_key: keyInput ? keyInput.value.trim() : '',
-            model: modInput ? modInput.value.trim() : '',
-            ollama_url: urlInput ? urlInput.value.trim() : ''
-          };
-
-          const sBox = document.getElementById('parents-status-box');
-          sBox.style.display = 'block';
-          sBox.style.background = '#1e293b';
-          sBox.textContent = `⏳ Testando conexão com ${prov.toUpperCase()}...`;
-
-          const r = await fetch('/api/provider/test', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const d = await r.json();
-
-          sBox.style.background = d.ok ? '#065f46' : '#7f1d1d';
-          sBox.style.color = '#fff';
-          sBox.textContent = d.ok ? `✅ Conectado com sucesso! Resposta: "${d.message}"` : `⚠️ ${d.message}`;
-          if (d.ok) {
-            speak(d.message);
-          }
-        };
-      }
-
-      document.getElementById('tab-opencode').onclick = () => renderProviderDetails('opencode');
-      document.getElementById('tab-gemini').onclick = () => renderProviderDetails('gemini');
-      document.getElementById('tab-openai').onclick = () => renderProviderDetails('openai');
-      document.getElementById('tab-groq').onclick = () => renderProviderDetails('groq');
-      document.getElementById('tab-ollama').onclick = () => renderProviderDetails('ollama');
-
-      renderProviderDetails(selectedProvider);
-
-      document.getElementById('btn-test-voice').onclick = () => {
-        const prof = document.getElementById('cfg-voice-profile').value;
-        const n = document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor';
-        speak(`Olá, ${n}! Minha nova voz neural está muito mais bonita e pronta para conversar com você!`, {
-          voiceProfile: prof
-        });
-      };
-
-      document.getElementById('btn-bonus').onclick = async () => {
+      document.getElementById('btn-quick-bonus').onclick = async () => {
         await fetch('/api/media/bonus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ minutes: 15 }) });
-        showToast('🎁 +15 minutos de Cinema Stark liberados para hoje!');
+        playTone(659, 120);
+        showToast('🎁 +15 minutos de Cinema Stark liberados!');
+        closeModal();
       };
 
-      document.getElementById('btn-save-cfg').onclick = async () => {
-        const payload = {
-          child_name: document.getElementById('cfg-name').value.trim() || 'Pequeno Inventor',
-          active_provider: selectedProvider,
-          voice_profile: document.getElementById('cfg-voice-profile').value,
-          youtube_url: document.getElementById('cfg-yt-url').value.trim(),
-          netflix_url: document.getElementById('cfg-nf-url').value.trim(),
-          media_start_time: document.getElementById('cfg-start').value.trim() || '16:00',
-          media_end_time: document.getElementById('cfg-end').value.trim() || '17:00',
-          media_daily_minutes: parseInt(document.getElementById('cfg-mins').value, 10) || 25,
-          require_book_before_media: document.getElementById('cfg-req-book').checked
-        };
-        const keyInp = document.getElementById('prov-key');
-        if (keyInp && keyInp.value.trim()) {
-          if (selectedProvider === 'opencode') payload.opencode_server = keyInp.value.trim();
-          else if (selectedProvider === 'gemini') payload.gemini_api_key = keyInp.value.trim();
-          else if (selectedProvider === 'openai') payload.openai_api_key = keyInp.value.trim();
-          else if (selectedProvider === 'groq') payload.groq_api_key = keyInp.value.trim();
-        }
-        const modInp = document.getElementById('prov-model');
-        if (modInp && modInp.value.trim()) {
-          if (selectedProvider === 'opencode') payload.opencode_model = modInp.value.trim();
-          else if (selectedProvider === 'ollama') payload.ollama_model = modInp.value.trim();
-        }
-        const urlInp = document.getElementById('prov-url');
-        if (urlInp && urlInp.value.trim()) payload.ollama_url = urlInp.value.trim();
-
-        await fetch('/api/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        localStorage.setItem('jarvis_voice_profile', payload.voice_profile);
-        if (appState.config) appState.config.voice_profile = payload.voice_profile;
-        await loadState(false);
+      document.getElementById('btn-quick-pause').onclick = async () => {
+        await fetch('/api/remote/pause', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        playTone(440, 120);
+        showToast('🍽️ Comando de tela enviado!');
         closeModal();
-        showToast('✅ Todas as configurações salvas com sucesso!');
-        speak(`Configurações salvas! Tudo pronto para brincar, ${payload.child_name}!`, {
-          voiceProfile: payload.voice_profile
-        });
+      };
+
+      document.getElementById('btn-quick-night').onclick = async () => {
+        await fetch('/api/remote/night', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+        playTone(523, 120);
+        showToast('🌙 Modo noturno alternado!');
+        closeModal();
       };
     }
 

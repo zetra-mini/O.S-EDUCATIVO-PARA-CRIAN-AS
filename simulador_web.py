@@ -2,7 +2,7 @@ import os
 import socket
 from flask import Flask, Response, jsonify, render_template, request, send_file
 
-from biblioteca_livros import BOOKS
+from biblioteca_livros import BOOKS, library_mgr
 from clima_estacoes import weather_mgr
 from gestao_tempo_midia import MediaTimeManager
 from jarvis_brain import JarvisBrain
@@ -100,7 +100,7 @@ def api_state():
                 k: v["label"] for k, v in VOICE_PROFILES.items()
             },
             "books_read_today": media_mgr.get_books_read_today(),
-            "books": BOOKS,
+            "books": library_mgr.obter_todos_os_livros(),
             "media_permission": perm,
             "greeting": brain.get_greeting(),
             "local_ip": local_ip,
@@ -301,6 +301,35 @@ def api_book_finished():
     book_id = data.get("book_id", "livro")
     total = media_mgr.record_book_read(book_id)
     return jsonify({"ok": True, "books_read_today": total})
+
+
+@app.route("/api/livros", methods=["GET"])
+def api_livros_listar():
+    return jsonify({"ok": True, "livros": library_mgr.obter_todos_os_livros()})
+
+
+@app.route("/api/livros/gerar", methods=["POST"])
+def api_livros_gerar():
+    data = request.get_json(silent=True) or {}
+    tema = data.get("tema", "Resiliência")
+    child_name = data.get("child_name") or brain.config.get("child_name", "Kaleo")
+    novo = library_mgr.gerar_historia_ia(tema=tema, child_name=child_name)
+    return jsonify({"ok": True, "livro": novo})
+
+
+@app.route("/api/livros/criar", methods=["POST"])
+def api_livros_criar():
+    data = request.get_json(silent=True) or {}
+    sucesso = library_mgr.salvar_novo_livro(data)
+    return jsonify({"ok": sucesso})
+
+
+@app.route("/api/livros/excluir", methods=["POST"])
+def api_livros_excluir():
+    data = request.get_json(silent=True) or {}
+    book_id = data.get("id", "")
+    sucesso = library_mgr.excluir_livro_dinamico(book_id)
+    return jsonify({"ok": sucesso})
 
 
 @app.route("/api/media/tick", methods=["POST"])
