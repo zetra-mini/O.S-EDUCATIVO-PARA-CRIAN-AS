@@ -15,6 +15,8 @@ import platform
 import socket
 import subprocess
 import sys
+import time
+from datetime import datetime
 from typing import Any, Dict
 
 # Assegura suporte a UTF-8 em terminais Windows/Linux
@@ -78,6 +80,9 @@ REMOTE_STATE = {
     "night_mode": False,
     "sos_action": None,
     "alarme": None,
+    "ultimo_tipo_alarme": None,
+    "ultimo_alarme_concluido": None,
+    "ultimo_recado_visto": None,
 }
 
 
@@ -286,6 +291,8 @@ def api_state(request: Request):
             "clima": weather_mgr.obter_clima_atual(),
             "calendario": calendar_mgr.obter_evento_hoje(),
             "alarme": REMOTE_STATE.get("alarme"),
+            "ultimo_alarme_concluido": REMOTE_STATE.get("ultimo_alarme_concluido"),
+            "ultimo_recado_visto": REMOTE_STATE.get("ultimo_recado_visto"),
             "bateria": bat,
         }
     )
@@ -558,6 +565,14 @@ def api_mensagens_marcar_aberta(request: Request):
         pet_mgr.ganhar_moedas(5, "Recado de amor da família assistido")
     except Exception:
         pass
+    import time
+    REMOTE_STATE["ultimo_recado_visto"] = {
+        "msg_id": msg_id,
+        "horario": datetime.now().strftime("%H:%M:%S"),
+        "timestamp": time.time(),
+        "status": "Assistido pelo Kaleo",
+        "recompensa": 5
+    }
     return json_response(res)
 
 
@@ -1041,6 +1056,7 @@ def api_remote_alarme(request: Request):
     texto_final = msg if (tipo == "personalizado" and msg) else mensagens_padrao.get(tipo, mensagens_padrao["dente"])
 
     import time
+    REMOTE_STATE["ultimo_tipo_alarme"] = texto_final
     REMOTE_STATE["alarme"] = {
         "ativo": True,
         "tipo": tipo,
@@ -1053,9 +1069,22 @@ def api_remote_alarme(request: Request):
 
 @app.route("/api/remote/alarme/dispensar", methods=["POST"])
 def api_remote_alarme_dispensar(request: Request):
+    import time
+    tipo_desc = REMOTE_STATE.get("ultimo_tipo_alarme") or "Missão de Rotina"
+    REMOTE_STATE["ultimo_alarme_concluido"] = {
+        "tipo": tipo_desc,
+        "horario": datetime.now().strftime("%H:%M:%S"),
+        "timestamp": time.time(),
+        "recompensa": 5
+    }
     REMOTE_STATE["alarme"] = None
     token_mgr.creditar_fichas(5, "Alarme de Rotina Cumprido", "ROTINA")
-    return json_response({"ok": True, "recompensa": 5, "saldo": token_mgr.obter_status_pote()["saldo"]})
+    return json_response({
+        "ok": True,
+        "recompensa": 5,
+        "saldo": token_mgr.obter_status_pote()["saldo"],
+        "ultimo_alarme_concluido": REMOTE_STATE["ultimo_alarme_concluido"]
+    })
 
 
 # ==============================================================================

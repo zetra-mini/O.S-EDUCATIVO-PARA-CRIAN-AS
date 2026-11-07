@@ -3439,11 +3439,29 @@
       } catch (e) {}
     }
 
+    let globalSoundTimeouts = [];
+
+    function safeSoundTimeout(fn, ms) {
+      const id = setTimeout(() => {
+        const idx = globalSoundTimeouts.indexOf(id);
+        if (idx !== -1) globalSoundTimeouts.splice(idx, 1);
+        try { fn(); } catch (e) {}
+      }, ms);
+      globalSoundTimeouts.push(id);
+      return id;
+    }
+
     function pararTodosAudiosESpeech() {
+      // 1. Cancela todos os timers de sequências sonoras, canções e notas musicais
+      globalSoundTimeouts.forEach(id => clearTimeout(id));
+      globalSoundTimeouts = [];
+
+      // 2. Aborta qualquer requisição de TTS neural em andamento
       if (ttsAbortCtrl) {
         try { ttsAbortCtrl.abort(); } catch (e) {}
         ttsAbortCtrl = null;
       }
+      // 3. Para imediatamente o nó Web Audio ativo
       if (currentBufferSource) {
         try {
           currentBufferSource.stop();
@@ -3451,6 +3469,7 @@
         } catch (e) {}
         currentBufferSource = null;
       }
+      // 4. Pausa qualquer áudio HTML5
       if (currentAudio) {
         try {
           currentAudio.pause();
@@ -3466,6 +3485,7 @@
           player.src = '';
         } catch (e) {}
       }
+      // 5. Cancela qualquer síntese nativa do navegador
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
         window._activeUtterance = null;
@@ -3580,13 +3600,13 @@
       const ctrl = new AbortController();
       ttsAbortCtrl = ctrl;
 
-      // Timeout inteligente para 3.2 segundos: se rede oscilar, entra fallback local sem deixar a criança esperando
+      // Timeout de 8.0 segundos: garante entrega da voz neural fluida escolhida no painel sem chaveamento prematuro para voz robótica
       let fallbackTimer = setTimeout(() => {
         if (ttsAbortCtrl === ctrl) {
           try { ctrl.abort(); } catch (e) {}
           speakBrowserFallback(text, options.onEnd, chosenProfile);
         }
-      }, 3200);
+      }, 8000);
 
       try {
         const payload = { 
@@ -7069,6 +7089,7 @@
       }
 
       function selectSong(key) {
+        pararTodosAudiosESpeech();
         selectedSongKey = key;
         const song = MELODIES[key];
         activeMelody = null;
@@ -7108,13 +7129,14 @@
 
       document.getElementById('btn-song-listen').onclick = () => {
         if (!selectedSongKey) return;
+        pararTodosAudiosESpeech();
         const song = MELODIES[selectedSongKey];
         const instLabel = currentInstrument === 'bichinhos' ? 'Bichinhos Cantores' : currentInstrument === 'bateria' ? 'Bateria Stark' : currentInstrument === 'laser' ? 'Laser Espacial' : 'Piano Mágico';
         playSfxClick();
         updateSkyPrompt(`🎶 Tocando: ${song.title} (${instLabel})...`, '#38bdf8');
 
         song.notes.forEach(([name, freq, col], i) => {
-          setTimeout(() => {
+          safeSoundTimeout(() => {
             const noteObj = SCALE_NOTES.find(n => n[0].toUpperCase() === name.toUpperCase());
             const animalKey = noteObj ? noteObj[5] : 'miau';
             playInstrumentSound(currentInstrument, freq, 360, animalKey);
@@ -7130,7 +7152,7 @@
           }, i * 440);
         });
 
-        setTimeout(() => {
+        safeSoundTimeout(() => {
           highlightKey(null);
           playSfxSuccess();
           updateSkyPrompt(`Gostou de ${song.title}? Agora aperte "Aprender"!`, '#fde047');
@@ -8457,14 +8479,14 @@
     function playRainWaterSfx() {
       const freqs = [1046, 1318, 1174, 1567, 1396, 1760];
       freqs.forEach((f, idx) => {
-        setTimeout(() => playTone(f, 50), idx * 75);
+        safeSoundTimeout(() => playTone(f, 50), idx * 75);
       });
     }
 
     function playSunnySfx() {
       const freqs = [523, 659, 784, 1046];
       freqs.forEach((f, idx) => {
-        setTimeout(() => playTone(f, 90), idx * 80);
+        safeSoundTimeout(() => playTone(f, 90), idx * 80);
       });
     }
 
@@ -9688,8 +9710,14 @@
           const itensPagina = listaReal.slice(inicio, inicio + ITENS_POR_PAGINA_LOJA);
 
           container.innerHTML = `
-            <div style="font-size:0.9rem; color:#fde047; font-weight:800;">
-              🎁 Troque suas moedas por privilégios especiais do mundo real com o papai e a mamãe!
+            <!-- BOTÃO DE REMOVER ACESSÓRIOS DO ROBÔ TAMBÉM NO TESOURO REAL -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <span style="font-size:0.9rem; color:#fde047; font-weight:800;">
+                🎁 Troque suas moedas por privilégios com o papai e a mamãe:
+              </span>
+              <button type="button" class="big-btn" style="background:#ef4444; border:1.5px solid #fca5a5; font-size:0.85rem; padding:6px 14px; font-weight:900;" onclick="desequiparTodosAcessorios()">
+                🚫 TIRAR ACESSÓRIOS DO JARVIS
+              </button>
             </div>
 
             <!-- GRID 2x2: 4 ITENS POR TELA (ZERO SCROLL) -->
@@ -10017,14 +10045,47 @@
     }
 
     // =========================================================================
-    // ATUALIZAÇÃO PERIÓDICA DE ESTADO (PET, MENSAGENS, BATERIA, S.O.S.)
+    // ATUALIZAÇÃO PERIÓDICA DE ESTADO EM TEMPO REAL (SINCRONIZAÇÃO PAIS ➔ HUD 2.5s)
     // =========================================================================
     verificarMensagensSecretas();
-    setInterval(verificarMensagensSecretas, 8000);
     setInterval(async () => {
       try {
+        verificarMensagensSecretas();
         const res = await fetch('/api/state');
         const data = await res.json();
+
+        // 1. SINCRONIZAÇÃO DE PERFIL DE VOZ E CONFIGURAÇÕES DO PAINEL DOS PAIS
+        if (data.config) {
+          if (data.config.voice_profile && data.config.voice_profile !== appState.config.voice_profile) {
+            appState.config.voice_profile = data.config.voice_profile;
+            try { localStorage.setItem('jarvis_voice_profile', data.config.voice_profile); } catch (e) {}
+          }
+          if (data.config.child_name) {
+            appState.config.child_name = data.config.child_name;
+          }
+        }
+
+        // 2. PAUSA REMOTA IMEDIATA DOS PAIS
+        const pauseScreen = document.getElementById('remote-pause-screen');
+        if (pauseScreen) {
+          if (data.remote_paused) {
+            if (pauseScreen.style.display !== 'flex') {
+              pararTodosAudiosESpeech();
+              pauseScreen.style.display = 'flex';
+            }
+          } else {
+            if (pauseScreen.style.display === 'flex') {
+              pauseScreen.style.display = 'none';
+            }
+          }
+        }
+
+        // 3. MODO NOTURNO REMOTO IMEDIATO DOS PAIS
+        if (data.night_mode && comodoAtualIdx !== 1) {
+          irParaComodo(1); // Vai para o Quarto de Dormir
+        }
+
+        // 4. ATUALIZAÇÕES DE STATUS, MOEDAS, CLIMA E BATERIA
         if (data.pet) atualizarBarrasPet(data.pet);
         if (data.pote) {
           const el = document.getElementById('pote-fichas-val');
@@ -10040,17 +10101,17 @@
           atualizarMonitorBateria(data.bateria);
         }
 
-        // Se os pais acionaram Alarme Sonoro e Visual de Rotina
+        // 5. ALARME SONORO E VISUAL DE ROTINA DISPARADO PELOS PAIS
         if (data.alarme && data.alarme.ativo && (!window._alarmeAtivoId || window._alarmeAtivoId !== data.alarme.id)) {
           dispararAlarmeVisualESonoro(data.alarme);
         }
 
-        // Se os pais ativaram SOS Intervenção no celular
+        // 6. SOS INTERVENÇÃO DOS PAIS
         if (data.sos_action) {
           dispararIntervencaoSosLocal(data.sos_action);
         }
       } catch (e) {}
-    }, 10000);
+    }, 2500);
 
     let alarmeSomInterval = null;
 
