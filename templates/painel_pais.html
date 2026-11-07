@@ -217,6 +217,7 @@
   <!-- ABAS DE NAVEGAÇÃO -->
   <nav class="tabs-bar">
     <button type="button" class="tab-btn active" onclick="switchAdminTab('status')">📊 Visão Geral & Presença</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('tesouros')">🎁 Tesouros & Recompensas</button>
     <button type="button" class="tab-btn" onclick="switchAdminTab('ia')">🤖 Motores de IA & Provedores</button>
     <button type="button" class="tab-btn" onclick="switchAdminTab('perfil')">👦 Filho & Voz Neural</button>
     <button type="button" class="tab-btn" onclick="switchAdminTab('midia')">🎬 Cinema & Horários</button>
@@ -437,6 +438,40 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- ABA 7: TESOUROS REAIS EM FAMÍLIA & RECOMPENSAS -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-tesouros">
+    <div class="card">
+      <div class="card-title">🎁 Pote do Tesouro & Economia de Fichas</div>
+      <div style="font-size:0.95rem; color:var(--text-muted); margin-bottom:14px;">
+        As moedas representam o esforço e as rotinas cumpridas pelo Kaleo (leitura, escovação de dentes, arrumação de quarto, mini-games cognitivos). Aqui você acompanha o saldo e os combinados do mundo real!
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(15,23,42,0.8); border:2px solid var(--gold); border-radius:12px; padding:16px; margin-bottom:18px;">
+        <div>
+          <div style="font-size:0.9rem; color:#94a3b8; font-weight:700;">SALDO ATUAL DO KALEO:</div>
+          <div style="font-size:2.2rem; font-weight:900; color:var(--gold);">🪙 <span id="adm-tesouro-saldo">0</span> Moedas</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem;" onclick="bonificarMoedasRapido(5, 'Arrumou os brinquedos com capricho!')">+5 Arrumou Quarto</button>
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem;" onclick="bonificarMoedasRapido(10, 'Comeu toda a comidinha saudável!')">+10 Almoço Limpo</button>
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem;" onclick="bonificarMoedasRapido(15, 'Comportamento exemplar e cooperação!')">+15 Super Campeão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVILÉGIOS REAIS RESGATADOS -->
+    <div class="card">
+      <div class="card-title">🌟 Privilégios do Mundo Real Resgatados pelo Filho</div>
+      <div style="font-size:0.95rem; color:var(--text-muted); margin-bottom:12px;">
+        Quando o Kaleo troca suas moedas na Loja pelo <strong>Tesouro Real</strong> (passeio de bicicleta, cinema em família, sobremesa especial), o pedido aparece aqui imediatamente para que o papai ou a mamãe possam cumprir e marcar como entregue:
+      </div>
+      <div id="adm-resgates-lista" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="color:#94a3b8; text-align:center; padding:20px;">Carregando pedidos de recompensas...</div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast-msg"></div>
 
   <!-- JAVASCRIPT DO PAINEL ADMINISTRATIVO -->
@@ -453,6 +488,7 @@
       if (targetPane) targetPane.classList.add('active');
       if (tabId === 'livros') carregarLivrosAdmin();
       if (tabId === 'diag') carregarLogsAdmin();
+      if (tabId === 'tesouros') carregarResgatesFamiliaAdmin();
     }
 
     function showToast(msg) {
@@ -472,6 +508,8 @@
         const rem = data.media_permission ? data.media_permission.remaining_seconds : 0;
         document.getElementById('val-cinema').textContent = `${Math.floor(rem / 60)}m`;
         document.getElementById('val-fichas').textContent = data.pote ? data.pote.saldo : 0;
+        const admTesouro = document.getElementById('adm-tesouro-saldo');
+        if (admTesouro && data.pote) admTesouro.textContent = data.pote.saldo || 0;
         if (data.bateria) {
           document.getElementById('val-bateria').textContent = `${data.bateria.porcentagem}%`;
           document.getElementById('diag-bateria').textContent = `${data.bateria.porcentagem}%`;
@@ -753,6 +791,95 @@
         `).join('');
         document.getElementById('diag-logs-erros').textContent = logs.filter(l => l.nivel === 'ERRO').length;
       } catch (e) {}
+    }
+
+    async function carregarResgatesFamiliaAdmin() {
+      const box = document.getElementById('adm-resgates-lista');
+      if (!box) return;
+      try {
+        const res = await fetch('/api/familia/resgates');
+        const lista = await res.json();
+        if (!Array.isArray(lista) || lista.length === 0) {
+          box.innerHTML = `
+            <div style="background:#0b1d36; border:2px dashed #334155; border-radius:12px; padding:24px; text-align:center; color:#94a3b8;">
+              <div style="font-size:2.5rem; margin-bottom:8px;">🎁</div>
+              <div style="font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:6px;">Nenhum privilégio solicitado no momento</div>
+              <div style="font-size:0.9rem;">Assim que o seu filho resgatar um Tesouro Real com suas moedas no Jarvis, ele aparecerá aqui com destaque!</div>
+            </div>
+          `;
+          return;
+        }
+
+        box.innerHTML = lista.map(item => {
+          const isPendente = item.status === 'PENDENTE';
+          return `
+            <div style="background:#0f172a; border:2px solid ${isPendente ? 'var(--gold)' : '#10b981'}; border-radius:12px; padding:16px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+              <div style="display:flex; align-items:center; gap:14px;">
+                <div style="font-size:2.4rem;">${item.icone || '🎁'}</div>
+                <div>
+                  <div style="font-size:1.1rem; font-weight:900; color:#fff;">${item.titulo}</div>
+                  <div style="font-size:0.85rem; color:#94a3b8;">
+                    Solicitado em: <strong>${item.solicitado_em || 'Hoje'}</strong> • Custo: <strong>🪙 ${item.custo_fichas} moedas</strong>
+                  </div>
+                  ${item.entregue_em ? `<div style="font-size:0.8rem; color:#34d399; margin-top:2px;">✅ Cumprido pelos pais em: ${item.entregue_em}</div>` : ''}
+                </div>
+              </div>
+              <div>
+                ${isPendente ? `
+                  <button type="button" class="btn btn-primary" style="background:#10b981; border-color:#059669; font-size:0.9rem; padding:8px 14px; white-space:nowrap;" onclick="marcarResgateEntregueAdmin(${item.id})">
+                    ✅ Marcar como Entregue
+                  </button>
+                ` : `
+                  <span style="background:rgba(16,185,129,0.2); color:#34d399; border:1px solid #10b981; border-radius:999px; padding:5px 12px; font-size:0.85rem; font-weight:800; white-space:nowrap;">
+                    ✓ ENTREGUE
+                  </span>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        box.innerHTML = `<div style="color:#ef4444; padding:14px;">Erro ao carregar lista de resgates.</div>`;
+      }
+    }
+
+    async function marcarResgateEntregueAdmin(resgateId) {
+      try {
+        const res = await fetch('/api/familia/resgates/entregar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ resgate_id: resgateId })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast(`✅ ${d.mensagem}`);
+          carregarResgatesFamiliaAdmin();
+        } else {
+          showToast(`⚠️ ${d.mensagem}`);
+        }
+      } catch (e) {
+        showToast('Erro ao marcar entrega.');
+      }
+    }
+
+    async function bonificarMoedasRapido(qtd, motivo) {
+      try {
+        const res = await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ quantidade: qtd, motivo: motivo })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast(`🪙 ${d.mensagem}`);
+          const sEl = document.getElementById('adm-tesouro-saldo');
+          if (sEl) sEl.textContent = d.saldo;
+          const vF = document.getElementById('val-fichas');
+          if (vF) vF.textContent = d.saldo;
+        }
+      } catch (e) {
+        showToast('Erro ao creditar moedas.');
+      }
     }
 
     // Inicialização

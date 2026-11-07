@@ -1088,6 +1088,7 @@
 
     /* 1. TOP BAR SLIM (LINHA ÚNICA, PREENCHIMENTO TOTAL) */
     .pou-top-bar {
+      position: relative;
       height: 52px;
       min-height: 52px;
       width: 100%;
@@ -1153,8 +1154,11 @@
       animation: pulseMic 2.5s infinite;
     }
 
-    /* NAVEGADOR DE CÔMODOS TOUCH */
+    /* NAVEGADOR DE CÔMODOS TOUCH (CENTRALIZADO COM PRECISÃO GEOMÉTRICA) */
     .pou-room-nav-pill {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -1163,6 +1167,7 @@
       border-radius: 999px;
       padding: 3px 12px;
       box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+      z-index: 5;
     }
 
     .btn-room-arrow {
@@ -1645,10 +1650,69 @@
     .drawer-content {
       flex: 1;
       padding: 12px;
-      overflow-y: auto;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .drawer-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* BARRA DE PAGINAÇÃO TÁTIL (ZERO SCROLL PARA A CRIANÇA) */
+    .drawer-pagination-footer {
+      padding: 12px 14px;
+      background: #0b1324;
+      border-top: 2px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn-drawer-page-nav {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      border: 2px solid #38bdf8;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+      transition: transform 0.1s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .btn-drawer-page-nav:active {
+      transform: scale(0.93);
+    }
+
+    .drawer-page-dots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .drawer-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #334155;
+      border: 2px solid #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .drawer-dot.active {
+      width: 24px;
+      border-radius: 10px;
+      background: #38bdf8;
+      border-color: #00f0ff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
     }
 
     .drawer-card-item {
@@ -1731,7 +1795,7 @@
 </head>
 <body>
   <div id="pou-app-container">
-    <!-- 1. TOP BAR FUTURISTA TRANSLÚCIDA CLEAN (LINHA ÚNICA) -->
+    <!-- 1. TOP BAR FUTURISTA TRANSLÚCIDA CLEAN (LINHA ÚNICA, CENTRALIZADA) -->
     <header class="pou-top-bar">
       <div style="display:flex; align-items:center; gap:8px;">
         <!-- MOEDAS DO TESOURO -->
@@ -1739,15 +1803,9 @@
           <span>🪙</span>
           <span id="pote-fichas-val">20</span>
         </div>
-
-        <!-- CLIMA DE HOJE & AS 4 ESTAÇÕES -->
-        <div class="pou-weather-badge" id="btn-top-clima" onclick="openWeatherSeasonsModal()" title="Toque para ouvir o clima de hoje e aprender as 4 estações!">
-          <span id="clima-icone-top">🌤️</span>
-          <span id="clima-val-top">--°C</span>
-        </div>
       </div>
 
-      <!-- NAVEGADOR DE CÔMODOS FUTURISTA TOUCH -->
+      <!-- NAVEGADOR DE CÔMODOS FUTURISTA TOUCH (CENTRO GEOMÉTRICO ABSOLUTO) -->
       <div class="pou-room-nav-pill">
         <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
         <span id="pou-room-title" class="pou-room-title">Sala de Brincar</span>
@@ -2054,8 +2112,9 @@
       <span class="drawer-title">🎮 JOGOS & ESTUDOS DO KALEO</span>
       <button type="button" class="drawer-close-btn" onclick="toggleActivityDrawer()">✕</button>
     </div>
-    <div class="drawer-content">
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openBooksLibrary)">
+    <div class="drawer-content" id="drawer-content">
+      <!-- PÁGINA 1: LEITURA, LETRAS, NÚMEROS E IDIOMAS -->
+      <div class="drawer-card-item drawer-card-p1" onclick="abrirAtividadeDrawer(openBooksLibrary)">
         <div class="drawer-card-icon">📚</div>
         <div>
           <div class="drawer-card-name">Histórias Mágicas</div>
@@ -2063,7 +2122,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openLiteracyAcademy)">
+      <div class="drawer-card-item drawer-card-p1" onclick="abrirAtividadeDrawer(openLiteracyAcademy)">
         <div class="drawer-card-icon">🔤</div>
         <div>
           <div class="drawer-card-name">Ler & Escrever (Método Fônico)</div>
@@ -2071,7 +2130,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openFingerCounting)">
+      <div class="drawer-card-item drawer-card-p1" onclick="abrirAtividadeDrawer(openFingerCounting)">
         <div class="drawer-card-icon">🖐️</div>
         <div>
           <div class="drawer-card-name">Mãos & Contar de 1 a 10</div>
@@ -2079,7 +2138,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openLanguagesAcademy)">
+      <div class="drawer-card-item drawer-card-p1" onclick="abrirAtividadeDrawer(openLanguagesAcademy)">
         <div class="drawer-card-icon">🌍</div>
         <div>
           <div class="drawer-card-name">Idiomas Mágicos (English & Español)</div>
@@ -2087,7 +2146,8 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openStarkPaint)">
+      <!-- PÁGINA 2: ARTE, MÚSICA, CINEMA E EMOÇÕES -->
+      <div class="drawer-card-item drawer-card-p2" style="display:none;" onclick="abrirAtividadeDrawer(openStarkPaint)">
         <div class="drawer-card-icon">🎨</div>
         <div>
           <div class="drawer-card-name">Pintura & Lousa Mágica</div>
@@ -2095,7 +2155,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openMusicComposer)">
+      <div class="drawer-card-item drawer-card-p2" style="display:none;" onclick="abrirAtividadeDrawer(openMusicComposer)">
         <div class="drawer-card-icon">🎵</div>
         <div>
           <div class="drawer-card-name">Música & Teclado</div>
@@ -2103,7 +2163,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openCinemaStark)">
+      <div class="drawer-card-item drawer-card-p2" style="display:none;" onclick="abrirAtividadeDrawer(openCinemaStark)">
         <div class="drawer-card-icon">🎬</div>
         <div>
           <div class="drawer-card-name">Cinema & Desenhos Stark</div>
@@ -2111,7 +2171,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openEmotionsCenter)">
+      <div class="drawer-card-item drawer-card-p2" style="display:none;" onclick="abrirAtividadeDrawer(openEmotionsCenter)">
         <div class="drawer-card-icon">💚</div>
         <div>
           <div class="drawer-card-name">Jogo das Emoções & Flor da Calma</div>
@@ -2119,7 +2179,8 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(abrirModalSemaforo)">
+      <!-- PÁGINA 3: ATENÇÃO, MEMÓRIA, COMPUTADOR E NATUREZA -->
+      <div class="drawer-card-item drawer-card-p3" style="display:none;" onclick="abrirAtividadeDrawer(abrirModalSemaforo)">
         <div class="drawer-card-icon">🚦</div>
         <div>
           <div class="drawer-card-name">Desafio do Semáforo</div>
@@ -2127,7 +2188,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(abrirModalLeitner)">
+      <div class="drawer-card-item drawer-card-p3" style="display:none;" onclick="abrirAtividadeDrawer(abrirModalLeitner)">
         <div class="drawer-card-icon">📦</div>
         <div>
           <div class="drawer-card-name">Baú do Conhecimento (Leitner)</div>
@@ -2135,7 +2196,7 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openTechAcademy)">
+      <div class="drawer-card-item drawer-card-p3" style="display:none;" onclick="abrirAtividadeDrawer(openTechAcademy)">
         <div class="drawer-card-icon">⌨️</div>
         <div>
           <div class="drawer-card-name">Treino do Mouse & Teclado</div>
@@ -2143,13 +2204,29 @@
         </div>
       </div>
 
-      <div class="drawer-card-item" onclick="abrirAtividadeDrawer(openWeatherSeasonsModal)">
+      <div class="drawer-card-item drawer-card-p3" style="display:none;" onclick="abrirAtividadeDrawer(openWeatherSeasonsModal)">
         <div class="drawer-card-icon">🌤️</div>
         <div>
           <div class="drawer-card-name">Clima de Hoje & 4 Estações</div>
           <div class="drawer-card-desc">Chuva, sol, frio e as estações do ano</div>
         </div>
       </div>
+    </div>
+
+    <!-- BARRA DE CONTROLE TÁTIL INFANTIL (ZERO SCROLL) -->
+    <div class="drawer-pagination-footer">
+      <button type="button" class="btn-drawer-page-nav" onclick="mudarPaginaDrawer(-1)" title="Página Anterior">
+        ◀ ANTERIOR
+      </button>
+      <div class="drawer-page-dots">
+        <span class="drawer-dot active" id="drawer-dot-1" onclick="irParaPaginaDrawer(1)" title="Página 1"></span>
+        <span class="drawer-dot" id="drawer-dot-2" onclick="irParaPaginaDrawer(2)" title="Página 2"></span>
+        <span class="drawer-dot" id="drawer-dot-3" onclick="irParaPaginaDrawer(3)" title="Página 3"></span>
+        <span id="drawer-page-lbl" style="font-size:0.95rem; font-weight:900; color:#38bdf8; margin-left:4px;">1 de 3</span>
+      </div>
+      <button type="button" class="btn-drawer-page-nav" onclick="mudarPaginaDrawer(1)" title="Próxima Página">
+        PRÓXIMO ▶
+      </button>
     </div>
   </aside>
 
@@ -2748,12 +2825,46 @@
     }, 4500);
 
     // CONTROLE DA GAVETA LATERAL DE ATIVIDADES
+    let paginaDrawerAtual = 1;
+    const TOTAL_PAGINAS_DRAWER = 3;
+
+    function atualizarExibicaoPaginaDrawer() {
+      for (let p = 1; p <= TOTAL_PAGINAS_DRAWER; p++) {
+        const cards = document.querySelectorAll(`.drawer-card-p${p}`);
+        cards.forEach(c => {
+          c.style.display = (p === paginaDrawerAtual) ? 'flex' : 'none';
+        });
+        const dot = document.getElementById(`drawer-dot-${p}`);
+        if (dot) {
+          if (p === paginaDrawerAtual) dot.classList.add('active');
+          else dot.classList.remove('active');
+        }
+      }
+      const lbl = document.getElementById('drawer-page-lbl');
+      if (lbl) lbl.textContent = `${paginaDrawerAtual} de ${TOTAL_PAGINAS_DRAWER}`;
+    }
+
+    function mudarPaginaDrawer(delta) {
+      playTone(587, 80);
+      paginaDrawerAtual = ((paginaDrawerAtual - 1 + delta + TOTAL_PAGINAS_DRAWER) % TOTAL_PAGINAS_DRAWER) + 1;
+      atualizarExibicaoPaginaDrawer();
+    }
+
+    function irParaPaginaDrawer(p) {
+      playTone(587, 80);
+      paginaDrawerAtual = p;
+      atualizarExibicaoPaginaDrawer();
+    }
+
     function toggleActivityDrawer() {
       const drawer = document.getElementById('activity-drawer');
       const backdrop = document.getElementById('drawer-backdrop');
       if (drawer && backdrop) {
-        drawer.classList.toggle('open');
+        const isOpen = drawer.classList.toggle('open');
         backdrop.classList.toggle('active');
+        if (isOpen) {
+          atualizarExibicaoPaginaDrawer();
+        }
       }
     }
 
@@ -8082,6 +8193,25 @@
     function iniciarMissaoQuarto() {
       dispararIntervencaoSosLocal('guardar_brinquedos');
     }
+
+    // CARREGAMENTO INSTANTÂNEO NO ARRANQUE (BOOT NO SEGUNDO ZERO)
+    async function carregarEstadoBootInicial() {
+      try {
+        const res = await fetch('/api/state');
+        const data = await res.json();
+        if (data.pet) {
+          atualizarBarrasPet(data.pet);
+          if (data.pet.acessorio !== undefined) {
+            atualizarAcessorioVisual(data.pet.acessorio);
+          }
+        }
+        if (data.pote) {
+          const el = document.getElementById('pote-fichas-val');
+          if (el) el.textContent = data.pote.saldo || 0;
+        }
+      } catch (e) {}
+    }
+    carregarEstadoBootInicial();
   </script>
   <!-- TELA DE PAUSA REMOTA DOS PAIS (ALMOÇO / JANTAR) -->
   <div id="remote-pause-screen" style="position:fixed; inset:0; background:radial-gradient(circle, #78350f 0%, #040914 90%); z-index:9000; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">

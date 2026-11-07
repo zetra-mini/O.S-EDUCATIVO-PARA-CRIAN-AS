@@ -217,6 +217,22 @@ class DatabaseManager:
             """
         )
 
+        # 2.05 REGISTRO DE RESGATES DO TESOURO REAL EM FAMÍLIA (PAI & FILHO)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS resgates_familia (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                item_id TEXT NOT NULL,
+                titulo TEXT NOT NULL,
+                icone TEXT NOT NULL,
+                custo_fichas INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'PENDENTE', -- 'PENDENTE' ou 'ENTREGUE'
+                solicitado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                entregue_em TIMESTAMP DEFAULT NULL
+            );
+            """
+        )
+
         # 2.1 INVENTÁRIO DE ACESSÓRIOS VESTÍVEIS REAIS DO JARVIS (ARMÁRIO)
         cursor.execute(
             """

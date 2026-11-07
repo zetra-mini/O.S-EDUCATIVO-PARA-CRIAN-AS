@@ -154,8 +154,29 @@ O sistema possui arquitetura adaptativa e se molda perfeitamente à capacidade d
 2. O servidor Microdot ultraleve iniciará na porta `8000` e o navegador abrirá automaticamente em `http://127.0.0.1:8000`.
 3. O painel dos pais estará disponível em `http://127.0.0.1:8000/pais`.
 
-### No Netbook Acer / Asus One (antiX Linux)
-1. Instale as dependências com o script otimizado:
+### No Netbook Acer / Asus One e PCs com Linux (antiX, Debian, Ubuntu, Raspberry Pi)
+
+#### ⚡ Opção 1: Instalação Automática em 1 Linha (Recomendado)
+Abra o terminal no Linux e execute o instalador automatizado universal:
+```bash
+# Clone o repositório e execute o instalador completo:
+git clone https://github.com/CarlosEduardoLemos/jarvis-kids-os.git
+cd jarvis-kids-os
+chmod +x install_linux.sh
+./install_linux.sh
+```
+Ou diretamente via curl:
+```bash
+curl -sSL https://raw.githubusercontent.com/CarlosEduardoLemos/jarvis-kids-os/main/install_linux.sh | bash
+```
+O script cuidará de tudo automaticamente:
+- Instala pacotes essenciais do sistema (`alsa-utils`, `espeak-ng`, `python3-venv`, `chromium`/`firefox`).
+- Cria o ambiente virtual e instala dependências Python (`microdot`, `edge-tts`, `google-genai`).
+- Otimiza ZRAM e consumo de memória para o processador Atom / Celeron.
+- Cria os atalhos na Área de Trabalho e configura o autostart no boot do sistema em tela cheia (modo quiosque seguro anti-saída infantil).
+
+#### 🛠️ Opção 2: Scripts Manuais Específicos
+1. Instale com o script específico para antiX / IceWM:
    ```bash
    bash instalar_antix_kiosk.sh
    ```
@@ -167,6 +188,27 @@ O sistema possui arquitetura adaptativa e se molda perfeitamente à capacidade d
    ```bash
    bash configurar_boot_automatico.sh
    ```
+
+---
+
+## 🎁 Fluxo do Tesouro Real da Família & Armário do Mascote
+
+- **Para onde vão as informações quando o filho resgata um Tesouro Real?**
+  - Quando a criança economiza moedas e resgata um privilégio real (ex: *Passeio no Parque*, *Cinema com Pipoca*, *Hora Extra de Brincadeira*), a solicitação é gravada imediatamente no banco de dados SQLite (`resgates_familia`) com timestamp e status `PENDENTE`.
+  - A solicitação aparece instantaneamente com destaque na nova aba **🎁 Tesouros & Recompensas** do **Painel dos Pais** (`/pais`), exibindo o item, a data/hora do resgate e o botão **`✅ Marcar como Entregue`**.
+  - Quando o papai ou a mamãe cumprem o combinado no mundo real, basta clicar no botão para arquivar com a data e horário da entrega!
+- **Itens do Mascote (Armário):**
+  - Os itens comprados para o robô companheiro (*Óculos Stark*, *Coroa de Ouro*, *Boné de Campeão*, *Cachecol Quentinho*, *Headset Gamer*, *Asas de Plasma*) são equipados imediatamente no SVG do robô, salvos no SQLite e mantidos vestidos desde o primeiro segundo de boot!
+
+---
+
+## 👶 Interface Lúdica Adaptada para Crianças de 3 a 5 Anos (Sem Scroll)
+
+- **Zero Dependência de Scroll do Mouse ou Touch:**
+  - A gaveta lateral de **Jogos & Estudos** foi totalmente remodelada com **Paginação Tátil de Alta Visibilidade**: botões gigantes `◀ ANTERIOR` e `PRÓXIMO ▶` com bolinhas iluminadas e som suave de virar página. A criança não precisa usar rodinha do mouse nem gesto de arrastar do touchpad para acessar todos os 12 jogos!
+- **Top Bar com Centralização Geométrica Absoluta:**
+  - A pílula de cômodos (`◀ Sala de Brincar ▶`) está milimetricamente centralizada no centro absoluto da tela em qualquer resolução (desde 800x480, 1024x600 até Full HD).
+  - Remoção de badges desnecessários para a criança (como temperatura em graus Celsius), mantendo o foco cognitivo no que realmente importa: moedas conquistadas e diversão educativa!
 
 ---
 

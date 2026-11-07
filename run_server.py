@@ -330,6 +330,37 @@ def api_fichas_historico(request: Request):
     return json_response(token_mgr.listar_historico_paginado(limite=limite, pagina=pagina))
 
 
+@app.route("/api/familia/resgates", methods=["GET"])
+def api_familia_resgates(request: Request):
+    status = request.args.get("status")
+    return json_response(token_mgr.listar_resgates_familia(status=status))
+
+
+@app.route("/api/familia/resgates/entregar", methods=["POST"])
+def api_familia_resgates_entregar(request: Request):
+    data = request.json or {}
+    resgate_id = data.get("id") or data.get("resgate_id")
+    try:
+        resgate_id = int(resgate_id)
+    except (TypeError, ValueError):
+        return json_response({"sucesso": False, "mensagem": "ID de resgate inválido."}, status_code=400)
+    return json_response(token_mgr.marcar_resgate_entregue(resgate_id))
+
+
+@app.route("/api/fichas/bonificar", methods=["POST"])
+def api_fichas_bonificar(request: Request):
+    data = request.json or {}
+    qtd = int(data.get("quantidade", 5))
+    motivo = str(data.get("motivo", "Incentivo dos Pais")).strip()
+    if qtd > 0:
+        sucesso = token_mgr.creditar_fichas(qtd, motivo, "PAIS")
+        msg = f"Creditadas {qtd} moedas com sucesso!"
+    else:
+        sucesso = token_mgr.debitar_fichas(abs(qtd), motivo)
+        msg = f"Ajustadas {abs(qtd)} moedas com sucesso!"
+    return json_response({"sucesso": sucesso, "mensagem": msg, "saldo": token_mgr.obter_saldo()})
+
+
 # ==============================================================================
 # ROTAS DE ROTINAS & PROTOCOLO ANTI-CONFLITO
 # ==============================================================================

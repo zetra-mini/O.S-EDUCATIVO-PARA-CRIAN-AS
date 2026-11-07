@@ -24,6 +24,10 @@ class TokenEconomyManager:
             }
         return {"saldo": 0, "total_acumulado": 0, "estrelas": 0}
 
+    def obter_saldo(self) -> int:
+        """Retorna diretamente o saldo numérico atual de moedas."""
+        return int(self.obter_status_pote().get("saldo", 0))
+
     def pode_creditar_categoria(self, categoria: str, limite_diario: int = 4) -> bool:
         """Verifica se a categoria atingiu o limite diário de recompensas para valorizar as conquistas."""
         cat_norm = categoria.upper()
@@ -138,6 +142,15 @@ class TokenEconomyManager:
             (item_id,),
         )
 
+        # Registra resgate na tabela para acompanhamento dos pais
+        self.db.executar_escrita(
+            """
+            INSERT INTO resgates_familia (item_id, titulo, icone, custo_fichas, status, solicitado_em)
+            VALUES (?, ?, ?, ?, 'PENDENTE', CURRENT_TIMESTAMP);
+            """,
+            (item["id"], item["titulo"], item["icone"], custo),
+        )
+
         novo_status = self.obter_status_pote()
         return {
             "sucesso": True,
@@ -145,6 +158,29 @@ class TokenEconomyManager:
             "item": dict(item),
             "saldo_restante": novo_status["saldo"],
         }
+
+    def listar_resgates_familia(self, status: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Retorna histórico de resgates de privilégios reais para os pais acompanharem."""
+        if status:
+            return self.db.consultar_todos(
+                "SELECT id, item_id, titulo, icone, custo_fichas, status, solicitado_em, entregue_em FROM resgates_familia WHERE status = ? ORDER BY id DESC;",
+                (status,),
+            )
+        return self.db.consultar_todos(
+            "SELECT id, item_id, titulo, icone, custo_fichas, status, solicitado_em, entregue_em FROM resgates_familia ORDER BY id DESC;"
+        )
+
+    def marcar_resgate_entregue(self, resgate_id: int) -> Dict[str, Any]:
+        """Permite aos pais confirmarem no painel que o privilégio real foi concedido ao filho."""
+        res = self.db.consultar_um("SELECT id, titulo FROM resgates_familia WHERE id = ?;", (resgate_id,))
+        if not res:
+            return {"sucesso": False, "mensagem": "Resgate não encontrado."}
+
+        self.db.executar_escrita(
+            "UPDATE resgates_familia SET status = 'ENTREGUE', entregue_em = CURRENT_TIMESTAMP WHERE id = ?;",
+            (resgate_id,),
+        )
+        return {"sucesso": True, "mensagem": f"Recompensa '{res['titulo']}' marcada como entregue!"}
 
     def listar_historico_paginado(self, limite: int = 10, pagina: int = 0) -> List[Dict[str, Any]]:
         """
