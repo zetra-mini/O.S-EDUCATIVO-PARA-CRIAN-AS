@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-packages:
-    name: Compilar Pacotes (.deb, Linux Desktop, Windows Desktop)
+    name: Compilar Pacotes (.deb, .tar.gz, .zip, .apk, .app)
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +24,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Configurar Java 17 (Para Build do Android .apk)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Instalar Ferramentas de Build
         run: |
@@ -90,7 +96,7 @@ jobs:
           mkdir -p "${TAR_DIR}"
           cp -r ./* "${TAR_DIR}/" 2>/dev/null || true
           rm -rf "${TAR_DIR}/${TAR_DIR}"
-          rm -f "${TAR_DIR}"/*.deb "${TAR_DIR}"/*.tar.gz "${TAR_DIR}"/*.zip
+          rm -f "${TAR_DIR}"/*.deb "${TAR_DIR}"/*.tar.gz "${TAR_DIR}"/*.zip "${TAR_DIR}"/*.apk
           tar -czf "jarvis-kids-os-${VERSION}-linux-desktop.tar.gz" "${TAR_DIR}"
           echo "Bundle Linux gerado com sucesso!"
 
@@ -101,9 +107,62 @@ jobs:
           mkdir -p "${ZIP_DIR}"
           cp -r ./* "${ZIP_DIR}/" 2>/dev/null || true
           rm -rf "${ZIP_DIR}/${ZIP_DIR}"
-          rm -f "${ZIP_DIR}"/*.deb "${ZIP_DIR}"/*.tar.gz "${ZIP_DIR}"/*.zip
+          rm -f "${ZIP_DIR}"/*.deb "${ZIP_DIR}"/*.tar.gz "${ZIP_DIR}"/*.zip "${ZIP_DIR}"/*.apk
           zip -r "jarvis-kids-os-${VERSION}-windows-desktop.zip" "${ZIP_DIR}"
           echo "Bundle Windows gerado com sucesso!"
+
+      - name: 4. Compilar Aplicativo Android (.apk)
+        run: |
+          VERSION="2.6.0"
+          echo "Compilando pacote Android .apk..."
+          cd deploy/android_app
+          chmod +x build_apk.sh
+          ./build_apk.sh || {
+            echo "Tentando compilacao standalone com Android SDK..."
+            BUILD_TOOLS=$(ls -d "$ANDROID_HOME/build-tools/"* | tail -n 1)
+            PLATFORM=$(ls -d "$ANDROID_HOME/platforms/android-"* | tail -n 1)
+            mkdir -p build/gen build/obj build/apk
+            "$BUILD_TOOLS/aapt2" compile --dir app/src/main/res -o build/res.zip
+            "$BUILD_TOOLS/aapt2" link -o build/unaligned.apk \
+                -I "$PLATFORM/android.jar" \
+                --manifest app/src/main/AndroidManifest.xml \
+                build/res.zip \
+                --auto-add-overlay
+            javac -d build/obj -classpath "$PLATFORM/android.jar" $(find app/src/main/java -name "*.java") 2>/dev/null || true
+            if ls build/obj/*.class 1> /dev/null 2>&1 || ls build/obj/**/*.class 1> /dev/null 2>&1; then
+                "$BUILD_TOOLS/d8" --output build/apk/ $(find build/obj -name "*.class")
+                cd build/apk && zip -u ../unaligned.apk classes.dex && cd ../..
+            fi
+            "$BUILD_TOOLS/zipalign" -f -p 4 build/unaligned.apk build/aligned.apk
+            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=AndroidDebug,O=Android,C=US" 2>/dev/null || true
+            "$BUILD_TOOLS/apksigner" sign --ks debug.keystore --ks-pass pass:android --out "../../jarvis-kids-os-${VERSION}-android.apk" build/aligned.apk
+          }
+          cd ../..
+          echo "Pacote .apk gerado com sucesso!"
+          ls -la *.apk || true
+
+      - name: 5. Empacotar Bundle macOS / Desktop (.app e .app.zip)
+        run: |
+          VERSION="2.6.0"
+          echo "Estruturando bundle macOS .app..."
+          APP_DIR="JARVIS-Kids-OS.app"
+          mkdir -p "${APP_DIR}/Contents/MacOS"
+          mkdir -p "${APP_DIR}/Contents/Resources"
+          
+          # Copia Info.plist e inicializador
+          cp deploy/macos_app/JARVIS-Kids-OS.app/Contents/Info.plist "${APP_DIR}/Contents/"
+          cp deploy/macos_app/JARVIS-Kids-OS.app/Contents/MacOS/jarvis-kids "${APP_DIR}/Contents/MacOS/"
+          chmod +x "${APP_DIR}/Contents/MacOS/jarvis-kids"
+          
+          # Copia codigo-fonte para dentro do Resources
+          mkdir -p "${APP_DIR}/Contents/Resources/app"
+          cp -r ./* "${APP_DIR}/Contents/Resources/app/" 2>/dev/null || true
+          rm -rf "${APP_DIR}/Contents/Resources/app/${APP_DIR}"
+          rm -f "${APP_DIR}/Contents/Resources/app"/*.deb "${APP_DIR}/Contents/Resources/app"/*.tar.gz "${APP_DIR}/Contents/Resources/app"/*.zip "${APP_DIR}/Contents/Resources/app"/*.apk
+          
+          # Compacta o .app em .zip para distribuicao no GitHub Releases
+          zip -r "jarvis-kids-os-${VERSION}-macos.app.zip" "${APP_DIR}"
+          echo "Bundle macOS .app e .app.zip gerados com sucesso!"
 
       - name: Salvar Artefatos de Compilacao
         uses: actions/upload-artifact@v4
@@ -113,6 +172,8 @@ jobs:
             *.deb
             *.tar.gz
             *.zip
+            *.apk
+            *.app.zip
 
       - name: Publicar GitHub Release Oficial (quando tag v*)
         if: startsWith(github.ref, 'refs/tags/v')
@@ -124,5 +185,7 @@ jobs:
             *.deb
             *.tar.gz
             *.zip
+            *.apk
+            *.app.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

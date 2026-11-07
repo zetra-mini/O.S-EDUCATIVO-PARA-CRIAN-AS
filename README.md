@@ -1,24 +1,41 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.1 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.2 — Stark Educational System (Para Kaleo Noah)
 
-Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para computadores com recursos restritos, tendo como referência original o netbook **Acer Aspire One / Asus Eee PC** (`Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), rodando sobre **antiX Linux (32/64 bits)** ou **Windows**.
+Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk)**!
 
 ---
 
-## 🌟 Novidades da Versão 3.1
-- 🤖 **Mascote Focado e Desobstruído:** Cômodos simplificados para **Sala de Brincar** e **Quarto de Dormir**, eliminando bandejas e elementos que obstruíam o robô e o botão principal de fala.
-- 🚫 **Zero Barras de Rolagem em Todo o Sistema:** Todas as atividades (Central de 16 Jogos, Prato dos Campeões, Biblioteca e Loja do Tesouro) foram desenhadas em Grid 2x2 com paginação tátil (`◀ Anterior` e `Próxima ▶`), garantindo usabilidade total sem exigir rodinha do mouse ou scroll touch.
-- 🔙 **Pilha de Navegação Inteligente (Botão Voltar):** Ao clicar em "Voltar" dentro de qualquer tela (leitura de livro, missão de higiene ou jogo), o sistema retorna sempre para a tela/estante anterior imediata e nunca direto para o dashboard/home do Jarvis.
-- 👕 **Opção de Desequipar Todos os Acessórios:** Botão dedicado `🚫 TIRAR ACESSÓRIOS DO JARVIS` no armário da loja, guardando todos os itens equipados e restaurando o traje original do robô.
-- 🔇 **Eliminação de Áudio sobre Áudio:** Interrupção agressiva e imediata de sintetizadores de voz e efeitos anteriores ao clicar em novas opções ou funções.
-- 🍎 **Educação Alimentar ("Prato dos Super Campeões"):** Prato dividido em 4 grupos nutritivos (Proteínas para músculos, Legumes para escudo imunológico, Carboidratos para energia e Frutas/Água para vitaminas) em layout 100% sem scroll.
-- 🧼 **Academia de Higiene Pessoal ("Super Herói Limpinho"):** 4 missões práticas (Lavar as mãos xô bactérias, escovação mágica dos dentes, banho relaxante dos campeões e corte de unhas/penteado) com recompensas e virtudes de autocuidado.
-- 💻 **Academia Tech com Treino da Rodinha do Mouse (Scroll):** Jogo lúdico com Foguete Cósmico (scroll up) e Submarino de Tesouros (scroll down), além de mira e clique.
-- 🇧🇷 **Festas & Datas Comemorativas do Brasil:** Jogo educativo paginado com as principais celebrações brasileiras (Carnaval, Páscoa, Dia das Mães, Festa Junina, 7 de Setembro, Natal, etc.) conectado ao SQLite.
-- 🎙️ **Comandos de Voz & Bloqueio Amigável do Cinema Stark:** O Jarvis abre jogos por voz e, ao pedir YouTube/Netflix bloqueado, informa com carinho o que a criança precisa fazer (ex.: ler um livrinho primeiro).
-- ⏰ **Central de Alarmes de Rotina:** Alarme sonoro e visual acionável pelos pais para escovar os dentes, guardar brinquedos, almoçar e dormir, com recompensa de moedas ao cumprir a missão.
-- 📍 **Geografia Ensinável com Edição Protegida:** Configuração de Cidade, Estado e País no painel dos pais protegida contra sobrescrita periódica, ensinando a criança onde ela mora no mundo.
-- 🔋 **Monitor Atento de Bateria do Netbook:** Avisos automáticos por voz carinhosa e banner superior quando a bateria cair para 20% e 10% (chamando os pais para plugar o carregador), e celebração sonora ao reconectar à tomada.
-- 🗣️ **11 Perfis de Voz Neural PT-BR:** Coleção expandida de vozes fluidas brasileiras (Antonio, Thalita, Francisca, Fábio, Letícia e vozes Studio Gemini), testáveis com 1 clique no painel ADM.
+## 🌟 Novidades da Versão 3.2
+
+### 🗣️ 1. Fonoaudiologia & Dicção do Super-Herói (17º Jogo Oficial)
+- **66 Desafios Fonoaudiológicos Completos:**
+  - **24 Desafios de Sílabas & Sons Desafiadores:** Trabalho minucioso de articulação infantil cobrindo fonemas R brando na ponta da língua (*Arara*, *Jacaré*, *Coração*, *Careta*, *Pirata*), R forte na garganta (*Rato*, *Robô*, *Rei*, *Rua*, *Rádio*), encontros consonantais com R (*Prato*, *Trator*, *Brasil*, *Dragão*, *Cravo*, *Fruta*, *Grade*), encontros consonantais com L (*Planeta*, *Flauta*, *Globo*, *Clube*, *Blusa*), sons de sibilantes e chiados (*Sapo*, *Sorvete*, *Zebra*, *Chocolate*, *Janela*, *Xícara*) e dígrafos nasais/palatais (*Coelho*, *Golfinho*).
+  - **30 Palavras Poderosas & Desafios Gigantes:** Palavras polissílabas infantis de 3 a 7 sílabas, incluindo o lendário campeão **Paralelepípedo** (7 sílabas!), *Astronauta*, *Borboleta*, *Dinossauro*, *Helicóptero*, *Hipopótamo*, *Rinoceronte*, *Escavadeira*, *Submarino*, *Tartaruga*, *Camaleão*, *Espetacular*, *Super-Herói*, *Constelação*, *Transformação*, *Bicicleta*, *Elefante*, *Arco-Íris*, *Computador*, *Telefone*, *Microscópio*, *Relâmpago*, *Joaninha*, *Melancia*, *Paraquedas*, *Tesouro*, *Foguete*, *Castelo*, *Espada* e *Aventura*.
+  - **12 Trava-Línguas Divertidos:** Treino de agilidade e ritmo articulatório (*O rato roeu*, *Três pratos de trigo*, *Sapo no saco*, *Doce mais doce*, *Aranha e a rã*, *Sabiá assobiador*, *Pinga a pia*, *O tempo*, *Mafagafos*, *Farofa fofa*, *Bote a bota*, *Peito de Pedro*).
+- **✨ Botão: "Nova Palavra Surpresa do Jarvis! 🤖":**
+  - O mascote Jarvis escolhe aleatoriamente uma palavra nova da cartola sob demanda, disparando arpeggio musical, chuva de corações/estrelas e expressão feliz nos olhinhos do robô.
+  - O robô fala com empolgação: *"Bip bip, super-herói Kaleo! O Jarvis preparou uma palavra mágica nova para você treinar a dicção: [SÍLABAS]! [DICA DA BOQUINHA] Vamos falar juntos?"*.
+- **🔉 Botão: "Sílaba por Sílaba":** Pronúncia pausada com cadência fonoaudiológica para a criança imitar cada pedacinho com calma.
+- **🎙️ Treino Interativo com Moedas Reais:** A criança treina a fala e recebe elogio do robô com **+5 moedas reais** creditadas no Pote do Tesouro.
+- **Comando de Voz Integrado:** Diga *"Jarvis me mostra uma palavra nova"*, *"Jarvis palavra mágica"* ou *"Jarvis treinar dicção"* e o jogo abre sorteando a palavra na hora!
+
+### 🎬 2. Gestão de Tempo de Cinema & Orientação Segura
+- **🚫 Botão de Travar / Zerar Cinema nas Ações Rápidas:** Os pais podem interromper ou revogar instantaneamente qualquer tempo residual de vídeo diretamente pelo painel `/pais` via `/api/admin/media/zerar`.
+- **Teto Máximo para Bônus de Mídia:** O bônus concedido pelos pais possui teto protetivo (máximo de 45 minutos), evitando acúmulos infinitos de tela.
+- **Diálogo Interativo por Voz:** Quando o cinema é liberado por horário ou bônus, o Jarvis anuncia por voz e pergunta gentilmente se a criança deseja assistir agora ou continuar brincando.
+
+### 🛡️ 3. Filtros Rígidos de Segurança Infantil (Child-Safe Guardrails)
+- **Sanitização de Respostas:** O módulo `jarvis_brain.py` aplica filtros estritos de segurança infantil que barram termos violentos, inapropriados ou assustadores, além de suprimir alucinações de blocos de código e markdown técnico.
+- **Proteção Canônica de Path Traversal:** Bloqueio `403 Forbidden` na rota de estáticos para tentativas de fuga de diretório (`/static/../../`).
+- **Rate Limit & Limite de Upload:** Uploads de vídeo e áudio dos pais limitados a 20MB para preservar a memória RAM do netbook contra travamentos (OOM).
+
+### 📦 4. Multiplataforma Universal & GitHub Actions CI/CD (.apk e .app)
+- **CI/CD Automatizado:** Compilação em nuvem de todos os pacotes oficiais a cada push ou tag de versão no GitHub Actions:
+  - 📱 **Android (.apk):** Aplicativo nativo em modo Fullscreen Landscape para tablets e celulares infantis (`deploy/android_app/`).
+  - 🍏 **macOS (.app e .app.zip):** Application Bundle executável para Mac com inicializador Python embutido (`deploy/macos_app/`).
+  - 🐧 **Debian Kiosk (.deb):** Pacote instalável com 1 clique para antiX Linux, Raspberry Pi OS e Ubuntu.
+  - 🐧 **Linux Standalone (.tar.gz):** Pacote portátil de quiosque para netbooks modestos.
+  - 🪟 **Windows Desktop (.zip):** Versão portátil completa com inicializador `.bat` para qualquer PC Windows.
+  - 📱 **PWA Móvel dos Pais:** Progressive Web App instalável no smartphone com Service Worker offline e push notifications.
 
 ---
 
@@ -27,12 +44,12 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 | 🤖 Tela Principal — Sala de Brincar do Robô Jarvis | 🎮 Central de Jogos & Estudos Paginada |
 | :---: | :---: |
 | ![HUD Jarvis](docs/screenshots/jarvis_sala_brincar.jpg) | ![Menu de Jogos e Estudos](docs/screenshots/menu_jogos_estudos.jpg) |
-| *Mascote Jarvis interativo com clima, economia de moedas, cômodos e status de bateria do notebook* | *16 Jogos infantis paginados em Grid 2x2 com botões táteis grandes e ZERO barras de rolagem* |
+| *Mascote Jarvis interativo com clima, economia de moedas, cômodos e status de bateria do notebook* | *17 Jogos infantis paginados em Grid 2x2 com botões táteis grandes e ZERO barras de rolagem* |
 
-| 📚 Biblioteca Mágica de Virtudes & Histórias | 🎵 Laboratório Musical & Piano Colorido |
+| 🗣️ Fonoaudiologia & Dicção do Super-Herói | 📚 Biblioteca Mágica de Virtudes & Histórias |
 | :---: | :---: |
-| ![Biblioteca Mágica](docs/screenshots/biblioteca_magica.jpg) | ![Laboratório Musical](docs/screenshots/laboratorio_musical.jpg) |
-| *Livros infantis de desenvolvimento pessoal com botões de virtudes, moral da história e gerador de histórias inéditas com IA* | *Teclado musical com notas Dó-Ré-Mi, bateria Stark, bichinhos cantores e canções infantis guiadas passo a passo* |
+| ![Fonoaudiologia](docs/screenshots/menu_jogos_estudos.jpg) | ![Biblioteca Mágica](docs/screenshots/biblioteca_magica.jpg) |
+| *66 desafios fonoaudiológicos com sílabas neon gigantes, botão de palavra surpresa do Jarvis e fala sílaba por sílaba* | *Livros infantis com virtudes, moral da história e gerador de histórias com IA* |
 
 ---
 
@@ -57,193 +74,108 @@ O sistema foi concebido, calibrado e testado originalmente para a linha de netbo
 | Componente | Requisitos Mínimos (Netbook Acer / Asus / PCs Antigos) | Requisitos Recomendados (PCs / Notebooks Modernos) |
 | :--- | :--- | :--- |
 | **Processador (CPU)** | Intel Atom 1.6 GHz, Intel Celeron antigo, AMD E-Series ou qualquer processador x86/x64 de 1 núcleo | Intel Core i3 / i5, AMD Ryzen 3 / 5 ou Celeron moderno quad-core |
-| **Memória RAM** | **1 GB de RAM** *(o backend Microdot consome apenas ~15 a 30 MB de RAM)* | **4 GB a 8 GB de RAM** *(necessário para rodar IA local com Ollama)* |
+| **Memória RAM** | **1 GB de RAM** *(o backend Microdot consome apenas ~12 a 25 MB de RAM)* | **4 GB a 8 GB de RAM** *(necessário para rodar IA local com Ollama)* |
 | **Armazenamento** | **500 MB livres** em disco ou cartão SD | **4 GB a 10 GB livres** *(para pesos dos modelos locais de IA)* |
-| **Resolução de Tela** | **1024 x 600 pixels** (10.1") com preenchimento total responsivo | **1366 x 768**, **1920 x 1080 (Full HD)** ou superior |
+| **Resolução de Tela** | **1024 x 600 pixels** (10.1") com preenchimento total responsivo sem scrollbars | **1366 x 768**, **1920 x 1080 (Full HD)** ou superior |
 | **Áudio & Microfone** | Microfone integrado e alto-falantes estéreo / saída P2 | Microfone USB com cancelamento de ruído e caixas de som |
 | **Conexão de Rede** | Wi-Fi 802.11 b/g/n (para síntese de voz neural e APIs na nuvem) | Conexão Wi-Fi ou Ethernet estável |
-| **Sistemas Operacionais** | **antiX Linux** (32/64 bits), **Debian minimal**, **Raspberry Pi OS**, **Windows 7/10/11** | Windows 10/11, Ubuntu/Debian, Fedora, macOS |
+| **Sistemas Operacionais** | **antiX Linux** (32/64 bits), **Debian minimal**, **Raspberry Pi OS**, **Windows 7/10/11**, **Android**, **macOS** | Windows 10/11, Ubuntu/Debian, Fedora, macOS Sonoma/Sequoia, Android 10+ |
 
 ---
 
-### ⚙️ Matriz de Modos de Operação Conforme o Hardware
+## 📦 Matriz de Pacotes & Downloads Oficiais (GitHub Releases)
 
-O sistema possui arquitetura adaptativa e se molda perfeitamente à capacidade da máquina hospedeira:
+Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS/actions) e disponibilizados na aba de **Releases**:
 
-1. **Modo Netbook Atom / Máquinas Modestas (1 GB a 2 GB RAM):**
-   * **Motor de IA:** Nuvem Híbrida (**Google Gemini 3.8 Flash**, **Groq Cloud Llama 3.3 70B** ou **OpenCode CLI em rede local**).
-   * **Voz Neural PT-BR:** **Edge-TTS Neural** com cache em memória e em disco (`voz_jarvis.py`), mantendo a CPU do Intel Atom em **0% de uso em repouso**.
-   * **Microfone Seguro Sob Demanda:** A placa de áudio nunca fica gravando em segundo plano. O microfone abre apenas no instante em que a criança clica no botão de fala ou toca no mascote, liberando imediatamente o hardware de áudio.
-
-2. **Modo Computador Moderno / Desktop (4 GB a 16 GB RAM):**
-   * **Motor de IA Local:** Suporte nativo ao **Ollama** rodando localmente (`http://127.0.0.1:11434`) com modelos como `llama3.2:1b` ou `qwen2.5:0.5b` com **zero custo de API e 100% localhost**.
-   * **Prioridade Estrita de Voz:** A voz selecionada no painel dos pais (`jarvis_antonio`, `amiga_thalita` ou `amiga_francisca`) tem prioridade total e não se altera ao alternar entre modelos de IA locais e na nuvem.
-
-3. **Modo Standalone / 100% Offline (Sem Internet):**
-   * Caso o netbook esteja em uma viagem ou sem Wi-Fi, o Jarvis ativa o modo de contingência offline com banco de respostas educativas pré-programadas no SQLite e síntese nativa do navegador, garantindo que o aprendizado nunca seja interrompido.
+| Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
+| :--- | :--- | :--- | :--- |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_2.6.0.deb` | `sudo dpkg -i jarvis-kids-os_2.6.0.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-2.6.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-2.6.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-2.6.0-android.apk` | Instalar no Android e permitir microfone |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-2.6.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
 
 ---
 
-## ⚡ Parte 1: Engenharia de Performance & Hardware Restrito
+## ⚡ Engenharia de Performance & Hardware Restrito
 
 ### 1. Servidor Web Ultraleve com Microdot (< 15 MB de RAM)
-- O backend foi migrado de frameworks pesados para o **Microdot**, um micro-framework assíncrono de pegada de memória mínima.
-- **Consumo real medido com `tracemalloc`:** Apenas **8.86 MB de RAM** (pico de **10.45 MB**), rodando com folga muito abaixo do teto de 30 MB.
+- O backend opera sobre o **Microdot**, micro-framework assíncrono de pegada de memória mínima.
+- **Consumo real medido:** Apenas **9 a 14 MB de RAM**, operando com folga muito abaixo do teto de 30 MB.
 - Servido nativamente na porta `http://127.0.0.1:8000`.
 
-### 2. SQLite em Modo WAL & Arquitetura Single-Writer / Multi-Reader
-- Para evitar a temida falha `SQLITE_BUSY` e o congelamento do disco/SSD por acessos simultâneos, todas as conexões SQLite injetam no momento da abertura:
+### 2. SQLite em Modo WAL & Arquitetura de Acesso Seguro
+- Para evitar a falha `SQLITE_BUSY` e o congelamento do disco/SSD por acessos simultâneos, todas as conexões SQLite injetam no momento da abertura:
   ```sql
   PRAGMA journal_mode = WAL;     -- Write-Ahead Logging: leituras e escritas não bloqueiam umas às outras
   PRAGMA synchronous = NORMAL;   -- Reduz chamadas excessivas de fsync ao disco
   PRAGMA temp_store = MEMORY;    -- Força tabelas temporárias e ordenações na memória RAM
   PRAGMA busy_timeout = 5000;    -- Espera até 5 segundos em caso de concorrência antes de falhar
   ```
-- **Fila Sequencial Assíncrona (`banco_dados.py`):** As rotas de escrita enfileiram tarefas em uma `queue.Queue`. Um único Worker em segundo plano (`SQLiteSingleWriter`) consome os dados e grava de forma estritamente sequencial. Múltiplas rotas podem ler concorrentemente com conexões independentes.
 
-### 3. Gestão Defensiva de Memória RAM (Teto de 2 GB)
-- **Paginação com Geradores (`yield`):** Consultas de histórico (logs, fichas, mensagens) usam `LIMIT` e `OFFSET`, transmitindo registros através de geradores linha por linha sem criar arrays gigantes na RAM.
-- **Coleta Ativa (`gc.collect()`):** Liberação ativa de memória e variáveis de sessão na transição entre jogos e módulos.
-- **Mídia sob Demanda:** Imagens, sons e áudios são transmitidos via fluxo contínuo do disco (`send_file(..., stream=True)`), nunca pré-carregados na memória.
+### 3. Eliminação Absoluta de Áudio sobre Áudio
+- Toda emissão de voz neural (`speak()`), chime sonoro ou música aciona previamente `pararTodosAudiosESpeech()`, cancelando requisições TTS em andamento e silenciando sintetizadores do navegador para garantir que nunca ocorra sobreposição de falas.
 
-### 4. Inteligência Artificial e Voz Terceirizadas
-- **Zero modelos neurais pesados locais:** Nenhum modelo Whisper, PyTorch ou LLM local roda no Atom.
-- O reconhecimento e síntese de voz (STT/TTS) são terceirizados para APIs em nuvem (**Google AI Studio / Gemini**, **Edge-TTS**, **OpenCode LAN** ou a **Web Speech API** nativa do navegador), garantindo CPU a 0% em repouso.
+### 4. Zero Scrollbars & Paginação Tátil
+- Todas as interfaces (HUD, Loja, Biblioteca, Prato dos Campeões, Central de 17 Jogos e Academia de Dicção) utilizam containers flexbox com `overflow: hidden; max-height: calc(100vh - 72px)` e navegação anterior/próxima em botões de alta visibilidade, eliminando completamente barras de rolagem.
 
 ---
 
-## 🧸 Parte 2: Psicologia Infantil, Rotinas e Conexão Paterna
+## 🎮 Catálogo dos 17 Jogos & Atividades Educativas
 
-### 1. Bichinho Virtual Estilo Pou (`jarvis_pet_status.py` / POUPY)
-- **4 Barras Vitais:** Higiene, Alimentação, Diversão e Energia com decaimento suave ao longo do tempo.
-- **Interação Tátil:** Carinho ao clicar/segurar no mascote, sabonete/chuveiro para higiene, frutinhas saudáveis e abajur interativo para o sono reparador.
-- **Humores Dinâmicos:** `FELIZ`, `COM_FOME`, `SUJO`, `CANSADO`, `TRISTE` refletidos nas expressões visuais 2D do mascote.
-
-### 2. Rotinas Diárias B-bot & Protocolo Anti-Conflito (`rotinas_companheiro.py`)
-- Em vez de ordens, missões cooperativas gamificadas:
-  - **Missão Dente Brilhante:** Cronômetro interativo de 2 minutos com barra visual de escovação.
-  - **Operação Quarto Limpo:** Desafio de contagem regressiva (3 a 5 minutos) para guardar brinquedos.
-  - **Aviso Preventivo de 5 Minutos:** Notificação afetuosa antes do fim do tempo de brincar ou do cinema.
-  - **Escolhas Dirigidas:** "Você quer calçar o sapato azul ou o vermelho agora?" promovendo autonomia sem atrito.
-
-### 3. Economia de Fichas & O "Pote do Tesouro" (`economia_fichas.py`)
-- Cada rotina concluída rende moedas/estrelas creditadas instantaneamente.
-- **Pote Virtual:** Animação imediata com o pote enchendo na tela.
-- **Loja de Privilégios Reais:** Troca de moedas por momentos especiais com os pais (passeio no parque, piquenique, sessão de cinema em família) e acessórios virtuais.
-
-### 4. Inteligência Emocional SEL & Autorregulação (`academia_emocoes_tech.py`)
-- **Mini-Histórias:** Situações infantis reais onde a criança identifica o sentimento do amigo.
-- **Florzinha da Calma:** Exercício de respiração vagal guiada: "Cheirar a florzinha pelo nariz" (4s) e "Soprar a velinha pela boca" (4s) para momentos de agitação ou frustração.
-
-### 5. Funções Executivas & Cognição (`cognicao_jogos.py`)
-- **Desafio do Semáforo (Controle Inibitório):** Toque rápido quando o sinal está verde; pare imediato quando o sinal fica vermelho.
-- **Baú do Conhecimento (Repetição Espaçada de Leitner):** Flashcards educativos em 3 caixas progressivas (diária, a cada 2 dias, semanal), consolidando letras, números, cores e animais.
-
-### 6. Educação Alimentar & Semáforo Nutricional (`educacao_alimentar.py`)
-- **Prato Colorido dos Superpoderes:** Estimula comer alimentos de cores variadas (verde para força, vermelho para coração forte, laranja para visão de herói).
-- **Semáforo dos Alimentos:** Alimentos livres (verde), moderados (amarelo) e doces ocasionais (vermelho), com validação remota de refeição pelos pais.
-
-### 7. Clima, Estações & Cuidados Pessoais (`clima_estacoes.py`)
-- Consulta automática da API gratuita **Open-Meteo** (sem necessidade de chaves).
-- **Cache de 120 minutos no SQLite:** Poupando conexão e processamento.
-- Dicas práticas e carinhosas para a criança (levar guarda-chuva na chuva, beber água no calor, vestir casaco no frio).
-
-### 8. Presença Paterna & Mensagens Remotas (`mensagens_pais.py`)
-- Mensagens secretas enviadas pelos pais via celular que surgem com destaque afetuoso na tela do Kaleo.
-- **Rastreamento em Tempo Real:** O painel dos pais exibe o status exato: `ENVIADA` ➔ `RECEBIDA` ➔ `ABERTA (às HH:MM:SS)`.
-- **SOS Intervenção:** O pai pode disparar do celular uma pausa com tela de abraço, música de calma ou chamada para refeição.
-
-### 10. Estudo Lúdico de Idiomas (Inglês 🇺🇸 e Espanhol 🇪🇸 — `estudo_idiomas.py`)
-- **Cards Falantes Interativos:** A criança vê a ilustração colorida, o nome em português, a palavra em destaque com guia fonético (ex: *"Dóg"*, *"Pê-rro"*, *"Uan"*) e ouve a pronúncia nativa com a Web Speech API (`en-US` e `es-ES`).
-- **Mãozinhas & Dedos (Números de 1 a 10):** Ensinamento concreto mostrando os dedinhos das mãos levantados (ex: 1 dedinho = *One / Uno*, 5 dedinhos = *Five / Cinco*, duas mãos abertas = *Ten / Diez*).
-- **Categorias Cotidianas:** Animais, Cores, Mãozinhas & Números, Frutinhas & Comidas, Saudações de Afeto e Família Querida.
-- **Mini-Quiz do Jarvis ("Adivinhe a Palavra"):** O Jarvis pergunta com áudio (*"Where is the Cat?"* ou *"¿Dónde está el Perro?"*) e a criança toca na carta correta entre 3 opções coloridas.
-- **Reforço Imediato:** Cada acerto credita **+5 moedas para o Pote do Tesouro** com festa visual de confetes e estrelas!
-
-### 11. Atualização em 1 Clique & Persistência do Sistema
-- **Script `atualizar_sistema.sh`:** Atualiza o repositório do GitHub (`git pull`) e reinicia os serviços sem complicações.
-- **Watchdog `iniciar_servicos.sh`:** Monitora o processo e reinicia automaticamente em caso de encerramento, garantindo disponibilidade contínua.
-- **Monitor de Bateria:** Alerta amigável no netbook quando a bateria estiver baixa (< 20%) ou 100% cheia para desconectar da tomada e proteger as células.
+1. **🎨 Laboratório de Pintura Neon:** Lousa artística com pincéis coloridos e salvamento de desenhos.
+2. **🎵 Laboratório Musical Stark:** Teclado Dó-Ré-Mi, bateria de ritmo e músicas infantis guiadas.
+3. **🔢 Desafio dos Dedinhos:** Matemática visual e contagem de 1 a 10 com mãozinhas animadas.
+4. **🔤 Ler & Escrever (Método Fônico):** Sons de cada letra do alfabeto e escrita na lousa neon.
+5. **🌍 Idiomas Mágicos:** Cartões falantes em Português, Inglês e Espanhol.
+6. **🚦 Semáforo & Atenção:** Treino de autorregulação e reflexos estilo "luz verde, luz vermelha".
+7. **🌸 Centro das Emoções & Flor da Calma:** Identificação de sentimentos e respiração guiada.
+8. **🍎 Prato dos Super Campeões:** Educação alimentar com divisão dos 4 grupos de nutrientes.
+9. **🧼 Academia de Higiene Pessoal:** 4 missões práticas de autocuidado (mãos, dentes, banho e unhas).
+10. **💻 Academia Tech & Treino do Mouse:** Foguete (scroll up), Submarino (scroll down), mira e clique.
+11. **🇧🇷 Festas & Datas Comemorativas do Brasil:** Celebrações culturais brasileiras no calendário.
+12. **🪢 Labirinto Espacial:** Coordenação motora fina e raciocínio lógico em labirintos estelares.
+13. **🧩 Jogo da Memória dos Heróis:** Cartas mágicas com pares de personagens e virtudes.
+14. **🪐 Cores e Formas Espaciais:** Geometria lúdica com círculos, quadrados, triângulos e estrelas.
+15. **🧮 Quebra-Cabeça Numérico:** Ordenação de peças numeradas com estímulo cognitivo.
+16. **🗃️ Baú Leitner de Repetição Espaçada:** Memorização inteligente de fatos e conceitos.
+17. **🗣️ Fonoaudiologia & Dicção do Super-Herói:** 66 desafios de fala com sílabas neon, dica da boquinha, fala pausada e sorteio de palavras mágicas pelo robô Jarvis!
 
 ---
 
-## 🕹️ Como Iniciar o Sistema
+## 🚀 Como Executar Localmente
 
-### No Windows
-1. Dê um duplo-clique em:
-   ```cmd
-   iniciar_web_windows.bat
-   ```
-2. O servidor Microdot ultraleve iniciará na porta `8000` e o navegador abrirá automaticamente em `http://127.0.0.1:8000`.
-3. O painel dos pais estará disponível em `http://127.0.0.1:8000/pais`.
+### Pré-requisitos
+- Python 3.10 ou superior
+- Navegador moderno (Chromium, Chrome, Edge ou Firefox)
 
-### No Netbook Acer / Asus One e PCs com Linux (antiX, Debian, Ubuntu, Raspberry Pi)
-
-#### ⚡ Opção 1: Instalação Automática em 1 Linha (Recomendado)
-Abra o terminal no Linux e execute o instalador automatizado universal:
+### Instalação Rápida
 ```bash
-# Clone o repositório oficial e execute o instalador completo:
-git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git ~/jarvis-kids-os
-cd ~/jarvis-kids-os
-chmod +x install_linux.sh
-./install_linux.sh
+git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git
+cd O.S-EDUCATIVO-PARA-CRIAN-AS
+pip install -r requirements.txt
 ```
-Ou diretamente via curl:
+
+### Inicialização
 ```bash
-curl -sSL https://raw.githubusercontent.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS/main/install_linux.sh | bash
+# Inicia o servidor local
+python run_server.py 8000
 ```
-O script cuidará de tudo automaticamente:
-- Instala pacotes essenciais do sistema (`alsa-utils`, `espeak-ng`, `python3-venv`, `chromium`/`firefox`).
-- Cria o ambiente virtual e instala dependências Python (`microdot`, `edge-tts`, `google-genai`).
-- Otimiza ZRAM e consumo de memória para o processador Atom / Celeron.
-- Cria os atalhos na Área de Trabalho e configura o autostart no boot do sistema em tela cheia (modo quiosque seguro anti-saída infantil).
-
-#### 🛠️ Opção 2: Scripts Manuais Específicos
-1. Instale com o script específico para antiX / IceWM:
-   ```bash
-   bash instalar_antix_kiosk.sh
-   ```
-2. Inicie o modo quiosque de tela cheia:
-   ```bash
-   bash iniciar_web_kiosk.sh
-   ```
-3. Para ativar a inicialização automática no boot com proteção de tela e atalhos bloqueados:
-   ```bash
-   bash configurar_boot_automatico.sh
-   ```
-
----
-
-## 🎁 Fluxo do Tesouro Real da Família & Armário do Mascote
-
-- **Para onde vão as informações quando o filho resgata um Tesouro Real?**
-  - Quando a criança economiza moedas e resgata um privilégio real (ex: *Passeio no Parque*, *Cinema com Pipoca*, *Hora Extra de Brincadeira*), a solicitação é gravada imediatamente no banco de dados SQLite (`resgates_familia`) com timestamp e status `PENDENTE`.
-  - A solicitação aparece instantaneamente com destaque na nova aba **🎁 Tesouros & Recompensas** do **Painel dos Pais** (`/pais`), exibindo o item, a data/hora do resgate e o botão **`✅ Marcar como Entregue`**.
-  - Quando o papai ou a mamãe cumprem o combinado no mundo real, basta clicar no botão para arquivar com a data e horário da entrega!
-- **Itens do Mascote (Armário):**
-  - Os itens comprados para o robô companheiro (*Óculos Stark*, *Coroa de Ouro*, *Boné de Campeão*, *Cachecol Quentinho*, *Headset Gamer*, *Asas de Plasma*) são equipados imediatamente no SVG do robô, salvos no SQLite e mantidos vestidos desde o primeiro segundo de boot!
-
----
-
-## 👶 Interface Lúdica Adaptada para Crianças de 3 a 5 Anos (Sem Scroll)
-
-- **Zero Dependência de Scroll do Mouse ou Touch:**
-  - A gaveta lateral de **Jogos & Estudos** foi totalmente remodelada com **Paginação Tátil de Alta Visibilidade**: botões gigantes `◀ ANTERIOR` e `PRÓXIMO ▶` com bolinhas iluminadas e som suave de virar página. A criança não precisa usar rodinha do mouse nem gesto de arrastar do touchpad para acessar todos os 12 jogos!
-- **Top Bar com Centralização Geométrica Absoluta:**
-  - A pílula de cômodos (`◀ Sala de Brincar ▶`) está milimetricamente centralizada no centro absoluto da tela em qualquer resolução (desde 800x480, 1024x600 até Full HD).
-  - Remoção de badges desnecessários para a criança (como temperatura em graus Celsius), mantendo o foco cognitivo no que realmente importa: moedas conquistadas e diversão educativa!
+- Acesse a interface da criança: `http://localhost:8000`
+- Acesse o painel dos pais: `http://localhost:8000/pais`
 
 ---
 
 ## 📱 Painel dos Pais (`/pais`)
 
 Acessível por qualquer smartphone, tablet ou computador na mesma rede Wi-Fi (`http://[IP-DO-NETBOOK]:8000/pais`):
-- **Envio de Mensagens com Leitura Confirmada:** Acompanhe quando seu filho abriu o bilhete.
-- **Pote do Tesouro:** Gerenciamento de fichas conquistadas e aprovação de resgates da vida real.
-- **Controle de Cinema & Mídia:** Adicione minutos de bônus ou pause a tela para o almoço.
-- **SOS Intervenção Imediata:** Acione respiração guiada, pausa de descanso ou hora da comidinha com um toque.
-- **Diagnóstico em Tempo Real & Logs de Falhas:** Visualizador de eventos, erros e alertas do sistema (banco SQLite, IA, voz TTS, bateria e memória) com filtros dinâmicos, busca por palavra e limpeza com 1 clique.
-- **Atualização do Sistema:** Botão remoto para baixar atualizações do GitHub e reiniciar o Jarvis.
+- **Ações Rápidas com 1 Toque:** Liberar ou travar cinema, pausar para refeição, acionar alarme de escovar dentes ou guardar brinquedos.
+- **Pote do Tesouro:** Gerenciamento do saldo de moedas e aprovação de resgates da vida real.
+- **Mensagens & Recados com Áudio/Vídeo:** Envio de bilhetes carinhosos com confirmação de leitura pela criança.
+- **Configurações de Voz Neural:** Seleção entre 11 vozes neurais brasileiras com prioridade total no sistema.
+- **Geografia Ensinável:** Configuração de cidade, estado e país para ensinar à criança sua localização no planeta Terra.
+- **Logs & Diagnóstico em Tempo Real:** Monitoramento de eventos, bateria do notebook e integridade do banco SQLite.
 
 ---
 

@@ -1,0 +1,32 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+APP_ROOT="$( cd "$DIR/../../.." && pwd )"
+
+# Garante PATH adequado no macOS
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# Inicia o backend Python em background
+if command -v python3 &>/dev/null; then
+    PYTHON_CMD="python3"
+else
+    PYTHON_CMD="python"
+fi
+
+cd "$APP_ROOT"
+$PYTHON_CMD run_server.py 8000 &
+PID_SERVER=$!
+
+# Aguarda 1.2s para o servidor subir
+sleep 1.2
+
+# Abre no navegador padrão ou Chrome em modo app
+if [ -d "/Applications/Google Chrome.app" ]; then
+    open -a "/Applications/Google Chrome.app" --args --app="http://127.0.0.1:8000" --window-size=1024,600
+elif [ -d "/Applications/Brave Browser.app" ]; then
+    open -a "/Applications/Brave Browser.app" --args --app="http://127.0.0.1:8000" --window-size=1024,600
+else
+    open "http://127.0.0.1:8000"
+fi
+
+# Mantém o processo vivo monitorando
+wait $PID_SERVER
