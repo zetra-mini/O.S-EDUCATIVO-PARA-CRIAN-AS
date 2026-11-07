@@ -152,6 +152,20 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** (especialmente no Acer Aspire One, Asus Eee PC ou PCs antigos) é a experiência de **Console Educativo Dedicado** (estilo videogame ou eletrodoméstico):
 
+### 🚀 Instalação com 1 Comando no antiX Linux (100% Automático):
+Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
+
+```bash
+sudo dpkg -i jarvis-kids-os_3.3.3.deb
+```
+
+**Pronto! A partir desse momento, tudo é 100% automático:**
+- **Zero configuração manual:** Você **não precisa** ativar o servidor pelo terminal nem digitar comandos toda vez que ligar o netbook.
+- **Início Automático no Boot:** O instalador `.deb` configura o serviço de background e a sessão do antiX. Sempre que você ligar ou reiniciar o computador, o Jarvis Kids OS sobe sozinho em tela cheia (modo quiosque 1024x600).
+- **Sem senhas ou distrações:** A criança vê apenas o robô Jarvis e seus jogos educativos, sem acesso a menus do sistema, barra de tarefas ou terminal.
+
+---
+
 ### 🔄 Como Funciona Toda Vez que Ligar ou Reiniciar:
 1. **Zero Senhas (Auto-Login Instantâneo):** O sistema faz o login automático direto no usuário da criança pelo gerenciador **SLiM** (`/etc/slim.conf`) ou **LightDM**, sem travar em telas de senha.
 2. **Zero Telas do Linux ou Menus Confusos:** O netbook não abre terminal, painéis ou área de trabalho com ícones soltos.
@@ -163,18 +177,14 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 * **Watchdog de Persistência:** Caso o navegador seja fechado acidentalmente, um laço de monitoramento reabre o Jarvis automaticamente em 2 segundos.
 * **Protetor de Tela Desativado:** Comandos `xset s off -dpms` impedem que a tela apague no meio de uma historinha ou jogo.
 
-### 🛠️ Scripts Prontos de Configuração:
-* **Instalação Rápida no antiX:**
+### 🛠️ Scripts Alternativos de Configuração (Caso instale sem o .deb):
+* **Instalação Manual no antiX:**
   ```bash
   bash instalar_antix_kiosk.sh
   ```
 * **Ativação Completa de Persistência & Auto-Login pelo Root:**
   ```bash
   sudo bash configurar_boot_automatico.sh
-  ```
-* **Instalação Dedicada de SO Kiosk Mínimo:**
-  ```bash
-  sudo bash deploy/linux_os_kiosk/install_linux_os.sh
   ```
 
 ---
@@ -201,26 +211,29 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 
 ---
 
-## 🚀 Como Executar Localmente
+## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-### Pré-requisitos
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.3.3.deb`). O sistema inicia 100% automático no boot.
+>
+> O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
+
+### Pré-requisitos (Modo Dev)
 - Python 3.10 ou superior
 - Navegador moderno (Chromium, Chrome, Edge ou Firefox)
 
-### Instalação Rápida
+### Instalação em Modo de Desenvolvimento
 ```bash
 git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git
 cd O.S-EDUCATIVO-PARA-CRIAN-AS
 pip install -r requirements.txt
 ```
 
-### Inicialização
+### Inicialização Manual do Servidor
 ```bash
-# Inicia o servidor local
 python run_server.py 8000
 ```
-- Acesse a interface da criança: `http://localhost:8000`
-- Acesse o painel dos pais: `http://localhost:8000/pais`
+- Interface da criança: `http://localhost:8000`
+- Painel dos pais: `http://localhost:8000/pais`
 
 ---
 
