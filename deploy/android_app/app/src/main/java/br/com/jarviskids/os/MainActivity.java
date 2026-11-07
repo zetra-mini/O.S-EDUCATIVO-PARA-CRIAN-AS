@@ -86,29 +86,57 @@ public class MainActivity extends Activity {
         settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
+        settings.setSupportMultipleWindows(false);
+        settings.setJavaScriptCanOpenWindowsAutomatically(false);
 
         webView.setWebViewClient(new WebViewClient() {
+            private String normalizarUrl(String url) {
+                if (url == null || url.trim().isEmpty()) return DEFAULT_LOCAL_URL;
+                if (url.endsWith("/pais") || url.equals("file:///pais") || url.contains("/pais")) {
+                    return "file:///android_asset/painel_pais.html";
+                }
+                if (url.equals("file:///") || url.endsWith("/hud_jarvis.html")) {
+                    return "file:///android_asset/hud_jarvis.html";
+                }
+                return url;
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
+                String target = normalizarUrl(url);
+                view.loadUrl(target);
                 return true;
             }
 
             @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    String url = request.getUrl().toString();
+                    String target = normalizarUrl(url);
+                    view.loadUrl(target);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                lidarComErroConexao();
+                lidarComErroConexao(failingUrl);
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (request.isForMainFrame()) {
-                        lidarComErroConexao();
+                        lidarComErroConexao(request.getUrl().toString());
                     }
                 }
             }
 
-            private void lidarComErroConexao() {
+            private void lidarComErroConexao(String url) {
+                if (url != null && url.startsWith("file:")) {
+                    return; // Arquivos locais em assets nao geram aviso de Wi-Fi
+                }
                 // Em caso de falha de conexao com IP externo, reverte imediatamente para o modo autonomo offline!
                 runOnUiThread(new Runnable() {
                     @Override

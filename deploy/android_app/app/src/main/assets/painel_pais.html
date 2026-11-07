@@ -331,7 +331,7 @@
       </button>
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-        <a href="/" style="color:#38bdf8; font-size:0.82rem; text-decoration:none; font-weight:700;">◀ Voltar para o Jarvis</a>
+        <a href="javascript:voltarAoJarvis()" style="color:#38bdf8; font-size:0.82rem; text-decoration:none; font-weight:700;">◀ Voltar para o Jarvis</a>
         <span style="color:#64748b; font-size:0.75rem;">PIN padrão: 1234 ou 56</span>
       </div>
     </div>
@@ -344,7 +344,7 @@
       <div class="sub">Controle dos Pais, Inteligência Artificial, Horários & Desenvolvimento Pessoal</div>
     </div>
     <div style="display:flex; gap:8px;">
-      <a href="/" class="btn-top-hub">🤖 Voltar ao Robô Jarvis</a>
+      <button type="button" class="btn-top-hub" onclick="voltarAoJarvis()" style="border:none; cursor:pointer;">🤖 Voltar ao Robô Jarvis</button>
     </div>
   </header>
 
@@ -855,6 +855,13 @@
 
   <!-- JAVASCRIPT DO PAINEL ADMINISTRATIVO -->
   <script>
+    function voltarAoJarvis() {
+      if (window.location.protocol === 'file:') {
+        window.location.href = 'hud_jarvis.html';
+      } else {
+        window.location.href = '/';
+      }
+    }
     // =========================================================================
     // TRAVA PARENTAL (PARENTAL GATE COM PIN / PERGUNTA DE ADULTO)
     // =========================================================================
