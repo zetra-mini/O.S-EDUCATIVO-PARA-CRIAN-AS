@@ -8476,9 +8476,21 @@
       ['#00f0ff','#ef4444','#facc15','#22c55e','#fb923c','#f472b6','#ffffff'].forEach(c => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.style.cssText = `width:46px; height:46px; border-radius:50%; background:${c}; border:3px solid #fff; cursor:pointer;`;
-        b.onclick = () => { color = c; playTone(587, 80); };
+        b.style.cssText = `width:42px; height:42px; border-radius:50%; background:${c}; border:3px solid #fff; cursor:pointer;`;
+        b.onclick = () => { color = c; carimboAtivo = null; playTone(587, 80); };
         bar.appendChild(b);
+      });
+
+      let carimboAtivo = null;
+      const carimbos = ['⭐', '🤖', '🚀', '🦖', '❤️', '👑', '⚡'];
+      carimbos.forEach(cr => {
+        const cb = document.createElement('button');
+        cb.type = 'button';
+        cb.className = 'big-btn';
+        cb.style.cssText = 'padding:4px 8px; font-size:1.2rem; background:#1e293b; border:1px solid #38bdf8; border-radius:8px; cursor:pointer;';
+        cb.textContent = cr;
+        cb.onclick = () => { carimboAtivo = cr; playTone(784, 80); showToast(`Carimbo ${cr} selecionado! Toque na tela para carimbar!`); };
+        bar.appendChild(cb);
       });
       const clr = document.createElement('button');
       clr.type = 'button';
@@ -8490,7 +8502,15 @@
       const cv = document.getElementById('paint-canvas');
       const ctx = cv.getContext('2d');
       let drawing = false;
-      cv.onmousedown = (e) => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+      cv.onmousedown = (e) => {
+        if (carimboAtivo) {
+          ctx.font = '36px Arial';
+          ctx.fillText(carimboAtivo, e.offsetX - 18, e.offsetY + 14);
+          playTone(880, 70);
+          return;
+        }
+        drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY);
+      };
       cv.onmousemove = (e) => {
         if (!drawing) return;
         ctx.strokeStyle = color; ctx.lineWidth = 10; ctx.lineCap = 'round';
@@ -10434,6 +10454,9 @@
               <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="ouvirCuriosidadeSolar()">
                 🔊 Pousar Nave & Ouvir o Jarvis
               </button>
+              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="testarGravidadePlaneta()">
+                🦘 Super Pulo da Gravidade!
+              </button>
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="iniciarQuizAstronauta()">
                 ⭐ Desafio do Astronauta (+5 🪙)
               </button>
@@ -10451,6 +10474,49 @@
       playTone(523 + (idx * 40), 90);
       const b = document.querySelector('.modal-body');
       if (b) renderSolarSystemBody(b);
+    }
+
+    
+    function testarGravidadePlaneta() {
+      const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
+      const box = document.getElementById('quiz-astronauta-box');
+      if (!box) return;
+      box.style.display = 'block';
+
+      let alturaPulo = '1 metro (Pulo Normal)';
+      let fala = '';
+      let somFreq = 587;
+
+      if (p.id === 'lua') {
+        alturaPulo = '6 METROS! (Você voa alto flutuando!)';
+        fala = 'Uau! Na Lua a gravidade é super fraca! Com um pulinho leve você voa bem alto como se tivesse asas!';
+        somFreq = 880;
+      } else if (p.id === 'marte') {
+        alturaPulo = '2.6 METROS! (Pulo duplo da Terra!)';
+        fala = 'Em Marte a gravidade é levinha! Você consegue pular por cima de um carro!';
+        somFreq = 659;
+      } else if (p.id === 'jupiter') {
+        alturaPulo = '0.3 METROS (Pesadíssimo, quase não sai do chão!)';
+        fala = 'Nossa! Júpiter tem tanta gravidade que você pesaria mais que o dobro! O pulo é bem baixinho!';
+        somFreq = 180;
+      } else if (p.id === 'sol') {
+        alturaPulo = '0 METROS (Quente demais para pisar!)';
+        fala = 'O Sol é uma bola de fogo gigante! A nave precisa ficar voando longe para não derreter!';
+        somFreq = 220;
+      } else {
+        alturaPulo = '1 METRO (Gravidade equilibrada da Terra)';
+        fala = `Aqui em ${p.nome.split(' ')[0]} a gravidade permite explorar com seus passos de herói!`;
+      }
+
+      playTone(somFreq, 200);
+      speak(fala);
+
+      box.innerHTML = `
+        <div style="font-size:1.15rem; font-weight:900; color:#38bdf8;">🦘 SIMULADOR DE GRAVIDADE EM ${p.nome.toUpperCase()}</div>
+        <div style="font-size:1.8rem; margin:8px 0; animation:pulse 0.8s infinite;">🚀 💨 👨‍🚀</div>
+        <div style="font-size:1.1rem; color:#facc15; font-weight:900;">Altura do seu pulo: ${alturaPulo}</div>
+        <div style="font-size:0.9rem; color:#e2e8f0; margin-top:4px;">${fala}</div>
+      `;
     }
 
     function ouvirCuriosidadeSolar() {
@@ -10516,6 +10582,10 @@
       { id: 'elefante', nome: 'Elefante Gentil', icon: '🐘', habitat: 'Florestas & Savanas', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba comprida para beber água, cheirar e até abraçar os filhotes!' },
       { id: 'golfinho', nome: 'Golfinho Curioso', icon: '🐬', habitat: 'Oceanos Azuis', curiosidade: 'Um dos animais mais inteligentes e alegres dos oceanos! Eles conversam com assobios e adoram dar saltos acrobáticos!' },
       { id: 'sapo', nome: 'Sapinho Cantor', icon: '🐸', habitat: 'Lagoas e Rios', curiosidade: 'Os sapos cantam na beira d água para chamar os amigos e ajudam a natureza comendo insetos e mosquitinhos!' },
+      { id: 'arara', nome: 'Arara Azul 🇧🇷', icon: '🦜', habitat: 'Pantanal & Florestas do Brasil', curiosidade: 'Uma das aves mais deslumbrantes da fauna brasileira! Ela tem penas azul-cobalto e voa em casais que ficam juntos a vida inteira!' },
+      { id: 'mico', nome: 'Mico-Leão-Dourado 🇧🇷', icon: '🐒', habitat: 'Mata Atlântica do Brasil', curiosidade: 'Um tesouro nacional com juba dourada e brilhante! Ele é super veloz pulando de galho em galho na floresta!' },
+      { id: 'onca', nome: 'Onça-Pintada 🇧🇷', icon: '🐆', habitat: 'Floresta Amazônica & Pantanal', curiosidade: 'O maior felino das Américas e rei das florestas brasileiras! Ela adora nadar nos rios e tem uma força espetacular!' },
+      { id: 'jacare', nome: 'Jacaré do Pantanal 🇧🇷', icon: '🐊', habitat: 'Rios e Pantanal do Brasil', curiosidade: 'Ele adora tomar sol na beira do rio para aquecer o corpinho e nada com muita agilidade usando sua cauda potente!' },
       { id: 'passaro', nome: 'Passarinho Cantador', icon: '🐦', habitat: 'Copas das Árvores', curiosidade: 'Eles acordam bem cedinho cantando para avisar a floresta que o sol nasceu e um novo dia começou!' },
       { id: 'cavalo', nome: 'Cavalo Veloz', icon: '🐴', habitat: 'Fazendas e Campos', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
       { id: 'coruja', nome: 'Coruja Sábia', icon: '🦉', habitat: 'Noite na Floresta', curiosidade: 'As corujas têm olhos gigantescos que enxergam no escuro e conseguem girar o pescoço quase uma volta inteira!' },
@@ -10632,6 +10702,28 @@
           // Duplo pio suave
           playTone(420, 140);
           setTimeout(() => playTone(360, 180), 220);
+        } else if (tipo === 'arara') {
+          // Grito da arara (duplo sweep estridente)
+          playTone(980, 100);
+          setTimeout(() => playTone(820, 120), 120);
+        } else if (tipo === 'mico') {
+          // Chittering do mico-leão
+          [880, 1100, 950, 1200].forEach((f, i) => setTimeout(() => playTone(f, 40), i * 50));
+        } else if (tipo === 'onca') {
+          // Esturro forte da onça
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(110, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(35, ctx.currentTime + 1.0);
+          gain.gain.setValueAtTime(0.35, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.0);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 1.0);
+        } else if (tipo === 'jacare') {
+          // Borbulhas e som grave do jacaré
+          playTone(90, 180);
+          setTimeout(() => playTone(75, 200), 190);
         } else {
           // Baleia profunda
           const osc = ctx.createOscillator();
@@ -10796,6 +10888,9 @@
             <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="iniciarMissaoRotinaRelogio()">
               🎯 Missão da Rotina (+5 🪙)
             </button>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #ea580c 0%, #c2410c 100%); border:2px solid #fdba74; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="iniciarDesafioCronometroHeroi()">
+              ⚡ Desafio dos 30s (+5 🪙)
+            </button>
           </div>
 
           <!-- BOX DA MISSÃO ATIVA -->
@@ -10824,6 +10919,47 @@
       const fala = `Agora no relógio são exatamente ${horaRelogioAtual} horas e ${minTxt} ${periodo}!`;
       playTone(587, 80);
       speak(fala);
+    }
+
+    
+    let timerDesafio30s = null;
+    function iniciarDesafioCronometroHeroi() {
+      const box = document.getElementById('missao-relogio-box');
+      if (!box) return;
+      box.style.display = 'block';
+
+      let segRestantes = 30;
+      if (timerDesafio30s) clearInterval(timerDesafio30s);
+
+      speak(`Desafio dos 30 segundos ativado, herói ${appState.config.child_name || 'Kaleo'}! Missão: guarde 3 brinquedos ou dê 5 pulos bem altos antes do tempo acabar! Valendo!`);
+
+      box.innerHTML = `
+        <div style="font-size:1.15rem; font-weight:900; color:#fdba74;">⚡ DESAFIO DOS 30 SEGUNDOS DO HERÓI!</div>
+        <div id="chrono-num" style="font-size:3.5rem; font-weight:900; color:#facc15; font-family:monospace; margin:6px 0;">30</div>
+        <div style="font-size:0.95rem; color:#fff;">Guarde 3 brinquedos ou dê 5 pulos bem altos antes de zerar!</div>
+      `;
+
+      timerDesafio30s = setInterval(async () => {
+        segRestantes--;
+        const numEl = document.getElementById('chrono-num');
+        if (numEl) numEl.textContent = segRestantes;
+        playTone(segRestantes <= 5 ? 880 : 440, 50);
+
+        if (segRestantes <= 0) {
+          clearInterval(timerDesafio30s);
+          playCelebrationFanfare();
+          dispararChuvaCoracoes();
+          speak(`Tempo esgotado! Missão superada com sucesso! Você é super veloz, super-herói! Ganhou 5 moedas!`);
+          showToast('⚡ Desafio dos 30s Concluído! +5 Moedas!');
+          await fetch('/api/fichas/bonificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantidade: 5, motivo: 'desafio_30s_relogio' })
+          }).catch(() => null);
+          const pEl = document.getElementById('pote-fichas-val');
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        }
+      }, 1000);
     }
 
     function iniciarMissaoRotinaRelogio() {
@@ -11006,11 +11142,14 @@
             <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'ima' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('ima')">
               🧲 O Super Ímã
             </button>
+            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'vulcao' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('vulcao')">
+              🌋 O Vulcão de Lava
+            </button>
           </div>
 
           <!-- ÁREA DO EXPERIMENTO ATIVO -->
           <div style="background:#030712; border:3px solid #38bdf8; border-radius:18px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center;">
-            ${abaCienciaAtiva === 'cores' ? renderExperimentoCores() : (abaCienciaAtiva === 'agua' ? renderExperimentoAgua() : renderExperimentoIma())}
+            ${abaCienciaAtiva === 'cores' ? renderExperimentoCores() : (abaCienciaAtiva === 'agua' ? renderExperimentoAgua() : (abaCienciaAtiva === 'ima' ? renderExperimentoIma() : renderExperimentoVulcao()))}
           </div>
         </div>
       `;
@@ -11193,6 +11332,53 @@
       }
     }
 
+
+
+    function renderExperimentoVulcao() {
+      return `
+        <div style="font-size:1.2rem; font-weight:900; color:#f97316;">🌋 O Vulcão Químico Stark</div>
+        <div style="font-size:0.9rem; color:#94a3b8;">Misture os ingredientes para criar uma erupção de lava mágica!</div>
+
+        <div style="display:flex; gap:10px; margin:10px 0; justify-content:center; flex-wrap:wrap;">
+          <span style="background:#1e293b; color:#cbd5e1; padding:6px 12px; border-radius:10px; font-weight:800; border:1px solid #64748b;">⚪ Bicarbonato</span>
+          <span style="font-size:1.4rem;">➕</span>
+          <span style="background:#1e293b; color:#cbd5e1; padding:6px 12px; border-radius:10px; font-weight:800; border:1px solid #64748b;">🧪 Vinagre</span>
+          <span style="font-size:1.4rem;">➕</span>
+          <span style="background:#1e293b; color:#ef4444; padding:6px 12px; border-radius:10px; font-weight:800; border:1px solid #ef4444;">🔴 Corante Vermelho</span>
+        </div>
+
+        <button type="button" class="big-btn" style="background:linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); border:2px solid #f87171; color:#fff; padding:10px 24px; border-radius:12px; font-weight:900; font-size:1.05rem;" onclick="dispararErupcaoVulcao()">
+          💥 ENTRAR EM ERUPÇÃO!
+        </button>
+
+        <div id="vulcao-anim-view" style="font-size:4.5rem; line-height:1; margin-top:8px;">🌋</div>
+        <div id="vulcao-desc-view" style="font-size:1rem; color:#fef08a; font-weight:800; max-width:520px;">
+          Clique no botão vermelho para fazer o vulcão soltar lava colorida!
+        </div>
+      `;
+    }
+
+    async function dispararErupcaoVulcao() {
+      const v = document.getElementById('vulcao-anim-view');
+      const d = document.getElementById('vulcao-desc-view');
+      if (!v || !d) return;
+
+      playCelebrationFanfare();
+      dispararChuvaCoracoes();
+      v.innerHTML = '🌋💥🔥✨';
+      v.style.animation = 'pulseMic 0.5s infinite';
+      d.innerHTML = `<span style="color:#ef4444; font-size:1.2rem;">ERUPÇÃO TOTAL!</span> O bicarbonato reagiu com o vinagre criando bolhas de gás que empurraram a lava vermelha para cima!`;
+
+      speak(`Cuidado com a lava quentinha! O bicarbonato se juntou com o vinagre e criou milhares de bolhinhas de gás, fazendo o vulcão entrar em erupção! Experimento científico nota dez!`);
+      showToast('🌋 Erupção Espetacular! +5 Moedas!');
+      await fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 5, motivo: 'experimento_vulcao' })
+      }).catch(() => null);
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+    }
 
     // =========================================================================
     // JOGO 23: ACADEMIA DE XADREZ DO PEQUENO MESTRE
