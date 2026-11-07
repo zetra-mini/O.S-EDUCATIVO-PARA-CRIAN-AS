@@ -1,6 +1,9 @@
 package br.com.jarviskids.os;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,23 +11,34 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
+    private static final String PREF_NAME = "JarvisKidsPrefs";
+    private static final String KEY_SERVER_URL = "server_url";
+    private static final String DEFAULT_LOCAL_URL = "file:///android_asset/hud_jarvis.html";
+
     private WebView webView;
     private PermissionRequest pendingPermissionRequest;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Tela cheia e tela sempre ligada
+        // Tela cheia e manter tela ligada
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemUI();
+
+        prefs = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 
         webView = new WebView(this);
         setContentView(webView);
@@ -32,11 +46,13 @@ public class MainActivity extends Activity {
         configurarWebView();
         solicitarPermissoesNativas();
 
-        String serverUrl = getIntent().getStringExtra("SERVER_URL");
-        if (serverUrl == null || serverUrl.isEmpty()) {
-            serverUrl = "http://127.0.0.1:8000";
+        // Inicializacao 100% autonoma por padrao: carrega os assets locais embutidos
+        String targetUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_LOCAL_URL);
+        if (targetUrl == null || targetUrl.trim().isEmpty() || targetUrl.contains("127.0.0.1:8000")) {
+            targetUrl = DEFAULT_LOCAL_URL;
         }
-        webView.loadUrl(serverUrl);
+
+        webView.loadUrl(targetUrl);
     }
 
     private void hideSystemUI() {
@@ -46,8 +62,6 @@ public class MainActivity extends Activity {
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
         );
     }
 
@@ -65,8 +79,11 @@ public class MainActivity extends Activity {
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
+        
+        // Habilita acesso total a arquivos e assets locais offline
         settings.setAllowFileAccess(true);
-        settings.setAllowContentAccess(true);
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
 
@@ -75,6 +92,32 @@ public class MainActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                lidarComErroConexao();
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (request.isForMainFrame()) {
+                        lidarComErroConexao();
+                    }
+                }
+            }
+
+            private void lidarComErroConexao() {
+                // Em caso de falha de conexao com IP externo, reverte imediatamente para o modo autonomo offline!
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Robô na rede Wi-Fi não encontrado. Modo Autônomo Offline Ativado!", Toast.LENGTH_LONG).show();
+                        prefs.edit().putString(KEY_SERVER_URL, DEFAULT_LOCAL_URL).apply();
+                        webView.loadUrl(DEFAULT_LOCAL_URL);
+                    }
+                });
             }
         });
 
@@ -105,6 +148,62 @@ public class MainActivity extends Activity {
                 });
             }
         });
+
+        // Toque longo com 2 dedos para abrir menu de conexao
+        webView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                exibirMenuModo();
+                return true;
+            }
+        });
+    }
+
+    private void exibirMenuModo() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("⚙️ Modo do JARVIS Kids Mobile");
+        String[] opcoes = {
+            "🎮 Modo Autônomo Offline (Jogar Direto no Celular)",
+            "👨‍👩‍👧 Painel dos Pais (Autônomo Local)",
+            "📡 Conectar ao Netbook / PC na Rede Wi-Fi"
+        };
+
+        builder.setItems(opcoes, (dialog, which) -> {
+            if (which == 0) {
+                prefs.edit().putString(KEY_SERVER_URL, DEFAULT_LOCAL_URL).apply();
+                webView.loadUrl(DEFAULT_LOCAL_URL);
+                Toast.makeText(MainActivity.this, "Modo Autônomo Ativado!", Toast.LENGTH_SHORT).show();
+            } else if (which == 1) {
+                String paisUrl = "file:///android_asset/painel_pais.html";
+                webView.loadUrl(paisUrl);
+            } else if (which == 2) {
+                solicitarIpServidor();
+            }
+        });
+        builder.show();
+    }
+
+    private void solicitarIpServidor() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Conectar ao Robô na Rede");
+        builder.setMessage("Digite o IP do Netbook ou Computador (Ex: 192.168.1.100:8000):");
+
+        final EditText input = new EditText(this);
+        input.setHint("Ex: 192.168.1.100:8000");
+        builder.setView(input);
+
+        builder.setPositiveButton("Conectar", (dialog, which) -> {
+            String ip = input.getText().toString().trim();
+            if (!ip.isEmpty()) {
+                if (!ip.startsWith("http://") && !ip.startsWith("https://")) {
+                    ip = "http://" + ip;
+                }
+                prefs.edit().putString(KEY_SERVER_URL, ip).apply();
+                webView.loadUrl(ip);
+            }
+        });
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
     }
 
     private void solicitarPermissoesNativas() {

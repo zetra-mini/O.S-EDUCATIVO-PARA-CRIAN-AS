@@ -159,30 +159,42 @@ def obter_nivel_bateria() -> Dict[str, Any]:
 
 
 # ==============================================================================
-# ROTAS DE PÁGINAS HTML (STREAMING DIRETO DO DISCO)
+# ROTAS DE PÁGINAS HTML (ACELERAÇÃO EM RAM PARA HARDWARE MODESTO ATOM N450)
 # ==============================================================================
+
+_TEMPLATE_RAM_CACHE: Dict[str, bytes] = {}
+
+def obter_template_cache(nome_arquivo: str) -> bytes:
+    """Carrega o template HTML em cache de memória RAM para 0ms de I/O em disco no Netbook."""
+    if nome_arquivo not in _TEMPLATE_RAM_CACHE:
+        caminho = os.path.join(TEMPLATES_DIR, nome_arquivo)
+        with open(caminho, "rb") as f:
+            _TEMPLATE_RAM_CACHE[nome_arquivo] = f.read()
+    return _TEMPLATE_RAM_CACHE[nome_arquivo]
 
 
 @app.route("/")
 def index(request: Request):
-    """Serve a interface principal do Jarvis em streaming contínuo."""
-    gc.collect()
-    caminho = os.path.join(TEMPLATES_DIR, "hud_jarvis.html")
-    resp = send_file(caminho, content_type="text/html; charset=utf-8")
-    resp.headers["Permissions-Policy"] = "microphone=(self), camera=(self)"
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    return resp
+    """Serve a interface principal do Jarvis com entrega instantânea em RAM."""
+    conteudo = obter_template_cache("hud_jarvis.html")
+    headers = {
+        "Content-Type": "text/html; charset=utf-8",
+        "Permissions-Policy": "microphone=(self), camera=(self)",
+        "Access-Control-Allow-Origin": "*",
+    }
+    return Response(body=conteudo, status_code=200, headers=headers)
 
 
 @app.route("/pais")
 def painel_pais(request: Request):
-    """Serve o painel dos pais em streaming contínuo."""
-    gc.collect()
-    caminho = os.path.join(TEMPLATES_DIR, "painel_pais.html")
-    resp = send_file(caminho, content_type="text/html; charset=utf-8")
-    resp.headers["Permissions-Policy"] = "microphone=(self), camera=(self)"
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    return resp
+    """Serve o painel dos pais com entrega instantânea em RAM."""
+    conteudo = obter_template_cache("painel_pais.html")
+    headers = {
+        "Content-Type": "text/html; charset=utf-8",
+        "Permissions-Policy": "microphone=(self), camera=(self)",
+        "Access-Control-Allow-Origin": "*",
+    }
+    return Response(body=conteudo, status_code=200, headers=headers)
 
 
 @app.route("/favicon.ico")
@@ -1101,6 +1113,64 @@ def api_remote_alarme_dispensar(request: Request):
         "recompensa": 5,
         "saldo": token_mgr.obter_status_pote()["saldo"],
         "ultimo_alarme_concluido": REMOTE_STATE["ultimo_alarme_concluido"]
+    })
+
+
+# ==============================================================================
+# SEGURANÇA PARENTAL: TRAVA COM PIN OU PERGUNTA DE ADULTO
+# ==============================================================================
+
+@app.route("/api/admin/pin/status", methods=["GET"])
+def api_pin_status(request: Request):
+    """Informa se há um PIN configurado pelos pais."""
+    pin = brain.config.get("parental_pin", "").strip()
+    return json_response({"has_pin": bool(pin)})
+
+
+@app.route("/api/admin/pin/verificar", methods=["POST"])
+def api_pin_verificar(request: Request):
+    """Valida o PIN dos pais ou resposta da pergunta matemática infantil."""
+    data = request.json or {}
+    tentativa = str(data.get("pin", "")).strip()
+    pin_salvo = str(brain.config.get("parental_pin", "")).strip()
+
+    if not pin_salvo:
+        # Sem PIN definido: aceita pergunta de adulto matemática (ex: 7x8=56, 9x8=72, 6x7=42, 1234)
+        if tentativa in ("56", "72", "42", "48", "63", "54", "1234"):
+            return json_response({"ok": True, "parental_gate": "pergunta_resolvida"})
+        return json_response({"ok": False, "erro": "Resposta incorreta. Tente novamente!"}, status_code=401)
+
+    if tentativa == pin_salvo:
+        return json_response({"ok": True})
+    return json_response({"ok": False, "erro": "PIN incorreto!"}, status_code=401)
+
+
+@app.route("/api/admin/pin/definir", methods=["POST"])
+def api_pin_definir(request: Request):
+    """Permite aos pais definir ou trocar o PIN de segurança."""
+    data = request.json or {}
+    novo_pin = str(data.get("pin", "")).strip()
+    if len(novo_pin) >= 4 and novo_pin.isdigit():
+        brain.config["parental_pin"] = novo_pin
+        brain.save_config()
+        return json_response({"ok": True, "mensagem": "PIN de segurança salvo com sucesso!"})
+    return json_response({"ok": False, "erro": "O PIN deve conter pelo menos 4 números."}, status_code=400)
+
+
+@app.route("/api/estatisticas/fala", methods=["GET"])
+def api_estatisticas_fala(request: Request):
+    """Retorna dados de progresso fonoaudiológico da criança para o painel dos pais."""
+    try:
+        linhas = db.query("SELECT COUNT(*) as total FROM historico_fichas WHERE motivo LIKE '%Dicção%' OR motivo LIKE '%Fala%'")
+        total_diccao = linhas[0]["total"] if linhas else 0
+    except Exception:
+        total_diccao = 0
+
+    return json_response({
+        "ok": True,
+        "total_palavras_treinadas": total_diccao,
+        "ultimo_alarme": REMOTE_STATE.get("ultimo_alarme_concluido"),
+        "timestamp": time.time()
     })
 
 

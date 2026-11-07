@@ -4,11 +4,17 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
 
-VERSION="2.6.0"
+VERSION="${VERSION:-3.3.0}"
 OUTPUT_APK="jarvis-kids-os-${VERSION}-android.apk"
 ROOT_DIR="$( cd "$DIR/../.." && pwd )"
 
 echo "=== Compilador Nativo de APK - JARVIS Kids OS ==="
+
+# Assegura copia atualizada dos templates e assets para dentro do app Android
+mkdir -p app/src/main/assets
+cp "$ROOT_DIR/templates/hud_jarvis.html" app/src/main/assets/
+cp "$ROOT_DIR/templates/painel_pais.html" app/src/main/assets/
+cp -r "$ROOT_DIR/static" app/src/main/assets/ 2>/dev/null || true
 
 # Localiza ANDROID_HOME / ANDROID_SDK_ROOT
 SDK_DIR="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
@@ -28,11 +34,12 @@ if [ -n "$SDK_DIR" ] && [ -d "$SDK_DIR" ]; then
         rm -rf build
         mkdir -p build/gen build/obj build/apk
         
-        # 1. Compila o AndroidManifest.xml com aapt2 link direto (sem recursos dependentes)
-        echo "Gerando pacote base com aapt2..."
+        # 1. Compila o AndroidManifest.xml com aapt2 link direto e embute pasta de assets
+        echo "Gerando pacote base com aapt2 e assets locais..."
         "$BUILD_TOOLS/aapt2" link \
             -I "$PLATFORM/android.jar" \
             --manifest app/src/main/AndroidManifest.xml \
+            -A app/src/main/assets \
             -o build/base.apk \
             --min-sdk-version 21 \
             --target-sdk-version 34 \
@@ -50,10 +57,14 @@ if [ -n "$SDK_DIR" ] && [ -d "$SDK_DIR" ]; then
         echo "Convertendo bytecode com d8..."
         "$BUILD_TOOLS/d8" --output build/apk/ $(find build/obj -name "*.class")
         
-        # 4. Adiciona classes.dex no APK
+        # 4. Adiciona classes.dex e garante integridade dos assets no APK
         cd build/apk
         zip -u ../base.apk classes.dex
         cd ../..
+        
+        cd "$DIR/app/src/main"
+        zip -r -u "$DIR/build/base.apk" assets
+        cd "$DIR"
         
         # 5. Zipalign (alinhamento em 4 bytes)
         echo "Alinhando APK..."
@@ -76,6 +87,7 @@ fi
 echo "Aviso: Gerando pacote APK a partir da arvore de assets Android..."
 mkdir -p build/apk_fallback
 cp app/src/main/AndroidManifest.xml build/apk_fallback/
+cp -r app/src/main/assets build/apk_fallback/
 cd build/apk_fallback
 zip -r "$ROOT_DIR/$OUTPUT_APK" ./*
 cd ../..

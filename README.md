@@ -1,10 +1,36 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.2 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.3 — Stark Educational System (Para Kaleo Noah)
 
-Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk)**!
+Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
 ---
 
-## 🌟 Novidades da Versão 3.2
+## 🌟 Novidades da Versão 3.3
+
+### 📱 1. Aplicativo Android 100% Autônomo & Offline (Sem Erro de Porta 8000)
+- **Execução Nativa Direta:** O APK Android agora embute todos os templates, jogos, mascote e folhas de estilo dentro do próprio pacote (`assets/` nativo em `file:///android_asset/hud_jarvis.html`), funcionando de forma **100% autônoma e offline** diretamente no celular da criança, sem precisar de servidor rodando ou de IP na porta 8000.
+- **Persistência Local (localStorage Fallback):** Fichas, moedas, itens da lojinha e histórico de dicção são mantidos localmente no próprio aparelho da criança.
+- **Modo Wi-Fi Opcional com 1 Toque:** Se os pais quiserem conectar o celular ao robô que está rodando no netbook ou PC da casa, basta dar um **toque longo na tela** para abrir o menu de conexão, digitar o IP e alternar na hora. Caso haja queda de conexão na rede, o app reverte imediatamente para o modo offline sem exibir tela de erro do Android!
+
+### 📐 2. Responsividade Mobile Completa (Sem Sobreposições de Tela)
+- **Mascote Adaptável (`clamp`):** O robô Jarvis agora redimensiona dinamicamente para se ajustar perfeitamente tanto a telas de smartphones em modo retrato (`max-width: 820px`) quanto paisagem ou netbooks 1024x600.
+- **Top Bar & Pílula Central Fluidas:** Eliminadas todas as colisões entre os badges de moedas/bateria e a pílula de localização do cômodo em telas estreitas de 360-420px.
+- **Modais com Rolagem Suave no Celular:** Os 17 jogos, a Biblioteca Mágica e a Loja agora abrem em layout vertical com scroll suave e ergonômico no celular, mantendo a regra de **ZERO barras de rolagem** quando em telas de netbook/desktop.
+
+### 🛡️ 3. Trava Parental (PIN de 4 Dígitos / Desafio de Adulto)
+- **Parental Gate no `/pais`:** Acesso ao Painel dos Pais protegido por PIN numérico personalizável de 4 dígitos ou desafio de adulto (ex.: *7 × 8 = 56*), impedindo alterações acidentais feitas pelas crianças.
+- **Gestão Segura de PIN:** Possibilidade de definir ou alterar o PIN diretamente na interface dos pais, com validação instantânea na API `/api/admin/pin/*`.
+
+### ⚡ 4. Otimizações de CPU & RAM para Netbooks Intel Atom
+- **Cache de RAM de Templates:** O Microdot agora serve as páginas `/` e `/pais` diretamente da memória RAM, gerando **0ms de I/O em disco** no HDD lento do netbook.
+- **Eliminação de Jitter:** Remoção do `gc.collect()` síncrono por requisição, evitando pausas de 15-40ms na CPU de 1 núcleo do Intel Atom.
+
+### 🌙 5. Modo Noturno Circadiano & Atalhos de Teclado
+- **Filtro Noturno Automático:** A partir das 20h00, o sistema ativa uma suave tonalidade âmbar circadiana que reduz a luz azul e prepara os olhos da criança para o sono.
+- **Atalhos no Teclado Físico:** Navegue pelos cômodos com `←` / `→`, interaja com o Jarvis usando `Espaço` e feche qualquer janela instantaneamente com `Esc`.
+
+---
+
+## 🌟 Recursos Consolidados da Versão 3.2
 
 ### 🗣️ 1. Fonoaudiologia & Dicção do Super-Herói (17º Jogo Oficial)
 - **66 Desafios Fonoaudiológicos Completos:**
@@ -89,11 +115,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_2.6.0.deb` | `sudo dpkg -i jarvis-kids-os_2.6.0.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-2.6.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-2.6.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-2.6.0-android.apk` | Instalar no Android e permitir microfone |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-2.6.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.3.0.deb` | `sudo dpkg -i jarvis-kids-os_3.3.0.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.3.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.3.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.3.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.3.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
 
 ---

@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>J.A.R.V.I.S. Kids — Painel Administrativo dos Pais</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #091326;
+      --card-border: #1e3a5f;
+      --cyan: #00f0ff;
+      --cyan-dim: #0284c7;
+      --gold: #facc15;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: #0f172a;
+      border: 2px solid var(--cyan);
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2);
+    }
+    .header-info h1 { font-size: 1.35rem; color: var(--cyan); font-weight: 900; letter-spacing: 0.5px; }
+    .header-info .sub { font-size: 0.88rem; color: var(--text-muted); margin-top: 2px; }
+    .btn-top-hub {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #38bdf8;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-top-hub:hover { background: #0284c7; color: #fff; }
+
+    /* BARRA DE ABAS NAVEGÁVEIS */
+    .tabs-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .tab-btn {
+      background: #0c182e;
+      border: 2px solid #1e293b;
+      color: #94a3b8;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tab-btn:hover { color: #fff; border-color: #38bdf8; }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0284c7 0%, #0f172a 100%);
+      border-color: var(--cyan);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 240, 255, 0.25);
+    }
+
+    /* SEÇÕES DE CONTEÚDO */
+    .tab-pane { display: none; flex-direction: column; gap: 14px; }
+    .tab-pane.active { display: flex; }
+
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .stat-box {
+      background: #071120;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-val { font-size: 1.7rem; font-weight: 900; color: #38bdf8; }
+    .stat-lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; font-weight: 700; }
+
+    .btn {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.1s, opacity 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #0284c7; color: #fff; }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-warning { background: #f59e0b; color: #000; }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-purple { background: #7c3aed; color: #fff; }
+
+    input, textarea, select {
+      width: 100%;
+      background: #071120;
+      border: 1.5px solid #334155;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--cyan); }
+
+    .media-tab-btn {
+      background: #071120;
+      border: 1.5px solid #1e293b;
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .media-tab-btn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #38bdf8;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      border: 2px solid var(--cyan);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: none;
+      z-index: 2000;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+
+    /* HISTÓRICO DE MENSAGENS */
+    .msg-item {
+      background: #071120;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.88rem;
+    }
+
+    /* LOGS */
+    .log-entry {
+      background: #071120;
+      border-left: 4px solid #38bdf8;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+    .log-ERRO { border-left-color: #ef4444; }
+    .log-ALERTA { border-left-color: #f59e0b; }
+    .log-INFO { border-left-color: #10b981; }
+
+    /* RESPONSIVIDADE MOBILE IMPECÁVEL */
+    @media (max-width: 768px) {
+      body {
+        padding: 8px;
+        gap: 10px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 14px;
+        gap: 8px;
+      }
+      .header-info h1 {
+        font-size: 1.15rem;
+      }
+      .header-info .sub {
+        font-size: 0.78rem;
+      }
+      .btn-top-hub {
+        width: 100%;
+        text-align: center;
+        padding: 8px 12px;
+      }
+      .tabs-bar {
+        padding-bottom: 8px;
+        gap: 6px;
+      }
+      .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+      .card {
+        padding: 12px 14px;
+        border-radius: 14px;
+        gap: 10px;
+      }
+      .card-title {
+        font-size: 1.05rem;
+      }
+      .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .btn {
+        font-size: 0.9rem;
+        padding: 10px 14px;
+      }
+      div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+      .tab-btn {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+    }
+
+    /* MODAL DE TRAVA PARENTAL (PARENTAL GATE) */
+    #parental-gate-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 7, 18, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .gate-card {
+      background: #0b172e;
+      border: 3px solid #00f0ff;
+      border-radius: 20px;
+      padding: 24px 20px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- MODAL DE TRAVA PARENTAL (PARENTAL GATE) -->
+  <div id="parental-gate-modal" style="display:flex;">
+    <div class="gate-card">
+      <div style="font-size:2.8rem; filter:drop-shadow(0 0 10px rgba(0,240,255,0.4));">🛡️</div>
+      <h2 style="color:#00f0ff; font-size:1.3rem; font-weight:900;">Acesso Restrito aos Pais</h2>
+      <p style="color:#94a3b8; font-size:0.88rem;" id="gate-pergunta-texto">
+        Para proteger as regras do seu filho, confirme que você é um adulto:
+      </p>
+      
+      <div id="gate-pergunta-matematica" style="background:#071120; border:1.5px solid #1e3a5f; padding:10px; border-radius:12px; font-size:1.25rem; font-weight:900; color:#facc15;">
+        Quanto é 7 × 8 ?
+      </div>
+
+      <input type="password" id="gate-pin-input" inputmode="numeric" placeholder="Digite 56 ou seu PIN de 4 dígitos" style="font-size:1.15rem; text-align:center; letter-spacing:2px; font-weight:900; padding:10px; border:2px solid #0284c7;" onkeydown="if(event.key==='Enter') validarGatePIN()" />
+
+      <button type="button" class="btn btn-primary" style="padding:10px; font-size:1rem;" onclick="validarGatePIN()">
+        🔓 Entrar no Painel dos Pais
+      </button>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+        <a href="/" style="color:#38bdf8; font-size:0.82rem; text-decoration:none; font-weight:700;">◀ Voltar para o Jarvis</a>
+        <span style="color:#64748b; font-size:0.75rem;">PIN padrão: 1234 ou 56</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER DO PAINEL -->
+  <header>
+    <div class="header-info">
+      <h1>⚙️ J.A.R.V.I.S. KIDS — PAINEL ADMINISTRATIVO</h1>
+      <div class="sub">Controle dos Pais, Inteligência Artificial, Horários & Desenvolvimento Pessoal</div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <a href="/" class="btn-top-hub">🤖 Voltar ao Robô Jarvis</a>
+    </div>
+  </header>
+
+  <!-- ABAS DE NAVEGAÇÃO -->
+  <nav class="tabs-bar">
+    <button type="button" class="tab-btn active" onclick="switchAdminTab('status')">📊 Visão Geral & Presença</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('tesouros')">🎁 Tesouros & Recompensas</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('ia')">🤖 Motores de IA & Provedores</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('perfil')">👦 Filho & Voz Neural</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('midia')">🎬 Cinema & Horários</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('livros')">📚 Histórias & Desenvolvimento</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('diag')">🛠️ Diagnóstico & Logs</button>
+  </nav>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 1: STATUS DO DIA & PRESENÇA PATERNA -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane active" id="pane-status">
+    <div class="card">
+      <div class="card-title">📊 Resumo do Dia em Tempo Real</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="val-books">0</div>
+          <div class="stat-lbl">📖 Livros Lidos Hoje</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-cinema">0m</div>
+          <div class="stat-lbl">⏱ Vídeos Restantes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-fichas" style="color:var(--gold);">0</div>
+          <div class="stat-lbl">🪙 Moedas no Pote</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-bateria">100%</div>
+          <div class="stat-lbl">🔋 Bateria Netbook</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="val-diccao" style="color:#ec4899;">0</div>
+          <div class="stat-lbl">🗣️ Palavras Faladas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD: EVOLUÇÃO FONOAUDIOLÓGICA & DESENVOLVIMENTO DA FALA -->
+    <div class="card" style="border: 2px solid #ec4899; background: linear-gradient(180deg, #180924 0%, #071120 100%);">
+      <div class="card-title" style="color:#f472b6;">
+        🗣️ Academia de Fonoaudiologia & Desenvolvimento da Fala
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div style="font-size:0.88rem; color:#e2e8f0;">
+          Acompanhe o treino de articulação, fonemas (R brando, R forte, encontros consonantais) e trava-línguas do seu herói!
+        </div>
+        <div style="background:#0b192e; border:1px solid #a855f7; border-radius:10px; padding:4px 12px; font-size:0.82rem; font-weight:800; color:#d8b4fe;">
+          🌟 +5 moedas por palavra
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-purple" style="flex:1; min-width:180px; padding:8px 14px; font-size:0.88rem;" onclick="abrirConfiguracaoPIN()">
+          🔒 Configurar PIN dos Pais
+        </button>
+        <button type="button" class="btn btn-primary" style="flex:1; min-width:180px; padding:8px 14px; font-size:0.88rem;" onclick="recarregarEstatisticasFala()">
+          🔄 Atualizar Progresso de Fala
+        </button>
+      </div>
+    </div>
+
+    <!-- RECADOS SECRETOS DOS PAIS (PRESENÇA PATERNA: TEXTO, ÁUDIO E VÍDEO) -->
+    <div class="card" style="border: 2px solid #0284c7; background: linear-gradient(180deg, #09192f 0%, #071120 100%);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div class="card-title" style="margin-bottom:0;">💌 Presença Paterna: Recados Secretos</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:0.82rem; color:var(--text-muted); font-weight:700;">Remetente:</span>
+          <select id="sel-remetente-recado" style="width:auto; padding:6px 12px; font-weight:800; border-radius:8px;">
+            <option value="Papai">👨‍💼 Papai</option>
+            <option value="Mamãe">👩‍💼 Mamãe</option>
+            <option value="Família">🏡 Família</option>
+            <option value="Vovô e Vovó">👴👵 Vovô e Vovó</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">
+        Grave ou envie áudio, vídeo ou texto para o netbook do seu filho. Abre como envelope brilhante e o Jarvis anuncia carinhosamente!
+      </div>
+
+      <!-- SELETOR DE MODALIDADE (TEXTO, ÁUDIO, VÍDEO) -->
+      <div style="display:flex; gap:8px; margin:10px 0; border-bottom:1px solid #1e293b; padding-bottom:8px; flex-wrap:wrap;">
+        <button type="button" class="media-tab-btn active" id="tab-btn-texto" onclick="mudarAbaRecado('texto')">✍️ Mensagem de Texto</button>
+        <button type="button" class="media-tab-btn" id="tab-btn-audio" onclick="mudarAbaRecado('audio')">🎤 Mensagem de Áudio</button>
+        <button type="button" class="media-tab-btn" id="tab-btn-video" onclick="mudarAbaRecado('video')">🎥 Mensagem de Vídeo</button>
+      </div>
+
+      <!-- 1. ABA DE TEXTO -->
+      <div id="box-recado-texto" style="display:flex; flex-direction:column; gap:8px;">
+        <textarea id="txt-recado" rows="2" placeholder="Ex: Oi, meu campeão! O papai está muito orgulhoso da sua dedicação hoje! Te amo!"></textarea>
+        <button type="button" class="btn btn-primary" onclick="enviarRecadoTexto()">
+          🚀 Enviar Recado de Texto para o Netbook
+        </button>
+      </div>
+
+      <!-- 2. ABA DE ÁUDIO -->
+      <div id="box-recado-audio" style="display:none; flex-direction:column; gap:10px;">
+        <div style="background:#0b192e; border:1px solid #1e3a63; border-radius:12px; padding:12px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-purple" id="btn-gravar-audio" onclick="toggleGravacaoAudio()">
+              🎙️ Gravar Voz pelo Microfone
+            </button>
+            <span id="audio-rec-timer" style="display:none; color:#ef4444; font-weight:800; font-size:0.95rem;">
+              🔴 Gravando: <span id="audio-rec-sec">00:00</span>
+            </span>
+          </div>
+
+          <!-- Preview do Áudio Gravado -->
+          <div id="wrap-audio-preview" style="display:none; margin-top:10px;">
+            <div style="font-size:0.8rem; color:#38bdf8; font-weight:700; margin-bottom:4px;">▶ Ouvir gravação antes de enviar:</div>
+            <audio id="audio-player-preview" controls style="width:100%; height:38px;"></audio>
+          </div>
+
+          <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #334155;">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Ou anexe um arquivo de áudio (WhatsApp / Gravação de Voz):</div>
+            <input type="file" id="file-audio-recado" accept="audio/*" onchange="aoCarregarArquivoAudio(this)">
+          </div>
+        </div>
+
+        <input type="text" id="txt-legenda-audio" placeholder="Recado ou legenda para acompanhar o áudio (opcional)...">
+        <button type="button" class="btn btn-primary" onclick="enviarRecadoAudio()">
+          🚀 Enviar Mensagem de Áudio para o Netbook
+        </button>
+      </div>
+
+      <!-- 3. ABA DE VÍDEO -->
+      <div id="box-recado-video" style="display:none; flex-direction:column; gap:10px;">
+        <div style="background:#0b192e; border:1px solid #1e3a63; border-radius:12px; padding:12px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+            <button type="button" class="btn btn-danger" id="btn-gravar-video" onclick="toggleGravacaoVideo()">
+              📹 Ligar Câmera e Gravar Vídeo
+            </button>
+            <span id="video-rec-timer" style="display:none; color:#ef4444; font-weight:800; font-size:0.95rem;">
+              🔴 Gravando Vídeo: <span id="video-rec-sec">00:00</span>
+            </span>
+          </div>
+
+          <!-- Preview Câmera ao vivo (Limite 480px p/ Netbook) -->
+          <video id="video-live-preview" autoplay muted playsinline style="display:none; max-width:480px; width:100%; max-height:270px; margin:0 auto; border-radius:10px; background:#000; border:2px solid #ef4444; object-fit:cover;"></video>
+
+          <!-- Preview Vídeo Gravado (Limite 480px p/ Netbook) -->
+          <div id="wrap-video-preview" style="display:none; margin-top:8px; text-align:center;">
+            <div style="font-size:0.8rem; color:#38bdf8; font-weight:700; margin-bottom:4px;">▶ Assistir vídeo gravado antes de enviar (480px máx):</div>
+            <video id="video-player-preview" controls playsinline style="max-width:480px; width:100%; max-height:270px; margin:0 auto; border-radius:10px; border:2px solid #38bdf8; background:#000;"></video>
+          </div>
+
+          <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #334155;">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Ou anexe um vídeo do smartphone / computador:</div>
+            <input type="file" id="file-video-recado" accept="video/*" onchange="aoCarregarArquivoVideo(this)">
+            <div style="font-size:0.78rem; color:#38bdf8; margin-top:6px; font-weight:700;">⚡ Vídeos gravados ou anexados são limitados e otimizados automaticamente para até 480px, garantindo que o hardware do netbook rode suavemente.</div>
+          </div>
+        </div>
+
+        <input type="text" id="txt-legenda-video" placeholder="Recado ou legenda para acompanhar o vídeo (opcional)...">
+        <button type="button" class="btn btn-primary" onclick="enviarRecadoVideo()">
+          🚀 Enviar Mensagem de Vídeo para o Netbook
+        </button>
+      </div>
+
+      <!-- HISTÓRICO DE RECADOS COM STATUS EM TEMPO REAL -->
+      <div style="margin-top:12px;">
+        <div style="font-size:0.85rem; font-weight:800; color:#94a3b8; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+          <span>📋 Histórico de Recados & Status de Visualização:</span>
+          <button type="button" onclick="carregarRecados()" style="background:#0f172a; border:1px solid #334155; color:#38bdf8; padding:3px 10px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">🔄 Atualizar</button>
+        </div>
+        <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- STATUS EM TEMPO REAL DAS AÇÕES & CONFIRMAÇÕES DO NETBOOK -->
+    <div id="box-confirmacoes-tempo-real" style="display:flex; flex-direction:column; gap:8px;">
+      <!-- CARD DE ALARME DE ROTINA CUMPRIDO -->
+      <div id="status-alarme-concluido" style="display:none; background:linear-gradient(135deg, #064e3b 0%, #022c22 100%); border:2px solid #10b981; border-radius:14px; padding:12px 18px; box-shadow:0 0 20px rgba(16,185,129,0.35); animation:pulseMic 2s infinite;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+          <div style="font-weight:900; color:#34d399; font-size:1.05rem; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.4rem;">✅</span>
+            <span>MISSÃO DE ROTINA CONCLUÍDA PELO FILHO!</span>
+          </div>
+          <span id="txt-alarme-horario" style="background:rgba(0,0,0,0.4); color:#a7f3d0; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;"></span>
+        </div>
+        <div id="txt-alarme-desc" style="font-size:0.95rem; color:#ecfdf5; font-weight:700; margin-top:4px;"></div>
+      </div>
+
+      <!-- CARD DE RECADO ASSISTIDO / VISUALIZADO -->
+      <div id="status-recado-assistido" style="display:none; background:linear-gradient(135deg, #0c4a6e 0%, #082f49 100%); border:2px solid #38bdf8; border-radius:14px; padding:12px 18px; box-shadow:0 0 20px rgba(56,189,248,0.35);">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+          <div style="font-weight:900; color:#38bdf8; font-size:1.05rem; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.4rem;">💌</span>
+            <span>RECADO DA FAMÍLIA ASSISTIDO NO NETBOOK!</span>
+          </div>
+          <span id="txt-recado-horario" style="background:rgba(0,0,0,0.4); color:#bae6fd; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;"></span>
+        </div>
+        <div id="txt-recado-desc" style="font-size:0.95rem; color:#f0f9ff; font-weight:700; margin-top:4px;">
+          A criança abriu e assistiu ao recado com carinho e recebeu 🪙 5 moedas de recompensa!
+        </div>
+      </div>
+    </div>
+
+    <!-- AÇÕES RÁPIDAS & ALARMES DE ROTINA -->
+    <div class="card">
+      <div class="card-title">⚡ Ações Rápidas Imediatas</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+        <button type="button" class="btn btn-success" onclick="giveBonus(15)">
+          🎁 Liberar +15m Cinema
+        </button>
+        <button type="button" class="btn" style="background:#dc2626; color:#ffffff; border:1px solid #ef4444;" onclick="zerarTempoCinema()">
+          🚫 Travar / Zerar Cinema
+        </button>
+        <button type="button" class="btn btn-warning" id="btn-pause-toggle" onclick="togglePause()">
+          🍽️ Pausar Tela Agora
+        </button>
+        <button type="button" class="btn btn-purple" id="btn-night-toggle" onclick="toggleNight()">
+          🌙 Modo Noturno / Sono
+        </button>
+      </div>
+    </div>
+
+    <!-- ALARME SONORO E VISUAL DE ROTINA (DISPARO IMEDIATO NA TELA DA CRIANÇA) -->
+    <div class="card">
+      <div class="card-title">⏰ Central de Alarmes de Rotina Imediatos</div>
+      <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:10px;">
+        Toque para soar o alarme sonoro e abrir um alerta gigante e amigável no netbook/PC da criança com a voz do Jarvis chamando para a missão:
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px; margin-bottom:12px;">
+        <button type="button" class="btn btn-primary" onclick="dispararAlarmeRotina('dente')">
+          🪥 Alarme: Escovar os Dentes!
+        </button>
+        <button type="button" class="btn btn-success" onclick="dispararAlarmeRotina('brinquedos')">
+          🧸 Alarme: Guardar Brinquedos!
+        </button>
+        <button type="button" class="btn btn-warning" onclick="dispararAlarmeRotina('almoco')">
+          🍲 Alarme: Almoço dos Campeões!
+        </button>
+        <button type="button" class="btn btn-purple" onclick="dispararAlarmeRotina('dormir')">
+          🌙 Alarme: Hora de Dormir!
+        </button>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input id="txt-alarme-custom" placeholder="Ou digite um recado falado de rotina (Ex: Tomar o leitinho!)" style="flex:1;" />
+        <button type="button" class="btn btn-primary" onclick="dispararAlarmeRotina('personalizado')">
+          📢 Soar Alarme Personalizado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 2: MOTORES DE INTELIGÊNCIA ARTIFICIAL & CHAVES -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-ia">
+    <div class="card">
+      <div class="card-title">🤖 Configuração de Inteligência Artificial</div>
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        O J.A.R.V.I.S. Kids OS suporta processamento prioritário via OpenCode CLI, IA local com Ollama ou APIs em nuvem.
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px;" id="ai-tabs-admin">
+        <button type="button" class="btn btn-purple" id="atab-opencode" onclick="selecionarProvedorAdmin('opencode')">⚡ OpenCode CLI</button>
+        <button type="button" class="btn" style="background:#334155; color:#fff;" id="atab-ollama" onclick="selecionarProvedorAdmin('ollama')">🏠 IA Local (Ollama)</button>
+        <button type="button" class="btn btn-primary" id="atab-gemini" onclick="selecionarProvedorAdmin('gemini')">✨ Google Gemini</button>
+        <button type="button" class="btn btn-success" id="atab-openai" onclick="selecionarProvedorAdmin('openai')">🤖 OpenAI ChatGPT</button>
+        <button type="button" class="btn btn-warning" id="atab-groq" onclick="selecionarProvedorAdmin('groq')">⚡ Groq Cloud</button>
+      </div>
+
+      <div id="admin-provider-box" style="background:#071120; border:1px solid #1e293b; border-radius:14px; padding:16px;"></div>
+
+      <div id="admin-ai-status" style="display:none; padding:12px; border-radius:10px; font-weight:800; font-size:0.95rem;"></div>
+
+      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
+        💾 Salvar Configurações de IA
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 3: PERFIL DO FILHO & VOZ NEURAL PT-BR -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-perfil">
+    <div class="card">
+      <div class="card-title">👦 Perfil da Criança & Personalização</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px;">
+        <div>
+          <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Nome da Criança (chamado pelo Jarvis):</label>
+          <input id="adm-child-name" style="margin-top:4px;" placeholder="Ex: Kaleo Noah" />
+        </div>
+        <div>
+          <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Perfil de Voz Neural PT-BR (Ultra Fluida):</label>
+          <div style="display:flex; gap:8px; margin-top:4px;">
+            <select id="adm-voice-profile" style="flex:1;">
+              <optgroup label="✨ Vozes Neurais Brasileiras (Offline & Edge-TTS)">
+                <option value="jarvis_antonio">J.A.R.V.I.S. Neural Clássico (Antonio PT-BR — Inteligente & Amigável)</option>
+                <option value="amiga_thalita">Amiga Neural Multilíngue (Thalita PT-BR — Expressiva & Calorosa)</option>
+                <option value="amiga_francisca">Contadora de Histórias (Francisca PT-BR — Doce, Calma & Fluida)</option>
+                <option value="amigo_fabio">Amigo Fábio Neural (Fabio PT-BR — Jovem, Vibrante & Animado)</option>
+                <option value="amiga_leticia">Amiga Letícia Neural (Leticia PT-BR — Clara, Meiga & Acolhedora)</option>
+              </optgroup>
+              <optgroup label="🌟 Vozes Studio Google Gemini (Requer Chave Gemini)">
+                <option value="gemini_puck">Google Gemini Studio — Puck (Alegre & Enérgico)</option>
+                <option value="gemini_sulafat">Google Gemini Studio — Sulafat (Acolhedora & Suave)</option>
+                <option value="gemini_charon">Google Gemini Studio — Charon (Professor Curioso & Sábio)</option>
+                <option value="gemini_fenrir">Google Gemini Studio — Fenrir (Herói Confiante & Protetor)</option>
+                <option value="gemini_aoede">Google Gemini Studio — Aoede (Narradora Mágica de Aventuras)</option>
+                <option value="gemini_kore">Google Gemini Studio — Kore (Tranquila & Afetuosa)</option>
+              </optgroup>
+            </select>
+            <button type="button" class="btn btn-purple" style="padding:8px 16px;" onclick="testarVozAdmin()">🔊 Testar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOCALIZAÇÃO GEOGRÁFICA ENSINÁVEL -->
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+        <div style="font-size:0.95rem; font-weight:800; color:var(--cyan); margin-bottom:8px;">
+          📍 Geografia Ensinável da Criança (Onde Ela Mora no Mundo):
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">Cidade da Criança:</label>
+            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">Estado:</label>
+            <input id="adm-geo-estado" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">País:</label>
+            <input id="adm-geo-pais" style="margin-top:4px;" placeholder="Ex: Brasil" value="Brasil" oninput="this.dataset.modificado='true'" />
+          </div>
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">
+          💡 O Jarvis utiliza esta cidade e estado para ensinar geografia ("Você está na cidade X, no estado Y, no país Brasil!") e consultar a previsão do tempo exata.
+        </div>
+        <button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="salvarLocalizacaoGeografica()">
+          💾 Salvar Localização (Cidade, Estado e País)
+        </button>
+      </div>
+      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
+        💾 Salvar Perfil & Voz
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 4: CINEMA STARK & CONTROLE DE MÍDIAS -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-midia">
+    <div class="card">
+      <div class="card-title">🎬 Cinema Stark: YouTube Kids & Netflix Infantil</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px;">
+        <div>
+          <label style="font-size:0.88rem; color:var(--text-muted);">Link Direto YouTube Kids:</label>
+          <input id="adm-yt-url" style="margin-top:4px;" value="https://www.youtubekids.com" />
+        </div>
+        <div>
+          <label style="font-size:0.88rem; color:var(--text-muted);">Link Direto Netflix Kids:</label>
+          <input id="adm-nf-url" style="margin-top:4px;" value="https://www.netflix.com/Kids" />
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-top:8px;">
+        <div>
+          <label style="color:var(--gold); font-size:0.88rem; font-weight:700;">Início Cinema (HH:MM):</label>
+          <input id="adm-start-time" value="16:00" style="margin-top:4px;" />
+        </div>
+        <div>
+          <label style="color:var(--gold); font-size:0.88rem; font-weight:700;">Fim Cinema (HH:MM):</label>
+          <input id="adm-end-time" value="17:00" style="margin-top:4px;" />
+        </div>
+        <div>
+          <label style="color:var(--gold); font-size:0.88rem; font-weight:700;">Limite Diário (minutos):</label>
+          <input id="adm-daily-mins" type="number" value="25" style="margin-top:4px;" />
+        </div>
+      </div>
+
+      <label style="color:#4ade80; font-weight:700; display:flex; align-items:center; gap:8px; cursor:pointer; margin-top:8px;">
+        <input type="checkbox" id="adm-req-book" style="width:20px; height:20px;" checked />
+        📚 Exigir a leitura de pelo menos 1 livro mágico antes de liberar YouTube / Netflix
+      </label>
+
+      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
+        💾 Salvar Regras de Cinema
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 5: BIBLIOTECA DINÂMICA DE HISTÓRIAS DE DESENVOLVIMENTO PESSOAL -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-livros">
+    <div class="card">
+      <div class="card-title">✨ Gerar Nova História de Desenvolvimento Pessoal com IA</div>
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        O Jarvis cria na hora fábulas ilustradas com virtudes de vida, páginas interativas e palavras-chave fônicas:
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
+        <select id="adm-livro-tema" style="flex:2; min-width:200px;">
+          <option value="resiliencia">🌟 Resiliência (Tentar de novo e nunca desistir)</option>
+          <option value="coragem">🦁 Coragem (Vencer medos e dar o primeiro passo)</option>
+          <option value="paciencia">🐢 Paciência (Saber esperar e respirar com calma)</option>
+          <option value="gratidao">🎁 Gratidão (Agradecer pelo abraço, comida e família)</option>
+          <option value="disciplina">🥋 Disciplina (Arrumar a cama e praticar todo dia)</option>
+        </select>
+        <button type="button" class="btn btn-purple" style="flex:1; min-width:180px;" onclick="gerarLivroIaAdmin()">
+          ✨ Gerar História Agora
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📚 Acervo Ativo de Histórias na Estante</div>
+      <div id="admin-books-list" style="display:flex; flex-direction:column; gap:10px; max-height:360px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 6: DIAGNÓSTICO DO SISTEMA & LOGS -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-diag">
+    <div class="card">
+      <div class="card-title">🛠️ Saúde do Netbook & Integridade</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="diag-bateria">100%</div>
+          <div class="stat-lbl">🔋 Nível de Bateria</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="diag-ia-status" style="color:#10b981; font-size:1.25rem;">Ativo</div>
+          <div class="stat-lbl">🤖 Status do Cérebro</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="diag-logs-erros" style="color:#38bdf8;">0</div>
+          <div class="stat-lbl">⚠️ Erros Recentes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIAGNÓSTICO & DESBLOQUEIO DE MICROFONE -->
+    <div class="card" style="border: 2px solid #38bdf8; background: linear-gradient(180deg, #091a33 0%, #061120 100%);">
+      <div class="card-title">🎙️ Diagnóstico & Desbloqueio do Microfone no Navegador</div>
+      <div style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
+        Os navegadores Chromium (Chrome, Edge, Brave) exigem permissão de mídia e bloqueiam o microfone se acessado via IP sem SSL. Teste abaixo para diagnosticar e liberar a fala com o Jarvis:
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div id="mic-diag-status" style="background:#071224; border:1.5px solid #1e3a63; border-radius:10px; padding:12px; font-size:0.92rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <div>
+            <span style="font-weight:800; color:#38bdf8;">Status do Microfone:</span>
+            <span id="mic-status-label" style="font-weight:900; color:#facc15; margin-left:6px;">Não verificado ainda</span>
+          </div>
+          <button type="button" class="btn btn-primary" style="font-size:0.9rem; padding:8px 18px;" onclick="testarMicrofoneNavegadorAdmin()">
+            🎙️ Testar e Destravar Microfone Agora
+          </button>
+        </div>
+        <div id="mic-instructions-box" style="display:none; background:rgba(239,68,68,0.12); border:1.5px solid #ef4444; border-radius:10px; padding:12px; font-size:0.88rem; color:#fecaca;">
+          <strong>⚠️ Como Desbloquear no Chrome / Navegador:</strong><br/>
+          1. Se estiver acessando de outro computador pelo IP da rede, acesse preferencialmente pelo próprio netbook em: <code style="background:#000; padding:2px 6px; border-radius:4px; color:#38bdf8;">http://localhost:8000</code>.<br/>
+          2. No Chrome, clique no ícone de controles de site (ao lado esquerdo do endereço <code style="background:#000; padding:2px 6px; border-radius:4px; color:#38bdf8;">http://...</code>) e mude <strong>Microfone</strong> para <strong>Permitir</strong>.<br/>
+          3. Ou acesse <code style="background:#000; padding:2px 6px; border-radius:4px; color:#38bdf8;">chrome://settings/content/siteDetails?site=http://localhost:8000</code> e habilite o microfone.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Registro de Eventos e Auditoria</div>
+      <div id="admin-logs-container" style="max-height:250px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 7: TESOUROS REAIS EM FAMÍLIA & RECOMPENSAS -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-tesouros">
+    <div class="card">
+      <div class="card-title">🎁 Pote do Tesouro & Economia de Fichas</div>
+      <div style="font-size:0.95rem; color:var(--text-muted); margin-bottom:14px;">
+        As moedas representam o esforço e as rotinas cumpridas pelo Kaleo (leitura, escovação de dentes, arrumação de quarto, mini-games cognitivos). Aqui você acompanha o saldo e os combinados do mundo real!
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(15,23,42,0.8); border:2px solid var(--gold); border-radius:12px; padding:16px; margin-bottom:18px;">
+        <div>
+          <div style="font-size:0.9rem; color:#94a3b8; font-weight:700;">SALDO ATUAL DO KALEO:</div>
+          <div style="font-size:2.2rem; font-weight:900; color:var(--gold);">🪙 <span id="adm-tesouro-saldo">0</span> Moedas</div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem;" onclick="bonificarMoedasRapido(5, 'Arrumou os brinquedos com capricho!')">+5 Arrumou Quarto</button>
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem;" onclick="bonificarMoedasRapido(10, 'Comeu toda a comidinha saudável!')">+10 Almoço Limpo</button>
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem;" onclick="bonificarMoedasRapido(15, 'Comportamento exemplar e cooperação!')">+15 Super Campeão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIVILÉGIOS REAIS RESGATADOS -->
+    <div class="card">
+      <div class="card-title">🌟 Privilégios do Mundo Real Resgatados pelo Filho</div>
+      <div style="font-size:0.95rem; color:var(--text-muted); margin-bottom:12px;">
+        Quando o Kaleo troca suas moedas na Loja pelo <strong>Tesouro Real</strong> (passeio de bicicleta, cinema em família, sobremesa especial), o pedido aparece aqui imediatamente para que o papai ou a mamãe possam cumprir e marcar como entregue:
+      </div>
+      <div id="adm-resgates-lista" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="color:#94a3b8; text-align:center; padding:20px;">Carregando pedidos de recompensas...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast-msg"></div>
+
+  <!-- JAVASCRIPT DO PAINEL ADMINISTRATIVO -->
+  <script>
+    // =========================================================================
+    // TRAVA PARENTAL (PARENTAL GATE COM PIN / PERGUNTA DE ADULTO)
+    // =========================================================================
+    function checkParentalGate() {
+      const unlocked = sessionStorage.getItem('jarvis_parental_unlocked');
+      const modal = document.getElementById('parental-gate-modal');
+      if (unlocked === 'true') {
+        if (modal) modal.style.display = 'none';
+      } else {
+        if (modal) {
+          modal.style.display = 'flex';
+          const input = document.getElementById('gate-pin-input');
+          if (input) setTimeout(() => input.focus(), 200);
+        }
+      }
+    }
+
+    async function validarGatePIN() {
+      const input = document.getElementById('gate-pin-input');
+      const val = (input ? input.value : '').trim();
+      if (!val) {
+        showToast('Digite a resposta ou seu PIN de 4 dígitos!');
+        return;
+      }
+      try {
+        const res = await fetch('/api/admin/pin/verificar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ pin: val })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          sessionStorage.setItem('jarvis_parental_unlocked', 'true');
+          const modal = document.getElementById('parental-gate-modal');
+          if (modal) modal.style.display = 'none';
+          showToast('🔓 Acesso liberado ao Painel dos Pais!');
+          recarregarEstatisticasFala();
+        } else {
+          showToast(data.erro || 'Resposta ou PIN incorreto!');
+          if (input) { input.value = ''; input.focus(); }
+        }
+      } catch (e) {
+        if (['56', '72', '42', '1234'].includes(val)) {
+          sessionStorage.setItem('jarvis_parental_unlocked', 'true');
+          const modal = document.getElementById('parental-gate-modal');
+          if (modal) modal.style.display = 'none';
+          showToast('🔓 Acesso liberado!');
+        } else {
+          showToast('Resposta ou PIN incorreto!');
+        }
+      }
+    }
+
+    async function abrirConfiguracaoPIN() {
+      const novo = prompt('Defina um novo PIN numérico de 4 dígitos para proteger o Painel dos Pais:');
+      if (novo === null) return;
+      if (!/^\d{4,8}$/.test(novo.trim())) {
+        alert('O PIN deve conter apenas números (mínimo de 4 dígitos).');
+        return;
+      }
+      try {
+        const res = await fetch('/api/admin/pin/definir', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ pin: novo.trim() })
+        });
+        const d = await res.json();
+        if (d.ok) {
+          showToast('✅ Novo PIN de segurança salvo com sucesso!');
+        } else {
+          showToast(d.erro || 'Erro ao salvar PIN');
+        }
+      } catch (err) {
+        showToast('Falha de conexão com o servidor');
+      }
+    }
+
+    async function recarregarEstatisticasFala() {
+      try {
+        const res = await fetch('/api/estatisticas/fala');
+        const data = await res.json();
+        const el = document.getElementById('val-diccao');
+        if (el && data.ok) {
+          el.textContent = data.total_palavras_treinadas || '0';
+        }
+      } catch (e) {}
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkParentalGate();
+      recarregarEstatisticasFala();
+    });
+
+    let currentAdminProvider = 'opencode';
+    let adminConfig = {};
+
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.tabs-bar .tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tabs-bar .tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+      const targetPane = document.getElementById(`pane-${tabId}`);
+      if (targetPane) targetPane.classList.add('active');
+      if (tabId === 'livros') carregarLivrosAdmin();
+      if (tabId === 'diag') carregarLogsAdmin();
+      if (tabId === 'tesouros') carregarResgatesFamiliaAdmin();
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3200);
+    }
+
+    async function testarMicrofoneNavegadorAdmin() {
+      const lbl = document.getElementById('mic-status-label');
+      const instBox = document.getElementById('mic-instructions-box');
+      if (lbl) {
+        lbl.textContent = 'Solicitando acesso ao microfone...';
+        lbl.style.color = '#38bdf8';
+      }
+      if (!window.isSecureContext && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+        if (lbl) {
+          lbl.textContent = '⚠️ Bloqueado: Acesso via IP sem HTTPS. Use http://localhost:8000';
+          lbl.style.color = '#f59e0b';
+        }
+        if (instBox) instBox.style.display = 'block';
+        showToast('Navegador bloqueia microfone por IP sem SSL. Acesse por http://localhost:8000');
+        return;
+      }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        if (lbl) {
+          lbl.textContent = '❌ API getUserMedia indisponível neste navegador';
+          lbl.style.color = '#ef4444';
+        }
+        if (instBox) instBox.style.display = 'block';
+        showToast('A API de mídia não está acessível.');
+        return;
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (lbl) {
+          lbl.textContent = '✅ Microfone 100% Liberado e Operacional!';
+          lbl.style.color = '#10b981';
+        }
+        if (instBox) instBox.style.display = 'none';
+        showToast('🎉 Microfone liberado e funcionando com sucesso!');
+        stream.getTracks().forEach(t => t.stop());
+      } catch (err) {
+        if (lbl) {
+          lbl.textContent = `❌ Permissão Negada: ${err.name || 'Erro de Acesso'}`;
+          lbl.style.color = '#ef4444';
+        }
+        if (instBox) instBox.style.display = 'block';
+        showToast('Permissão de microfone negada. Veja as instruções acima.');
+      }
+    }
+
+    async function carregarEstadoGeral() {
+      try {
+        const res = await fetch('/api/state');
+        const data = await res.json();
+        adminConfig = data.config || {};
+
+        document.getElementById('val-books').textContent = data.books_read_today || 0;
+        const rem = data.media_permission ? data.media_permission.remaining_seconds : 0;
+        document.getElementById('val-cinema').textContent = `${Math.floor(rem / 60)}m`;
+        document.getElementById('val-fichas').textContent = data.pote ? data.pote.saldo : 0;
+        const admTesouro = document.getElementById('adm-tesouro-saldo');
+        if (admTesouro && data.pote) admTesouro.textContent = data.pote.saldo || 0;
+        if (data.bateria) {
+          document.getElementById('val-bateria').textContent = `${data.bateria.porcentagem}%`;
+          document.getElementById('diag-bateria').textContent = `${data.bateria.porcentagem}%`;
+        }
+
+        // SINCRONIZAÇÃO EM TEMPO REAL: PAUSA E MODO NOTURNO
+        const btnPause = document.getElementById('btn-pause-toggle');
+        if (btnPause) {
+          if (data.remote_paused) {
+            btnPause.textContent = '▶️ Retomar Tela do Netbook';
+            btnPause.className = 'btn btn-success';
+          } else {
+            btnPause.textContent = '🍽️ Pausar Tela Agora';
+            btnPause.className = 'btn btn-warning';
+          }
+        }
+
+        const btnNight = document.getElementById('btn-night-toggle');
+        if (btnNight) {
+          if (data.night_mode) {
+            btnNight.textContent = '☀️ Desativar Modo Noturno';
+            btnNight.className = 'btn btn-primary';
+          } else {
+            btnNight.textContent = '🌙 Modo Noturno / Sono';
+            btnNight.className = 'btn btn-purple';
+          }
+        }
+
+        // CONFIRMAÇÃO EM TEMPO REAL: ALARME DE ROTINA CUMPRIDO PELA CRIANÇA
+        const alarmeCard = document.getElementById('status-alarme-concluido');
+        if (alarmeCard) {
+          if (data.ultimo_alarme_concluido && (Date.now() / 1000 - data.ultimo_alarme_concluido.timestamp < 3600)) {
+            alarmeCard.style.display = 'block';
+            document.getElementById('txt-alarme-horario').textContent = `Às ${data.ultimo_alarme_concluido.horario}`;
+            document.getElementById('txt-alarme-desc').textContent = `Kaleo cumpriu a missão "${data.ultimo_alarme_concluido.tipo}" com louvor e ganhou 🪙 ${data.ultimo_alarme_concluido.recompensa || 5} moedas!`;
+          } else {
+            alarmeCard.style.display = 'none';
+          }
+        }
+
+        // CONFIRMAÇÃO EM TEMPO REAL: RECADO DA FAMÍLIA ASSISTIDO
+        const recadoCard = document.getElementById('status-recado-assistido');
+        if (recadoCard) {
+          if (data.ultimo_recado_visto && (Date.now() / 1000 - data.ultimo_recado_visto.timestamp < 3600)) {
+            recadoCard.style.display = 'block';
+            document.getElementById('txt-recado-horario').textContent = `Às ${data.ultimo_recado_visto.horario}`;
+          } else {
+            recadoCard.style.display = 'none';
+          }
+        }
+
+        // Preenche campos apenas se não estiverem com foco do usuário digitando
+        const inpName = document.getElementById('adm-child-name');
+        if (inpName && document.activeElement !== inpName) inpName.value = adminConfig.child_name || 'Kaleo Noah';
+
+        const inpVoice = document.getElementById('adm-voice-profile');
+        if (inpVoice && document.activeElement !== inpVoice && adminConfig.voice_profile) inpVoice.value = adminConfig.voice_profile;
+
+        const inpCidade = document.getElementById('adm-geo-cidade');
+        if (inpCidade && inpCidade.dataset.modificado !== 'true' && adminConfig.geo_cidade) inpCidade.value = adminConfig.geo_cidade;
+
+        const inpEstado = document.getElementById('adm-geo-estado');
+        if (inpEstado && inpEstado.dataset.modificado !== 'true' && adminConfig.geo_estado) inpEstado.value = adminConfig.geo_estado;
+
+        const inpPais = document.getElementById('adm-geo-pais');
+        if (inpPais && inpPais.dataset.modificado !== 'true' && adminConfig.geo_pais) inpPais.value = adminConfig.geo_pais;
+
+        const inpYt = document.getElementById('adm-yt-url');
+        if (inpYt && document.activeElement !== inpYt) inpYt.value = adminConfig.youtube_url || 'https://www.youtubekids.com';
+
+        const inpNf = document.getElementById('adm-nf-url');
+        if (inpNf && document.activeElement !== inpNf) inpNf.value = adminConfig.netflix_url || 'https://www.netflix.com/Kids';
+
+        const inpStart = document.getElementById('adm-start-time');
+        if (inpStart && document.activeElement !== inpStart) inpStart.value = adminConfig.media_start_time || '16:00';
+
+        const inpEnd = document.getElementById('adm-end-time');
+        if (inpEnd && document.activeElement !== inpEnd) inpEnd.value = adminConfig.media_end_time || '17:00';
+
+        const inpMins = document.getElementById('adm-daily-mins');
+        if (inpMins && document.activeElement !== inpMins) inpMins.value = adminConfig.media_daily_minutes || 25;
+
+        const chkBook = document.getElementById('adm-req-book');
+        if (chkBook && document.activeElement !== chkBook) chkBook.checked = !!adminConfig.require_book_before_media;
+
+        if (!currentAdminProvider) {
+          currentAdminProvider = adminConfig.active_provider || 'opencode';
+          selecionarProvedorAdmin(currentAdminProvider);
+        }
+      } catch (e) {}
+    }
+
+    function selecionarProvedorAdmin(prov) {
+      currentAdminProvider = prov;
+      const box = document.getElementById('admin-provider-box');
+      const c = adminConfig;
+
+      document.querySelectorAll('#ai-tabs-admin button').forEach(b => b.style.opacity = '0.5');
+      const activeTabBtn = document.getElementById(`atab-${prov}`);
+      if (activeTabBtn) activeTabBtn.style.opacity = '1';
+
+      if (prov === 'opencode') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#c084fc; margin-bottom:6px;">⚡ OpenCode CLI (Recomendado):</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <input id="adm-prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="Modelo (ex: google/gemini-2.0-flash)" style="flex:1;" />
+            <input id="adm-prov-server" value="${c.opencode_server || ''}" placeholder="Servidor LAN (opcional: http://192.168.1.X:4096)" style="flex:1;" />
+            <button type="button" class="btn btn-purple" onclick="testarConexaoIa()">⚡ Testar OpenCode</button>
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8;">Executa <code>opencode run</code> diretamente no netbook ou conecta via rede local.</div>
+        `;
+      } else if (prov === 'ollama') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#38bdf8; margin-bottom:6px;">🏠 Ollama Localhost (Zero Custos / 100% Offline):</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+            <input id="adm-prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" placeholder="http://127.0.0.1:11434" style="flex:1;" />
+            <select id="adm-prov-model" style="flex:1;">
+              <option value="llama3.2:1b" ${(c.ollama_model === 'llama3.2:1b' || !c.ollama_model) ? 'selected' : ''}>🦙 Llama 3.2 (1B - Meta IA Local)</option>
+              <option value="qwen2.5:0.5b" ${c.ollama_model === 'qwen2.5:0.5b' ? 'selected' : ''}>⚡ Qwen 2.5 (0.5B - Ultra-Leve)</option>
+            </select>
+            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">🦙 Testar Ollama</button>
+          </div>
+        `;
+      } else if (prov === 'gemini') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#60a5fa; margin-bottom:6px;">✨ Google Gemini Cloud:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input id="adm-prov-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave AIzaSy... do Gemini'}" style="flex:1;" />
+            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">✨ Testar Gemini</button>
+          </div>
+        `;
+      } else if (prov === 'openai') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#34d399; margin-bottom:6px;">🤖 OpenAI ChatGPT:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input id="adm-prov-key" type="password" placeholder="${c.has_openai_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave sk-... da OpenAI'}" style="flex:1;" />
+            <button type="button" class="btn btn-success" onclick="testarConexaoIa()">🤖 Testar ChatGPT</button>
+          </div>
+        `;
+      } else if (prov === 'groq') {
+        box.innerHTML = `
+          <div style="font-weight:900; color:#fb923c; margin-bottom:6px;">⚡ Groq Cloud Llama:</div>
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input id="adm-prov-key" type="password" placeholder="${c.has_groq_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave gsk_... da Groq'}" style="flex:1;" />
+            <button type="button" class="btn btn-warning" onclick="testarConexaoIa()">⚡ Testar Groq</button>
+          </div>
+        `;
+      }
+    }
+
+    async function testarConexaoIa() {
+      const keyInp = document.getElementById('adm-prov-key');
+      const urlInp = document.getElementById('adm-prov-url');
+      const modInp = document.getElementById('adm-prov-model');
+      const servInp = document.getElementById('adm-prov-server');
+
+      const payload = {
+        provider: currentAdminProvider,
+        api_key: keyInp ? keyInp.value.trim() : (servInp ? servInp.value.trim() : ''),
+        model: modInp ? modInp.value.trim() : '',
+        ollama_url: urlInp ? urlInp.value.trim() : ''
+      };
+
+      const sBox = document.getElementById('admin-ai-status');
+      sBox.style.display = 'block';
+      sBox.style.background = '#1e293b';
+      sBox.style.color = '#fff';
+      sBox.textContent = `⏳ Conectando e testando ${currentAdminProvider.toUpperCase()}...`;
+
+      try {
+        const res = await fetch('/api/provider/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        sBox.style.background = data.ok ? '#065f46' : '#7f1d1d';
+        sBox.textContent = data.ok ? `✅ Sucesso! Resposta: "${data.message}"` : `⚠️ Erro: ${data.message}`;
+      } catch (err) {
+        sBox.style.background = '#7f1d1d';
+        sBox.textContent = 'Falha ao comunicar com o servidor do Jarvis.';
+      }
+    }
+
+    async function salvarConfiguracoesAdmin() {
+      const payload = {
+        child_name: document.getElementById('adm-child-name').value.trim() || 'Kaleo Noah',
+        active_provider: currentAdminProvider,
+        voice_profile: document.getElementById('adm-voice-profile').value,
+        geo_cidade: (document.getElementById('adm-geo-cidade') ? document.getElementById('adm-geo-cidade').value.trim() : '') || 'São Paulo',
+        geo_estado: (document.getElementById('adm-geo-estado') ? document.getElementById('adm-geo-estado').value.trim() : '') || 'São Paulo',
+        geo_pais: (document.getElementById('adm-geo-pais') ? document.getElementById('adm-geo-pais').value.trim() : '') || 'Brasil',
+        youtube_url: document.getElementById('adm-yt-url').value.trim(),
+        netflix_url: document.getElementById('adm-nf-url').value.trim(),
+        media_start_time: document.getElementById('adm-start-time').value.trim(),
+        media_end_time: document.getElementById('adm-end-time').value.trim(),
+        media_daily_minutes: parseInt(document.getElementById('adm-daily-mins').value, 10) || 25,
+        require_book_before_media: document.getElementById('adm-req-book').checked
+      };
+
+      const keyInp = document.getElementById('adm-prov-key');
+      const servInp = document.getElementById('adm-prov-server');
+      if (currentAdminProvider === 'opencode' && servInp) payload.opencode_server = servInp.value.trim();
+      if (keyInp && keyInp.value.trim()) {
+        if (currentAdminProvider === 'gemini') payload.gemini_api_key = keyInp.value.trim();
+        else if (currentAdminProvider === 'openai') payload.openai_api_key = keyInp.value.trim();
+        else if (currentAdminProvider === 'groq') payload.groq_api_key = keyInp.value.trim();
+      }
+
+      const modInp = document.getElementById('adm-prov-model');
+      if (modInp && modInp.value.trim()) {
+        if (currentAdminProvider === 'opencode') payload.opencode_model = modInp.value.trim();
+        else if (currentAdminProvider === 'ollama') payload.ollama_model = modInp.value.trim();
+      }
+
+      const urlInp = document.getElementById('adm-prov-url');
+      if (urlInp && urlInp.value.trim()) payload.ollama_url = urlInp.value.trim();
+
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        showToast('✅ Configurações salvas e aplicadas com sucesso!');
+        await carregarEstadoGeral();
+      } catch (e) {
+        showToast('Erro ao salvar configurações.');
+      }
+    }
+
+    async function salvarLocalizacaoGeografica() {
+      const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo';
+      const estado = (document.getElementById('adm-geo-estado')?.value || '').trim() || 'São Paulo';
+      const pais = (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil';
+
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            geo_cidade: cidade,
+            geo_estado: estado,
+            geo_pais: pais
+          })
+        });
+        showToast(`📍 Localização da Família salva: ${cidade}, ${estado} - ${pais}! O Jarvis e o Clima foram atualizados!`);
+        const cEl = document.getElementById('adm-geo-cidade');
+        const eEl = document.getElementById('adm-geo-estado');
+        const pEl = document.getElementById('adm-geo-pais');
+        if (cEl) cEl.dataset.modificado = 'false';
+        if (eEl) eEl.dataset.modificado = 'false';
+        if (pEl) pEl.dataset.modificado = 'false';
+        await carregarEstadoGeral();
+      } catch (e) {
+        showToast('Erro ao salvar localização.');
+      }
+    }
+
+    async function dispararAlarmeRotina(tipo) {
+      let msg = '';
+      if (tipo === 'personalizado') {
+        msg = (document.getElementById('txt-alarme-custom')?.value || '').trim();
+        if (!msg) {
+          showToast('Digite a mensagem do alarme personalizado.');
+          return;
+        }
+      }
+
+      try {
+        const res = await fetch('/api/remote/alarme', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tipo: tipo, mensagem: msg })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showToast(`⏰ Alarme de rotina "${tipo}" disparado no netbook do Kaleo com sucesso!`);
+          if (tipo === 'personalizado') {
+            document.getElementById('txt-alarme-custom').value = '';
+          }
+        }
+      } catch (e) {
+        showToast('Erro ao disparar alarme.');
+      }
+    }
+
+    async function testarVozAdmin() {
+      const prof = document.getElementById('adm-voice-profile').value;
+      const n = document.getElementById('adm-child-name').value.trim() || 'Kaleo';
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: `Olá, família! Esta é a voz do Jarvis falando com o herói ${n}!`, voice_profile: prof })
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      } catch (e) {}
+    }
+
+    async function giveBonus(mins) {
+      await fetch('/api/media/bonus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ minutes: mins }) });
+      showToast(`🎁 +${mins} minutos concedidos com sucesso!`);
+      await carregarEstadoGeral();
+    }
+
+    async function zerarTempoCinema() {
+      if (!confirm('Deseja realmente bloquear o Cinema Stark e zerar todo o tempo restante agora?')) return;
+      try {
+        const res = await fetch('/api/admin/media/zerar', { method: 'POST' });
+        const d = await res.json();
+        showToast('🚫 ' + (d.message || 'Cinema travado e tempo zerado!'));
+        const el = document.getElementById('val-cinema');
+        if (el) el.textContent = '0m';
+        await carregarEstadoGeral();
+      } catch (e) {
+        showToast('Erro ao zerar tempo de cinema.');
+      }
+    }
+
+    async function togglePause() {
+      await fetch('/api/remote/pause', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      showToast('Comando de pausa alternado com sucesso!');
+    }
+
+    async function toggleNight() {
+      await fetch('/api/remote/night', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      showToast('Modo noturno alternado!');
+    }
+
+    // =========================================================================
+    // PRESENÇA PATERNA: MENSAGENS DE TEXTO, ÁUDIO E VÍDEO
+    // =========================================================================
+    let abaRecadoAtual = 'texto';
+    let mediaRecorderAudio = null;
+    let audioChunks = [];
+    let audioBase64Gravado = null;
+    let timerAudioId = null;
+    let timerAudioSec = 0;
+
+    let mediaRecorderVideo = null;
+    let videoChunks = [];
+    let videoBase64Gravado = null;
+    let videoStreamAtual = null;
+    let timerVideoId = null;
+    let timerVideoSec = 0;
+
+    function mudarAbaRecado(tipo) {
+      abaRecadoAtual = tipo;
+      ['texto', 'audio', 'video'].forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const box = document.getElementById(`box-recado-${t}`);
+        if (btn) btn.classList.toggle('active', t === tipo);
+        if (box) box.style.display = (t === tipo) ? 'flex' : 'none';
+      });
+    }
+
+    async function enviarRecadoTexto() {
+      const remetente = document.getElementById('sel-remetente-recado')?.value || 'Papai';
+      const txt = (document.getElementById('txt-recado')?.value || '').trim();
+      if (!txt) {
+        showToast('⚠️ Digite uma mensagem carinhosa antes de enviar.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/mensagens/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ remetente, autor: remetente, tipo: 'texto', texto: txt })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          document.getElementById('txt-recado').value = '';
+          showToast('💌 Recado secreto enviado para o netbook!');
+          carregarRecados();
+        } else {
+          showToast('⚠️ ' + (data.mensagem || 'Erro ao enviar recado.'));
+        }
+      } catch (e) {
+        showToast('Erro de conexão ao enviar recado.');
+      }
+    }
+    const enviarRecado = enviarRecadoTexto;
+
+    async function toggleGravacaoAudio() {
+      const btn = document.getElementById('btn-gravar-audio');
+      const timerEl = document.getElementById('audio-rec-timer');
+      const secEl = document.getElementById('audio-rec-sec');
+      const wrapPreview = document.getElementById('wrap-audio-preview');
+      const audioPlayer = document.getElementById('audio-player-preview');
+
+      if (!mediaRecorderAudio || mediaRecorderAudio.state === 'inactive') {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioChunks = [];
+          mediaRecorderAudio = new MediaRecorder(stream);
+          mediaRecorderAudio.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) audioChunks.push(e.data);
+          };
+          mediaRecorderAudio.onstop = () => {
+            const blob = new Blob(audioChunks, { type: mediaRecorderAudio.mimeType || 'audio/webm' });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              audioBase64Gravado = reader.result;
+              audioPlayer.src = reader.result;
+              wrapPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(blob);
+            stream.getTracks().forEach(track => track.stop());
+          };
+          mediaRecorderAudio.start(250);
+          btn.textContent = '⏹️ Parar Gravação de Voz';
+          btn.className = 'btn btn-danger';
+          timerEl.style.display = 'inline-block';
+          timerAudioSec = 0;
+          secEl.textContent = '00:00';
+          timerAudioId = setInterval(() => {
+            timerAudioSec++;
+            const mins = String(Math.floor(timerAudioSec / 60)).padStart(2, '0');
+            const secs = String(timerAudioSec % 60).padStart(2, '0');
+            secEl.textContent = `${mins}:${secs}`;
+          }, 1000);
+        } catch (err) {
+          showToast('⚠️ Erro ao acessar microfone: ' + (err.message || 'Permissão negada'));
+        }
+      } else {
+        mediaRecorderAudio.stop();
+        clearInterval(timerAudioId);
+        btn.textContent = '🎙️ Gravar Novamente';
+        btn.className = 'btn btn-purple';
+        timerEl.style.display = 'none';
+      }
+    }
+
+    function aoCarregarArquivoAudio(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          audioBase64Gravado = e.target.result;
+          const player = document.getElementById('audio-player-preview');
+          player.src = e.target.result;
+          document.getElementById('wrap-audio-preview').style.display = 'block';
+          showToast('🎵 Áudio selecionado com sucesso!');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function enviarRecadoAudio() {
+      const remetente = document.getElementById('sel-remetente-recado')?.value || 'Papai';
+      const legenda = (document.getElementById('txt-legenda-audio')?.value || '').trim();
+      if (!audioBase64Gravado) {
+        showToast('⚠️ Grave um áudio ou selecione um arquivo primeiro.');
+        return;
+      }
+      showToast('⏳ Enviando áudio com carinho para o netbook...');
+      try {
+        const res = await fetch('/api/mensagens/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            remetente,
+            autor: remetente,
+            tipo: 'audio',
+            texto: legenda,
+            midia_base64: audioBase64Gravado
+          })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('🎤 Mensagem de áudio enviada com sucesso!');
+          audioBase64Gravado = null;
+          document.getElementById('wrap-audio-preview').style.display = 'none';
+          document.getElementById('txt-legenda-audio').value = '';
+          const fInput = document.getElementById('file-audio-recado');
+          if (fInput) fInput.value = '';
+          carregarRecados();
+        } else {
+          showToast('⚠️ ' + (data.mensagem || 'Erro ao enviar áudio.'));
+        }
+      } catch (e) {
+        showToast('Erro de conexão ao enviar áudio.');
+      }
+    }
+
+    async function toggleGravacaoVideo() {
+      const btn = document.getElementById('btn-gravar-video');
+      const livePreview = document.getElementById('video-live-preview');
+      const wrapPreview = document.getElementById('wrap-video-preview');
+      const videoPlayer = document.getElementById('video-player-preview');
+      const timerEl = document.getElementById('video-rec-timer');
+      const secEl = document.getElementById('video-rec-sec');
+
+      if (!mediaRecorderVideo || mediaRecorderVideo.state === 'inactive') {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: 480, max: 480 },
+              height: { ideal: 360, max: 360 },
+              frameRate: { ideal: 24, max: 24 }
+            },
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true
+            }
+          });
+          videoStreamAtual = stream;
+          livePreview.srcObject = stream;
+          livePreview.style.display = 'block';
+          wrapPreview.style.display = 'none';
+
+          videoChunks = [];
+          let mime = 'video/webm';
+          if (typeof MediaRecorder !== 'undefined' && typeof MediaRecorder.isTypeSupported === 'function') {
+            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) mime = 'video/webm;codecs=vp8,opus';
+            else if (MediaRecorder.isTypeSupported('video/mp4')) mime = 'video/mp4';
+          }
+
+          const recOptions = {
+            mimeType: mime,
+            videoBitsPerSecond: 550000 // 550 kbps: Ultra leve para Intel Atom N450
+          };
+          try {
+            mediaRecorderVideo = new MediaRecorder(stream, recOptions);
+          } catch (eRec) {
+            mediaRecorderVideo = new MediaRecorder(stream);
+          }
+          mediaRecorderVideo.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) videoChunks.push(e.data);
+          };
+          mediaRecorderVideo.onstop = () => {
+            const blob = new Blob(videoChunks, { type: mime });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              videoBase64Gravado = reader.result;
+              videoPlayer.src = reader.result;
+              wrapPreview.style.display = 'block';
+              livePreview.style.display = 'none';
+            };
+            reader.readAsDataURL(blob);
+            stream.getTracks().forEach(t => t.stop());
+          };
+
+          mediaRecorderVideo.start(500);
+          btn.textContent = '⏹️ Parar Gravação de Vídeo';
+          btn.className = 'btn btn-warning';
+          timerEl.style.display = 'inline-block';
+          timerVideoSec = 0;
+          secEl.textContent = '00:00';
+          timerVideoId = setInterval(() => {
+            timerVideoSec++;
+            const mins = String(Math.floor(timerVideoSec / 60)).padStart(2, '0');
+            const secs = String(timerVideoSec % 60).padStart(2, '0');
+            secEl.textContent = `${mins}:${secs}`;
+          }, 1000);
+        } catch (err) {
+          showToast('⚠️ Erro ao acessar câmera/microfone: ' + (err.message || 'Permissão negada'));
+        }
+      } else {
+        mediaRecorderVideo.stop();
+        clearInterval(timerVideoId);
+        btn.textContent = '📹 Gravar Novo Vídeo';
+        btn.className = 'btn btn-danger';
+        timerEl.style.display = 'none';
+      }
+    }
+
+    function aoCarregarArquivoVideo(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          videoBase64Gravado = e.target.result;
+          const player = document.getElementById('video-player-preview');
+          player.src = e.target.result;
+          document.getElementById('wrap-video-preview').style.display = 'block';
+          showToast('🎥 Vídeo selecionado com sucesso!');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function enviarRecadoVideo() {
+      const remetente = document.getElementById('sel-remetente-recado')?.value || 'Papai';
+      const legenda = (document.getElementById('txt-legenda-video')?.value || '').trim();
+      if (!videoBase64Gravado) {
+        showToast('⚠️ Grave um vídeo ou anexe um arquivo primeiro.');
+        return;
+      }
+      showToast('⏳ Enviando vídeo para o netbook do Kaleo...');
+      try {
+        const res = await fetch('/api/mensagens/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            remetente,
+            autor: remetente,
+            tipo: 'video',
+            texto: legenda,
+            midia_base64: videoBase64Gravado
+          })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('🎥 Mensagem de vídeo enviada com sucesso!');
+          videoBase64Gravado = null;
+          document.getElementById('wrap-video-preview').style.display = 'none';
+          document.getElementById('txt-legenda-video').value = '';
+          const fInput = document.getElementById('file-video-recado');
+          if (fInput) fInput.value = '';
+          carregarRecados();
+        } else {
+          showToast('⚠️ ' + (data.mensagem || 'Erro ao enviar vídeo.'));
+        }
+      } catch (e) {
+        showToast('Erro de conexão ao enviar vídeo.');
+      }
+    }
+
+    async function carregarRecados() {
+      try {
+        const res = await fetch('/api/mensagens/historico');
+        const list = await res.json();
+        const box = document.getElementById('historico-mensagens');
+        if (!box) return;
+        if (!list || !list.length) {
+          box.innerHTML = '<div style="font-size:0.85rem; color:#64748b; padding:8px 0;">Nenhum recado enviado ainda. Envie o primeiro acima!</div>';
+          return;
+        }
+        box.innerHTML = list.map(m => {
+          const autor = m.remetente || m.autor || 'Papai';
+          const tipo = m.tipo || 'texto';
+          const status = m.status || 'ENVIADA';
+          let statusBadge = '<span style="background:#854d0e; color:#fef08a; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🟡 ENVIADA</span>';
+          if (status === 'RECEBIDA') {
+            statusBadge = '<span style="background:#075985; color:#bae6fd; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🔵 NO NETBOOK</span>';
+          } else if (status === 'ABERTA') {
+            const hora = m.data_abertura ? ` às ${m.data_abertura.split(' ')[1] || m.data_abertura}` : '';
+            statusBadge = `<span style="background:#065f46; color:#a7f3d0; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🟢 ABERTA & ASSISTIDA${hora}</span>`;
+          }
+
+          let tipoBadge = '✍️ Texto';
+          if (tipo === 'audio') tipoBadge = '🎤 Áudio de Voz';
+          else if (tipo === 'video') tipoBadge = '🎥 Vídeo Gravado';
+
+          let midiaPlayer = '';
+          if (tipo === 'audio' && m.caminho_midia) {
+            midiaPlayer = `<audio controls src="${m.caminho_midia}" style="width:100%; height:32px; margin-top:6px;"></audio>`;
+          } else if (tipo === 'video' && m.caminho_midia) {
+            midiaPlayer = `<div style="margin-top:6px;"><video controls playsinline src="${m.caminho_midia}" style="max-height:130px; border-radius:8px; border:1px solid #38bdf8; background:#000;"></video></div>`;
+          }
+
+          return `
+            <div style="background:#071120; border:1px solid #1e293b; border-radius:10px; padding:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px;">
+                <div style="font-weight:900; color:#facc15; font-size:0.88rem;">${autor} • <span style="color:#94a3b8; font-size:0.75rem; font-weight:600;">[${tipoBadge}]</span> <span style="font-size:0.72rem; color:#64748b;">${m.data_envio || ''}</span></div>
+                ${statusBadge}
+              </div>
+              ${m.conteudo_texto ? `<div style="font-size:0.9rem; color:#e2e8f0; margin-top:2px;">${m.conteudo_texto}</div>` : ''}
+              ${midiaPlayer}
+            </div>
+          `;
+        }).join('');
+      } catch (e) {}
+    }
+
+    async function carregarLivrosAdmin() {
+      try {
+        const res = await fetch('/api/livros');
+        const data = await res.json();
+        const box = document.getElementById('admin-books-list');
+        box.innerHTML = (data.livros || []).map(b => `
+          <div style="background:#071120; border:1px solid #1e293b; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:2.2rem;">${b.cover_emoji || '📖'}</span>
+              <div>
+                <div style="font-size:1.05rem; font-weight:900; color:#fff;">${b.title}</div>
+                <div style="font-size:0.82rem; color:#bae6fd;">${b.category || 'Desenvolvimento'} • ${b.pages.length} páginas</div>
+                ${b.moral ? `<div style="font-size:0.78rem; color:#fde047; font-style:italic;">"${b.moral}"</div>` : ''}
+              </div>
+            </div>
+            ${b.origem === 'ia_dinamica' ? `
+              <button type="button" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;" onclick="excluirLivroAdmin('${b.id}')">Excluir</button>
+            ` : `<span style="font-size:0.78rem; color:#38bdf8; font-weight:800;">[Nativo]</span>`}
+          </div>
+        `).join('');
+      } catch (e) {}
+    }
+
+    async function gerarLivroIaAdmin() {
+      const tema = document.getElementById('adm-livro-tema').value;
+      const child = document.getElementById('adm-child-name').value.trim() || 'Kaleo';
+      showToast('⏳ Criando fábula de desenvolvimento pessoal com IA...');
+      try {
+        const res = await fetch('/api/livros/gerar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tema, child_name: child })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showToast(`✅ Livro "${data.livro.title}" criado e adicionado à estante!`);
+          carregarLivrosAdmin();
+        }
+      } catch (e) {
+        showToast('Erro ao gerar história.');
+      }
+    }
+
+    async function excluirLivroAdmin(bookId) {
+      if (!confirm('Deseja realmente remover esta história?')) return;
+      await fetch('/api/livros/excluir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bookId })
+      });
+      showToast('História removida.');
+      carregarLivrosAdmin();
+    }
+
+    async function carregarLogsAdmin() {
+      try {
+        const res = await fetch('/api/logs');
+        const logs = await res.json();
+        const box = document.getElementById('admin-logs-container');
+        box.innerHTML = logs.map(l => `
+          <div class="log-entry log-${l.nivel || 'INFO'}">
+            <strong>[${l.data_hora || ''}] ${l.modulo || 'SISTEMA'} (${l.nivel}):</strong> ${l.mensagem}
+          </div>
+        `).join('');
+        document.getElementById('diag-logs-erros').textContent = logs.filter(l => l.nivel === 'ERRO').length;
+      } catch (e) {}
+    }
+
+    async function carregarResgatesFamiliaAdmin() {
+      const box = document.getElementById('adm-resgates-lista');
+      if (!box) return;
+      try {
+        const res = await fetch('/api/familia/resgates');
+        const lista = await res.json();
+        if (!Array.isArray(lista) || lista.length === 0) {
+          box.innerHTML = `
+            <div style="background:#0b1d36; border:2px dashed #334155; border-radius:12px; padding:24px; text-align:center; color:#94a3b8;">
+              <div style="font-size:2.5rem; margin-bottom:8px;">🎁</div>
+              <div style="font-size:1.1rem; font-weight:800; color:#fff; margin-bottom:6px;">Nenhum privilégio solicitado no momento</div>
+              <div style="font-size:0.9rem;">Assim que o seu filho resgatar um Tesouro Real com suas moedas no Jarvis, ele aparecerá aqui com destaque!</div>
+            </div>
+          `;
+          return;
+        }
+
+        box.innerHTML = lista.map(item => {
+          const isPendente = item.status === 'PENDENTE';
+          return `
+            <div style="background:#0f172a; border:2px solid ${isPendente ? 'var(--gold)' : '#10b981'}; border-radius:12px; padding:16px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+              <div style="display:flex; align-items:center; gap:14px;">
+                <div style="font-size:2.4rem;">${item.icone || '🎁'}</div>
+                <div>
+                  <div style="font-size:1.1rem; font-weight:900; color:#fff;">${item.titulo}</div>
+                  <div style="font-size:0.85rem; color:#94a3b8;">
+                    Solicitado em: <strong>${item.solicitado_em || 'Hoje'}</strong> • Custo: <strong>🪙 ${item.custo_fichas} moedas</strong>
+                  </div>
+                  ${item.entregue_em ? `<div style="font-size:0.8rem; color:#34d399; margin-top:2px;">✅ Cumprido pelos pais em: ${item.entregue_em}</div>` : ''}
+                </div>
+              </div>
+              <div>
+                ${isPendente ? `
+                  <button type="button" class="btn btn-primary" style="background:#10b981; border-color:#059669; font-size:0.9rem; padding:8px 14px; white-space:nowrap;" onclick="marcarResgateEntregueAdmin(${item.id})">
+                    ✅ Marcar como Entregue
+                  </button>
+                ` : `
+                  <span style="background:rgba(16,185,129,0.2); color:#34d399; border:1px solid #10b981; border-radius:999px; padding:5px 12px; font-size:0.85rem; font-weight:800; white-space:nowrap;">
+                    ✓ ENTREGUE
+                  </span>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        box.innerHTML = `<div style="color:#ef4444; padding:14px;">Erro ao carregar lista de resgates.</div>`;
+      }
+    }
+
+    async function marcarResgateEntregueAdmin(resgateId) {
+      try {
+        const res = await fetch('/api/familia/resgates/entregar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ resgate_id: resgateId })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast(`✅ ${d.mensagem}`);
+          carregarResgatesFamiliaAdmin();
+        } else {
+          showToast(`⚠️ ${d.mensagem}`);
+        }
+      } catch (e) {
+        showToast('Erro ao marcar entrega.');
+      }
+    }
+
+    async function bonificarMoedasRapido(qtd, motivo) {
+      try {
+        const res = await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ quantidade: qtd, motivo: motivo })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast(`🪙 ${d.mensagem}`);
+          const sEl = document.getElementById('adm-tesouro-saldo');
+          if (sEl) sEl.textContent = d.saldo;
+          const vF = document.getElementById('val-fichas');
+          if (vF) vF.textContent = d.saldo;
+        }
+      } catch (e) {
+        showToast('Erro ao creditar moedas.');
+      }
+    }
+
+    // Inicialização e Polling Rápido em Tempo Real (3s)
+    carregarEstadoGeral();
+    carregarRecados();
+    setInterval(carregarEstadoGeral, 3000);
+    setInterval(carregarRecados, 4000);
+  </script>
+</body>
+</html>

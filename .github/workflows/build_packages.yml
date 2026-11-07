@@ -20,6 +20,15 @@ jobs:
       - name: Clonar Repositorio
         uses: actions/checkout@v4
 
+      - name: Determinar Versao da Release
+        run: |
+          RAW_VER="${GITHUB_REF_NAME#v}"
+          if [ -z "$RAW_VER" ] || [ "$RAW_VER" = "main" ]; then
+            RAW_VER="3.3.0"
+          fi
+          echo "VERSION=${RAW_VER}" >> $GITHUB_ENV
+          echo "Versao configurada: ${RAW_VER}"
+
       - name: Configurar Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -40,7 +49,7 @@ jobs:
 
       - name: 1. Compilar Pacote Debian Kiosk (.deb)
         run: |
-          VERSION="2.6.0"
+          VERSION="${VERSION:-3.3.0}"
           ARCH="all"
           DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
           mkdir -p "${DEB_DIR}/DEBIAN"
@@ -91,7 +100,7 @@ jobs:
 
       - name: 2. Empacotar Versao Desktop Linux (.tar.gz)
         run: |
-          VERSION="2.6.0"
+          VERSION="${VERSION:-3.3.0}"
           TAR_DIR="jarvis-kids-os-${VERSION}-linux-desktop"
           mkdir -p "${TAR_DIR}"
           cp -r ./* "${TAR_DIR}/" 2>/dev/null || true
@@ -102,7 +111,7 @@ jobs:
 
       - name: 3. Empacotar Versao Desktop Windows (.zip)
         run: |
-          VERSION="2.6.0"
+          VERSION="${VERSION:-3.3.0}"
           ZIP_DIR="jarvis-kids-os-${VERSION}-windows-desktop"
           mkdir -p "${ZIP_DIR}"
           cp -r ./* "${ZIP_DIR}/" 2>/dev/null || true
@@ -113,7 +122,7 @@ jobs:
 
       - name: 4. Compilar Aplicativo Android (.apk)
         run: |
-          VERSION="2.6.0"
+          VERSION="${VERSION:-3.3.0}"
           echo "Compilando pacote Android .apk..."
           bash deploy/android_app/build_apk.sh
           echo "Pacote .apk gerado:"
@@ -121,7 +130,7 @@ jobs:
 
       - name: 5. Empacotar Bundle macOS / Desktop (.app e .app.zip)
         run: |
-          VERSION="2.6.0"
+          VERSION="${VERSION:-3.3.0}"
           echo "Estruturando bundle macOS .app..."
           APP_DIR="JARVIS-Kids-OS.app"
           mkdir -p "${APP_DIR}/Contents/MacOS"
