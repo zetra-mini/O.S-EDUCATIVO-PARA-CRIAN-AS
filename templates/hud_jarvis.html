@@ -9587,9 +9587,10 @@
     }
 
     // =========================================================================
-    // MODAL: PRESENÇA PATERNA & MENSAGEM SECRETA DOS PAIS (MODO FOCO)
+    // MODAL: PRESENÇA PATERNA & MENSAGEM SECRETA DOS PAIS (TEXTO, ÁUDIO, VÍDEO)
     // =========================================================================
     let msgSecretaAtualId = null;
+    let ultimaMsgNotificadaId = null;
 
     async function verificarMensagensSecretas() {
       try {
@@ -9597,9 +9598,32 @@
         const msg = await res.json();
         const btn = document.getElementById('btn-secret-msg');
         if (msg && msg.id) {
+          const idMudou = (msgSecretaAtualId !== msg.id);
           msgSecretaAtualId = msg.id;
           btn.style.display = 'inline-flex';
-          btn.textContent = `💌 RECADO DO ${msg.remetente.toUpperCase()}!`;
+
+          const autor = (msg.remetente || 'PAPAI').toUpperCase();
+          const tipo = msg.tipo || 'texto';
+          if (tipo === 'video') {
+            btn.innerHTML = `🎥 VÍDEO DO ${autor}!`;
+          } else if (tipo === 'audio') {
+            btn.innerHTML = `🎤 ÁUDIO DO ${autor}!`;
+          } else {
+            btn.innerHTML = `💌 RECADO DO ${autor}!`;
+          }
+
+          if (idMudou && ultimaMsgNotificadaId !== msg.id) {
+            ultimaMsgNotificadaId = msg.id;
+            playTone(659, 150);
+            const quem = msg.remetente || 'papai';
+            if (tipo === 'video') {
+              speak(`Kaleo! O ${quem} enviou um vídeo com muito carinho para você assistir!`);
+            } else if (tipo === 'audio') {
+              speak(`Kaleo! O ${quem} gravou uma mensagem de voz para você ouvir!`);
+            } else {
+              speak(`Kaleo! Tem uma cartinha especial do ${quem} esperando por você!`);
+            }
+          }
         } else {
           btn.style.display = 'none';
         }
@@ -9609,30 +9633,80 @@
     async function abrirMensagemPais() {
       if (!msgSecretaAtualId) return;
       playTone(659, 100);
-      const body = openModal('💌 RECADO ESPECIAL DA FAMÍLIA');
+      try {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      } catch (e) {}
+
+      const body = openModal('💌 PRESENÇA PATERNA & FAMÍLIA');
 
       try {
         const res = await fetch('/api/mensagens/novas');
         const msg = await res.json();
+        if (!msg || !msg.id) return;
+
+        const quem = msg.remetente || 'Papai';
+        const tipo = msg.tipo || 'texto';
+        let conteudoVisual = '';
+        let iconeModal = '💌';
+        let tituloModal = `O seu ${quem} preparou esta mensagem com muito amor para você:`;
+
+        if (tipo === 'video' && msg.caminho_midia) {
+          iconeModal = '🎥';
+          tituloModal = `Vídeo Especial do ${quem}:`;
+          conteudoVisual = `
+            <div style="margin:14px 0; background:#000; border-radius:16px; overflow:hidden; border:3px solid #facc15; box-shadow:0 0 25px rgba(250,204,21,0.4);">
+              <video id="video-recado-crianca" src="${msg.caminho_midia}" controls autoplay playsinline style="width:100%; max-height:360px; display:block; object-fit:contain;"></video>
+            </div>
+            ${msg.conteudo_texto ? `<div style="font-size:1.15rem; font-weight:800; color:#fde047; margin:10px 0; line-height:1.4;">"${msg.conteudo_texto}"</div>` : ''}
+          `;
+        } else if (tipo === 'audio' && msg.caminho_midia) {
+          iconeModal = '🎤';
+          tituloModal = `Mensagem de Voz do ${quem}:`;
+          conteudoVisual = `
+            <div style="margin:16px 0; background:rgba(2,132,199,0.15); border:2px dashed #38bdf8; border-radius:18px; padding:18px; text-align:center;">
+              <div style="font-size:3.2rem; margin-bottom:8px; animation:pulse 1.5s infinite;">🎙️✨</div>
+              <div style="font-size:0.95rem; color:#7dd3fc; margin-bottom:10px; font-weight:700;">Toque no play ou ouça a voz com carinho:</div>
+              <audio id="audio-recado-crianca" src="${msg.caminho_midia}" controls autoplay style="width:100%; height:46px;"></audio>
+            </div>
+            ${msg.conteudo_texto ? `<div style="font-size:1.15rem; font-weight:800; color:#fde047; margin:10px 0; line-height:1.4;">"${msg.conteudo_texto}"</div>` : ''}
+          `;
+        } else {
+          // Mensagem de texto com leitura neural do Jarvis
+          iconeModal = '💌';
+          tituloModal = `Cartinha Especial do ${quem}:`;
+          conteudoVisual = `
+            <div style="font-size:1.45rem; font-weight:900; color:#ffffff; line-height:1.45; margin:18px 0; background:rgba(250,204,21,0.12); border-radius:16px; padding:20px; border:1.5px solid rgba(250,204,21,0.4); text-shadow:0 2px 4px rgba(0,0,0,0.5);">
+              "${msg.conteudo_texto || 'Um grande abraço de super-herói!'}"
+            </div>
+          `;
+          speak(`O seu ${quem} deixou um recado com muito carinho para você: ${msg.conteudo_texto}`);
+        }
+
         body.innerHTML = `
-          <div style="background:#0c1c36; border:3px solid #facc15; border-radius:18px; padding:20px; text-align:center; box-shadow:0 0 25px rgba(250, 204, 21, 0.4);">
-            <div style="font-size:4rem; margin-bottom:8px;">💌</div>
-            <div style="font-size:1.15rem; color:#fde047; font-weight:800; margin-bottom:12px;">
-              O seu ${msg.remetente} preparou esta mensagem para você:
+          <div style="background:#0c1c36; border:3px solid #facc15; border-radius:18px; padding:20px; text-align:center; box-shadow:0 0 25px rgba(250, 204, 21, 0.4); max-height:82vh; overflow-y:auto; box-sizing:border-box;">
+            <div style="font-size:3.2rem; margin-bottom:4px;">${iconeModal}</div>
+            <div style="font-size:1.15rem; color:#fde047; font-weight:800; margin-bottom:6px;">
+              ${tituloModal}
             </div>
-            <div style="font-size:1.45rem; font-weight:900; color:#ffffff; line-height:1.4; margin-bottom:20px;">
-              "${msg.conteudo_texto || 'Um grande abraço de herói!'}"
+            ${conteudoVisual}
+            <div style="margin-top:16px;">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981, #059669); font-size:1.25rem; padding:14px 28px; box-shadow:0 4px 18px rgba(16,185,129,0.5); border:2px solid #34d399;" onclick="concluirMensagemPais(${msg.id})">
+                ✓ JÁ ASSISTI / OUVI E AMEI! (+5 Moedas 🪙)
+              </button>
             </div>
-            <button type="button" class="big-btn" style="background:#10b981; font-size:1.25rem; padding:14px 28px;" onclick="concluirMensagemPais(${msg.id})">
-              ✓ JÁ OUVI E AMEI! (CONCLUIR)
-            </button>
           </div>
         `;
-        speak(`O seu ${msg.remetente} deixou um recado especial para você: ${msg.conteudo_texto}`);
       } catch (e) {}
     }
 
     async function concluirMensagemPais(msgId) {
+      try {
+        const v = document.getElementById('video-recado-crianca');
+        if (v) v.pause();
+        const a = document.getElementById('audio-recado-crianca');
+        if (a) a.pause();
+      } catch (e) {}
+
       try {
         await fetch('/api/mensagens/marcar_aberta', {
           method: 'POST',
@@ -9642,8 +9716,12 @@
         document.getElementById('btn-secret-msg').style.display = 'none';
         msgSecretaAtualId = null;
         closeModal();
-        showToast('❤️ Mensagem confirmada com carinho para o papai!');
-        playTone(880, 160);
+        if (appState) {
+          appState.coins = (appState.coins || 0) + 5;
+          atualizarPoteVisual();
+        }
+        showToast('❤️ Mensagem confirmada com carinho para o papai! (+5 Moedas 🪙)');
+        playTone(880, 180);
       } catch (e) {}
     }
 
@@ -9693,7 +9771,8 @@
     // =========================================================================
     // ATUALIZAÇÃO PERIÓDICA DE ESTADO (PET, MENSAGENS, BATERIA, S.O.S.)
     // =========================================================================
-    setInterval(verificarMensagensSecretas, 15000);
+    verificarMensagensSecretas();
+    setInterval(verificarMensagensSecretas, 8000);
     setInterval(async () => {
       try {
         const res = await fetch('/api/state');

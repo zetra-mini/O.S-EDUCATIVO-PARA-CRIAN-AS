@@ -15,3 +15,7 @@ venv/
 .cache/
 temp_check.js
 
+
+static/uploads_recados/*
+!static/uploads_recados/.gitkeep
+

@@ -158,6 +158,23 @@
     }
     input:focus, textarea:focus, select:focus { border-color: var(--cyan); }
 
+    .media-tab-btn {
+      background: #071120;
+      border: 1.5px solid #1e293b;
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .media-tab-btn.active {
+      background: #0284c7;
+      color: #fff;
+      border-color: #38bdf8;
+    }
+
     .toast {
       position: fixed;
       bottom: 24px;
@@ -251,17 +268,110 @@
       </div>
     </div>
 
-    <!-- RECADOS SECRETOS DOS PAIS -->
-    <div class="card">
-      <div class="card-title">💌 Presença Paterna: Recados Secretos</div>
-      <div style="font-size:0.9rem; color:var(--text-muted);">
-        Envie uma mensagem de incentivo ou carinho que abrirá como envelope brilhante no netbook do seu filho:
+    <!-- RECADOS SECRETOS DOS PAIS (PRESENÇA PATERNA: TEXTO, ÁUDIO E VÍDEO) -->
+    <div class="card" style="border: 2px solid #0284c7; background: linear-gradient(180deg, #09192f 0%, #071120 100%);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div class="card-title" style="margin-bottom:0;">💌 Presença Paterna: Recados Secretos</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:0.82rem; color:var(--text-muted); font-weight:700;">Remetente:</span>
+          <select id="sel-remetente-recado" style="width:auto; padding:6px 12px; font-weight:800; border-radius:8px;">
+            <option value="Papai">👨‍💼 Papai</option>
+            <option value="Mamãe">👩‍💼 Mamãe</option>
+            <option value="Família">🏡 Família</option>
+            <option value="Vovô e Vovó">👴👵 Vovô e Vovó</option>
+          </select>
+        </div>
       </div>
-      <textarea id="txt-recado" rows="2" placeholder="Ex: Oi, meu campeão! O papai está muito orgulhoso da sua dedicação hoje! Te amo!"></textarea>
-      <button type="button" class="btn btn-primary" onclick="enviarRecado()">
-        🚀 Enviar Recado Especial para o Netbook
-      </button>
-      <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:160px; overflow-y:auto;"></div>
+      <div style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">
+        Grave ou envie áudio, vídeo ou texto para o netbook do seu filho. Abre como envelope brilhante e o Jarvis anuncia carinhosamente!
+      </div>
+
+      <!-- SELETOR DE MODALIDADE (TEXTO, ÁUDIO, VÍDEO) -->
+      <div style="display:flex; gap:8px; margin:10px 0; border-bottom:1px solid #1e293b; padding-bottom:8px; flex-wrap:wrap;">
+        <button type="button" class="media-tab-btn active" id="tab-btn-texto" onclick="mudarAbaRecado('texto')">✍️ Mensagem de Texto</button>
+        <button type="button" class="media-tab-btn" id="tab-btn-audio" onclick="mudarAbaRecado('audio')">🎤 Mensagem de Áudio</button>
+        <button type="button" class="media-tab-btn" id="tab-btn-video" onclick="mudarAbaRecado('video')">🎥 Mensagem de Vídeo</button>
+      </div>
+
+      <!-- 1. ABA DE TEXTO -->
+      <div id="box-recado-texto" style="display:flex; flex-direction:column; gap:8px;">
+        <textarea id="txt-recado" rows="2" placeholder="Ex: Oi, meu campeão! O papai está muito orgulhoso da sua dedicação hoje! Te amo!"></textarea>
+        <button type="button" class="btn btn-primary" onclick="enviarRecadoTexto()">
+          🚀 Enviar Recado de Texto para o Netbook
+        </button>
+      </div>
+
+      <!-- 2. ABA DE ÁUDIO -->
+      <div id="box-recado-audio" style="display:none; flex-direction:column; gap:10px;">
+        <div style="background:#0b192e; border:1px solid #1e3a63; border-radius:12px; padding:12px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-purple" id="btn-gravar-audio" onclick="toggleGravacaoAudio()">
+              🎙️ Gravar Voz pelo Microfone
+            </button>
+            <span id="audio-rec-timer" style="display:none; color:#ef4444; font-weight:800; font-size:0.95rem;">
+              🔴 Gravando: <span id="audio-rec-sec">00:00</span>
+            </span>
+          </div>
+
+          <!-- Preview do Áudio Gravado -->
+          <div id="wrap-audio-preview" style="display:none; margin-top:10px;">
+            <div style="font-size:0.8rem; color:#38bdf8; font-weight:700; margin-bottom:4px;">▶ Ouvir gravação antes de enviar:</div>
+            <audio id="audio-player-preview" controls style="width:100%; height:38px;"></audio>
+          </div>
+
+          <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #334155;">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Ou anexe um arquivo de áudio (WhatsApp / Gravação de Voz):</div>
+            <input type="file" id="file-audio-recado" accept="audio/*" onchange="aoCarregarArquivoAudio(this)">
+          </div>
+        </div>
+
+        <input type="text" id="txt-legenda-audio" placeholder="Recado ou legenda para acompanhar o áudio (opcional)...">
+        <button type="button" class="btn btn-primary" onclick="enviarRecadoAudio()">
+          🚀 Enviar Mensagem de Áudio para o Netbook
+        </button>
+      </div>
+
+      <!-- 3. ABA DE VÍDEO -->
+      <div id="box-recado-video" style="display:none; flex-direction:column; gap:10px;">
+        <div style="background:#0b192e; border:1px solid #1e3a63; border-radius:12px; padding:12px;">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+            <button type="button" class="btn btn-danger" id="btn-gravar-video" onclick="toggleGravacaoVideo()">
+              📹 Ligar Câmera e Gravar Vídeo
+            </button>
+            <span id="video-rec-timer" style="display:none; color:#ef4444; font-weight:800; font-size:0.95rem;">
+              🔴 Gravando Vídeo: <span id="video-rec-sec">00:00</span>
+            </span>
+          </div>
+
+          <!-- Preview Câmera ao vivo -->
+          <video id="video-live-preview" autoplay muted playsinline style="display:none; width:100%; max-height:220px; border-radius:10px; background:#000; border:2px solid #ef4444; object-fit:cover;"></video>
+
+          <!-- Preview Vídeo Gravado -->
+          <div id="wrap-video-preview" style="display:none; margin-top:8px;">
+            <div style="font-size:0.8rem; color:#38bdf8; font-weight:700; margin-bottom:4px;">▶ Assistir vídeo gravado antes de enviar:</div>
+            <video id="video-player-preview" controls playsinline style="width:100%; max-height:220px; border-radius:10px; border:2px solid #38bdf8; background:#000;"></video>
+          </div>
+
+          <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #334155;">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">Ou anexe um vídeo do smartphone / computador:</div>
+            <input type="file" id="file-video-recado" accept="video/*" onchange="aoCarregarArquivoVideo(this)">
+          </div>
+        </div>
+
+        <input type="text" id="txt-legenda-video" placeholder="Recado ou legenda para acompanhar o vídeo (opcional)...">
+        <button type="button" class="btn btn-primary" onclick="enviarRecadoVideo()">
+          🚀 Enviar Mensagem de Vídeo para o Netbook
+        </button>
+      </div>
+
+      <!-- HISTÓRICO DE RECADOS COM STATUS EM TEMPO REAL -->
+      <div style="margin-top:12px;">
+        <div style="font-size:0.85rem; font-weight:800; color:#94a3b8; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+          <span>📋 Histórico de Recados & Status de Visualização:</span>
+          <button type="button" onclick="carregarRecados()" style="background:#0f172a; border:1px solid #334155; color:#38bdf8; padding:3px 10px; border-radius:6px; cursor:pointer; font-weight:700; font-size:0.75rem;">🔄 Atualizar</button>
+        </div>
+        <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto;"></div>
+      </div>
     </div>
 
     <!-- AÇÕES RÁPIDAS & ALARMES DE ROTINA -->
@@ -850,17 +960,279 @@
       showToast('Modo noturno alternado!');
     }
 
-    async function enviarRecado() {
-      const txt = document.getElementById('txt-recado').value.trim();
-      if (!txt) return;
-      await fetch('/api/mensagens/enviar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ autor: 'Papai e Mamãe', texto: txt })
+    // =========================================================================
+    // PRESENÇA PATERNA: MENSAGENS DE TEXTO, ÁUDIO E VÍDEO
+    // =========================================================================
+    let abaRecadoAtual = 'texto';
+    let mediaRecorderAudio = null;
+    let audioChunks = [];
+    let audioBase64Gravado = null;
+    let timerAudioId = null;
+    let timerAudioSec = 0;
+
+    let mediaRecorderVideo = null;
+    let videoChunks = [];
+    let videoBase64Gravado = null;
+    let videoStreamAtual = null;
+    let timerVideoId = null;
+    let timerVideoSec = 0;
+
+    function mudarAbaRecado(tipo) {
+      abaRecadoAtual = tipo;
+      ['texto', 'audio', 'video'].forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const box = document.getElementById(`box-recado-${t}`);
+        if (btn) btn.classList.toggle('active', t === tipo);
+        if (box) box.style.display = (t === tipo) ? 'flex' : 'none';
       });
-      document.getElementById('txt-recado').value = '';
-      showToast('💌 Recado secreto enviado com sucesso!');
-      carregarRecados();
+    }
+
+    async function enviarRecadoTexto() {
+      const remetente = document.getElementById('sel-remetente-recado')?.value || 'Papai';
+      const txt = (document.getElementById('txt-recado')?.value || '').trim();
+      if (!txt) {
+        showToast('⚠️ Digite uma mensagem carinhosa antes de enviar.');
+        return;
+      }
+      try {
+        const res = await fetch('/api/mensagens/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ remetente, autor: remetente, tipo: 'texto', texto: txt })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          document.getElementById('txt-recado').value = '';
+          showToast('💌 Recado secreto enviado para o netbook!');
+          carregarRecados();
+        } else {
+          showToast('⚠️ ' + (data.mensagem || 'Erro ao enviar recado.'));
+        }
+      } catch (e) {
+        showToast('Erro de conexão ao enviar recado.');
+      }
+    }
+    const enviarRecado = enviarRecadoTexto;
+
+    async function toggleGravacaoAudio() {
+      const btn = document.getElementById('btn-gravar-audio');
+      const timerEl = document.getElementById('audio-rec-timer');
+      const secEl = document.getElementById('audio-rec-sec');
+      const wrapPreview = document.getElementById('wrap-audio-preview');
+      const audioPlayer = document.getElementById('audio-player-preview');
+
+      if (!mediaRecorderAudio || mediaRecorderAudio.state === 'inactive') {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          audioChunks = [];
+          mediaRecorderAudio = new MediaRecorder(stream);
+          mediaRecorderAudio.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) audioChunks.push(e.data);
+          };
+          mediaRecorderAudio.onstop = () => {
+            const blob = new Blob(audioChunks, { type: mediaRecorderAudio.mimeType || 'audio/webm' });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              audioBase64Gravado = reader.result;
+              audioPlayer.src = reader.result;
+              wrapPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(blob);
+            stream.getTracks().forEach(track => track.stop());
+          };
+          mediaRecorderAudio.start(250);
+          btn.textContent = '⏹️ Parar Gravação de Voz';
+          btn.className = 'btn btn-danger';
+          timerEl.style.display = 'inline-block';
+          timerAudioSec = 0;
+          secEl.textContent = '00:00';
+          timerAudioId = setInterval(() => {
+            timerAudioSec++;
+            const mins = String(Math.floor(timerAudioSec / 60)).padStart(2, '0');
+            const secs = String(timerAudioSec % 60).padStart(2, '0');
+            secEl.textContent = `${mins}:${secs}`;
+          }, 1000);
+        } catch (err) {
+          showToast('⚠️ Erro ao acessar microfone: ' + (err.message || 'Permissão negada'));
+        }
+      } else {
+        mediaRecorderAudio.stop();
+        clearInterval(timerAudioId);
+        btn.textContent = '🎙️ Gravar Novamente';
+        btn.className = 'btn btn-purple';
+        timerEl.style.display = 'none';
+      }
+    }
+
+    function aoCarregarArquivoAudio(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          audioBase64Gravado = e.target.result;
+          const player = document.getElementById('audio-player-preview');
+          player.src = e.target.result;
+          document.getElementById('wrap-audio-preview').style.display = 'block';
+          showToast('🎵 Áudio selecionado com sucesso!');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function enviarRecadoAudio() {
+      const remetente = document.getElementById('sel-remetente-recado')?.value || 'Papai';
+      const legenda = (document.getElementById('txt-legenda-audio')?.value || '').trim();
+      if (!audioBase64Gravado) {
+        showToast('⚠️ Grave um áudio ou selecione um arquivo primeiro.');
+        return;
+      }
+      showToast('⏳ Enviando áudio com carinho para o netbook...');
+      try {
+        const res = await fetch('/api/mensagens/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            remetente,
+            autor: remetente,
+            tipo: 'audio',
+            texto: legenda,
+            midia_base64: audioBase64Gravado
+          })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('🎤 Mensagem de áudio enviada com sucesso!');
+          audioBase64Gravado = null;
+          document.getElementById('wrap-audio-preview').style.display = 'none';
+          document.getElementById('txt-legenda-audio').value = '';
+          const fInput = document.getElementById('file-audio-recado');
+          if (fInput) fInput.value = '';
+          carregarRecados();
+        } else {
+          showToast('⚠️ ' + (data.mensagem || 'Erro ao enviar áudio.'));
+        }
+      } catch (e) {
+        showToast('Erro de conexão ao enviar áudio.');
+      }
+    }
+
+    async function toggleGravacaoVideo() {
+      const btn = document.getElementById('btn-gravar-video');
+      const livePreview = document.getElementById('video-live-preview');
+      const wrapPreview = document.getElementById('wrap-video-preview');
+      const videoPlayer = document.getElementById('video-player-preview');
+      const timerEl = document.getElementById('video-rec-timer');
+      const secEl = document.getElementById('video-rec-sec');
+
+      if (!mediaRecorderVideo || mediaRecorderVideo.state === 'inactive') {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 } },
+            audio: true
+          });
+          videoStreamAtual = stream;
+          livePreview.srcObject = stream;
+          livePreview.style.display = 'block';
+          wrapPreview.style.display = 'none';
+
+          videoChunks = [];
+          let mime = 'video/webm';
+          if (typeof MediaRecorder !== 'undefined' && typeof MediaRecorder.isTypeSupported === 'function') {
+            if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) mime = 'video/webm;codecs=vp8,opus';
+            else if (MediaRecorder.isTypeSupported('video/mp4')) mime = 'video/mp4';
+          }
+
+          mediaRecorderVideo = new MediaRecorder(stream, { mimeType: mime });
+          mediaRecorderVideo.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) videoChunks.push(e.data);
+          };
+          mediaRecorderVideo.onstop = () => {
+            const blob = new Blob(videoChunks, { type: mime });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              videoBase64Gravado = reader.result;
+              videoPlayer.src = reader.result;
+              wrapPreview.style.display = 'block';
+              livePreview.style.display = 'none';
+            };
+            reader.readAsDataURL(blob);
+            stream.getTracks().forEach(t => t.stop());
+          };
+
+          mediaRecorderVideo.start(500);
+          btn.textContent = '⏹️ Parar Gravação de Vídeo';
+          btn.className = 'btn btn-warning';
+          timerEl.style.display = 'inline-block';
+          timerVideoSec = 0;
+          secEl.textContent = '00:00';
+          timerVideoId = setInterval(() => {
+            timerVideoSec++;
+            const mins = String(Math.floor(timerVideoSec / 60)).padStart(2, '0');
+            const secs = String(timerVideoSec % 60).padStart(2, '0');
+            secEl.textContent = `${mins}:${secs}`;
+          }, 1000);
+        } catch (err) {
+          showToast('⚠️ Erro ao acessar câmera/microfone: ' + (err.message || 'Permissão negada'));
+        }
+      } else {
+        mediaRecorderVideo.stop();
+        clearInterval(timerVideoId);
+        btn.textContent = '📹 Gravar Novo Vídeo';
+        btn.className = 'btn btn-danger';
+        timerEl.style.display = 'none';
+      }
+    }
+
+    function aoCarregarArquivoVideo(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          videoBase64Gravado = e.target.result;
+          const player = document.getElementById('video-player-preview');
+          player.src = e.target.result;
+          document.getElementById('wrap-video-preview').style.display = 'block';
+          showToast('🎥 Vídeo selecionado com sucesso!');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function enviarRecadoVideo() {
+      const remetente = document.getElementById('sel-remetente-recado')?.value || 'Papai';
+      const legenda = (document.getElementById('txt-legenda-video')?.value || '').trim();
+      if (!videoBase64Gravado) {
+        showToast('⚠️ Grave um vídeo ou anexe um arquivo primeiro.');
+        return;
+      }
+      showToast('⏳ Enviando vídeo para o netbook do Kaleo...');
+      try {
+        const res = await fetch('/api/mensagens/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            remetente,
+            autor: remetente,
+            tipo: 'video',
+            texto: legenda,
+            midia_base64: videoBase64Gravado
+          })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('🎥 Mensagem de vídeo enviada com sucesso!');
+          videoBase64Gravado = null;
+          document.getElementById('wrap-video-preview').style.display = 'none';
+          document.getElementById('txt-legenda-video').value = '';
+          const fInput = document.getElementById('file-video-recado');
+          if (fInput) fInput.value = '';
+          carregarRecados();
+        } else {
+          showToast('⚠️ ' + (data.mensagem || 'Erro ao enviar vídeo.'));
+        }
+      } catch (e) {
+        showToast('Erro de conexão ao enviar vídeo.');
+      }
     }
 
     async function carregarRecados() {
@@ -868,12 +1240,45 @@
         const res = await fetch('/api/mensagens/historico');
         const list = await res.json();
         const box = document.getElementById('historico-mensagens');
-        box.innerHTML = list.map(m => `
-          <div class="msg-item">
-            <div style="font-weight:bold; color:#facc15;">${m.autor} • <span style="font-size:0.75rem; color:#94a3b8;">${m.data_envio || ''}</span></div>
-            <div>${m.texto}</div>
-          </div>
-        `).join('');
+        if (!box) return;
+        if (!list || !list.length) {
+          box.innerHTML = '<div style="font-size:0.85rem; color:#64748b; padding:8px 0;">Nenhum recado enviado ainda. Envie o primeiro acima!</div>';
+          return;
+        }
+        box.innerHTML = list.map(m => {
+          const autor = m.remetente || m.autor || 'Papai';
+          const tipo = m.tipo || 'texto';
+          const status = m.status || 'ENVIADA';
+          let statusBadge = '<span style="background:#854d0e; color:#fef08a; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🟡 ENVIADA</span>';
+          if (status === 'RECEBIDA') {
+            statusBadge = '<span style="background:#075985; color:#bae6fd; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🔵 NO NETBOOK</span>';
+          } else if (status === 'ABERTA') {
+            const hora = m.data_abertura ? ` às ${m.data_abertura.split(' ')[1] || m.data_abertura}` : '';
+            statusBadge = `<span style="background:#065f46; color:#a7f3d0; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🟢 ABERTA & ASSISTIDA${hora}</span>`;
+          }
+
+          let tipoBadge = '✍️ Texto';
+          if (tipo === 'audio') tipoBadge = '🎤 Áudio de Voz';
+          else if (tipo === 'video') tipoBadge = '🎥 Vídeo Gravado';
+
+          let midiaPlayer = '';
+          if (tipo === 'audio' && m.caminho_midia) {
+            midiaPlayer = `<audio controls src="${m.caminho_midia}" style="width:100%; height:32px; margin-top:6px;"></audio>`;
+          } else if (tipo === 'video' && m.caminho_midia) {
+            midiaPlayer = `<div style="margin-top:6px;"><video controls playsinline src="${m.caminho_midia}" style="max-height:130px; border-radius:8px; border:1px solid #38bdf8; background:#000;"></video></div>`;
+          }
+
+          return `
+            <div style="background:#071120; border:1px solid #1e293b; border-radius:10px; padding:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px;">
+                <div style="font-weight:900; color:#facc15; font-size:0.88rem;">${autor} • <span style="color:#94a3b8; font-size:0.75rem; font-weight:600;">[${tipoBadge}]</span> <span style="font-size:0.72rem; color:#64748b;">${m.data_envio || ''}</span></div>
+                ${statusBadge}
+              </div>
+              ${m.conteudo_texto ? `<div style="font-size:0.9rem; color:#e2e8f0; margin-top:2px;">${m.conteudo_texto}</div>` : ''}
+              ${midiaPlayer}
+            </div>
+          `;
+        }).join('');
       } catch (e) {}
     }
 
@@ -1038,6 +1443,7 @@
     carregarEstadoGeral();
     carregarRecados();
     setInterval(carregarEstadoGeral, 10000);
+    setInterval(carregarRecados, 8000);
   </script>
 </body>
 </html>

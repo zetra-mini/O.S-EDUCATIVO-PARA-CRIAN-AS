@@ -209,6 +209,11 @@ def static_files(request: Request, path: str):
         ".svg": "image/svg+xml",
         ".mp3": "audio/mpeg",
         ".wav": "audio/wav",
+        ".ogg": "audio/ogg",
+        ".m4a": "audio/mp4",
+        ".webm": "video/webm",
+        ".mp4": "video/mp4",
+        ".mov": "video/quicktime",
         ".css": "text/css",
         ".js": "application/javascript",
         ".ttf": "font/ttf",
@@ -536,22 +541,45 @@ def api_mensagens_novas(request: Request):
 def api_mensagens_marcar_aberta(request: Request):
     data = request.json or {}
     msg_id = int(data.get("id", 0))
-    return json_response(messages_mgr.marcar_como_aberta(msg_id))
+    res = messages_mgr.marcar_como_aberta(msg_id)
+    try:
+        from jarvis_pet_status import pet_mgr
+        pet_mgr.ganhar_moedas(5, "Recado de amor da família assistido")
+    except Exception:
+        pass
+    return json_response(res)
 
 
+@app.route("/api/mensagens/enviar", methods=["POST"])
 @app.route("/api/admin/mensagem/enviar", methods=["POST"])
 def api_admin_mensagem_enviar(request: Request):
     data = request.json or {}
-    remetente = data.get("remetente", "Papai")
+    remetente = data.get("remetente") or data.get("autor", "Papai")
     tipo = data.get("tipo", "texto")
-    texto = data.get("texto", "")
+    texto = data.get("texto") or data.get("conteudo_texto", "")
     midia = data.get("caminho_midia", "")
-    return json_response(messages_mgr.enviar_mensagem(remetente, tipo, texto, midia))
+    midia_base64 = data.get("midia_base64", "")
+    res = messages_mgr.enviar_mensagem(
+        remetente=remetente,
+        tipo=tipo,
+        texto=texto,
+        caminho_midia=midia,
+        midia_base64=midia_base64,
+    )
+    return json_response(res)
 
 
+@app.route("/api/mensagens/historico", methods=["GET"])
 @app.route("/api/admin/mensagens/status", methods=["GET"])
 def api_admin_mensagens_status(request: Request):
-    return json_response(messages_mgr.listar_status_pais())
+    msgs = messages_mgr.listar_status_pais()
+    formatadas = []
+    for m in msgs:
+        d = dict(m)
+        d["autor"] = d.get("remetente", "Papai")
+        d["texto"] = d.get("conteudo_texto", "")
+        formatadas.append(d)
+    return json_response(formatadas)
 
 
 @app.route("/api/admin/sos", methods=["POST"])
