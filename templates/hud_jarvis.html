@@ -2212,8 +2212,8 @@
 
     <!-- 3. BARRA INFERIOR FUTURISTA (CLEAN: JOGOS, FERRAMENTA E LOJA/ARMÁRIO) -->
     <footer class="pou-bottom-bar">
-      <!-- BOTÃO JOGOS (ABRE A GAVETA LATERAL DE ATIVIDADES EDUCATIVAS) -->
-      <button type="button" class="pou-bottom-btn" onclick="toggleActivityDrawer()" title="Abrir Jogos & Atividades Educativas">
+      <!-- BOTÃO JOGOS (ABRE A CENTRAL DE JOGOS & ESTUDOS PAGINADA) -->
+      <button type="button" class="pou-bottom-btn" onclick="openGamesMenuModal(1)" title="Abrir Jogos & Atividades Educativas">
         <div class="pou-btn-icon-box">🎮</div>
         <span class="pou-btn-label">Jogos</span>
       </button>
@@ -2365,10 +2365,26 @@
   <!-- MODAL DE ATIVIDADE INFANTIL -->
   <div class="modal-overlay" id="activity-modal">
     <div class="modal-header">
-      <button type="button" class="btn-back" onclick="closeModal()">⬅ VOLTAR AO JARVIS</button>
+      <button type="button" class="btn-back" onclick="voltarTelaModal()">⬅ VOLTAR AO JARVIS</button>
       <h2 id="modal-title" style="color: var(--cyan); font-size: 1.3rem;">ATIVIDADE</h2>
     </div>
     <div class="modal-body" id="modal-body"></div>
+  </div>
+
+  <!-- OVERLAY DE ALARME HEROICO DE ROTINA -->
+  <div id="routine-alarm-modal" style="display:none; position:fixed; inset:0; background:rgba(4,10,24,0.92); backdrop-filter:blur(14px); z-index:900; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:linear-gradient(145deg, #0c2044 0%, #061126 100%); border:3px solid #f59e0b; border-radius:24px; padding:24px 20px; max-width:540px; width:100%; text-align:center; box-shadow:0 0 50px rgba(245,158,11,0.6); animation:pulseMic 1.4s infinite; display:flex; flex-direction:column; align-items:center; gap:12px;">
+      <div id="alarm-icon" style="font-size:4.2rem; filter:drop-shadow(0 0 20px #facc15);">⏰</div>
+      <div style="font-size:1.45rem; font-weight:900; color:#fde047; text-transform:uppercase; letter-spacing:1px;" id="alarm-title">
+        Alarme de Rotina do Kaleo!
+      </div>
+      <div id="alarm-message" style="font-size:1.15rem; font-weight:800; color:#ffffff; line-height:1.4; background:rgba(15,23,42,0.7); border:2px solid #38bdf8; border-radius:16px; padding:12px 16px; width:100%; box-sizing:border-box;">
+        Hora de escovar os dentinhos!
+      </div>
+      <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; font-size:1.2rem; padding:12px 28px; width:100%; font-weight:900; margin-top:6px;" onclick="dispensarAlarmeHeroico()">
+        🌟 CUMPRI A MISSÃO! (+5 Moedas)
+      </button>
+    </div>
   </div>
 
   <!-- MODAL DE MATEMÁTICA DOS PAIS (100% SEGURO E NUNCA BLOQUEADO) -->
@@ -2925,52 +2941,252 @@
       }
     }, 4500);
 
-    // CONTROLE DA GAVETA LATERAL DE ATIVIDADES
-    let paginaDrawerAtual = 1;
-    const TOTAL_PAGINAS_DRAWER = 3;
+    // =========================================================================
+    // CENTRAL DE JOGOS & ESTUDOS DO KALEO (PAGINADO, ZERO SCROLL, 16 JOGOS)
+    // =========================================================================
+    let paginaJogosModalAtual = 1;
+    const TOTAL_PAGINAS_JOGOS = 4;
 
-    function atualizarExibicaoPaginaDrawer() {
-      for (let p = 1; p <= TOTAL_PAGINAS_DRAWER; p++) {
-        const cards = document.querySelectorAll(`.drawer-card-p${p}`);
-        cards.forEach(c => {
-          c.style.display = (p === paginaDrawerAtual) ? 'flex' : 'none';
-        });
-        const dot = document.getElementById(`drawer-dot-${p}`);
-        if (dot) {
-          if (p === paginaDrawerAtual) dot.classList.add('active');
-          else dot.classList.remove('active');
-        }
+    const JOGOS_KATALOGO = [
+      // PÁGINA 1: HISTÓRIAS, LETRINHAS, DEDINHOS E IDIOMAS
+      {
+        id: 'historias',
+        pagina: 1,
+        nome: 'Histórias Mágicas',
+        desc: 'Livros ilustrados e lições de vida',
+        icone: '📚',
+        cor: '#38bdf8',
+        acao: () => openBooksLibrary()
+      },
+      {
+        id: 'letras',
+        pagina: 1,
+        nome: 'Ler & Escrever (Método Fônico)',
+        desc: 'Sons das letrinhas e lousa neon',
+        icone: '🔤',
+        cor: '#a855f7',
+        acao: () => openLiteracyAcademy()
+      },
+      {
+        id: 'contar',
+        pagina: 1,
+        nome: 'Mãos & Contar de 1 a 10',
+        desc: 'Aprenda a contar com os dedinhos',
+        icone: '🖐️',
+        cor: '#f59e0b',
+        acao: () => openFingerCounting()
+      },
+      {
+        id: 'idiomas',
+        pagina: 1,
+        nome: 'Idiomas Mágicos (English & Español)',
+        desc: 'Cards falantes e mini-quiz com moedas',
+        icone: '🌍',
+        cor: '#10b981',
+        acao: () => openLanguagesAcademy()
+      },
+
+      // PÁGINA 2: NUTRIÇÃO, HIGIENE, PINTURA E MÚSICA
+      {
+        id: 'prato',
+        pagina: 2,
+        nome: 'Prato dos Super Campeões',
+        desc: 'Nutrição, alimentos coloridos e superpoderes',
+        icone: '🍎',
+        cor: '#ef4444',
+        acao: () => openHealthyFoodGame()
+      },
+      {
+        id: 'higiene',
+        pagina: 2,
+        nome: 'Super Herói Limpinho (Higiene)',
+        desc: 'Dentes brilhando, banho e mãos limpas',
+        icone: '🧼',
+        cor: '#06b6d4',
+        acao: () => openPersonalHygieneGame()
+      },
+      {
+        id: 'pintura',
+        pagina: 2,
+        nome: 'Pintura & Lousa Mágica Neon',
+        desc: 'Desenhe e pinte com cores vibrantes',
+        icone: '🎨',
+        cor: '#ec4899',
+        acao: () => openStarkPaint()
+      },
+      {
+        id: 'musica',
+        pagina: 2,
+        nome: 'Laboratório Musical & Piano',
+        desc: 'Notas musicais, teclado e canções infantis',
+        icone: '🎵',
+        cor: '#8b5cf6',
+        acao: () => openMusicComposer()
+      },
+
+      // PÁGINA 3: TECNOLOGIA, DATAS COMEMORATIVAS, CINEMA E CLIMA
+      {
+        id: 'tech',
+        pagina: 3,
+        nome: 'Academia Tech: Mouse, Teclado & Scroll',
+        desc: 'Treino de teclado, cliques e rodinha do mouse',
+        icone: '💻',
+        cor: '#3b82f6',
+        acao: () => openTechAcademy()
+      },
+      {
+        id: 'datas',
+        pagina: 3,
+        nome: 'Festas & Datas Comemorativas',
+        desc: 'Carnaval, Páscoa, São João, Natal e Brasil',
+        icone: '🇧🇷',
+        cor: '#10b981',
+        acao: () => openDatasComemorativasModal()
+      },
+      {
+        id: 'cinema',
+        pagina: 3,
+        nome: 'Cinema & Desenhos Stark',
+        desc: 'Tempo educativo no YouTube e Netflix',
+        icone: '🎬',
+        cor: '#f97316',
+        acao: () => openCinemaStark()
+      },
+      {
+        id: 'clima',
+        pagina: 3,
+        nome: 'Clima, Geografia & Meu Lugar no Mundo',
+        desc: 'Minha cidade, estado, Brasil e 4 estações',
+        icone: '🌤️',
+        cor: '#eab308',
+        acao: () => openWeatherSeasonsModal()
+      },
+
+      // PÁGINA 4: MENTE, EMOÇÕES, MEMÓRIA E FORMAS
+      {
+        id: 'semaforo',
+        pagina: 4,
+        nome: 'Desafio do Semáforo Stark',
+        desc: 'Treino de atenção rápida e controle mental',
+        icone: '🚦',
+        cor: '#22c55e',
+        acao: () => abrirModalSemaforo()
+      },
+      {
+        id: 'emocoes',
+        pagina: 4,
+        nome: 'Flor da Calma & Emoções',
+        desc: 'Respiração mágica e inteligência emocional',
+        icone: '💚',
+        cor: '#14b8a6',
+        acao: () => openEmotionsCenter()
+      },
+      {
+        id: 'leitner',
+        pagina: 4,
+        nome: 'Baú Leitner da Memória',
+        desc: 'Flashcards de repetição e curiosidades',
+        icone: '📦',
+        cor: '#f59e0b',
+        acao: () => abrirBauMemoriaModal()
+      },
+      {
+        id: 'formas',
+        pagina: 4,
+        nome: 'Cores, Formas & Lógica Espacial',
+        desc: 'Encaixar formas geométricas e padrões',
+        icone: '🔷',
+        cor: '#6366f1',
+        acao: () => abrirFormasCoresModal()
       }
-      const lbl = document.getElementById('drawer-page-lbl');
-      if (lbl) lbl.textContent = `${paginaDrawerAtual} de ${TOTAL_PAGINAS_DRAWER}`;
+    ];
+
+    function openGamesMenuModal(pag = 1) {
+      paginaJogosModalAtual = pag;
+      pushModalScreen('🎮 JOGOS, ESTUDOS & AVENTURAS DO KALEO', (body) => {
+        renderGamesMenuBody(body);
+      }, true);
     }
 
-    function mudarPaginaDrawer(delta) {
-      playTone(587, 80);
-      paginaDrawerAtual = ((paginaDrawerAtual - 1 + delta + TOTAL_PAGINAS_DRAWER) % TOTAL_PAGINAS_DRAWER) + 1;
-      atualizarExibicaoPaginaDrawer();
+    function renderGamesMenuBody(body) {
+      speak(`Central de Jogos e Estudos! Escolha uma aventura ou estudo de herói!`);
+
+      const jogosPagina = JOGOS_KATALOGO.filter(j => j.pagina === paginaJogosModalAtual);
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box; overflow:hidden;">
+          
+          <!-- BANNER TOPO COMPACTO -->
+          <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 14px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:1.05rem; font-weight:900; color:#38bdf8; display:flex; align-items:center; gap:8px;">
+              <span>⭐ Escolha uma atividade para brincar e aprender:</span>
+            </div>
+            <span style="font-size:0.85rem; font-weight:900; background:#1e293b; color:#fde047; padding:4px 12px; border-radius:999px;">
+              Página ${paginaJogosModalAtual} de ${TOTAL_PAGINAS_JOGOS}
+            </span>
+          </div>
+
+          <!-- GRID 2x2: 4 JOGOS GIGANTES POR TELA (ZERO SCROLL) -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:12px; flex:1; min-height:280px;" id="games-grid-container">
+            ${jogosPagina.map(j => `
+              <div onclick="acionarJogoMenu('${j.id}')" style="background:linear-gradient(145deg, #0d1e38 0%, #061122 100%); border:2.5px solid ${j.cor}; border-radius:18px; padding:12px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; box-shadow:0 6px 20px rgba(0,0,0,0.4); transition:transform 0.12s, box-shadow 0.12s; user-select:none; box-sizing:border-box;">
+                <div style="font-size:3.2rem; min-width:60px; text-align:center; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.6));">${j.icone}</div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:1.15rem; font-weight:900; color:#ffffff; line-height:1.2; margin-bottom:4px;">${j.nome}</div>
+                  <div style="font-size:0.82rem; color:#94a3b8; line-height:1.25;">${j.desc}</div>
+                </div>
+                <div style="font-size:1.6rem; color:${j.cor}; font-weight:900;">▶</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- RODAPÉ TÁTIL DE NAVEGAÇÃO DE PÁGINAS (BOTÕES GRANDES) -->
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:14px; padding:8px 14px;">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:8px 20px; font-size:1rem; font-weight:900;" onclick="mudarPaginaMenuJogos(-1)">
+              ◀ Página Anterior
+            </button>
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${[1, 2, 3, 4].map(p => `
+                <span onclick="mudarPaginaMenuJogosDireto(${p})" style="width:14px; height:14px; border-radius:50%; background:${p === paginaJogosModalAtual ? '#38bdf8' : '#334155'}; cursor:pointer; box-shadow:${p === paginaJogosModalAtual ? '0 0 10px #38bdf8' : 'none'};"></span>
+              `).join('')}
+              <span style="font-size:0.95rem; font-weight:900; color:#38bdf8; margin-left:6px;">${paginaJogosModalAtual} / ${TOTAL_PAGINAS_JOGOS}</span>
+            </div>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:8px 20px; font-size:1rem; font-weight:900;" onclick="mudarPaginaMenuJogos(1)">
+              Próxima Página ▶
+            </button>
+          </div>
+
+        </div>
+      `;
     }
 
-    function irParaPaginaDrawer(p) {
+    function mudarPaginaMenuJogos(delta) {
       playTone(587, 80);
-      paginaDrawerAtual = p;
-      atualizarExibicaoPaginaDrawer();
+      paginaJogosModalAtual = ((paginaJogosModalAtual - 1 + delta + TOTAL_PAGINAS_JOGOS) % TOTAL_PAGINAS_JOGOS) + 1;
+      const body = document.getElementById('modal-body');
+      if (body) renderGamesMenuBody(body);
+    }
+
+    function mudarPaginaMenuJogosDireto(p) {
+      playTone(587, 80);
+      paginaJogosModalAtual = p;
+      const body = document.getElementById('modal-body');
+      if (body) renderGamesMenuBody(body);
+    }
+
+    function acionarJogoMenu(jogoId) {
+      playTone(659, 100);
+      const item = JOGOS_KATALOGO.find(j => j.id === jogoId);
+      if (item && typeof item.acao === 'function') {
+        item.acao();
+      }
     }
 
     function toggleActivityDrawer() {
-      const drawer = document.getElementById('activity-drawer');
-      const backdrop = document.getElementById('drawer-backdrop');
-      if (drawer && backdrop) {
-        const isOpen = drawer.classList.toggle('open');
-        backdrop.classList.toggle('active');
-        if (isOpen) {
-          atualizarExibicaoPaginaDrawer();
-        }
-      }
+      openGamesMenuModal(1);
     }
 
     function abrirAtividadeDrawer(funcaoAbrir) {
-      toggleActivityDrawer();
       if (typeof funcaoAbrir === 'function') {
         funcaoAbrir();
       }
@@ -3148,7 +3364,7 @@
       } catch (e) {}
     }
 
-    function stopCurrentSpeech() {
+    function pararTodosAudiosESpeech() {
       if (ttsAbortCtrl) {
         try { ttsAbortCtrl.abort(); } catch (e) {}
         ttsAbortCtrl = null;
@@ -3167,13 +3383,29 @@
         } catch (e) {}
         currentAudio = null;
       }
+      const player = document.getElementById('jarvis-speech-player');
+      if (player) {
+        try {
+          player.pause();
+          player.currentTime = 0;
+          player.src = '';
+        } catch (e) {}
+      }
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
         window._activeUtterance = null;
       }
+      if (window._leituraTimer) {
+        clearTimeout(window._leituraTimer);
+        window._leituraTimer = null;
+      }
       setSpeakingVisual(false);
       const speakWaves = document.getElementById('robot-speaking-waves');
       if (speakWaves) speakWaves.style.display = 'none';
+    }
+
+    function stopCurrentSpeech() {
+      pararTodosAudiosESpeech();
     }
 
     // CACHE LOCAL EM RAM DE ÁUDIOS DE VOZ DECODIFICADOS (0ms DE LATÊNCIA APÓS 1ª VEZ)
@@ -3182,7 +3414,7 @@
     function tocarAudioBufferDecodificado(decodedData, onEnd) {
       try {
         destravarAudioNavegador();
-        stopCurrentSpeech();
+        pararTodosAudiosESpeech();
 
         const source = audioCtx.createBufferSource();
         source.buffer = decodedData;
@@ -3236,6 +3468,7 @@
     }
 
     async function speak(text, options = {}) {
+      pararTodosAudiosESpeech();
       if (document.getElementById('subtitle-bar')) {
         document.getElementById('subtitle-bar').textContent = text;
       }
@@ -3897,13 +4130,27 @@
             if (speakWaves) speakWaves.style.display = 'none';
             resetVoiceToIdle();
 
-            // Ações secundárias detectadas
-            if (data.acao_frontend === 'abrir_clima') abrirModalEstacoes();
+            // Ações secundárias detectadas por comando de voz
+            if (data.acao_frontend === 'abrir_clima') openWeatherSeasonsModal();
             else if (data.acao_frontend === 'abrir_loja') abrirLojaTesouro();
             else if (data.acao_frontend === 'missao_dente') iniciarMissaoDente();
             else if (data.acao_frontend === 'missao_quarto') iniciarMissaoQuarto();
-            else if (data.acao_frontend === 'ir_cozinha') irParaComodo(1);
-            else if (data.acao_frontend === 'abrir_jogos') toggleActivityDrawer();
+            else if (data.acao_frontend === 'ir_cozinha') irParaComodo(0);
+            else if (data.acao_frontend === 'abrir_jogos') openGamesMenuModal(1);
+            else if (data.acao_frontend === 'abrir_biblioteca') openBooksLibrary();
+            else if (data.acao_frontend === 'abrir_musica') openMusicComposer();
+            else if (data.acao_frontend === 'abrir_pintura') openStarkPaint();
+            else if (data.acao_frontend === 'abrir_tech') openTechAcademy();
+            else if (data.acao_frontend === 'abrir_datas') openDatasComemorativasModal();
+            else if (data.acao_frontend === 'abrir_comida') openHealthyFoodGame();
+            else if (data.acao_frontend === 'abrir_higiene') openPersonalHygieneGame();
+            else if (data.acao_frontend === 'abrir_cinema') openCinemaStark();
+            else if (data.acao_frontend === 'cinema_bloqueado') openCinemaStark();
+            else if (data.acao_frontend === 'abrir_dedinhos') openFingerCounting();
+            else if (data.acao_frontend === 'abrir_letras') openLiteracyAcademy();
+            else if (data.acao_frontend === 'abrir_idiomas') openLanguagesAcademy();
+            else if (data.acao_frontend === 'abrir_semaforo') abrirModalSemaforo();
+            else if (data.acao_frontend === 'abrir_emocoes') openEmotionsCenter();
 
             // O MICROFONE PERMANECE 100% DESLIGADO! ZERO WAKE-WORD. ZERO REINÍCIO OCULTO.
           }
@@ -4487,28 +4734,124 @@
       renderMouseStage();
     }
 
-    function openModal(title = '') {
+    let modalNavStack = []; // Array de { title, renderFn, zeroScroll, cleanup }
+
+    function pushModalScreen(title, renderFn, zeroScroll = true, cleanup = null) {
+      pararTodosAudiosESpeech();
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
       resetVoiceToIdle();
       playTone(659, 90);
+
+      modalNavStack.push({ title, renderFn, zeroScroll, cleanup });
+      atualizarBotaoVoltarModal();
+
+      const mEl = document.getElementById('activity-modal');
+      if (mEl) {
+        mEl.classList.add('open');
+        if (zeroScroll) mEl.classList.add('zero-scroll');
+        else mEl.classList.remove('zero-scroll');
+      }
+
+      const tEl = document.getElementById('modal-title');
+      if (tEl) tEl.textContent = title;
+
+      const bEl = document.getElementById('modal-body');
+      if (bEl) {
+        bEl.innerHTML = '';
+        renderFn(bEl);
+      }
+      return bEl;
+    }
+
+    function voltarTelaModal() {
+      pararTodosAudiosESpeech();
+      playTone(523, 80);
+      if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
+      if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+      if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
+
+      if (modalNavStack.length > 1) {
+        const currentScreen = modalNavStack.pop();
+        if (currentScreen && typeof currentScreen.cleanup === 'function') {
+          try { currentScreen.cleanup(); } catch (e) {}
+        }
+
+        const prev = modalNavStack[modalNavStack.length - 1];
+        atualizarBotaoVoltarModal();
+
+        const mEl = document.getElementById('activity-modal');
+        if (mEl) {
+          if (prev.zeroScroll) mEl.classList.add('zero-scroll');
+          else mEl.classList.remove('zero-scroll');
+        }
+
+        const tEl = document.getElementById('modal-title');
+        if (tEl) tEl.textContent = prev.title;
+
+        const bEl = document.getElementById('modal-body');
+        if (bEl) {
+          bEl.innerHTML = '';
+          prev.renderFn(bEl);
+        }
+      } else {
+        modalNavStack = [];
+        closeModal();
+      }
+    }
+
+    function atualizarBotaoVoltarModal() {
+      const btn = document.querySelector('.btn-back');
+      if (!btn) return;
+      if (modalNavStack.length > 1) {
+        btn.innerHTML = '⬅ VOLTAR';
+        btn.title = 'Voltar para a tela anterior';
+      } else {
+        btn.innerHTML = '⬅ VOLTAR AO JARVIS';
+        btn.title = 'Voltar para a Sala do Robô Jarvis';
+      }
+    }
+
+    function openModal(title = '', zeroScroll = true) {
+      pararTodosAudiosESpeech();
+      if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
+      if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+      if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
+      resetVoiceToIdle();
+      playTone(659, 90);
+
+      const mEl = document.getElementById('activity-modal');
+      if (mEl) {
+        mEl.classList.add('open');
+        if (zeroScroll) mEl.classList.add('zero-scroll');
+        else mEl.classList.remove('zero-scroll');
+      }
+
       if (title) {
         const tEl = document.getElementById('modal-title');
         if (tEl) tEl.textContent = title;
       }
       const bEl = document.getElementById('modal-body');
       if (bEl && title) bEl.innerHTML = '';
-      const mEl = document.getElementById('activity-modal');
-      if (mEl) mEl.classList.add('open');
+
+      modalNavStack.push({
+        title: title,
+        renderFn: (b) => {},
+        zeroScroll: zeroScroll
+      });
+      atualizarBotaoVoltarModal();
+
       return bEl;
     }
 
     function closeModal(restoreVoice = true) {
+      pararTodosAudiosESpeech();
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
       resetVoiceToIdle();
+      modalNavStack = [];
       const mEl = document.getElementById('activity-modal');
       if (mEl) {
         mEl.classList.remove('open');
@@ -4525,19 +4868,26 @@
     let paginaLivrosAtual = 1;
     const LIVROS_POR_PAGINA = 4;
 
-    async function openBooksLibrary() {
-      const modal = document.getElementById('activity-modal');
-      if (modal) modal.classList.add('zero-scroll');
-      const body = openModal('📚 BIBLIOTECA MÁGICA — DESENVOLVIMENTO PESSOAL & VIRTUDES');
-      paginaLivrosAtual = 1;
-      try {
-        const res = await fetch('/api/livros');
-        const data = await res.json();
-        if (data && data.livros && data.livros.length) {
-          appState.books = data.livros;
-        }
-      } catch (e) {}
-      renderBooksShelf(body);
+    function openBooksLibrary() {
+      pushModalScreen('📚 BIBLIOTECA MÁGICA — DESENVOLVIMENTO PESSOAL & VIRTUDES', async (body) => {
+        paginaLivrosAtual = 1;
+        try {
+          const res = await fetch('/api/livros');
+          const data = await res.json();
+          if (data && data.livros && data.livros.length) {
+            appState.books = data.livros;
+          }
+        } catch (e) {}
+        renderBooksShelf(body);
+      }, true);
+    }
+
+    function abrirLeitorDeLivro(bookIdx, pageIdx = 0) {
+      const book = (appState.books && appState.books[bookIdx]) ? appState.books[bookIdx] : null;
+      const title = book ? `📖 ${book.title}` : '📖 HISTÓRIA MÁGICA';
+      pushModalScreen(title, (body) => {
+        openBookPage(body, bookIdx, pageIdx);
+      }, true);
     }
 
     function renderBooksShelf(body) {
@@ -4564,7 +4914,7 @@
                 <span>📖 Histórias de Virtudes do Kaleo</span>
                 <span style="font-size:0.8rem; background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:999px;">Lidos hoje: ${appState.books_read_today}</span>
               </div>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:1.5px solid #c084fc; font-size:0.88rem; padding:6px 14px; display:flex; align-items:center; gap:6px;" onclick="abrirGeradorHistoriaModal(document.getElementById('modal-body'))">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:1.5px solid #c084fc; font-size:0.88rem; padding:6px 14px; display:flex; align-items:center; gap:6px;" onclick="abrirGeradorHistoriaModal()">
                 <span>✨ Criar Nova História com o Jarvis</span>
               </button>
             </div>
@@ -4684,55 +5034,54 @@
             </button>
           </div>
         `;
-        card.onclick = () => openBookPage(document.getElementById('modal-body'), globalIdx, 0);
+        card.onclick = () => abrirLeitorDeLivro(globalIdx, 0);
         grid.appendChild(card);
       });
     }
-        grid.appendChild(card);
-      });
-    }
 
-    function abrirGeradorHistoriaModal(body) {
-      playTone(587, 100);
-      const childName = appState.config.child_name || 'Kaleo';
+    function abrirGeradorHistoriaModal() {
+      pushModalScreen('✨ GERADOR DE HISTÓRIAS COM O JARVIS', (body) => {
+        playTone(587, 100);
+        const childName = appState.config.child_name || 'Kaleo';
 
-      const virtudes = [
-        { id: 'resiliencia', nome: '🌟 Resiliência & Persistência', desc: 'Aprender que errar nos faz crescer e tentar de novo com amor!' },
-        { id: 'coragem', nome: '🦁 Coragem & Autoconfiança', desc: 'Vencer medos, acreditar em si mesmo e dar o primeiro passo!' },
-        { id: 'paciencia', nome: '🐢 Paciência & Calma', desc: 'Saber esperar e respirar fundo quando a agonia bater!' },
-        { id: 'gratidao', nome: '🎁 Gratidão & Família', desc: 'Agradecer pelas pessoas queridas, saúde e comidinha gostosa!' },
-        { id: 'disciplina', nome: '🥋 Hábitos & Disciplina', desc: 'Arrumar a cama, cuidar dos brinquedos e estudar todo dia!' }
-      ];
+        const virtudes = [
+          { id: 'resiliencia', nome: '🌟 Resiliência & Persistência', desc: 'Aprender que errar nos faz crescer e tentar de novo com amor!' },
+          { id: 'coragem', nome: '🦁 Coragem & Autoconfiança', desc: 'Vencer medos, acreditar em si mesmo e dar o primeiro passo!' },
+          { id: 'paciencia', nome: '🐢 Paciência & Calma', desc: 'Saber esperar e respirar fundo quando a agonia bater!' },
+          { id: 'gratidao', nome: '🎁 Gratidão & Família', desc: 'Agradecer pelas pessoas queridas, saúde e comidinha gostosa!' },
+          { id: 'disciplina', nome: '🥋 Hábitos & Disciplina', desc: 'Arrumar a cama, cuidar dos brinquedos e estudar todo dia!' }
+        ];
 
-      body.innerHTML = `
-        <div style="max-width:760px; margin:0 auto; padding:12px; display:flex; flex-direction:column; gap:16px;">
-          <div style="background:#09192f; border:2px solid #7c3aed; border-radius:18px; padding:16px; text-align:center;">
-            <div style="font-size:2.8rem; margin-bottom:4px;">✨📖</div>
-            <div style="font-size:1.4rem; font-weight:900; color:#c084fc;">Gerador de Histórias com o Robô Jarvis</div>
-            <div style="font-size:1.02rem; color:#e0e7ff; margin-top:4px;">
-              Qual virtude de herói você quer aprender na nova história para o herói <strong>${childName}</strong>?
+        body.innerHTML = `
+          <div style="max-width:760px; margin:0 auto; padding:12px; display:flex; flex-direction:column; gap:16px;">
+            <div style="background:#09192f; border:2px solid #7c3aed; border-radius:18px; padding:16px; text-align:center;">
+              <div style="font-size:2.8rem; margin-bottom:4px;">✨📖</div>
+              <div style="font-size:1.4rem; font-weight:900; color:#c084fc;">Gerador de Histórias com o Robô Jarvis</div>
+              <div style="font-size:1.02rem; color:#e0e7ff; margin-top:4px;">
+                Qual virtude de herói você quer aprender na nova história para o herói <strong>${childName}</strong>?
+              </div>
             </div>
+
+            <div style="display:grid; grid-template-columns:1fr; gap:10px;" id="virtudes-list">
+              ${virtudes.map(v => `
+                <button type="button" class="big-btn" style="background:#0f1f38; border:2px solid #3b82f6; border-radius:14px; padding:14px 18px; text-align:left; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;" onclick="executarGeracaoHistoria('${v.id}')">
+                  <div>
+                    <div style="font-size:1.2rem; font-weight:900; color:#facc15;">${v.nome}</div>
+                    <div style="font-size:0.9rem; color:#94a3b8; margin-top:2px;">${v.desc}</div>
+                  </div>
+                  <span style="font-size:1.6rem; color:#38bdf8;">➔</span>
+                </button>
+              `).join('')}
+            </div>
+
+            <button type="button" class="big-btn" style="background:#334155; padding:10px 18px;" onclick="voltarTelaModal()">
+              ⬅ Voltar para a Estante
+            </button>
           </div>
+        `;
 
-          <div style="display:grid; grid-template-columns:1fr; gap:10px;" id="virtudes-list">
-            ${virtudes.map(v => `
-              <button type="button" class="big-btn" style="background:#0f1f38; border:2px solid #3b82f6; border-radius:14px; padding:14px 18px; text-align:left; display:flex; justify-content:space-between; align-items:center; transition:all 0.2s;" onclick="executarGeracaoHistoria('${v.id}')">
-                <div>
-                  <div style="font-size:1.2rem; font-weight:900; color:#facc15;">${v.nome}</div>
-                  <div style="font-size:0.9rem; color:#94a3b8; margin-top:2px;">${v.desc}</div>
-                </div>
-                <span style="font-size:1.6rem; color:#38bdf8;">➔</span>
-              </button>
-            `).join('')}
-          </div>
-
-          <button type="button" class="big-btn" style="background:#334155; padding:10px 18px;" onclick="renderBooksShelf(document.getElementById('modal-body'))">
-            ⬅ Voltar para a Estante
-          </button>
-        </div>
-      `;
-
-      speak(`Qual virtude de herói você quer aprender na nova história, ${childName}? Escolha entre Resiliência, Coragem, Paciência, Gratidão ou Disciplina!`);
+        speak(`Qual virtude de herói você quer aprender na nova história, ${childName}? Escolha entre Resiliência, Coragem, Paciência, Gratidão ou Disciplina!`);
+      }, true);
     }
 
     async function executarGeracaoHistoria(temaId) {
@@ -4760,13 +5109,14 @@
           appState.books.unshift(data.livro);
           playSfxSuccess();
           speak(`Prontinho, ${childName}! A sua nova história foi criada com muito carinho e já está na estante! Vamos ler juntos!`);
-          openBookPage(body, 0, 0);
+          voltarTelaModal();
+          abrirLeitorDeLivro(0, 0);
           return;
         }
       } catch (err) {}
 
       speak('Ops! Tive um pequeno soluço cósmico, mas vamos voltar para os livros da estante!');
-      renderBooksShelf(body);
+      voltarTelaModal();
     }
 
     const SCENE_ICONS = {
@@ -4840,7 +5190,7 @@
         </div>
       `;
 
-      document.getElementById('btn-shelf').onclick = () => renderBooksShelf(body);
+      document.getElementById('btn-shelf').onclick = () => voltarTelaModal();
       document.getElementById('btn-repeat').onclick = () => speak(page.text);
       document.getElementById('btn-spell').onclick = () => {
         playTone(659, 100);
@@ -4878,7 +5228,7 @@
           addStar(2);
           const moralTexto = book.moral ? ` E a grande lição de hoje é: ${book.moral}` : '';
           speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
-          renderBooksShelf(body);
+          voltarTelaModal();
         };
       }
     }
@@ -5633,25 +5983,35 @@
     const TECH_WORDS_POOL = ['KALEO', 'JARVIS', 'SOL', 'LUA', 'BOLA', 'CASA', 'AMOR', 'HEROI', 'MAMA', 'PAPA'];
 
     function openTechAcademy() {
-      const body = openModal('🖐️ TREINO DE MOUSE & TECLADO DO JARVIS');
-      body.innerHTML = `
-        <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
-          <button type="button" class="big-btn" style="background:#0284c7; padding:8px 18px; font-size:1.05rem;" id="tab-mouse">🖱️ Treino do Mouse (Mover, Clicar e Arrastar)</button>
-          <button type="button" class="big-btn" style="background:#7c3aed; color:#fff; padding:8px 18px; font-size:1.05rem;" id="tab-kb">⌨️ Qual Dedinho Usar no Teclado</button>
-        </div>
-        <div id="tech-stage" style="flex:1; display:flex; flex-direction:column;"></div>
-      `;
-      document.getElementById('tab-mouse').onclick = () => {
-        document.getElementById('tab-mouse').style.border = '2px solid #00f0ff';
-        document.getElementById('tab-kb').style.border = 'none';
-        renderMouseStage();
-      };
-      document.getElementById('tab-kb').onclick = () => {
-        document.getElementById('tab-kb').style.border = '2px solid #00f0ff';
-        document.getElementById('tab-mouse').style.border = 'none';
-        renderFingerTypingStage();
-      };
-      document.getElementById('tab-mouse').click();
+      pushModalScreen('🖐️ TREINO DE MOUSE, TECLADO & SCROLL', (body) => {
+        body.innerHTML = `
+          <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; justify-content:center;">
+            <button type="button" class="big-btn" style="background:#0284c7; padding:8px 16px; font-size:0.95rem; font-weight:900;" id="tab-mouse">🖱️ Treino do Mouse</button>
+            <button type="button" class="big-btn" style="background:#7c3aed; color:#fff; padding:8px 16px; font-size:0.95rem; font-weight:900;" id="tab-kb">⌨️ Dedinhos no Teclado</button>
+            <button type="button" class="big-btn" style="background:#059669; color:#fff; padding:8px 16px; font-size:0.95rem; font-weight:900;" id="tab-wheel">📜 Rodinha do Mouse (Scroll)</button>
+          </div>
+          <div id="tech-stage" style="flex:1; display:flex; flex-direction:column;"></div>
+        `;
+        document.getElementById('tab-mouse').onclick = () => {
+          document.getElementById('tab-mouse').style.border = '2px solid #00f0ff';
+          document.getElementById('tab-kb').style.border = 'none';
+          document.getElementById('tab-wheel').style.border = 'none';
+          renderMouseStage();
+        };
+        document.getElementById('tab-kb').onclick = () => {
+          document.getElementById('tab-kb').style.border = '2px solid #00f0ff';
+          document.getElementById('tab-mouse').style.border = 'none';
+          document.getElementById('tab-wheel').style.border = 'none';
+          renderFingerTypingStage();
+        };
+        document.getElementById('tab-wheel').onclick = () => {
+          document.getElementById('tab-wheel').style.border = '2px solid #00f0ff';
+          document.getElementById('tab-mouse').style.border = 'none';
+          document.getElementById('tab-kb').style.border = 'none';
+          renderMouseWheelStage();
+        };
+        document.getElementById('tab-mouse').click();
+      }, true);
     }
 
     function renderFingerTypingStage() {
@@ -5944,6 +6304,141 @@
       }
 
       setTimeout(spawn, 100);
+    }
+
+    // =========================================================================
+    // TREINO DA RODINHA DO MOUSE (SCROLL UP & SCROLL DOWN)
+    // =========================================================================
+    function renderMouseWheelStage() {
+      if (keyHandler) window.removeEventListener('keydown', keyHandler);
+      const stage = document.getElementById('tech-stage');
+      if (!stage) return;
+
+      let wheelPhase = 1; // 1: Scroll UP (Foguete Sobe), 2: Scroll DOWN (Submarino Desce)
+      let wheelProgress = 0; // 0 a 100
+
+      stage.innerHTML = `
+        <div style="background:#09192f; border:2px solid #38bdf8; border-radius:14px; padding:10px 14px; margin-bottom:10px; text-align:center;">
+          <div id="wheel-instruction" style="font-size:1.2rem; font-weight:900; color:#fde047; margin-bottom:4px;">
+            Fase 1: Gire a rodinha do mouse para CIMA para o foguete subir até a estrela!
+          </div>
+          <div style="font-size:0.82rem; color:#94a3b8;">
+            (Passe o mouse por cima do quadro abaixo e role a rodinha ou use dois dedos no touchpad)
+          </div>
+        </div>
+
+        <div id="wheel-arena" style="flex:1; min-height:280px; background:radial-gradient(circle at 50% 50%, #0c2144 0%, #030a17 100%); border:3px solid #38bdf8; border-radius:18px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:16px; box-sizing:border-box; user-select:none; cursor:ns-resize;">
+          
+          <!-- TOPO DA ARENA (ALVO DA FASE 1: ESTRELA) -->
+          <div id="wheel-target-top" style="display:flex; align-items:center; gap:8px; background:rgba(15,23,42,0.85); border:2px solid #facc15; border-radius:999px; padding:6px 18px;">
+            <span style="font-size:2.2rem; filter:drop-shadow(0 0 12px #fde047);">⭐</span>
+            <span style="font-size:1.05rem; font-weight:900; color:#fde047;">ESTRELA CÓSMICA</span>
+          </div>
+
+          <!-- PISTA VERTICAL DO OBJETO -->
+          <div style="width:100%; max-width:320px; height:130px; position:relative; border-left:3px dashed rgba(56,189,248,0.4); border-right:3px dashed rgba(56,189,248,0.4); margin:auto;">
+            <div id="wheel-vehicle" style="position:absolute; left:50%; transform:translateX(-50%); bottom:0%; font-size:3.5rem; filter:drop-shadow(0 0 15px #38bdf8); transition:bottom 0.15s ease-out; text-align:center;">
+              🚀
+            </div>
+          </div>
+
+          <!-- BARRA DE PROGRESSO DO SCROLL -->
+          <div style="width:100%; max-width:360px; background:#0f172a; border:2px solid #334155; border-radius:999px; height:22px; overflow:hidden; position:relative; margin-top:6px;">
+            <div id="wheel-progress-bar" style="height:100%; width:0%; background:linear-gradient(90deg, #0284c7 0%, #38bdf8 100%); border-radius:999px; transition:width 0.15s ease-out;"></div>
+            <span id="wheel-progress-lbl" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:900; color:#ffffff;">0%</span>
+          </div>
+
+          <!-- BASE DA ARENA -->
+          <div id="wheel-base-lbl" style="font-size:0.92rem; font-weight:800; color:#94a3b8; margin-top:6px;">
+            🌍 Base Espacial da Terra
+          </div>
+        </div>
+      `;
+
+      speak(`Treino da rodinha do mouse! Gire a rodinha para cima para o foguete subir até a estrela cósmica!`);
+
+      const arena = document.getElementById('wheel-arena');
+      const vehicle = document.getElementById('wheel-vehicle');
+      const bar = document.getElementById('wheel-progress-bar');
+      const lbl = document.getElementById('wheel-progress-lbl');
+      const inst = document.getElementById('wheel-instruction');
+      const targetTop = document.getElementById('wheel-target-top');
+      const baseLbl = document.getElementById('wheel-base-lbl');
+
+      let completed = false;
+
+      function onWheelEvent(e) {
+        e.preventDefault();
+        if (completed) return;
+
+        if (wheelPhase === 1) {
+          if (e.deltaY < 0) {
+            wheelProgress = Math.min(100, wheelProgress + 10);
+            playTone(300 + (wheelProgress * 4), 60);
+          } else {
+            wheelProgress = Math.max(0, wheelProgress - 5);
+          }
+
+          vehicle.style.bottom = `${wheelProgress}%`;
+          bar.style.width = `${wheelProgress}%`;
+          lbl.textContent = `${wheelProgress}%`;
+
+          if (wheelProgress >= 100) {
+            completed = true;
+            playTone(523, 100);
+            setTimeout(() => playTone(659, 100), 100);
+            setTimeout(() => playTone(784, 180), 200);
+            addStar(1);
+            speak(`Uau, ${appState.config.child_name || 'Kaleo'}! O foguete subiu até a estrela! Agora Fase 2: gire a rodinha para BAIXO!`);
+            
+            setTimeout(() => {
+              wheelPhase = 2;
+              wheelProgress = 100;
+              completed = false;
+              arena.style.background = 'radial-gradient(circle at 50% 50%, #082f49 0%, #031322 100%)';
+              arena.style.borderColor = '#06b6d4';
+              targetTop.innerHTML = '<span style="font-size:2.2rem;">🚢</span><span style="font-size:1.05rem; font-weight:900; color:#38bdf8;">SUPERFÍCIE DO MAR</span>';
+              targetTop.style.borderColor = '#06b6d4';
+              baseLbl.innerHTML = '🪙 <strong>Baú do Tesouro no Fundo do Mar!</strong>';
+              baseLbl.style.color = '#fde047';
+              vehicle.textContent = '🤿';
+              vehicle.style.bottom = '100%';
+              bar.style.background = 'linear-gradient(90deg, #06b6d4 0%, #10b981 100%)';
+              bar.style.width = '100%';
+              lbl.textContent = '100%';
+              inst.innerHTML = 'Fase 2: Agora gire a rodinha do mouse para BAIXO para o mergulhador descer até o baú!';
+              inst.style.color = '#38bdf8';
+              speak('Agora gire a rodinha para baixo para mergulhar até o baú do tesouro!');
+            }, 1800);
+          }
+        } else if (wheelPhase === 2) {
+          if (e.deltaY > 0) {
+            wheelProgress = Math.max(0, wheelProgress - 10);
+            playTone(700 - ((100 - wheelProgress) * 4), 60);
+          } else {
+            wheelProgress = Math.min(100, wheelProgress + 5);
+          }
+
+          vehicle.style.bottom = `${wheelProgress}%`;
+          bar.style.width = `${wheelProgress}%`;
+          lbl.textContent = `${wheelProgress}%`;
+
+          if (wheelProgress <= 0) {
+            completed = true;
+            playTone(440, 80);
+            setTimeout(() => playTone(554, 80), 80);
+            setTimeout(() => playTone(659, 120), 160);
+            setTimeout(() => playTone(880, 240), 240);
+            addStar(1);
+            inst.innerHTML = '🏆 MESTRE DA RODINHA DO MOUSE! Parabéns!';
+            inst.style.color = '#4ade80';
+            vehicle.textContent = '💎';
+            speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você dominou o scroll para cima e para baixo!`);
+          }
+        }
+      }
+
+      arena.addEventListener('wheel', onWheelEvent, { passive: false });
     }
 
     // =========================================================================
@@ -6828,16 +7323,15 @@
 
     function openHealthyFoodGame() {
       playTone(523, 100);
-      const modal = document.getElementById('activity-modal');
-      if (modal) modal.classList.add('zero-scroll');
-      const body = openModal('🍎 PRATO DOS SUPER CAMPEÕES');
       pratoItensSelecionados = [];
       abaAlimentoAtiva = 'proteina';
       const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
       speak(`Bem-vindo ao Prato dos Super Campeões, herói ${childName}! Escolha os alimentos ao lado para colocar no seu prato e ganhar moedas de ouro!`);
 
-      renderizarTelaPrato(body);
+      pushModalScreen('🍎 PRATO DOS SUPER CAMPEÕES', (body) => {
+        renderizarTelaPrato(body);
+      }, true);
     }
 
     function renderizarTelaPrato(body) {
@@ -7052,12 +7546,13 @@
 
     function openPersonalHygieneGame() {
       playTone(587, 100);
-      const body = openModal('🧼 ACADEMIA DO SUPER HERÓI LIMPINHO');
       const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
       speak(`Bem-vindo à Academia de Higiene Pessoal, herói ${childName}! Cuidar do corpo, lavar as mãos, escovar os dentes e tomar banho são os superpoderes dos verdadeiros campeões! Escolha uma missão para começar!`);
 
-      renderizarMenuHigiene(body);
+      pushModalScreen('🧼 ACADEMIA DO SUPER HERÓI LIMPINHO', (body) => {
+        renderizarMenuHigiene(body);
+      }, true);
     }
 
     function renderizarMenuHigiene(body) {
@@ -7128,278 +7623,281 @@
 
     // SUB-JOGO 1: LAVAR AS MÃOS
     function iniciarMissaoLavarMaos() {
-      playTone(523, 100);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
-      const body = document.querySelector('#activity-modal .modal-body');
-      if (!body) return;
+      pushModalScreen('🧼 MISSÃO: LAVAR AS MÃOS', (body) => {
+        playTone(523, 100);
+        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
-      speak(`Missão: Lavar as Mãos! Toque no sabão e depois nos monstrinhos de germes para mandar todos embora com água e espuma!`);
+        speak(`Missão: Lavar as Mãos! Toque no sabão e depois nos monstrinhos de germes para mandar todos embora com água e espuma!`);
 
-      let germesRestantes = 4;
+        let germesRestantes = 4;
 
-      body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
-          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-            <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="openPersonalHygieneGame()">⬅ Voltar às Missões</button>
-            <div style="font-size:1.3rem; font-weight:900; color:#38bdf8;">🧼 Lavando as Mãozinhas</div>
-            <div id="germes-count" style="background:#ef4444; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Germes: 4</div>
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="voltarTelaModal()">⬅ Voltar às Missões</button>
+              <div style="font-size:1.3rem; font-weight:900; color:#38bdf8;">🧼 Lavando as Mãozinhas</div>
+              <div id="germes-count" style="background:#ef4444; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Germes: 4</div>
+            </div>
+
+            <!-- MÃOZINHAS COM MONSTRINHOS DE GERMES -->
+            <div style="position:relative; width:min(90vw, 420px); height:280px; background:radial-gradient(circle, #1e3a5f 0%, #0d1e33 90%); border:3px solid #38bdf8; border-radius:24px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <div style="font-size:7rem; user-select:none;">👐</div>
+
+              <!-- MONSTRINHOS CLICÁVEIS -->
+              <button type="button" id="germe-1" class="germe-btn" onclick="eliminarGerme('germe-1')" style="position:absolute; top:40px; left:60px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 1s infinite;" title="Eliminar Germe!">👾</button>
+              <button type="button" id="germe-2" class="germe-btn" onclick="eliminarGerme('germe-2')" style="position:absolute; top:50px; right:60px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 1.1s infinite;" title="Eliminar Germe!">🦠</button>
+              <button type="button" id="germe-3" class="germe-btn" onclick="eliminarGerme('germe-3')" style="position:absolute; bottom:50px; left:90px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 1.2s infinite;" title="Eliminar Germe!">👾</button>
+              <button type="button" id="germe-4" class="germe-btn" onclick="eliminarGerme('germe-4')" style="position:absolute; bottom:60px; right:90px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 0.9s infinite;" title="Eliminar Germe!">🦠</button>
+            </div>
+
+            <div id="higiene-feedback-text" style="background:#040c18; border:2px solid #38bdf8; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
+              Toque nos monstrinhos nas mãozinhas para passar água e sabão!
+            </div>
           </div>
+        `;
 
-          <!-- MÃOZINHAS COM MONSTRINHOS DE GERMES -->
-          <div style="position:relative; width:min(90vw, 420px); height:280px; background:radial-gradient(circle, #1e3a5f 0%, #0d1e33 90%); border:3px solid #38bdf8; border-radius:24px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-            <div style="font-size:7rem; user-select:none;">👐</div>
+        window.eliminarGerme = async function(id) {
+          const el = document.getElementById(id);
+          if (!el || el.dataset.eliminado) return;
+          el.dataset.eliminado = 'true';
+          el.innerHTML = '🫧';
+          playTone(750, 100);
+          setTimeout(() => { if (el) el.style.display = 'none'; }, 300);
 
-            <!-- MONSTRINHOS CLICÁVEIS -->
-            <button type="button" id="germe-1" class="germe-btn" onclick="eliminarGerme('germe-1')" style="position:absolute; top:40px; left:60px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 1s infinite;" title="Eliminar Germe!">👾</button>
-            <button type="button" id="germe-2" class="germe-btn" onclick="eliminarGerme('germe-2')" style="position:absolute; top:50px; right:60px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 1.1s infinite;" title="Eliminar Germe!">🦠</button>
-            <button type="button" id="germe-3" class="germe-btn" onclick="eliminarGerme('germe-3')" style="position:absolute; bottom:50px; left:90px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 1.2s infinite;" title="Eliminar Germe!">👾</button>
-            <button type="button" id="germe-4" class="germe-btn" onclick="eliminarGerme('germe-4')" style="position:absolute; bottom:60px; right:90px; font-size:2.8rem; background:none; border:none; cursor:pointer; animation:pulseMic 0.9s infinite;" title="Eliminar Germe!">🦠</button>
-          </div>
+          germesRestantes--;
+          const cEl = document.getElementById('germes-count');
+          if (cEl) cEl.textContent = `Germes: ${germesRestantes}`;
 
-          <div id="higiene-feedback-text" style="background:#040c18; border:2px solid #38bdf8; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
-            Toque nos monstrinhos nas mãozinhas para passar água e sabão!
-          </div>
-        </div>
-      `;
+          const fb = document.getElementById('higiene-feedback-text');
+          if (germesRestantes > 0) {
+            if (fb) fb.textContent = `Espuminha mágica! Restam ${germesRestantes} germes para lavar!`;
+            speak('Espuminha mágica!');
+          } else {
+            // Missão completa!
+            playSfxSuccess();
+            addStarReward(1);
+            if (fb) fb.innerHTML = `🏆 <span style="color:#4ade80; font-weight:900;">MÃOZINHAS 100% LIMPAS E PROTEGIDAS!</span> +10 Moedas 🪙!`;
+            try {
+              await fetch('/api/higiene/concluir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ missao_id: 'lavar_maos' })
+              });
+            } catch (e) {}
 
-      window.eliminarGerme = async function(id) {
-        const el = document.getElementById(id);
-        if (!el || el.dataset.eliminado) return;
-        el.dataset.eliminado = 'true';
-        el.innerHTML = '🫧';
-        playTone(750, 100);
-        setTimeout(() => { if (el) el.style.display = 'none'; }, 300);
-
-        germesRestantes--;
-        const cEl = document.getElementById('germes-count');
-        if (cEl) cEl.textContent = `Germes: ${germesRestantes}`;
-
-        const fb = document.getElementById('higiene-feedback-text');
-        if (germesRestantes > 0) {
-          if (fb) fb.textContent = `Espuminha mágica! Restam ${germesRestantes} germes para lavar!`;
-          speak('Espuminha mágica!');
-        } else {
-          // Missão completa!
-          playSfxSuccess();
-          addStarReward(1);
-          if (fb) fb.innerHTML = `🏆 <span style="color:#4ade80; font-weight:900;">MÃOZINHAS 100% LIMPAS E PROTEGIDAS!</span> +10 Moedas 🪙!`;
-          try {
-            await fetch('/api/higiene/concluir', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ missao_id: 'lavar_maos' })
-            });
-          } catch (e) {}
-
-          const msg = `Uau, herói ${childName}! Suas mãozinhas estão brilhando de limpas! Todos os germes foram embora pelo ralo! Você ganhou 10 moedas de ouro!`;
-          speak(msg);
-          mostrarFalaPou(`🧼 Mãozinhas limpas e protegidas! (+10 Moedas!)`);
-        }
-      };
+            const msg = `Uau, herói ${childName}! Suas mãozinhas estão brilhando de limpas! Todos os germes foram embora pelo ralo! Você ganhou 10 moedas de ouro!`;
+            speak(msg);
+            mostrarFalaPou(`🧼 Mãozinhas limpas e protegidas! (+10 Moedas!)`);
+          }
+        };
+      }, true);
     }
 
     // SUB-JOGO 2: ESCOVAR OS DENTES
+    function iniciarMissaoEscovarDENTES() {
+      iniciarMissaoEscovarDentes();
+    }
     function iniciarMissaoEscovarDentes() {
-      playTone(587, 100);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
-      const body = document.querySelector('#activity-modal .modal-body');
-      if (!body) return;
+      pushModalScreen('🪥 MISSÃO: ESCOVAR OS DENTES', (body) => {
+        playTone(587, 100);
+        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
-      speak(`Missão: Escovação Mágica dos Dentinhos! Toque nas partes dos dentes para fazer o movimento de trenzinho e vassourinha!`);
+        speak(`Missão: Escovação Mágica dos Dentinhos! Toque nas partes dos dentes para fazer o movimento de trenzinho e vassourinha!`);
 
-      let dentesEscovados = 0;
+        let dentesEscovados = 0;
 
-      body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
-          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-            <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="openPersonalHygieneGame()">⬅ Voltar às Missões</button>
-            <div style="font-size:1.3rem; font-weight:900; color:#818cf8;">🪥 Sorriso Brilhante Stark</div>
-            <div id="dentes-count" style="background:#4f46e5; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Etapas: 0/4</div>
-          </div>
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="voltarTelaModal()">⬅ Voltar às Missões</button>
+              <div style="font-size:1.3rem; font-weight:900; color:#818cf8;">🪥 Sorriso Brilhante Stark</div>
+              <div id="dentes-count" style="background:#4f46e5; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Etapas: 0/3</div>
+            </div>
 
-          <div style="width:min(90vw, 420px); height:260px; background:radial-gradient(circle, #2e1065 0%, #17072e 90%); border:3px solid #818cf8; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative;">
-            <div style="font-size:5rem;">😁</div>
-            <div style="display:flex; gap:10px;">
-              <button type="button" class="big-btn" id="btn-dente-1" style="background:#0284c7; padding:8px 14px; font-size:0.95rem;" onclick="escovarParteDente('btn-dente-1', 'Dentes de Cima')">🦷 Cima (Vassourinha)</button>
-              <button type="button" class="big-btn" id="btn-dente-2" style="background:#0284c7; padding:8px 14px; font-size:0.95rem;" onclick="escovarParteDente('btn-dente-2', 'Dentes de Baixo')">🦷 Baixo (Vassourinha)</button>
-              <button type="button" class="big-btn" id="btn-dente-3" style="background:#0284c7; padding:8px 14px; font-size:0.95rem;" onclick="escovarParteDente('btn-dente-3', 'Molares do Fundo')">🚂 Fundo (Trenzinho)</button>
+            <div style="width:min(90vw, 420px); height:260px; background:radial-gradient(circle, #2e1065 0%, #17072e 90%); border:3px solid #818cf8; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; position:relative;">
+              <div style="font-size:5rem;">😁</div>
+              <div style="display:flex; gap:10px;">
+                <button type="button" class="big-btn" id="btn-dente-1" style="background:#0284c7; padding:8px 14px; font-size:0.95rem;" onclick="escovarParteDente('btn-dente-1', 'Dentes de Cima')">🦷 Cima (Vassourinha)</button>
+                <button type="button" class="big-btn" id="btn-dente-2" style="background:#0284c7; padding:8px 14px; font-size:0.95rem;" onclick="escovarParteDente('btn-dente-2', 'Dentes de Baixo')">🦷 Baixo (Vassourinha)</button>
+                <button type="button" class="big-btn" id="btn-dente-3" style="background:#0284c7; padding:8px 14px; font-size:0.95rem;" onclick="escovarParteDente('btn-dente-3', 'Molares do Fundo')">🚂 Fundo (Trenzinho)</button>
+              </div>
+            </div>
+
+            <div id="dente-feedback-text" style="background:#040c18; border:2px solid #818cf8; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
+              Toque nos botões para escovar cada parte do sorriso com a escovinha mágica!
             </div>
           </div>
+        `;
 
-          <div id="dente-feedback-text" style="background:#040c18; border:2px solid #818cf8; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
-            Toque nos botões para escovar cada parte do sorriso com a escovinha mágica!
-          </div>
-        </div>
-      `;
+        window.escovarParteDente = async function(btnId, parte) {
+          const btn = document.getElementById(btnId);
+          if (!btn || btn.dataset.limpo) return;
+          btn.dataset.limpo = 'true';
+          btn.style.background = '#10b981';
+          btn.innerHTML = `✨ ${parte} Limpos!`;
+          playTone(800 + dentesEscovados * 100, 120);
 
-      window.escovarParteDente = async function(btnId, parte) {
-        const btn = document.getElementById(btnId);
-        if (!btn || btn.dataset.limpo) return;
-        btn.dataset.limpo = 'true';
-        btn.style.background = '#10b981';
-        btn.innerHTML = `✨ ${parte} Limpos!`;
-        playTone(800 + dentesEscovados * 100, 120);
+          dentesEscovados++;
+          const cEl = document.getElementById('dentes-count');
+          if (cEl) cEl.textContent = `Etapas: ${dentesEscovados}/3`;
 
-        dentesEscovados++;
-        const cEl = document.getElementById('dentes-count');
-        if (cEl) cEl.textContent = `Etapas: ${dentesEscovados}/3`;
+          const fb = document.getElementById('dente-feedback-text');
+          if (dentesEscovados < 3) {
+            if (fb) fb.textContent = `Ótimo movimento de escovação nos ${parte}! Xô cáries!`;
+            speak(`Ótimo movimento de escovação nos ${parte}!`);
+          } else {
+            playSfxSuccess();
+            addStarReward(1);
+            if (fb) fb.innerHTML = `🌟 <span style="color:#fde047; font-weight:900;">SORRISO ILUMINADO E PROTEGIDO!</span> +10 Moedas 🪙!`;
+            try {
+              await fetch('/api/higiene/concluir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ missao_id: 'escovar_dentes' })
+              });
+            } catch (e) {}
 
-        const fb = document.getElementById('dente-feedback-text');
-        if (dentesEscovados < 3) {
-          if (fb) fb.textContent = `Ótimo movimento de escovação nos ${parte}! Xô cáries!`;
-          speak(`Ótimo movimento de escovação nos ${parte}!`);
-        } else {
-          playSfxSuccess();
-          addStarReward(1);
-          if (fb) fb.innerHTML = `🌟 <span style="color:#fde047; font-weight:900;">SORRISO ILUMINADO E PROTEGIDO!</span> +10 Moedas 🪙!`;
-          try {
-            await fetch('/api/higiene/concluir', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ missao_id: 'escovar_dentes' })
-            });
-          } catch (e) {}
-
-          speak(`Sensacional, ${childName}! Seu sorriso está brilhando como uma estrela de cinema! Sem cáries e com hálito bem refrescante! Você ganhou 10 moedas de ouro!`);
-          mostrarFalaPou(`🪥 Sorriso brilhante e protegido! (+10 Moedas!)`);
-        }
-      };
+            speak(`Sensacional, ${childName}! Seu sorriso está brilhando como uma estrela de cinema! Sem cáries e com hálito bem refrescante! Você ganhou 10 moedas de ouro!`);
+            mostrarFalaPou(`🪥 Sorriso brilhante e protegido! (+10 Moedas!)`);
+          }
+        };
+      }, true);
     }
 
     // SUB-JOGO 3: SUPER BANHO DOS CAMPEÕES
     function iniciarMissaoSuperBanho() {
-      playTone(523, 100);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
-      const body = document.querySelector('#activity-modal .modal-body');
-      if (!body) return;
+      pushModalScreen('🚿 MISSÃO: BANHO DOS CAMPEÕES', (body) => {
+        playTone(523, 100);
+        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
-      speak(`Missão: Super Banho dos Campeões! Toque nas etapas para ligar a água morna, passar sabonete, lavar o cabelo e secar os pezinhos!`);
+        speak(`Missão: Super Banho dos Campeões! Toque nas etapas para ligar a água morna, passar sabonete, lavar o cabelo e secar os pezinhos!`);
 
-      let etapasConcluidas = 0;
+        let etapasConcluidas = 0;
 
-      body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
-          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-            <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="openPersonalHygieneGame()">⬅ Voltar às Missões</button>
-            <div style="font-size:1.3rem; font-weight:900; color:#34d399;">🚿 Super Banho Stark</div>
-            <div id="banho-count" style="background:#059669; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Etapas: 0/4</div>
-          </div>
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="voltarTelaModal()">⬅ Voltar às Missões</button>
+              <div style="font-size:1.3rem; font-weight:900; color:#34d399;">🚿 Super Banho Stark</div>
+              <div id="banho-count" style="background:#059669; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Etapas: 0/4</div>
+            </div>
 
-          <div style="width:min(90vw, 420px); height:260px; background:radial-gradient(circle, #064e3b 0%, #022c22 90%); border:3px solid #34d399; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; position:relative;">
-            <div id="banho-icon-center" style="font-size:5rem;">🚿</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; width:90%;">
-              <button type="button" class="big-btn" id="btn-banho-1" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-1', '🚿 Água Morna Gostosa', 'A água quentinha relaxa todos os músculos!')">1. Água Morna</button>
-              <button type="button" class="big-btn" id="btn-banho-2" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-2', '🧼 Sabonete no Corpo', 'Espuma cheirosa para limpar toda a poeirinha!')">2. Sabonete</button>
-              <button type="button" class="big-btn" id="btn-banho-3" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-3', '🧴 Shampoo Cheiroso', 'Shampoo no cabelinho deixa fios macios e limpinhos!')">3. Shampoo</button>
-              <button type="button" class="big-btn" id="btn-banho-4" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-4', '🦶 Secar os Dedinhos dos Pés', 'Secar bem os pezinhos evita frieiras e chulé!')">4. Secar Pezinhos</button>
+            <div style="width:min(90vw, 420px); height:260px; background:radial-gradient(circle, #064e3b 0%, #022c22 90%); border:3px solid #34d399; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; position:relative;">
+              <div id="banho-icon-center" style="font-size:5rem;">🚿</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; width:90%;">
+                <button type="button" class="big-btn" id="btn-banho-1" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-1', '🚿 Água Morna Gostosa', 'A água quentinha relaxa todos os músculos!')">1. Água Morna</button>
+                <button type="button" class="big-btn" id="btn-banho-2" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-2', '🧼 Sabonete no Corpo', 'Espuma cheirosa para limpar toda a poeirinha!')">2. Sabonete</button>
+                <button type="button" class="big-btn" id="btn-banho-3" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-3', '🧴 Shampoo Cheiroso', 'Shampoo no cabelinho deixa fios macios e limpinhos!')">3. Shampoo</button>
+                <button type="button" class="big-btn" id="btn-banho-4" style="background:#0284c7; padding:8px 10px; font-size:0.9rem;" onclick="concluirEtapaBanho('btn-banho-4', '🦶 Secar os Dedinhos dos Pés', 'Secar bem os pezinhos evita frieiras e chulé!')">4. Secar Pezinhos</button>
+              </div>
+            </div>
+
+            <div id="banho-feedback-text" style="background:#040c18; border:2px solid #34d399; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
+              Toque nos 4 botões de banho para deixar o corpo relaxado e cheiroso!
             </div>
           </div>
+        `;
 
-          <div id="banho-feedback-text" style="background:#040c18; border:2px solid #34d399; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
-            Toque nos 4 botões de banho para deixar o corpo relaxado e cheiroso!
-          </div>
-        </div>
-      `;
+        window.concluirEtapaBanho = async function(btnId, titulo, fala) {
+          const btn = document.getElementById(btnId);
+          if (!btn || btn.dataset.limpo) return;
+          btn.dataset.limpo = 'true';
+          btn.style.background = '#10b981';
+          btn.innerHTML = `✅ ${titulo.split(' ')[1]}`;
+          playTone(650 + etapasConcluidas * 80, 100);
 
-      window.concluirEtapaBanho = async function(btnId, titulo, fala) {
-        const btn = document.getElementById(btnId);
-        if (!btn || btn.dataset.limpo) return;
-        btn.dataset.limpo = 'true';
-        btn.style.background = '#10b981';
-        btn.innerHTML = `✅ ${titulo.split(' ')[1]}`;
-        playTone(650 + etapasConcluidas * 80, 100);
+          etapasConcluidas++;
+          const cEl = document.getElementById('banho-count');
+          if (cEl) cEl.textContent = `Etapas: ${etapasConcluidas}/4`;
 
-        etapasConcluidas++;
-        const cEl = document.getElementById('banho-count');
-        if (cEl) cEl.textContent = `Etapas: ${etapasConcluidas}/4`;
+          const fb = document.getElementById('banho-feedback-text');
+          if (etapasConcluidas < 4) {
+            if (fb) fb.textContent = fala;
+            speak(fala);
+          } else {
+            playSfxSuccess();
+            addStarReward(2);
+            if (fb) fb.innerHTML = `🫧 <span style="color:#6ee7b7; font-weight:900;">BANHO COMPLETO! CORPINHO CHEIROSO E RELAXADO!</span> +15 Moedas 🪙!`;
+            try {
+              await fetch('/api/higiene/concluir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ missao_id: 'banho_campeao' })
+              });
+            } catch (e) {}
 
-        const fb = document.getElementById('banho-feedback-text');
-        if (etapasConcluidas < 4) {
-          if (fb) fb.textContent = fala;
-          speak(fala);
-        } else {
-          playSfxSuccess();
-          addStarReward(2);
-          if (fb) fb.innerHTML = `🫧 <span style="color:#6ee7b7; font-weight:900;">BANHO COMPLETO! CORPINHO CHEIROSO E RELAXADO!</span> +15 Moedas 🪙!`;
-          try {
-            await fetch('/api/higiene/concluir', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ missao_id: 'banho_campeao' })
-            });
-          } catch (e) {}
-
-          speak(`Que delícia de banho, herói ${childName}! Você está limpinho, super cheiroso e com energia renovada! Você ganhou 15 moedas de ouro e 2 estrelas!`);
-          mostrarFalaPou(`🚿 Super banho concluído! (+15 Moedas!)`);
-        }
-      };
+            speak(`Que delícia de banho, herói ${childName}! Você está limpinho, super cheiroso e com energia renovada! Você ganhou 15 moedas de ouro e 2 estrelas!`);
+            mostrarFalaPou(`🚿 Super banho concluído! (+15 Moedas!)`);
+          }
+        };
+      }, true);
     }
 
     // SUB-JOGO 4: UNHAS & CABELO
     function iniciarMissaoUnhasCabelo() {
-      playTone(523, 100);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
-      const body = document.querySelector('#activity-modal .modal-body');
-      if (!body) return;
+      pushModalScreen('✂️ MISSÃO: UNHAS & CABELO', (body) => {
+        playTone(523, 100);
+        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
 
-      speak(`Missão: Unhas Limpinhas e Penteado de Herói! Cuidar das unhas e do cabelo deixa você estiloso e saudável!`);
+        speak(`Missão: Unhas Limpinhas e Penteado de Herói! Cuidar das unhas e do cabelo deixa você estiloso e saudável!`);
 
-      let etapas = 0;
+        let etapas = 0;
 
-      body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
-          <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-            <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="openPersonalHygieneGame()">⬅ Voltar às Missões</button>
-            <div style="font-size:1.3rem; font-weight:900; color:#c084fc;">✂️ Estilo & Cuidado Stark</div>
-            <div id="unhas-count" style="background:#7c3aed; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Etapas: 0/2</div>
-          </div>
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:16px; max-width:800px; margin:0 auto;">
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <button type="button" class="big-btn" style="background:#475569; padding:8px 16px;" onclick="voltarTelaModal()">⬅ Voltar às Missões</button>
+              <div style="font-size:1.3rem; font-weight:900; color:#c084fc;">✂️ Estilo & Cuidado Stark</div>
+              <div id="unhas-count" style="background:#7c3aed; color:#fff; font-weight:900; padding:6px 14px; border-radius:999px;">Etapas: 0/2</div>
+            </div>
 
-          <div style="width:min(90vw, 420px); height:240px; background:radial-gradient(circle, #3b0764 0%, #1c053a 90%); border:3px solid #c084fc; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;">
-            <div style="font-size:5rem;">💇‍♂️</div>
-            <div style="display:flex; gap:14px;">
-              <button type="button" class="big-btn" id="btn-unha-1" style="background:#0284c7; padding:10px 18px; font-size:1rem;" onclick="concluirUnhasCabelo('btn-unha-1', 'Unhas Limpinhas', 'Unhas curtinhas não guardam sujeira!')">✂️ Cortar & Limpar Unhas</button>
-              <button type="button" class="big-btn" id="btn-unha-2" style="background:#0284c7; padding:10px 18px; font-size:1rem;" onclick="concluirUnhasCabelo('btn-unha-2', 'Penteado de Herói', 'Cabelo penteado de verdadeiro campeão!')">🪮 Pentear o Cabelo</button>
+            <div style="width:min(90vw, 420px); height:240px; background:radial-gradient(circle, #3b0764 0%, #1c053a 90%); border:3px solid #c084fc; border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;">
+              <div style="font-size:5rem;">💇‍♂️</div>
+              <div style="display:flex; gap:14px;">
+                <button type="button" class="big-btn" id="btn-unha-1" style="background:#0284c7; padding:10px 18px; font-size:1rem;" onclick="concluirUnhasCabelo('btn-unha-1', 'Unhas Limpinhas', 'Unhas curtinhas não guardam sujeira!')">✂️ Cortar & Limpar Unhas</button>
+                <button type="button" class="big-btn" id="btn-unha-2" style="background:#0284c7; padding:10px 18px; font-size:1rem;" onclick="concluirUnhasCabelo('btn-unha-2', 'Penteado de Herói', 'Cabelo penteado de verdadeiro campeão!')">🪮 Pentear o Cabelo</button>
+              </div>
+            </div>
+
+            <div id="unha-feedback-text" style="background:#040c18; border:2px solid #c084fc; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
+              Toque nos botões para cuidar das unhas e do penteado do herói!
             </div>
           </div>
+        `;
 
-          <div id="unha-feedback-text" style="background:#040c18; border:2px solid #c084fc; border-radius:14px; padding:12px 20px; font-size:1.15rem; font-weight:800; color:#ffffff; text-align:center;">
-            Toque nos botões para cuidar das unhas e do penteado do herói!
-          </div>
-        </div>
-      `;
+        window.concluirUnhasCabelo = async function(btnId, titulo, fala) {
+          const btn = document.getElementById(btnId);
+          if (!btn || btn.dataset.limpo) return;
+          btn.dataset.limpo = 'true';
+          btn.style.background = '#10b981';
+          btn.innerHTML = `✅ ${titulo}`;
+          playTone(700 + etapas * 120, 100);
 
-      window.concluirUnhasCabelo = async function(btnId, titulo, fala) {
-        const btn = document.getElementById(btnId);
-        if (!btn || btn.dataset.limpo) return;
-        btn.dataset.limpo = 'true';
-        btn.style.background = '#10b981';
-        btn.innerHTML = `✅ ${titulo}`;
-        playTone(700 + etapas * 120, 100);
+          etapas++;
+          const cEl = document.getElementById('unhas-count');
+          if (cEl) cEl.textContent = `Etapas: ${etapas}/2`;
 
-        etapas++;
-        const cEl = document.getElementById('unhas-count');
-        if (cEl) cEl.textContent = `Etapas: ${etapas}/2`;
+          const fb = document.getElementById('unha-feedback-text');
+          if (etapas < 2) {
+            if (fb) fb.textContent = fala;
+            speak(fala);
+          } else {
+            playSfxSuccess();
+            addStarReward(1);
+            if (fb) fb.innerHTML = `✨ <span style="color:#d8b4fe; font-weight:900;">VISUAL E HIGIENE IMPECÁVEIS!</span> +10 Moedas 🪙!`;
+            try {
+              await fetch('/api/higiene/concluir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ missao_id: 'cabelo_unhas' })
+              });
+            } catch (e) {}
 
-        const fb = document.getElementById('unha-feedback-text');
-        if (etapas < 2) {
-          if (fb) fb.textContent = fala;
-          speak(fala);
-        } else {
-          playSfxSuccess();
-          addStarReward(1);
-          if (fb) fb.innerHTML = `✨ <span style="color:#d8b4fe; font-weight:900;">UNHAS E CABELOS IMPECÁVEIS!</span> +10 Moedas 🪙!`;
-          try {
-            await fetch('/api/higiene/concluir', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ missao_id: 'cabelo_unhas' })
-            });
-          } catch (e) {}
-
-          speak(`Sensacional, ${childName}! Unhas limpinhas e penteado digno de um Vingador! Você ganhou 10 moedas de ouro!`);
-          mostrarFalaPou(`✂️ Unhas e cabelo de super-herói! (+10 Moedas!)`);
-        }
-      };
+            speak(`Visual nota dez, herói ${childName}! Unhas curtinhas, bem limpas e cabelo arrumado como um herói estiloso! Você ganhou 10 moedas de ouro!`);
+            mostrarFalaPou(`✂️ Cabelo e unhas de herói! (+10 Moedas!)`);
+          }
+        };
+      }, true);
     }
 
     // =========================================================================
@@ -8638,35 +9136,211 @@
     }
 
     // =========================================================================
-    // MODAL: LOJA DO TESOURO & ARMÁRIO VESTÍVEL DO JARVIS (TOKEN ECONOMY)
+    // JOGO: FESTAS & DATAS COMEMORATIVAS DO BRASIL (ZERO SCROLL & PAGINADO)
+    // =========================================================================
+    let paginaDatasAtual = 1;
+    const DATAS_POR_PAGINA = 4;
+    let todasDatasComemorativas = [];
+
+    async function openDatasComemorativasModal() {
+      pushModalScreen('🇧🇷 FESTAS & DATAS COMEMORATIVAS DO BRASIL', async (body) => {
+        body.innerHTML = `
+          <div style="color:#38bdf8; text-align:center; padding:30px; font-size:1.2rem; font-weight:900;">
+            Carregando celebrações do Brasil...
+          </div>
+        `;
+
+        try {
+          const res = await fetch('/api/calendario/listar');
+          todasDatasComemorativas = await res.json();
+        } catch (e) {
+          todasDatasComemorativas = [];
+        }
+
+        renderDatasComemorativasBody(body);
+      }, true);
+    }
+
+    function renderDatasComemorativasBody(body) {
+      speak(`Calendário de Festas e Datas Comemorativas do Brasil! Toque em uma festa para ouvir a história!`);
+
+      const hoje = new Date();
+      const diaHoje = hoje.getDate();
+      const mesHoje = hoje.getMonth() + 1;
+
+      const eventoHoje = todasDatasComemorativas.find(d => d.dia === diaHoje && d.mes === mesHoje);
+      const totalPags = Math.max(1, Math.ceil(todasDatasComemorativas.length / DATAS_POR_PAGINA));
+      if (paginaDatasAtual > totalPags) paginaDatasAtual = 1;
+
+      const inicio = (paginaDatasAtual - 1) * DATAS_POR_PAGINA;
+      const datasPagina = todasDatasComemorativas.slice(inicio, inicio + DATAS_POR_PAGINA);
+
+      const nomesMeses = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box; overflow:hidden;">
+          
+          <!-- BANNER COMEMORATIVO -->
+          <div style="background:${eventoHoje ? 'linear-gradient(135deg, #1e3a8a 0%, #172554 100%)' : '#09192f'}; border:2px solid ${eventoHoje ? '#facc15' : '#1e3a63'}; border-radius:14px; padding:8px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:2rem;">${eventoHoje ? '🎉' : '📅'}</span>
+              <div>
+                <div style="font-size:0.95rem; font-weight:900; color:#fde047;">
+                  ${eventoHoje ? `HOJE É DIA DE FESTA: ${eventoHoje.titulo}!` : 'Calendário Oficial de Festas do Nosso Brasil'}
+                </div>
+                <div style="font-size:0.8rem; color:#bae6fd;">
+                  ${eventoHoje ? eventoHoje.mensagem_jarvis : 'Descubra a história e a alegria de cada época especial do ano com o Jarvis!'}
+                </div>
+              </div>
+            </div>
+            ${eventoHoje ? `
+              <button type="button" class="big-btn" style="background:#10b981; border:1.5px solid #34d399; font-size:0.85rem; padding:6px 14px;" onclick="celebrarDataHoje(${eventoHoje.id})">
+                🎈 Celebrar (+${eventoHoje.recompensa_fichas} Moedas)
+              </button>
+            ` : ''}
+          </div>
+
+          <!-- GRID 2x2: 4 DATAS GRANDES POR TELA (ZERO SCROLL) -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1; min-height:270px;" id="datas-grid-container">
+            ${datasPagina.map(item => {
+              const iconesMap = {
+                'Carnaval': '🎭',
+                'Páscoa': '🐰',
+                'Mães': '👩‍👧',
+                'Pais': '👨‍👦',
+                'Junina': '🌽',
+                'Independência': '🇧🇷',
+                'Crianças': '🧸',
+                'Natal': '🎄',
+                'Ano Novo': '🎆',
+                'Água': '💧',
+                'Terra': '🌱',
+                'Meio Ambiente': '🌳',
+                'Amigo': '🚀',
+                'Árvore': '🌲',
+                'Livro': '📖'
+              };
+              let ico = '🎈';
+              for (const [k, v] of Object.entries(iconesMap)) {
+                if (item.titulo.includes(k)) { ico = v; break; }
+              }
+
+              return `
+                <div onclick="ouvirDataComemorativa(${item.id})" style="background:linear-gradient(145deg, #0d1e38 0%, #061122 100%); border:2px solid #38bdf8; border-radius:16px; padding:10px 14px; display:flex; align-items:center; gap:12px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.4); box-sizing:border-box;">
+                  <div style="font-size:3rem; min-width:55px; text-align:center;">${ico}</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; margin-bottom:2px;">
+                      <span style="background:#1e293b; color:#38bdf8; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:999px;">
+                        ${item.dia} de ${nomesMeses[item.mes] || ''}
+                      </span>
+                      <span style="font-size:0.75rem; color:#fde047; font-weight:800;">🪙 +${item.recompensa_fichas}</span>
+                    </div>
+                    <div style="font-size:1.05rem; font-weight:900; color:#ffffff; line-height:1.2; margin-bottom:2px;">
+                      ${item.titulo}
+                    </div>
+                    <div style="font-size:0.78rem; color:#94a3b8; line-height:1.2; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                      ${item.mensagem_jarvis}
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- RODAPÉ TÁTIL DE PAGINAÇÃO -->
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:14px; padding:8px 14px;">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:8px 18px; font-size:0.95rem; font-weight:900;" onclick="mudarPaginaDatas(-1)">
+              ◀ Datas Anteriores
+            </button>
+            <span style="font-size:0.95rem; font-weight:900; color:#38bdf8;">
+              Página ${paginaDatasAtual} de ${totalPags} • (${todasDatasComemorativas.length} Datas)
+            </span>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:8px 18px; font-size:0.95rem; font-weight:900;" onclick="mudarPaginaDatas(1)">
+              Mais Datas ▶
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function mudarPaginaDatas(delta) {
+      playTone(587, 80);
+      const totalPags = Math.max(1, Math.ceil(todasDatasComemorativas.length / DATAS_POR_PAGINA));
+      paginaDatasAtual = ((paginaDatasAtual - 1 + delta + totalPags) % totalPags) + 1;
+      const body = document.getElementById('modal-body');
+      if (body) renderDatasComemorativasBody(body);
+    }
+
+    function ouvirDataComemorativa(id) {
+      playTone(659, 100);
+      const ev = todasDatasComemorativas.find(d => d.id === id);
+      if (ev) {
+        speak(`${ev.titulo}! No dia ${ev.dia} de mês ${ev.mes}. ${ev.mensagem_jarvis}`);
+      }
+    }
+
+    async function celebrarDataHoje(id) {
+      playTone(880, 200);
+      try {
+        const res = await fetch('/api/calendario/concluir', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ evento_id: id })
+        });
+        const data = await res.json();
+        showToast(data.mensagem || '🎉 Parabéns! Você celebrou a data de hoje!');
+        speak(data.mensagem);
+        atualizarPoteVisual();
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // MODAL: LOJA DO TESOURO & ARMÁRIO VESTÍVEL DO JARVIS (PAGINADO & ZERO SCROLL)
     // =========================================================================
     let abaLojaAtiva = 'armario';
+    let paginaArmarioAtual = 1;
+    let paginaTesouroRealAtual = 1;
+    const ITENS_POR_PAGINA_LOJA = 4;
 
     async function abrirLojaTesouro(aba = 'armario') {
       abaLojaAtiva = aba;
-      const body = openModal('🏪 LOJA DO TESOURO & ARMÁRIO DO JARVIS');
-      playTone(523, 90);
+      pushModalScreen('🏪 LOJA DO TESOURO & ARMÁRIO DO JARVIS', async (body) => {
+        playTone(523, 90);
 
-      body.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:#0b1d36; border:2px solid #f59e0b; border-radius:14px; padding:10px 16px; margin-bottom:12px;">
-          <span style="font-weight:900; color:#fde047; font-size:1.15rem;">SEU SALDO ATUAL:</span>
-          <span style="font-weight:900; color:#fde047; font-size:1.4rem;">🪙 <span id="loja-saldo-display">...</span> Moedas</span>
-        </div>
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box; overflow:hidden;">
+            
+            <!-- TOPO: SALDO E ABAS DE NAVEGAÇÃO -->
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; background:#0b1d36; border:2px solid #f59e0b; border-radius:14px; padding:8px 16px;">
+                <span style="font-weight:900; color:#fde047; font-size:1.05rem;">SEU SALDO ATUAL:</span>
+                <span style="font-weight:900; color:#fde047; font-size:1.3rem;">🪙 <span id="loja-saldo-display">...</span> Moedas</span>
+              </div>
 
-        <div style="display:flex; gap:10px; margin-bottom:14px;">
-          <button type="button" id="tab-btn-armario" class="big-btn" style="flex:1; padding:10px 14px; font-size:1.1rem; ${abaLojaAtiva === 'armario' ? 'background:#0284c7; border:2px solid #00f0ff;' : 'background:#1e293b; opacity:0.8;'}" onclick="abrirLojaTesouro('armario')">
-            👔 Armário do Jarvis (Vestir/Tirar)
-          </button>
-          <button type="button" id="tab-btn-real" class="big-btn" style="flex:1; padding:10px 14px; font-size:1.1rem; ${abaLojaAtiva === 'real' ? 'background:#0284c7; border:2px solid #00f0ff;' : 'background:#1e293b; opacity:0.8;'}" onclick="abrirLojaTesouro('real')">
-            🎁 Tesouro Real com a Família
-          </button>
-        </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" id="tab-btn-armario" class="big-btn" style="flex:1; padding:8px 12px; font-size:0.95rem; font-weight:900; ${abaLojaAtiva === 'armario' ? 'background:#0284c7; border:2px solid #00f0ff;' : 'background:#1e293b; opacity:0.8;'}" onclick="abrirLojaTesouro('armario')">
+                  👔 Armário do Jarvis (Vestir/Tirar)
+                </button>
+                <button type="button" id="tab-btn-real" class="big-btn" style="flex:1; padding:8px 12px; font-size:0.95rem; font-weight:900; ${abaLojaAtiva === 'real' ? 'background:#0284c7; border:2px solid #00f0ff;' : 'background:#1e293b; opacity:0.8;'}" onclick="abrirLojaTesouro('real')">
+                  🎁 Tesouro Real com a Família
+                </button>
+              </div>
+            </div>
 
-        <div id="loja-conteudo-aba" style="min-height:220px;">
-          <div style="color:#94a3b8; padding:16px; text-align:center;">Carregando itens...</div>
-        </div>
-      `;
+            <!-- ÁREA CENTRAL DE CONTEÚDO (GRID 2x2, ZERO SCROLL) -->
+            <div id="loja-conteudo-aba" style="flex:1; min-height:280px; display:flex; flex-direction:column; justify-content:space-between; gap:8px;">
+              <div style="color:#94a3b8; padding:20px; text-align:center;">Carregando itens...</div>
+            </div>
 
+          </div>
+        `;
+
+        await carregarConteudoAbaLoja();
+      }, true);
+    }
+
+    async function carregarConteudoAbaLoja() {
       try {
         const resSt = await fetch('/api/fichas/status');
         const st = await resSt.json();
@@ -8682,74 +9356,154 @@
           const lista = dataAcc.acessorios || [];
           const atual = dataAcc.acessorio_atual;
 
+          const totalPags = Math.max(1, Math.ceil(lista.length / ITENS_POR_PAGINA_LOJA));
+          if (paginaArmarioAtual > totalPags) paginaArmarioAtual = 1;
+
+          const inicio = (paginaArmarioAtual - 1) * ITENS_POR_PAGINA_LOJA;
+          const itensPagina = lista.slice(inicio, inicio + ITENS_POR_PAGINA_LOJA);
+
           container.innerHTML = `
-            <div style="font-size:0.95rem; color:#38bdf8; font-weight:800; margin-bottom:10px;">
-              ✨ Toque para comprar, vestir ou tirar as roupinhas e itens no seu robô!
+            <!-- BOTÃO DE REMOVER TODOS OS ACESSÓRIOS DO ROBÔ EM DESTAQUE -->
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <span style="font-size:0.9rem; color:#38bdf8; font-weight:800;">
+                ✨ Toque para comprar, vestir ou tirar itens do seu robô:
+              </span>
+              <button type="button" class="big-btn" style="background:#ef4444; border:1.5px solid #fca5a5; font-size:0.85rem; padding:6px 14px; font-weight:900;" onclick="desequiparTodosAcessorios()">
+                🚫 TIRAR ACESSÓRIOS DO JARVIS
+              </button>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px;">
-              ${lista.map(item => {
+
+            <!-- GRID 2x2: 4 ITENS POR TELA (ZERO SCROLL) -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1;" id="armario-grid">
+              ${itensPagina.map(item => {
                 const isEquipado = (item.equipado == 1) || (atual === item.id);
                 const isComprado = (item.comprado == 1);
 
                 let btnHtml = '';
                 if (!isComprado) {
                   btnHtml = `
-                    <button type="button" class="big-btn" style="background:#10b981; width:100%; font-size:0.95rem; padding:9px 12px;" onclick="comprarAcessorioArmario('${item.id}', '${item.nome}')">
+                    <button type="button" class="big-btn" style="background:#10b981; width:100%; font-size:0.88rem; padding:6px 10px;" onclick="comprarAcessorioArmario('${item.id}', '${item.nome}')">
                       🪙 Comprar (${item.custo_fichas} moedas)
                     </button>
                   `;
                 } else if (isEquipado) {
                   btnHtml = `
-                    <button type="button" class="big-btn" style="background:#f97316; width:100%; font-size:0.95rem; padding:9px 12px;" onclick="desequiparAcessorioArmario('${item.id}', '${item.nome}')">
+                    <button type="button" class="big-btn" style="background:#f97316; width:100%; font-size:0.88rem; padding:6px 10px;" onclick="desequiparAcessorioArmario('${item.id}', '${item.nome}')">
                       ✖️ Tirar do Jarvis
                     </button>
                   `;
                 } else {
                   btnHtml = `
-                    <button type="button" class="big-btn" style="background:#0284c7; width:100%; font-size:0.95rem; padding:9px 12px;" onclick="equiparAcessorioArmario('${item.id}', '${item.nome}')">
+                    <button type="button" class="big-btn" style="background:#0284c7; width:100%; font-size:0.88rem; padding:6px 10px;" onclick="equiparAcessorioArmario('${item.id}', '${item.nome}')">
                       ✨ Vestir no Jarvis
                     </button>
                   `;
                 }
 
                 return `
-                  <div class="toy-card" style="flex-direction:column; padding:14px; text-align:center; gap:8px; border-color:${isEquipado ? '#facc15' : '#334155'}; position:relative;">
-                    ${isEquipado ? '<span style="position:absolute; top:8px; right:10px; background:#facc15; color:#0f172a; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:999px;">⭐ VESTIDO</span>' : ''}
-                    <div style="font-size:3rem;">${item.icone}</div>
-                    <div style="font-size:1.05rem; font-weight:900; color:#fff;">${item.nome}</div>
-                    <div style="font-size:0.8rem; color:#94a3b8;">${item.descricao}</div>
-                    ${btnHtml}
+                  <div class="toy-card" style="flex-direction:row; padding:10px 14px; align-items:center; gap:12px; border-color:${isEquipado ? '#facc15' : '#334155'}; position:relative; box-sizing:border-box;">
+                    ${isEquipado ? '<span style="position:absolute; top:6px; right:8px; background:#facc15; color:#0f172a; font-size:0.7rem; font-weight:900; padding:2px 6px; border-radius:999px;">⭐ VESTIDO</span>' : ''}
+                    <div style="font-size:2.8rem; min-width:50px; text-align:center;">${item.icone}</div>
+                    <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:3px;">
+                      <div style="font-size:1.02rem; font-weight:900; color:#fff;">${item.nome}</div>
+                      <div style="font-size:0.76rem; color:#94a3b8; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${item.descricao}</div>
+                      ${btnHtml}
+                    </div>
                   </div>
                 `;
               }).join('')}
             </div>
+
+            <!-- RODAPÉ TÁTIL DE PAGINAÇÃO DO ARMÁRIO -->
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:12px; padding:6px 14px;">
+              <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:6px 16px; font-size:0.92rem;" onclick="mudarPaginaArmario(-1)">
+                ◀ Itens Anteriores
+              </button>
+              <span style="font-size:0.92rem; font-weight:900; color:#38bdf8;">
+                Página ${paginaArmarioAtual} de ${totalPags} • (${lista.length} Acessórios)
+              </span>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:6px 16px; font-size:0.92rem;" onclick="mudarPaginaArmario(1)">
+                Mais Itens ▶
+              </button>
+            </div>
           `;
         } else {
-          // ABA TESOURO REAL EM FAMÍLIA
+          // ABA TESOURO REAL EM FAMÍLIA (PAGINADO)
           const resL = await fetch('/api/fichas/loja');
           const itens = await resL.json();
+          const listaReal = Array.isArray(itens) ? itens : [];
+
+          const totalPags = Math.max(1, Math.ceil(listaReal.length / ITENS_POR_PAGINA_LOJA));
+          if (paginaTesouroRealAtual > totalPags) paginaTesouroRealAtual = 1;
+
+          const inicio = (paginaTesouroRealAtual - 1) * ITENS_POR_PAGINA_LOJA;
+          const itensPagina = listaReal.slice(inicio, inicio + ITENS_POR_PAGINA_LOJA);
 
           container.innerHTML = `
-            <div style="font-size:0.95rem; color:#fde047; font-weight:800; margin-bottom:10px;">
+            <div style="font-size:0.9rem; color:#fde047; font-weight:800;">
               🎁 Troque suas moedas por privilégios especiais do mundo real com o papai e a mamãe!
             </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
-              ${(Array.isArray(itens) ? itens : []).map(item => `
-                <div class="toy-card" style="flex-direction:column; padding:14px; text-align:center; gap:8px;">
-                  <div style="font-size:2.8rem;">${item.icone}</div>
-                  <div style="font-size:1.05rem; font-weight:900; color:#fff;">${item.titulo}</div>
-                  <div style="font-size:0.8rem; color:#94a3b8;">${item.descricao}</div>
-                  <button type="button" class="big-btn" style="background:#0284c7; width:100%; margin-top:4px;" onclick="resgatarItemLoja('${item.id}')">
-                    Resgatar por 🪙 ${item.custo_fichas}
-                  </button>
+
+            <!-- GRID 2x2: 4 ITENS POR TELA (ZERO SCROLL) -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1;" id="tesouro-grid">
+              ${itensPagina.map(item => `
+                <div class="toy-card" style="flex-direction:row; padding:10px 14px; align-items:center; gap:12px; box-sizing:border-box;">
+                  <div style="font-size:2.8rem; min-width:50px; text-align:center;">${item.icone}</div>
+                  <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:3px;">
+                    <div style="font-size:1.02rem; font-weight:900; color:#fff;">${item.titulo}</div>
+                    <div style="font-size:0.76rem; color:#94a3b8; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${item.descricao}</div>
+                    <button type="button" class="big-btn" style="background:#0284c7; width:100%; font-size:0.88rem; padding:6px 10px;" onclick="resgatarItemLoja('${item.id}')">
+                      Resgatar por 🪙 ${item.custo_fichas}
+                    </button>
+                  </div>
                 </div>
               `).join('')}
+            </div>
+
+            <!-- RODAPÉ TÁTIL DE PAGINAÇÃO DO TESOURO REAL -->
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:12px; padding:6px 14px;">
+              <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:6px 16px; font-size:0.92rem;" onclick="mudarPaginaTesouroReal(-1)">
+                ◀ Vales Anteriores
+              </button>
+              <span style="font-size:0.92rem; font-weight:900; color:#38bdf8;">
+                Página ${paginaTesouroRealAtual} de ${totalPags} • (${listaReal.length} Recompensas)
+              </span>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:6px 16px; font-size:0.92rem;" onclick="mudarPaginaTesouroReal(1)">
+                Mais Vales ▶
+              </button>
             </div>
           `;
         }
       } catch (e) {
         console.error("Erro na loja:", e);
       }
+    }
+
+    function mudarPaginaArmario(delta) {
+      playTone(587, 80);
+      paginaArmarioAtual += delta;
+      carregarConteudoAbaLoja();
+    }
+
+    function mudarPaginaTesouroReal(delta) {
+      playTone(587, 80);
+      paginaTesouroRealAtual += delta;
+      carregarConteudoAbaLoja();
+    }
+
+    async function desequiparTodosAcessorios() {
+      playTone(523, 100);
+      try {
+        const res = await fetch('/api/pet/acessorio/desequipar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ item_id: null })
+        });
+        atualizarAcessorioVisual(null);
+        showToast('Robô Jarvis agora está sem nenhum acessório!');
+        speak(`Prontinho, ${appState.config.child_name || 'Kaleo'}! Tirei todos os acessórios do Jarvis!`);
+        carregarConteudoAbaLoja();
+      } catch (e) {}
     }
 
     async function comprarAcessorioArmario(itemId, nome) {
@@ -8959,12 +9713,93 @@
           atualizarMonitorBateria(data.bateria);
         }
 
+        // Se os pais acionaram Alarme Sonoro e Visual de Rotina
+        if (data.alarme && data.alarme.ativo && (!window._alarmeAtivoId || window._alarmeAtivoId !== data.alarme.id)) {
+          dispararAlarmeVisualESonoro(data.alarme);
+        }
+
         // Se os pais ativaram SOS Intervenção no celular
         if (data.sos_action) {
           dispararIntervencaoSosLocal(data.sos_action);
         }
       } catch (e) {}
-    }, 12000);
+    }, 10000);
+
+    let alarmeSomInterval = null;
+
+    function dispararAlarmeVisualESonoro(alarme) {
+      if (!alarme) return;
+      window._alarmeAtivoId = alarme.id;
+
+      pararTodosAudiosESpeech();
+
+      const modal = document.getElementById('routine-alarm-modal');
+      const iconEl = document.getElementById('alarm-icon');
+      const titleEl = document.getElementById('alarm-title');
+      const msgEl = document.getElementById('alarm-message');
+
+      const icons = {
+        dente: '🪥',
+        brinquedos: '🧸',
+        almoco: '🍲',
+        dormir: '🌙',
+        personalizado: '📢'
+      };
+
+      const titles = {
+        dente: 'HORA DE ESCOVAR OS DENTINHOS!',
+        brinquedos: 'OPERAÇÃO QUARTO LIMPO!',
+        almoco: 'HORA DO ALMOÇO DOS CAMPEÕES!',
+        dormir: 'HORA DE DORMIR E DESCANSAR!',
+        personalizado: 'MENSAGEM ESPECIAL DA FAMÍLIA!'
+      };
+
+      if (iconEl) iconEl.textContent = icons[alarme.tipo] || '⏰';
+      if (titleEl) titleEl.textContent = titles[alarme.tipo] || 'ALARME DE ROTINA!';
+      if (msgEl) msgEl.textContent = alarme.mensagem || 'Hora da sua rotina de super-herói!';
+
+      if (modal) modal.style.display = 'flex';
+
+      if (alarmeSomInterval) clearInterval(alarmeSomInterval);
+      let bipStep = 0;
+      alarmeSomInterval = setInterval(() => {
+        const m = document.getElementById('routine-alarm-modal');
+        if (!m || m.style.display === 'none') {
+          clearInterval(alarmeSomInterval);
+          alarmeSomInterval = null;
+          return;
+        }
+        playTone(bipStep % 2 === 0 ? 659 : 880, 150, 'sine', 0.25);
+        bipStep++;
+      }, 700);
+
+      speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! Alarme de rotina ativado! ${alarme.mensagem}`);
+    }
+
+    async function dispensarAlarmeHeroico() {
+      if (alarmeSomInterval) {
+        clearInterval(alarmeSomInterval);
+        alarmeSomInterval = null;
+      }
+      pararTodosAudiosESpeech();
+
+      const modal = document.getElementById('routine-alarm-modal');
+      if (modal) modal.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/remote/alarme/dispensar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'}
+        });
+        const d = await res.json();
+        playTone(523, 100);
+        setTimeout(() => playTone(659, 100), 100);
+        setTimeout(() => playTone(880, 240), 200);
+        showToast('🌟 Missão de rotina concluída com louvor! +5 Moedas!');
+        speak(`Muito bem, ${appState.config.child_name || 'Kaleo'}! Missão cumprida! Você ganhou cinco moedas de herói!`);
+        atualizarPoteVisual();
+      } catch (e) {}
+    }
 
     function dispararIntervencaoSosLocal(acao) {
       if (acao === 'guardar_brinquedos') {

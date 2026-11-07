@@ -77,6 +77,7 @@ REMOTE_STATE = {
     "pause_message": "Hora de recarregar as energias! Vamos fazer uma pausa para comer comidinha gostosa!",
     "night_mode": False,
     "sos_action": None,
+    "alarme": None,
 }
 
 
@@ -269,6 +270,7 @@ def api_state(request: Request):
             "pote": token_mgr.obter_status_pote(),
             "clima": weather_mgr.obter_clima_atual(),
             "calendario": calendar_mgr.obter_evento_hoje(),
+            "alarme": REMOTE_STATE.get("alarme"),
             "bateria": bat,
         }
     )
@@ -490,6 +492,11 @@ def api_higiene_concluir(request: Request):
 def api_calendario_hoje(request: Request):
     evento = calendar_mgr.obter_evento_hoje()
     return json_response(evento or {})
+
+
+@app.route("/api/calendario/listar", methods=["GET"])
+def api_calendario_listar(request: Request):
+    return json_response(calendar_mgr.listar_todas_datas())
 
 
 @app.route("/api/calendario/concluir", methods=["POST"])
@@ -977,6 +984,39 @@ def api_remote_resume(request: Request):
 def api_remote_night(request: Request):
     REMOTE_STATE["night_mode"] = not REMOTE_STATE["night_mode"]
     return json_response({"ok": True, "night_mode": REMOTE_STATE["night_mode"]})
+
+
+@app.route("/api/remote/alarme", methods=["POST"])
+def api_remote_alarme(request: Request):
+    data = request.json or {}
+    tipo = data.get("tipo", "dente")
+    msg = data.get("mensagem", "")
+
+    mensagens_padrao = {
+        "dente": "Hora de escovar os dentinhos, Kaleo! Deixe o sorriso de super-herói bem brilhante!",
+        "brinquedos": "Operação Quarto Limpo! Hora de guardar todos os brinquedos no baú!",
+        "almoco": "Hora do Almoço dos Campeões! Vamos comer comidinha gostosa e saudável para carregar a bateria!",
+        "dormir": "Hora de dormir, Kaleo! Vamos descansar os olhinhos e sonhar com grandes aventuras!",
+        "personalizado": msg or "Atenção Kaleo! O papai e a mamãe têm um recado especial de rotina para você!"
+    }
+    texto_final = msg if (tipo == "personalizado" and msg) else mensagens_padrao.get(tipo, mensagens_padrao["dente"])
+
+    import time
+    REMOTE_STATE["alarme"] = {
+        "ativo": True,
+        "tipo": tipo,
+        "mensagem": texto_final,
+        "timestamp": time.time(),
+        "id": int(time.time() * 1000)
+    }
+    return json_response({"ok": True, "alarme": REMOTE_STATE["alarme"]})
+
+
+@app.route("/api/remote/alarme/dispensar", methods=["POST"])
+def api_remote_alarme_dispensar(request: Request):
+    REMOTE_STATE["alarme"] = None
+    token_mgr.creditar_fichas(5, "Alarme de Rotina Cumprido", "ROTINA")
+    return json_response({"ok": True, "recompensa": 5, "saldo": token_mgr.obter_status_pote()["saldo"]})
 
 
 # ==============================================================================

@@ -38,6 +38,23 @@ class CalendarEventsManager:
             return evento_dict
         return None
 
+    def listar_todas_datas(self) -> list:
+        """Lista todas as datas festivas cadastradas ordenadas por mês e dia."""
+        ano = datetime.date.today().year
+        linhas = self.db.consultar_todos(
+            """
+            SELECT id, dia, mes, titulo, categoria, mensagem_jarvis, acessorio_mascote, desafio_tipo, recompensa_fichas, ano_conclusao
+            FROM datas_calendario
+            ORDER BY mes ASC, dia ASC;
+            """
+        )
+        resultado = []
+        for l in (linhas or []):
+            d = dict(l)
+            d["concluido_ano"] = (d["ano_conclusao"] == ano)
+            resultado.append(d)
+        return resultado
+
     def concluir_missao_calendario(self, evento_id: int) -> Dict[str, Any]:
         """Conclui a missão festiva do dia e credita moedas bônus."""
         ano = datetime.date.today().year

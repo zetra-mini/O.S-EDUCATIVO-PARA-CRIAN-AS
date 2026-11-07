@@ -6,21 +6,33 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 
 ## 🌟 Novidades da Versão 3.1
 - 🤖 **Mascote Focado e Desobstruído:** Cômodos simplificados para **Sala de Brincar** e **Quarto de Dormir**, eliminando bandejas e elementos que obstruíam o robô e o botão principal de fala.
-- 🍎 **Novo Jogo de Educação Alimentar ("Prato dos Super Campeões"):** Prato interativo dividido em 4 grupos nutritivos (Proteínas para músculos, Legumes para escudo imunológico, Carboidratos para energia do cérebro, Frutas e Água para hidratação), com falas do Jarvis explicando os superpoderes de cada alimento e recompensa de +15 moedas.
-- 🧼 **Novo Jogo de Higiene Pessoal ("Super Herói Limpinho"):** 4 missões práticas (Lavar as mãos xô bactérias, escovação mágica dos dentes, banho relaxante dos campeões e corte de unhas/penteado) com recompensas e virtudes de autocuidado.
-- 🧭 **Geografia Ensinável no Clima:** Ensina a criança a se localizar no mundo (Planeta Terra 🌍 ➔ Brasil 🇧🇷 ➔ Estado 🗺️ ➔ Cidade 🏙️), com Cidade/Estado personalizáveis no Painel dos Pais.
+- 🚫 **Zero Barras de Rolagem em Todo o Sistema:** Todas as atividades (Central de 16 Jogos, Prato dos Campeões, Biblioteca e Loja do Tesouro) foram desenhadas em Grid 2x2 com paginação tátil (`◀ Anterior` e `Próxima ▶`), garantindo usabilidade total sem exigir rodinha do mouse ou scroll touch.
+- 🔙 **Pilha de Navegação Inteligente (Botão Voltar):** Ao clicar em "Voltar" dentro de qualquer tela (leitura de livro, missão de higiene ou jogo), o sistema retorna sempre para a tela/estante anterior imediata e nunca direto para o dashboard/home do Jarvis.
+- 👕 **Opção de Desequipar Todos os Acessórios:** Botão dedicado `🚫 TIRAR ACESSÓRIOS DO JARVIS` no armário da loja, guardando todos os itens equipados e restaurando o traje original do robô.
+- 🔇 **Eliminação de Áudio sobre Áudio:** Interrupção agressiva e imediata de sintetizadores de voz e efeitos anteriores ao clicar em novas opções ou funções.
+- 🍎 **Educação Alimentar ("Prato dos Super Campeões"):** Prato dividido em 4 grupos nutritivos (Proteínas para músculos, Legumes para escudo imunológico, Carboidratos para energia e Frutas/Água para vitaminas) em layout 100% sem scroll.
+- 🧼 **Academia de Higiene Pessoal ("Super Herói Limpinho"):** 4 missões práticas (Lavar as mãos xô bactérias, escovação mágica dos dentes, banho relaxante dos campeões e corte de unhas/penteado) com recompensas e virtudes de autocuidado.
+- 💻 **Academia Tech com Treino da Rodinha do Mouse (Scroll):** Jogo lúdico com Foguete Cósmico (scroll up) e Submarino de Tesouros (scroll down), além de mira e clique.
+- 🇧🇷 **Festas & Datas Comemorativas do Brasil:** Jogo educativo paginado com as principais celebrações brasileiras (Carnaval, Páscoa, Dia das Mães, Festa Junina, 7 de Setembro, Natal, etc.) conectado ao SQLite.
+- 🎙️ **Comandos de Voz & Bloqueio Amigável do Cinema Stark:** O Jarvis abre jogos por voz e, ao pedir YouTube/Netflix bloqueado, informa com carinho o que a criança precisa fazer (ex.: ler um livrinho primeiro).
+- ⏰ **Central de Alarmes de Rotina:** Alarme sonoro e visual acionável pelos pais para escovar os dentes, guardar brinquedos, almoçar e dormir, com recompensa de moedas ao cumprir a missão.
+- 📍 **Geografia Ensinável com Edição Protegida:** Configuração de Cidade, Estado e País no painel dos pais protegida contra sobrescrita periódica, ensinando a criança onde ela mora no mundo.
 - 🔋 **Monitor Atento de Bateria do Netbook:** Avisos automáticos por voz carinhosa e banner superior quando a bateria cair para 20% e 10% (chamando os pais para plugar o carregador), e celebração sonora ao reconectar à tomada.
 - 🗣️ **11 Perfis de Voz Neural PT-BR:** Coleção expandida de vozes fluidas brasileiras (Antonio, Thalita, Francisca, Fábio, Letícia e vozes Studio Gemini), testáveis com 1 clique no painel ADM.
-- 🎮 **Gaveta de Atividades Zero Scroll:** Navegação tátil com 3 páginas de 4 cards grandes, pensada especialmente para a coordenação motora de crianças pequenas.
 
 ---
 
 ## 📸 Capturas de Tela do Sistema em Execução
 
-| 🤖 Tela Principal — HUD Jarvis Kids | 🎮 Gaveta de Jogos & Estudos |
+| 🤖 Tela Principal — Sala de Brincar do Robô Jarvis | 🎮 Central de Jogos & Estudos Paginada |
 | :---: | :---: |
-| ![HUD Jarvis](docs/screenshots/jarvis_hud_principal.jpg) | ![Menu de Jogos e Estudos](docs/screenshots/menu_jogos_estudos.jpg) |
-| *Mascote Jarvis interativo com clima em tempo real, economia de moedas, cômodos Pou e botão flutuante* | *Gaveta retrátil de atividades: Histórias Mágicas, Alfabetização Fônica, Mãos de Contar, Idiomas e Música* |
+| ![HUD Jarvis](docs/screenshots/jarvis_sala_brincar.jpg) | ![Menu de Jogos e Estudos](docs/screenshots/menu_jogos_estudos.jpg) |
+| *Mascote Jarvis interativo com clima, economia de moedas, cômodos e status de bateria do notebook* | *16 Jogos infantis paginados em Grid 2x2 com botões táteis grandes e ZERO barras de rolagem* |
+
+| 📚 Biblioteca Mágica de Virtudes & Histórias | 🎵 Laboratório Musical & Piano Colorido |
+| :---: | :---: |
+| ![Biblioteca Mágica](docs/screenshots/biblioteca_magica.jpg) | ![Laboratório Musical](docs/screenshots/laboratorio_musical.jpg) |
+| *Livros infantis de desenvolvimento pessoal com botões de virtudes, moral da história e gerador de histórias inéditas com IA* | *Teclado musical com notas Dó-Ré-Mi, bateria Stark, bichinhos cantores e canções infantis guiadas passo a passo* |
 
 ---
 
@@ -170,15 +182,15 @@ O sistema possui arquitetura adaptativa e se molda perfeitamente à capacidade d
 #### ⚡ Opção 1: Instalação Automática em 1 Linha (Recomendado)
 Abra o terminal no Linux e execute o instalador automatizado universal:
 ```bash
-# Clone o repositório e execute o instalador completo:
-git clone https://github.com/CarlosEduardoLemos/jarvis-kids-os.git
-cd jarvis-kids-os
+# Clone o repositório oficial e execute o instalador completo:
+git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git ~/jarvis-kids-os
+cd ~/jarvis-kids-os
 chmod +x install_linux.sh
 ./install_linux.sh
 ```
 Ou diretamente via curl:
 ```bash
-curl -sSL https://raw.githubusercontent.com/CarlosEduardoLemos/jarvis-kids-os/main/install_linux.sh | bash
+curl -sSL https://raw.githubusercontent.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS/main/install_linux.sh | bash
 ```
 O script cuidará de tudo automaticamente:
 - Instala pacotes essenciais do sistema (`alsa-utils`, `espeak-ng`, `python3-venv`, `chromium`/`firefox`).

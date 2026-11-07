@@ -135,16 +135,200 @@ class JarvisBrain:
         """
         text_lower = (user_text or "").lower()
 
-        # 1. Clima / Tempo
-        if any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "sol", "estação", "estacoes"]):
+        # 0. Cinema Stark / YouTube / Netflix (com verificação estrita de bloqueio e orientação)
+        if any(w in text_lower for w in ["cinema", "youtube", "netflix", "desenho", "desenhos", "assistir", "filme"]):
+            try:
+                from gestao_tempo_midia import MediaTimeManager
+                from banco_dados import db
+                mm = MediaTimeManager(self, database=db)
+                perm = mm.check_permission()
+                bloqueado = not perm.get("allowed", False)
+                motivo = perm.get("reason", "")
+                msg_bloqueio = perm.get("message", "")
+
+                if bloqueado:
+                    if motivo == "need_book" or "livro" in motivo.lower() or "leitura" in motivo.lower():
+                        reply = f"Atenção, super-herói {self.name}! O Cinema Stark está protegido pelas regrinhas da família! Para liberar o YouTube e Netflix, primeiro você precisa ler um livrinho mágico na nossa biblioteca! Quer que eu abra as histórias agora?"
+                        return {
+                            "ok": True,
+                            "intencao": "cinema_bloqueado",
+                            "resposta_voz": reply,
+                            "acao_frontend": "cinema_bloqueado",
+                            "dados": {"motivo": "leitura_pendente", "status": perm},
+                        }
+                    elif motivo == "daily_limit" or "tempo" in motivo.lower() or "limite" in motivo.lower():
+                        reply = f"{self.name}, o tempo de vídeo de hoje já chegou ao fim! Seus olhinhos precisam descansar um pouco. Que tal tocar uma canção no piano ou desenhar na lousa mágica?"
+                        return {
+                            "ok": True,
+                            "intencao": "cinema_bloqueado",
+                            "resposta_voz": reply,
+                            "acao_frontend": "cinema_bloqueado",
+                            "dados": {"motivo": "limite_atingido", "status": perm},
+                        }
+                    else:
+                        reply = f"O Cinema Stark só abre no horário combinado com a família! {msg_bloqueio} Enquanto isso, vamos jogar um joguinho bem legal na nossa sala?"
+                        return {
+                            "ok": True,
+                            "intencao": "cinema_bloqueado",
+                            "resposta_voz": reply,
+                            "acao_frontend": "cinema_bloqueado",
+                            "dados": {"motivo": "horario_restrito", "status": perm},
+                        }
+                else:
+                    reply = f"Cinema Stark liberado com sucesso, {self.name}! Prepare-se para ver seus desenhos favoritos aprovados pela família!"
+                    return {
+                        "ok": True,
+                        "intencao": "abrir_cinema",
+                        "resposta_voz": reply,
+                        "acao_frontend": "abrir_cinema",
+                        "dados": perm,
+                    }
+            except Exception:
+                pass
+
+        # 1. Histórias Mágicas / Livros de Virtudes
+        if any(w in text_lower for w in ["história", "historia", "histórias", "historias", "historinha", "livro", "livros", "ler", "leitura", "biblioteca"]):
+            reply = "Abrindo a nossa Biblioteca Mágica de Histórias de Herói! Escolha uma linda virtude para aprender hoje!"
+            return {
+                "ok": True,
+                "intencao": "abrir_biblioteca",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_biblioteca",
+                "dados": {},
+            }
+
+        # 2. Laboratório Musical / Piano / Bateria
+        if any(w in text_lower for w in ["música", "musica", "piano", "tocar", "canção", "cancao", "bateria", "cantar"]):
+            reply = "Abrindo o Laboratório Musical do Jarvis! Vamos tocar o piano mágico e soltar o som dos tambores!"
+            return {
+                "ok": True,
+                "intencao": "abrir_musica",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_musica",
+                "dados": {},
+            }
+
+        # 3. Pintura & Lousa Mágica Neon
+        if any(w in text_lower for w in ["pintar", "pintura", "desenhar", "lousa", "colorir", "arte"]):
+            reply = "Abrindo a Lousa Neon e Pintura Mágica! Solte a sua imaginação e crie uma obra de arte com cores brilhantes!"
+            return {
+                "ok": True,
+                "intencao": "abrir_pintura",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_pintura",
+                "dados": {},
+            }
+
+        # 4. Academia Tech: Teclado, Mouse & Rodinha Scroll
+        if any(w in text_lower for w in ["teclado", "mouse", "rodinha", "scroll", "digitar", "clique", "setinha"]):
+            reply = "Abrindo a Academia Tech! Vamos treinar os dedinhos no teclado, o clique do mouse e o movimento da rodinha mágica!"
+            return {
+                "ok": True,
+                "intencao": "abrir_tech",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_tech",
+                "dados": {},
+            }
+
+        # 5. Festas & Datas Comemorativas do Brasil
+        if any(w in text_lower for w in ["data", "datas", "comemorativa", "comemorativas", "festa", "festas", "carnaval", "páscoa", "pascoa", "natal", "dia das mães", "dia dos pais", "7 de setembro"]):
+            reply = "Abrindo o Calendário de Festas e Datas Comemorativas do Brasil! Vamos descobrir o que celebramos com alegria!"
+            return {
+                "ok": True,
+                "intencao": "abrir_datas",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_datas",
+                "dados": {},
+            }
+
+        # 6. Alimentação Saudável / Prato dos Campeões
+        if any(w in text_lower for w in ["prato", "comida saudável", "comida saudavel", "alimentação", "alimentacao", "nutrição", "nutricao", "comidinha"]):
+            reply = "Abrindo o Prato dos Super Campeões! Vamos escolher comidinhas saudáveis e coloridas para ficar bem forte!"
+            return {
+                "ok": True,
+                "intencao": "abrir_comida",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_comida",
+                "dados": {},
+            }
+
+        # 7. Higiene dos Heróis / Banho, Mãos e Dentes
+        if any(w in text_lower for w in ["higiene", "banho", "limpinho", "sabão", "sabao", "lavar mão", "lavar as mãos"]):
+            reply = "Missão Super Herói Limpinho ativada! Vamos cuidar do nosso corpinho, tomar um banho gostoso e lavar as mãozinhas!"
+            return {
+                "ok": True,
+                "intencao": "abrir_higiene",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_higiene",
+                "dados": {},
+            }
+
+        # 8. Mãos & Contar de 1 a 10
+        if any(w in text_lower for w in ["contar", "dedinhos", "mãozinha", "maozinha", "1 a 10", "número", "numeros"]):
+            reply = "Abrindo o jogo de contar com as mãozinhas! Vamos levantar os dedinhos e aprender a contar de 1 a 10!"
+            return {
+                "ok": True,
+                "intencao": "abrir_dedinhos",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_dedinhos",
+                "dados": {},
+            }
+
+        # 9. Ler & Escrever (Método Fônico)
+        if any(w in text_lower for w in ["alfabeto", "letrinha", "letrinhas", "escrever", "fônico", "fonico", "ler"]):
+            reply = "Abrindo o treino fônico das letrinhas! Vamos ouvir o som que cada letrinha faz e praticar na lousa neon!"
+            return {
+                "ok": True,
+                "intencao": "abrir_letras",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_letras",
+                "dados": {},
+            }
+
+        # 10. Idiomas Mágicos (English & Español)
+        if any(w in text_lower for w in ["inglês", "ingles", "espanhol", "idioma", "idiomas", "english"]):
+            reply = "Welcome! Abrindo os Idiomas Mágicos! Vamos aprender palavras em inglês e espanhol com cartões falantes!"
+            return {
+                "ok": True,
+                "intencao": "abrir_idiomas",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_idiomas",
+                "dados": {},
+            }
+
+        # 11. Semáforo & Atenção
+        if any(w in text_lower for w in ["semáforo", "semaforo", "sinal", "atenção", "atencao"]):
+            reply = "Abrindo o Desafio do Semáforo Stark! Foco total: quando ficar verde a gente clica, quando ficar vermelho a gente espera!"
+            return {
+                "ok": True,
+                "intencao": "abrir_semaforo",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_semaforo",
+                "dados": {},
+            }
+
+        # 12. Emoções & Flor da Calma
+        if any(w in text_lower for w in ["emoção", "emocao", "emoções", "emocoes", "calma", "respirar", "raiva", "triste", "medo"]):
+            reply = "Abrindo o Centro das Emoções e a Flor da Calma! Vamos respirar fundo, soltar o ar e acalmar o coraçãozinho!"
+            return {
+                "ok": True,
+                "intencao": "abrir_emocoes",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_emocoes",
+                "dados": {},
+            }
+
+        # 13. Clima / Tempo / Estações
+        if any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "sol", "estação", "estacoes", "geografia"]):
             try:
                 from clima_estacoes import WeatherSeasonManager
                 wm = WeatherSeasonManager()
                 clima = wm.obter_clima_atual()
                 temp = clima.get("temperatura", 24)
                 desc = clima.get("descricao", "ensolarado")
+                cidade = self.config.get("geo_cidade", "sua cidade")
                 conselho = clima.get("conselho_infantil", "Um lindo dia para se divertir!")
-                reply = f"Sistemas meteorológicos ativos, Kaleu! Hoje está fazendo {temp} graus com tempo {desc}. {conselho}"
+                reply = f"Sistemas meteorológicos ativos, Kaleo! Em {cidade}, hoje está fazendo {temp} graus com tempo {desc}. {conselho}"
                 return {
                     "ok": True,
                     "intencao": "clima",
@@ -155,13 +339,13 @@ class JarvisBrain:
             except Exception:
                 pass
 
-        # 2. Moedas / Tesouro
+        # 14. Moedas / Tesouro Real
         if any(w in text_lower for w in ["moeda", "moedas", "tesouro", "saldo", "pote", "fichas", "dinheiro"]):
             try:
                 from economia_fichas import token_mgr
                 status = token_mgr.obter_status_pote()
                 saldo = status.get("saldo", 0)
-                reply = f"Bip bip! Kaleu, você tem {saldo} moedas brilhantes guardadas no seu Pote do Tesouro! Vamos ver as recompensas na loja?"
+                reply = f"Bip bip! Kaleo, você tem {saldo} moedas brilhantes guardadas no seu Pote do Tesouro! Vamos ver as recompensas na loja?"
                 return {
                     "ok": True,
                     "intencao": "tesouro",
@@ -172,9 +356,9 @@ class JarvisBrain:
             except Exception:
                 pass
 
-        # 3. Escovar os dentes
+        # 15. Escovar os dentes
         if any(w in text_lower for w in ["dente", "dentes", "escova", "escovar"]):
-            reply = "Missão Dente Brilhante ativada, Kaleu! Pegue a sua escovinha que o cronômetro de 2 minutos vai começar agora! Vamos deixar o sorriso brilhando!"
+            reply = "Missão Dente Brilhante ativada, Kaleo! Pegue a sua escovinha que o cronômetro de 2 minutos vai começar agora! Vamos deixar o sorriso brilhando!"
             return {
                 "ok": True,
                 "intencao": "dente",
@@ -183,7 +367,7 @@ class JarvisBrain:
                 "dados": {"duracao_segundos": 120},
             }
 
-        # 4. Guardar brinquedos / Quarto limpo
+        # 16. Guardar brinquedos / Quarto limpo
         if any(w in text_lower for w in ["quarto", "brinquedo", "brinquedos", "guardar", "bagunça", "arrumar"]):
             reply = "Operação Quarto Limpo ativada! Vamos guardar todos os brinquedos no baú antes do tempo acabar! Você é um super-herói veloz!"
             return {
@@ -194,20 +378,9 @@ class JarvisBrain:
                 "dados": {"duracao_segundos": 180},
             }
 
-        # 5. Comida / Fome
-        if any(w in text_lower for w in ["fome", "comida", "comer", "fruta", "frutinha", "lanche", "almoço", "jantar"]):
-            reply = "Bip! Hora de abastecer! Vamos para a nossa cozinha escolher frutinhas deliciosas e carregar a bateria!"
-            return {
-                "ok": True,
-                "intencao": "cozinha",
-                "resposta_voz": reply,
-                "acao_frontend": "ir_cozinha",
-                "dados": {},
-            }
-
-        # 6. Jogar / Brincar
-        if any(w in text_lower for w in ["jogar", "jogo", "brincar", "brincadeira", "bola"]):
-            reply = "Eba! Adoro brincar com você! Escolha um jogo incrível na gaveta ou vamos jogar a bolinha mágica!"
+        # 17. Jogar / Brincar geral
+        if any(w in text_lower for w in ["jogar", "jogo", "brincar", "brincadeira", "jogos"]):
+            reply = "Eba! Adoro brincar com você, Kaleo! Escolha um dos nossos jogos incríveis ou vamos jogar a bolinha mágica!"
             return {
                 "ok": True,
                 "intencao": "jogos",

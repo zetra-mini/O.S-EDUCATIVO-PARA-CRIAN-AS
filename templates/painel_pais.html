@@ -264,7 +264,7 @@
       <div id="historico-mensagens" style="display:flex; flex-direction:column; gap:6px; margin-top:6px; max-height:160px; overflow-y:auto;"></div>
     </div>
 
-    <!-- AÇÕES RÁPIDAS -->
+    <!-- AÇÕES RÁPIDAS & ALARMES DE ROTINA -->
     <div class="card">
       <div class="card-title">⚡ Ações Rápidas Imediatas</div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
@@ -276,6 +276,34 @@
         </button>
         <button type="button" class="btn btn-purple" onclick="toggleNight()">
           🌙 Modo Noturno / Sono
+        </button>
+      </div>
+    </div>
+
+    <!-- ALARME SONORO E VISUAL DE ROTINA (DISPARO IMEDIATO NA TELA DA CRIANÇA) -->
+    <div class="card">
+      <div class="card-title">⏰ Central de Alarmes de Rotina Imediatos</div>
+      <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:10px;">
+        Toque para soar o alarme sonoro e abrir um alerta gigante e amigável no netbook/PC da criança com a voz do Jarvis chamando para a missão:
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px; margin-bottom:12px;">
+        <button type="button" class="btn btn-primary" onclick="dispararAlarmeRotina('dente')">
+          🪥 Alarme: Escovar os Dentes!
+        </button>
+        <button type="button" class="btn btn-success" onclick="dispararAlarmeRotina('brinquedos')">
+          🧸 Alarme: Guardar Brinquedos!
+        </button>
+        <button type="button" class="btn btn-warning" onclick="dispararAlarmeRotina('almoco')">
+          🍲 Alarme: Almoço dos Campeões!
+        </button>
+        <button type="button" class="btn btn-purple" onclick="dispararAlarmeRotina('dormir')">
+          🌙 Alarme: Hora de Dormir!
+        </button>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input id="txt-alarme-custom" placeholder="Ou digite um recado falado de rotina (Ex: Tomar o leitinho!)" style="flex:1;" />
+        <button type="button" class="btn btn-primary" onclick="dispararAlarmeRotina('personalizado')">
+          📢 Soar Alarme Personalizado
         </button>
       </div>
     </div>
@@ -353,20 +381,23 @@
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">Cidade da Criança:</label>
-            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" />
+            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
           </div>
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">Estado:</label>
-            <input id="adm-geo-estado" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" />
+            <input id="adm-geo-estado" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
           </div>
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">País:</label>
-            <input id="adm-geo-pais" style="margin-top:4px;" placeholder="Ex: Brasil" value="Brasil" />
+            <input id="adm-geo-pais" style="margin-top:4px;" placeholder="Ex: Brasil" value="Brasil" oninput="this.dataset.modificado='true'" />
           </div>
         </div>
         <div style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">
           💡 O Jarvis utiliza esta cidade e estado para ensinar geografia ("Você está na cidade X, no estado Y, no país Brasil!") e consultar a previsão do tempo exata.
         </div>
+        <button type="button" class="btn btn-primary" style="margin-top:10px;" onclick="salvarLocalizacaoGeografica()">
+          💾 Salvar Localização (Cidade, Estado e País)
+        </button>
       </div>
       <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
         💾 Salvar Perfil & Voz
@@ -551,21 +582,44 @@
           document.getElementById('diag-bateria').textContent = `${data.bateria.porcentagem}%`;
         }
 
-        // Preenche campos
-        document.getElementById('adm-child-name').value = adminConfig.child_name || 'Kaleo Noah';
-        if (adminConfig.voice_profile) document.getElementById('adm-voice-profile').value = adminConfig.voice_profile;
-        if (adminConfig.geo_cidade) document.getElementById('adm-geo-cidade').value = adminConfig.geo_cidade;
-        if (adminConfig.geo_estado) document.getElementById('adm-geo-estado').value = adminConfig.geo_estado;
-        if (adminConfig.geo_pais) document.getElementById('adm-geo-pais').value = adminConfig.geo_pais;
-        document.getElementById('adm-yt-url').value = adminConfig.youtube_url || 'https://www.youtubekids.com';
-        document.getElementById('adm-nf-url').value = adminConfig.netflix_url || 'https://www.netflix.com/Kids';
-        document.getElementById('adm-start-time').value = adminConfig.media_start_time || '16:00';
-        document.getElementById('adm-end-time').value = adminConfig.media_end_time || '17:00';
-        document.getElementById('adm-daily-mins').value = adminConfig.media_daily_minutes || 25;
-        document.getElementById('adm-req-book').checked = !!adminConfig.require_book_before_media;
+        // Preenche campos apenas se não estiverem com foco do usuário digitando
+        const inpName = document.getElementById('adm-child-name');
+        if (inpName && document.activeElement !== inpName) inpName.value = adminConfig.child_name || 'Kaleo Noah';
 
-        currentAdminProvider = adminConfig.active_provider || 'opencode';
-        selecionarProvedorAdmin(currentAdminProvider);
+        const inpVoice = document.getElementById('adm-voice-profile');
+        if (inpVoice && document.activeElement !== inpVoice && adminConfig.voice_profile) inpVoice.value = adminConfig.voice_profile;
+
+        const inpCidade = document.getElementById('adm-geo-cidade');
+        if (inpCidade && inpCidade.dataset.modificado !== 'true' && adminConfig.geo_cidade) inpCidade.value = adminConfig.geo_cidade;
+
+        const inpEstado = document.getElementById('adm-geo-estado');
+        if (inpEstado && inpEstado.dataset.modificado !== 'true' && adminConfig.geo_estado) inpEstado.value = adminConfig.geo_estado;
+
+        const inpPais = document.getElementById('adm-geo-pais');
+        if (inpPais && inpPais.dataset.modificado !== 'true' && adminConfig.geo_pais) inpPais.value = adminConfig.geo_pais;
+
+        const inpYt = document.getElementById('adm-yt-url');
+        if (inpYt && document.activeElement !== inpYt) inpYt.value = adminConfig.youtube_url || 'https://www.youtubekids.com';
+
+        const inpNf = document.getElementById('adm-nf-url');
+        if (inpNf && document.activeElement !== inpNf) inpNf.value = adminConfig.netflix_url || 'https://www.netflix.com/Kids';
+
+        const inpStart = document.getElementById('adm-start-time');
+        if (inpStart && document.activeElement !== inpStart) inpStart.value = adminConfig.media_start_time || '16:00';
+
+        const inpEnd = document.getElementById('adm-end-time');
+        if (inpEnd && document.activeElement !== inpEnd) inpEnd.value = adminConfig.media_end_time || '17:00';
+
+        const inpMins = document.getElementById('adm-daily-mins');
+        if (inpMins && document.activeElement !== inpMins) inpMins.value = adminConfig.media_daily_minutes || 25;
+
+        const chkBook = document.getElementById('adm-req-book');
+        if (chkBook && document.activeElement !== chkBook) chkBook.checked = !!adminConfig.require_book_before_media;
+
+        if (!currentAdminProvider) {
+          currentAdminProvider = adminConfig.active_provider || 'opencode';
+          selecionarProvedorAdmin(currentAdminProvider);
+        }
       } catch (e) {}
     }
 
@@ -705,6 +759,62 @@
         await carregarEstadoGeral();
       } catch (e) {
         showToast('Erro ao salvar configurações.');
+      }
+    }
+
+    async function salvarLocalizacaoGeografica() {
+      const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo';
+      const estado = (document.getElementById('adm-geo-estado')?.value || '').trim() || 'São Paulo';
+      const pais = (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil';
+
+      try {
+        await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            geo_cidade: cidade,
+            geo_estado: estado,
+            geo_pais: pais
+          })
+        });
+        showToast(`📍 Localização da Família salva: ${cidade}, ${estado} - ${pais}! O Jarvis e o Clima foram atualizados!`);
+        const cEl = document.getElementById('adm-geo-cidade');
+        const eEl = document.getElementById('adm-geo-estado');
+        const pEl = document.getElementById('adm-geo-pais');
+        if (cEl) cEl.dataset.modificado = 'false';
+        if (eEl) eEl.dataset.modificado = 'false';
+        if (pEl) pEl.dataset.modificado = 'false';
+        await carregarEstadoGeral();
+      } catch (e) {
+        showToast('Erro ao salvar localização.');
+      }
+    }
+
+    async function dispararAlarmeRotina(tipo) {
+      let msg = '';
+      if (tipo === 'personalizado') {
+        msg = (document.getElementById('txt-alarme-custom')?.value || '').trim();
+        if (!msg) {
+          showToast('Digite a mensagem do alarme personalizado.');
+          return;
+        }
+      }
+
+      try {
+        const res = await fetch('/api/remote/alarme', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tipo: tipo, mensagem: msg })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showToast(`⏰ Alarme de rotina "${tipo}" disparado no netbook do Kaleo com sucesso!`);
+          if (tipo === 'personalizado') {
+            document.getElementById('txt-alarme-custom').value = '';
+          }
+        }
+      } catch (e) {
+        showToast('Erro ao disparar alarme.');
       }
     }
 
