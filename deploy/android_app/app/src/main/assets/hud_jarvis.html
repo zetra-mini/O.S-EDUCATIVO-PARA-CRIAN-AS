@@ -2208,6 +2208,11 @@
           <span>🪙</span>
           <span id="pote-fichas-val">20</span>
         </div>
+        <!-- CLIMA & TEMPERATURA EM TEMPO REAL -->
+        <div id="top-weather-badge" class="pou-weather-badge" onclick="openWeatherSeasonsModal()" title="Clima & Temperatura em Tempo Real">
+          <span id="clima-icone-top">🌤️</span>
+          <span id="clima-val-top">--°C</span>
+        </div>
         <!-- INDICADOR INTELIGENTE DE BATERIA DO NETBOOK / NOTEBOOK -->
         <div id="top-battery-badge" class="pou-coin-badge" style="background:rgba(15,23,42,0.85); border-color:#38bdf8; display:none;" title="Nível de Bateria do Netbook">
           <span id="top-battery-icon">🔋</span>
@@ -9900,23 +9905,59 @@
         `;
 
         try {
-          const [resClima, resEstacoes] = await Promise.all([
-            fetch('/api/clima/atual').then(r => r.json()).catch(() => null),
+          let [resClima, resEstacoes] = await Promise.all([
+            fetch('/api/clima/atual?forcar=1').then(r => r.json()).catch(() => null),
             fetch('/api/clima/estacoes').then(r => r.json()).catch(() => null)
           ]);
 
+          // Standalone / Offline / Mobile Fallback dinâmico com Open-Meteo
+          if (!resClima && navigator.onLine) {
+            try {
+              const cid = (appState.config && appState.config.geo_cidade) || 'Campo Largo';
+              const q = encodeURIComponent(cid);
+              const gRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=1&language=pt&format=json`).then(r => r.json());
+              if (gRes && gRes.results && gRes.results[0]) {
+                const item = gRes.results[0];
+                const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${item.latitude}&longitude=${item.longitude}&current=temperature_2m,weather_code&timezone=auto`).then(r => r.json());
+                if (wRes && wRes.current) {
+                  const t = Math.round(wRes.current.temperature_2m * 10) / 10;
+                  const c = wRes.current.weather_code || 0;
+                  const chuvaCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95];
+                  const eChuva = chuvaCodes.includes(c);
+                  resClima = {
+                    temperatura: t,
+                    codigo_tempo: c,
+                    descricao: eChuva ? 'Chuva Fresquinha' : (t < 18 ? 'Tempo Frio' : (c > 0 ? 'Céu com Nuvens' : 'Sol Brilhante')),
+                    icone: eChuva ? '🌧️' : (t < 18 ? '❄️' : (c > 0 ? '⛅' : '☀️')),
+                    estacao_ano: (new Date().getMonth() >= 2 && new Date().getMonth() <= 4) ? 'Outono' : ((new Date().getMonth() >= 5 && new Date().getMonth() <= 7) ? 'Inverno' : ((new Date().getMonth() >= 8 && new Date().getMonth() <= 10) ? 'Primavera' : 'Verão')),
+                    conselho_infantil: eChuva ? '🌧️ A chuva está molhando as plantinhas! Vista capa ou guarda-chuva!' : (t < 18 ? '❄️ Brrr! Está friozinho! Coloque um casaco quentinho!' : '☀️ O clima está ótimo para brincar e aprender! Beba bastante água!'),
+                    acessorio_mascote: eChuva ? 'guarda_chuva.png' : (t < 18 ? 'cachecol.png' : 'oculos_sol.png'),
+                    cidade: item.name || cid,
+                    estado: item.admin1 || 'Paraná',
+                    pais: item.country || 'Brasil',
+                    planeta: 'Planeta Terra'
+                  };
+                }
+              }
+            } catch (e) {}
+          }
+
           const clima = resClima || {
-            temperatura: 24,
+            temperatura: 20,
             codigo_tempo: 0,
-            descricao: 'Dia Ensolarado e Tranquilo',
-            icone: '☀️',
-            estacao_ano: 'Verão',
+            descricao: 'Tempo Agradável e Acolhedor',
+            icone: '⛅',
+            estacao_ano: (new Date().getMonth() >= 2 && new Date().getMonth() <= 4) ? 'Outono' : ((new Date().getMonth() >= 5 && new Date().getMonth() <= 7) ? 'Inverno' : ((new Date().getMonth() >= 8 && new Date().getMonth() <= 10) ? 'Primavera' : 'Verão')),
             conselho_infantil: 'O dia está ótimo para brincar e aprender! Lembre-se de tomar água!',
-            acessorio_mascote: 'oculos_sol.png'
+            acessorio_mascote: 'oculos_sol.png',
+            cidade: (appState.config && appState.config.geo_cidade) || 'Campo Largo',
+            estado: (appState.config && appState.config.geo_estado) || 'Paraná',
+            pais: 'Brasil',
+            planeta: 'Planeta Terra'
           };
 
           const estacoesData = resEstacoes || {
-            estacao_atual: clima.estacao_ano || 'Verão',
+            estacao_atual: clima.estacao_ano || 'Primavera',
             estacoes: [
               { nome: 'Primavera', descricao: 'Estação das flores perfumadas, passarinhos cantando e borboletas!', icone: '🌸', roupa_certa: 'Roupa leve e tênis confortável para passear no jardim' },
               { nome: 'Verão', descricao: 'Sol brilhante, dias quentinhos, praia e picolé gostoso!', icone: '☀️', roupa_certa: 'Camiseta regata, shorts, boné e protetor solar' },
@@ -9926,8 +9967,8 @@
           };
 
           window._lastClimaGeo = clima;
-          const cidadeNome = clima.cidade || (appState.config && appState.config.geo_cidade) || 'São Paulo';
-          const estadoNome = clima.estado || (appState.config && appState.config.geo_estado) || 'São Paulo';
+          const cidadeNome = clima.cidade || (appState.config && appState.config.geo_cidade) || 'Campo Largo';
+          const estadoNome = clima.estado || (appState.config && appState.config.geo_estado) || 'Paraná';
           const paisNome = clima.pais || 'Brasil';
 
           const rainCodes = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95];

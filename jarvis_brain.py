@@ -401,14 +401,17 @@ class JarvisBrain:
         # 13. Clima / Tempo / Estações
         if any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "sol", "estação", "estacoes", "geografia"]):
             try:
-                from clima_estacoes import WeatherSeasonManager
-                wm = WeatherSeasonManager()
-                clima = wm.obter_clima_atual()
-                temp = clima.get("temperatura", 24)
-                desc = clima.get("descricao", "ensolarado")
-                cidade = self.config.get("geo_cidade", "sua cidade")
+                from clima_estacoes import weather_mgr
+                cidade_cfg = self.config.get("geo_cidade", "Campo Largo")
+                estado_cfg = self.config.get("geo_estado", "Paraná")
+                weather_mgr.definir_localizacao(cidade_cfg, estado_cfg)
+                clima = weather_mgr.obter_clima_atual(forcar=True)
+                temp = clima.get("temperatura", 20)
+                desc = clima.get("descricao", "agradável")
+                cidade = clima.get("cidade", cidade_cfg)
                 conselho = clima.get("conselho_infantil", "Um lindo dia para se divertir!")
-                reply = f"Sistemas meteorológicos ativos, Kaleo! Em {cidade}, hoje está fazendo {temp} graus com tempo {desc}. {conselho}"
+                crianca = self.name
+                reply = f"Sistemas meteorológicos ativos, {crianca}! Em {cidade}, agora está fazendo {temp} graus com {desc}. {conselho}"
                 return {
                     "ok": True,
                     "intencao": "clima",

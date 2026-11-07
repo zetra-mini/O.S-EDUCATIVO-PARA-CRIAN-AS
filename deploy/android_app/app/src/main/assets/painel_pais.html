@@ -668,11 +668,11 @@
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">Cidade da Criança:</label>
-            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
+            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: Campo Largo" value="Campo Largo" oninput="this.dataset.modificado='true'" />
           </div>
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">Estado:</label>
-            <input id="adm-geo-estado" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
+            <input id="adm-geo-estado" style="margin-top:4px;" placeholder="Ex: Paraná" value="Paraná" oninput="this.dataset.modificado='true'" />
           </div>
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">País:</label>
@@ -1265,8 +1265,8 @@
     }
 
     async function salvarLocalizacaoGeografica() {
-      const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo';
-      const estado = (document.getElementById('adm-geo-estado')?.value || '').trim() || 'São Paulo';
+      const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'Campo Largo';
+      const estado = (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná';
       const pais = (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil';
 
       try {
@@ -1279,7 +1279,8 @@
             geo_pais: pais
           })
         });
-        showToast(`📍 Localização da Família salva: ${cidade}, ${estado} - ${pais}! O Jarvis e o Clima foram atualizados!`);
+        await fetch('/api/clima/atual?forcar=1').catch(() => null);
+        showToast(`📍 Localização da Família salva: ${cidade}, ${estado} - ${pais}! O Jarvis e o Clima em tempo real foram sincronizados!`);
         const cEl = document.getElementById('adm-geo-cidade');
         const eEl = document.getElementById('adm-geo-estado');
         const pEl = document.getElementById('adm-geo-pais');

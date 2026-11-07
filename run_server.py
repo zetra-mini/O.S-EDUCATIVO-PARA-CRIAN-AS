@@ -63,8 +63,8 @@ media_mgr = MediaTimeManager(brain, database=db)
 
 # Inicializa localização meteorológica & geográfica
 weather_mgr.definir_localizacao(
-    brain.config.get("geo_cidade", "São Paulo"),
-    brain.config.get("geo_estado", "São Paulo"),
+    brain.config.get("geo_cidade", "Campo Largo"),
+    brain.config.get("geo_estado", "Paraná"),
     brain.config.get("geo_pais", "Brasil")
 )
 
@@ -547,7 +547,12 @@ def api_calendario_concluir(request: Request):
 
 @app.route("/api/clima/atual", methods=["GET"])
 def api_clima_atual(request: Request):
-    return json_response(weather_mgr.obter_clima_atual())
+    forcar = False
+    if hasattr(request, "args") and request.args:
+        f_val = request.args.get("forcar", "")
+        if f_val in ("1", "true", "True", True) or "forcar" in request.args:
+            forcar = True
+    return json_response(weather_mgr.obter_clima_atual(forcar=forcar))
 
 
 @app.route("/api/clima/estacoes", methods=["GET"])
