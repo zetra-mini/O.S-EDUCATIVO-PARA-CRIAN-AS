@@ -1,6 +1,6 @@
 package br.com.jarviskids.os;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,12 +11,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private WebView webView;
@@ -26,19 +22,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Modo Fullscreen Imersivo e Tela Sempre Ligada
+        // Tela cheia e tela sempre ligada
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemUI();
 
-        setContentView(R.layout.activity_main);
+        webView = new WebView(this);
+        setContentView(webView);
 
-        webView = findViewById(R.id.webview);
         configurarWebView();
-
         solicitarPermissoesNativas();
 
-        // Carrega o JARVIS Kids OS (IP local configuravel ou localhost)
-        // Por padrao, tenta carregar o servidor do netbook/desktop na rede local ou embutido
         String serverUrl = getIntent().getStringExtra("SERVER_URL");
         if (serverUrl == null || serverUrl.isEmpty()) {
             serverUrl = "http://127.0.0.1:8000";
@@ -76,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         settings.setAllowContentAccess(true);
         settings.setLoadWithOverviewMode(true);
         settings.setUseWideViewPort(true);
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -89,44 +81,49 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    runOnUiThread(() -> {
-                        for (String res : request.getResources()) {
-                            if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(res)) {
-                                pendingPermissionRequest = request;
-                                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO)
-                                        == PackageManager.PERMISSION_GRANTED) {
-                                    request.grant(request.getResources());
-                                } else {
-                                    ActivityCompat.requestPermissions(MainActivity.this,
-                                            new String[]{Manifest.permission.RECORD_AUDIO},
-                                            PERMISSION_REQUEST_CODE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            for (String res : request.getResources()) {
+                                if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(res)) {
+                                    pendingPermissionRequest = request;
+                                    if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                                            == PackageManager.PERMISSION_GRANTED) {
+                                        request.grant(request.getResources());
+                                    } else {
+                                        requestPermissions(
+                                                new String[]{android.Manifest.permission.RECORD_AUDIO},
+                                                PERMISSION_REQUEST_CODE);
+                                    }
+                                    return;
                                 }
-                                return;
                             }
                         }
                         request.grant(request.getResources());
-                    });
-                }
+                    }
+                });
             }
         });
     }
 
     private void solicitarPermissoesNativas() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    PERMISSION_REQUEST_CODE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(
+                        new String[]{android.Manifest.permission.RECORD_AUDIO},
+                        PERMISSION_REQUEST_CODE);
+            }
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (pendingPermissionRequest != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (pendingPermissionRequest != null) {
                     pendingPermissionRequest.grant(pendingPermissionRequest.getResources());
                     pendingPermissionRequest = null;
                 }
