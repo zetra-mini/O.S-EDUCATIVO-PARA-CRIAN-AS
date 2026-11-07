@@ -240,6 +240,65 @@ class WeatherSeasonManager:
         clima_res.update(geo)
         return clima_res
 
+    def obter_previsao_amanha(self) -> Dict[str, Any]:
+        """Consulta previsão meteorológica detalhada para o dia seguinte (amanhã)."""
+        geo = self.obter_geografia_infantil()
+        try:
+            url = f"https://api.open-meteo.com/v1/forecast?latitude={self.lat}&longitude={self.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto"
+            req = urllib.request.Request(url, headers={"User-Agent": "JarvisKidsOS/3.4"})
+            with urllib.request.urlopen(req, timeout=4.0) as res_req:
+                data = json.loads(res_req.read().decode("utf-8"))
+                daily = data.get("daily", {})
+                times = daily.get("time", [])
+                if len(times) > 1:
+                    max_temp = float(daily.get("temperature_2m_max", [22.0, 20.0])[1])
+                    min_temp = float(daily.get("temperature_2m_min", [15.0, 14.0])[1])
+                    code = int(daily.get("weather_code", [0, 0])[1])
+                    prob_chuva = int(daily.get("precipitation_probability_max", [0, 0])[1])
+
+                    desc, icone, acessorio = self._traduzir_codigo_clima(code, max_temp)
+
+                    if prob_chuva >= 50 or code in (51, 53, 55, 61, 63, 65, 80, 81, 82, 95):
+                        conselho = f"🌧️ A previsão indica {prob_chuva}% de chance de chuva amanhã! Se for sair de casa, separe a capa ou o guarda-chuva!"
+                    elif max_temp < 18.0:
+                        conselho = f"❄️ Amanhã vai fazer friozinho com mínima de {round(min_temp)} graus! Separe um casaco bem quentinho!"
+                    elif max_temp > 27.0:
+                        conselho = f"☀️ Amanhã o dia promete calor com máxima de {round(max_temp)} graus! Lembre-se de beber bastante água!"
+                    else:
+                        conselho = "🌤️ Amanhã o clima estará super agradável para brincar e aprender com o Jarvis!"
+
+                    res = {
+                        "ok": True,
+                        "data_amanha": times[1],
+                        "temp_max": round(max_temp, 1),
+                        "temp_min": round(min_temp, 1),
+                        "codigo_tempo": code,
+                        "prob_chuva": prob_chuva,
+                        "descricao": desc,
+                        "icone": icone,
+                        "conselho_infantil": conselho,
+                        "acessorio_mascote": acessorio,
+                    }
+                    res.update(geo)
+                    return res
+        except Exception:
+            pass
+
+        # Fallback seguro para modo offline
+        res = {
+            "ok": True,
+            "temp_max": 20.0,
+            "temp_min": 14.0,
+            "codigo_tempo": 0,
+            "prob_chuva": 20,
+            "descricao": "Tempo Aconchegante e Agradável",
+            "icone": "⛅",
+            "conselho_infantil": "Amanhã o dia será ótimo para se divertir e aprender coisas novas com o Jarvis!",
+            "acessorio_mascote": "bone.png",
+        }
+        res.update(geo)
+        return res
+
     def _traduzir_codigo_clima(self, code: int, temp: float) -> tuple[str, str, str]:
         if code in (51, 53, 55, 61, 63, 65, 80, 81, 82, 95):
             return "Chuva Fresquinha", "🌧️", "guarda_chuva.png"

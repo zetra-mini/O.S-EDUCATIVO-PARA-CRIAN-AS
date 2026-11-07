@@ -399,24 +399,44 @@ class JarvisBrain:
             }
 
         # 13. Clima / Tempo / Estações (não conflita com Sistema Solar)
-        if ("solar" not in text_lower) and (any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "previsão", "estação", "estacoes", "geografia"]) or re.search(r'\b(sol|ensolarado)\b', text_lower)):
+        if ("solar" not in text_lower) and (any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "previsão", "previsao", "estação", "estacoes", "geografia"]) or re.search(r'\b(sol|ensolarado)\b', text_lower)):
             try:
                 from clima_estacoes import weather_mgr
                 cidade_cfg = self.config.get("geo_cidade", "Campo Largo")
                 estado_cfg = self.config.get("geo_estado", "Paraná")
                 weather_mgr.definir_localizacao(cidade_cfg, estado_cfg)
+                crianca = self.name
+
+                # 13.1 Previsão para AMANHÃ
+                is_amanha = any(w in text_lower for w in ["amanhã", "amanha", "dia seguinte", "próximo dia", "proximo dia"])
+                if is_amanha:
+                    prev = weather_mgr.obter_previsao_amanha()
+                    t_max = prev.get("temp_max", 20)
+                    t_min = prev.get("temp_min", 14)
+                    desc = prev.get("descricao", "agradável")
+                    cidade = prev.get("cidade", cidade_cfg)
+                    conselho = prev.get("conselho_infantil", "Um ótimo dia pela frente!")
+                    reply = f"Previsão do tempo para amanhã em {cidade}, {crianca}: teremos máxima de {t_max} graus e mínima de {t_min} graus, com {desc}. {conselho}"
+                    return {
+                        "ok": True,
+                        "intencao": "previsao_amanha",
+                        "resposta_voz": reply,
+                        "acao_frontend": "nenhuma",  # Não abre modal, apenas responde por voz e texto
+                        "dados": prev,
+                    }
+
+                # 13.2 Clima ATUAL (Hoje)
                 clima = weather_mgr.obter_clima_atual(forcar=True)
                 temp = clima.get("temperatura", 20)
                 desc = clima.get("descricao", "agradável")
                 cidade = clima.get("cidade", cidade_cfg)
                 conselho = clima.get("conselho_infantil", "Um lindo dia para se divertir!")
-                crianca = self.name
                 reply = f"Sistemas meteorológicos ativos, {crianca}! Em {cidade}, agora está fazendo {temp} graus com {desc}. {conselho}"
                 return {
                     "ok": True,
                     "intencao": "clima",
                     "resposta_voz": reply,
-                    "acao_frontend": "abrir_clima",
+                    "acao_frontend": "nenhuma",  # Não abre modal, apenas responde por voz e texto
                     "dados": clima,
                 }
             except Exception:

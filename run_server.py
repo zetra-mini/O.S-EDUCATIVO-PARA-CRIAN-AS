@@ -555,6 +555,11 @@ def api_clima_atual(request: Request):
     return json_response(weather_mgr.obter_clima_atual(forcar=forcar))
 
 
+@app.route("/api/clima/amanha", methods=["GET"])
+def api_clima_amanha(request: Request):
+    return json_response(weather_mgr.obter_previsao_amanha())
+
+
 @app.route("/api/clima/estacoes", methods=["GET"])
 def api_clima_estacoes(request: Request):
     return json_response(weather_mgr.obter_dados_estacoes())
