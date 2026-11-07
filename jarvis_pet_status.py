@@ -111,6 +111,7 @@ class JarvisPetManager:
 
     def dar_banho(self) -> Dict[str, Any]:
         """Restaura higiene para 100%, dá 1 moeda justa e comemora."""
+        current = self.obter_status()
         self.db.executar_escrita(
             """
             UPDATE bixinho_status
@@ -119,11 +120,28 @@ class JarvisPetManager:
             """,
             (time.time(),),
         )
-        if current["higiene"] < 90.0:
+        if current.get("higiene", 100.0) < 90.0:
             token_mgr.creditar_fichas(1, "Banho Limpinho no Jarvis", "ROTINA")
         return {
             "sucesso": True,
             "mensagem": "🧼 Circuito limpo e reluzente! A armadura do Jarvis está brilhando como nova!",
+            "status": self.obter_status(),
+        }
+
+    def limpar(self, pontos: int = 35) -> Dict[str, Any]:
+        """Aumenta o nível de higiene do mascote pelas missões da rotina."""
+        current = self.obter_status()
+        nova_hig = min(100.0, current.get("higiene", 80.0) + pontos)
+        self.db.executar_escrita(
+            """
+            UPDATE bixinho_status
+            SET higiene = ?, ultimo_decaimento = ?
+            WHERE id = 1;
+            """,
+            (nova_hig, time.time()),
+        )
+        return {
+            "sucesso": True,
             "status": self.obter_status(),
         }
 

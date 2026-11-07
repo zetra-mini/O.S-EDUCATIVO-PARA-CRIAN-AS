@@ -321,15 +321,51 @@
           <input id="adm-child-name" style="margin-top:4px;" placeholder="Ex: Kaleo Noah" />
         </div>
         <div>
-          <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Perfil de Voz Neural PT-BR:</label>
+          <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Perfil de Voz Neural PT-BR (Ultra Fluida):</label>
           <div style="display:flex; gap:8px; margin-top:4px;">
             <select id="adm-voice-profile" style="flex:1;">
-              <option value="jarvis_antonio">Antônio Neural (Estilo Jarvis Stark Elegante)</option>
-              <option value="amiga_thalita">Thalita Neural (Acolhedora e Doce)</option>
-              <option value="amiga_francisca">Francisca Neural (Alegre e Serena)</option>
+              <optgroup label="✨ Vozes Neurais Brasileiras (Offline & Edge-TTS)">
+                <option value="jarvis_antonio">J.A.R.V.I.S. Neural Clássico (Antonio PT-BR — Inteligente & Amigável)</option>
+                <option value="amiga_thalita">Amiga Neural Multilíngue (Thalita PT-BR — Expressiva & Calorosa)</option>
+                <option value="amiga_francisca">Contadora de Histórias (Francisca PT-BR — Doce, Calma & Fluida)</option>
+                <option value="amigo_fabio">Amigo Fábio Neural (Fabio PT-BR — Jovem, Vibrante & Animado)</option>
+                <option value="amiga_leticia">Amiga Letícia Neural (Leticia PT-BR — Clara, Meiga & Acolhedora)</option>
+              </optgroup>
+              <optgroup label="🌟 Vozes Studio Google Gemini (Requer Chave Gemini)">
+                <option value="gemini_puck">Google Gemini Studio — Puck (Alegre & Enérgico)</option>
+                <option value="gemini_sulafat">Google Gemini Studio — Sulafat (Acolhedora & Suave)</option>
+                <option value="gemini_charon">Google Gemini Studio — Charon (Professor Curioso & Sábio)</option>
+                <option value="gemini_fenrir">Google Gemini Studio — Fenrir (Herói Confiante & Protetor)</option>
+                <option value="gemini_aoede">Google Gemini Studio — Aoede (Narradora Mágica de Aventuras)</option>
+                <option value="gemini_kore">Google Gemini Studio — Kore (Tranquila & Afetuosa)</option>
+              </optgroup>
             </select>
             <button type="button" class="btn btn-purple" style="padding:8px 16px;" onclick="testarVozAdmin()">🔊 Testar</button>
           </div>
+        </div>
+      </div>
+
+      <!-- LOCALIZAÇÃO GEOGRÁFICA ENSINÁVEL -->
+      <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+        <div style="font-size:0.95rem; font-weight:800; color:var(--cyan); margin-bottom:8px;">
+          📍 Geografia Ensinável da Criança (Onde Ela Mora no Mundo):
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">Cidade da Criança:</label>
+            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" />
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">Estado:</label>
+            <input id="adm-geo-estado" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" />
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">País:</label>
+            <input id="adm-geo-pais" style="margin-top:4px;" placeholder="Ex: Brasil" value="Brasil" />
+          </div>
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-muted); margin-top:6px;">
+          💡 O Jarvis utiliza esta cidade e estado para ensinar geografia ("Você está na cidade X, no estado Y, no país Brasil!") e consultar a previsão do tempo exata.
         </div>
       </div>
       <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
@@ -518,6 +554,9 @@
         // Preenche campos
         document.getElementById('adm-child-name').value = adminConfig.child_name || 'Kaleo Noah';
         if (adminConfig.voice_profile) document.getElementById('adm-voice-profile').value = adminConfig.voice_profile;
+        if (adminConfig.geo_cidade) document.getElementById('adm-geo-cidade').value = adminConfig.geo_cidade;
+        if (adminConfig.geo_estado) document.getElementById('adm-geo-estado').value = adminConfig.geo_estado;
+        if (adminConfig.geo_pais) document.getElementById('adm-geo-pais').value = adminConfig.geo_pais;
         document.getElementById('adm-yt-url').value = adminConfig.youtube_url || 'https://www.youtubekids.com';
         document.getElementById('adm-nf-url').value = adminConfig.netflix_url || 'https://www.netflix.com/Kids';
         document.getElementById('adm-start-time').value = adminConfig.media_start_time || '16:00';
@@ -627,6 +666,9 @@
         child_name: document.getElementById('adm-child-name').value.trim() || 'Kaleo Noah',
         active_provider: currentAdminProvider,
         voice_profile: document.getElementById('adm-voice-profile').value,
+        geo_cidade: (document.getElementById('adm-geo-cidade') ? document.getElementById('adm-geo-cidade').value.trim() : '') || 'São Paulo',
+        geo_estado: (document.getElementById('adm-geo-estado') ? document.getElementById('adm-geo-estado').value.trim() : '') || 'São Paulo',
+        geo_pais: (document.getElementById('adm-geo-pais') ? document.getElementById('adm-geo-pais').value.trim() : '') || 'Brasil',
         youtube_url: document.getElementById('adm-yt-url').value.trim(),
         netflix_url: document.getElementById('adm-nf-url').value.trim(),
         media_start_time: document.getElementById('adm-start-time').value.trim(),

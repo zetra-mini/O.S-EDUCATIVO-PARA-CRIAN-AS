@@ -21,40 +21,78 @@ try:
 except Exception:
     pass
 
-# Perfis de voz neural disponíveis para o JARVIS Kids OS
+# Perfis de voz neural disponíveis para o JARVIS Kids OS (Vozes fluidas de última geração)
 VOICE_PROFILES = {
     "jarvis_antonio": {
-        "label": "J.A.R.V.I.S. Neural (Antonio PT-BR — Masculino Amigável)",
+        "label": "J.A.R.V.I.S. Neural Clássico (Antonio PT-BR — Masculino Inteligente)",
         "engine": "edge",
         "voice": "pt-BR-AntonioNeural",
-        "rate": "+4%",
+        "rate": "+3%",
         "pitch": "+2Hz",
     },
     "amiga_thalita": {
-        "label": "Amiga Gemini Neural (Thalita PT-BR — Expressiva e Calorosa)",
+        "label": "Amiga Neural Multilíngue (Thalita PT-BR — Expressiva e Fluida)",
         "engine": "edge",
         "voice": "pt-BR-ThalitaMultilingualNeural",
         "rate": "+2%",
         "pitch": "+0Hz",
     },
     "amiga_francisca": {
-        "label": "Contadora de Histórias (Francisca PT-BR — Voz Doce e Calma)",
+        "label": "Contadora de Histórias (Francisca PT-BR — Doce, Calma e Fluida)",
         "engine": "edge",
         "voice": "pt-BR-FranciscaNeural",
         "rate": "+0%",
         "pitch": "+0Hz",
     },
+    "amigo_fabio": {
+        "label": "Amigo Fábio Neural (Fabio PT-BR — Jovem, Vibrante e Animado)",
+        "engine": "edge",
+        "voice": "pt-BR-FabioNeural",
+        "rate": "+2%",
+        "pitch": "+1Hz",
+    },
+    "amiga_leticia": {
+        "label": "Amiga Letícia Neural (Leticia PT-BR — Clara, Meiga e Doce)",
+        "engine": "edge",
+        "voice": "pt-BR-LeticiaNeural",
+        "rate": "+1%",
+        "pitch": "+1Hz",
+    },
     "gemini_puck": {
-        "label": "Google Gemini 3.8 Studio TTS — Puck (Alegre / Requer Chave Gemini)",
+        "label": "Google Gemini Studio TTS — Puck (Alegre & Enérgico / Via Gemini)",
         "engine": "gemini",
         "voice": "Puck",
         "fallback_edge": "pt-BR-AntonioNeural",
     },
     "gemini_sulafat": {
-        "label": "Google Gemini 3.8 Studio TTS — Sulafat (Acolhedora / Requer Chave Gemini)",
+        "label": "Google Gemini Studio TTS — Sulafat (Acolhedora & Suave / Via Gemini)",
         "engine": "gemini",
         "voice": "Sulafat",
         "fallback_edge": "pt-BR-ThalitaMultilingualNeural",
+    },
+    "gemini_charon": {
+        "label": "Google Gemini Studio TTS — Charon (Professor Curioso & Sábio / Via Gemini)",
+        "engine": "gemini",
+        "voice": "Charon",
+        "fallback_edge": "pt-BR-FabioNeural",
+    },
+    "gemini_fenrir": {
+        "label": "Google Gemini Studio TTS — Fenrir (Herói Confiante & Protetor / Via Gemini)",
+        "engine": "gemini",
+        "voice": "Fenrir",
+        "fallback_edge": "pt-BR-AntonioNeural",
+    },
+    "gemini_aoede": {
+        "label": "Google Gemini Studio TTS — Aoede (Narradora Mágica de Aventuras / Via Gemini)",
+        "engine": "gemini",
+        "voice": "Aoede",
+        "fallback_edge": "pt-BR-FranciscaNeural",
+    },
+    "gemini_kore": {
+        "label": "Google Gemini Studio TTS — Kore (Tranquila, Doce & Afetuosa / Via Gemini)",
+        "engine": "gemini",
+        "voice": "Kore",
+        "fallback_edge": "pt-BR-LeticiaNeural",
     },
 }
 

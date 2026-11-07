@@ -1,6 +1,17 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.0 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.1 — Stark Educational System (Para Kaleo Noah)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para computadores com recursos restritos, tendo como referência original o netbook **Acer Aspire One / Asus Eee PC** (`Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), rodando sobre **antiX Linux (32/64 bits)** ou **Windows**.
+
+---
+
+## 🌟 Novidades da Versão 3.1
+- 🤖 **Mascote Focado e Desobstruído:** Cômodos simplificados para **Sala de Brincar** e **Quarto de Dormir**, eliminando bandejas e elementos que obstruíam o robô e o botão principal de fala.
+- 🍎 **Novo Jogo de Educação Alimentar ("Prato dos Super Campeões"):** Prato interativo dividido em 4 grupos nutritivos (Proteínas para músculos, Legumes para escudo imunológico, Carboidratos para energia do cérebro, Frutas e Água para hidratação), com falas do Jarvis explicando os superpoderes de cada alimento e recompensa de +15 moedas.
+- 🧼 **Novo Jogo de Higiene Pessoal ("Super Herói Limpinho"):** 4 missões práticas (Lavar as mãos xô bactérias, escovação mágica dos dentes, banho relaxante dos campeões e corte de unhas/penteado) com recompensas e virtudes de autocuidado.
+- 🧭 **Geografia Ensinável no Clima:** Ensina a criança a se localizar no mundo (Planeta Terra 🌍 ➔ Brasil 🇧🇷 ➔ Estado 🗺️ ➔ Cidade 🏙️), com Cidade/Estado personalizáveis no Painel dos Pais.
+- 🔋 **Monitor Atento de Bateria do Netbook:** Avisos automáticos por voz carinhosa e banner superior quando a bateria cair para 20% e 10% (chamando os pais para plugar o carregador), e celebração sonora ao reconectar à tomada.
+- 🗣️ **11 Perfis de Voz Neural PT-BR:** Coleção expandida de vozes fluidas brasileiras (Antonio, Thalita, Francisca, Fábio, Letícia e vozes Studio Gemini), testáveis com 1 clique no painel ADM.
+- 🎮 **Gaveta de Atividades Zero Scroll:** Navegação tátil com 3 páginas de 4 cards grandes, pensada especialmente para a coordenação motora de crianças pequenas.
 
 ---
 

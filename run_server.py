@@ -45,6 +45,7 @@ from cognicao_jogos import cognition_mgr
 from datas_comemorativas import calendar_mgr
 from economia_fichas import token_mgr
 from educacao_alimentar import food_mgr
+from higiene_pessoal import hygiene_mgr
 import estudo_idiomas
 import escuta_jarvis
 from gestao_tempo_midia import MediaTimeManager
@@ -57,6 +58,13 @@ from voz_jarvis import VOICE_PROFILES, neural_tts
 app = Microdot()
 brain = JarvisBrain()
 media_mgr = MediaTimeManager(brain, database=db)
+
+# Inicializa localização meteorológica & geográfica
+weather_mgr.definir_localizacao(
+    brain.config.get("geo_cidade", "São Paulo"),
+    brain.config.get("geo_estado", "São Paulo"),
+    brain.config.get("geo_pais", "Brasil")
+)
 
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
@@ -94,7 +102,7 @@ def json_response(data: Any, status_code: int = 200) -> Response:
 
 
 def obter_nivel_bateria() -> Dict[str, Any]:
-    """Lê status e porcentagem da bateria sem bibliotecas pesadas."""
+    """Lê status e porcentagem da bateria sem bibliotecas pesadas (Linux e Windows nativos)."""
     sys_name = platform.system().lower()
     if sys_name == "linux":
         try:
@@ -112,9 +120,30 @@ def obter_nivel_bateria() -> Dict[str, Any]:
                 return {"presente": True, "porcentagem": cap, "carregando": carregando, "status": st}
         except Exception:
             pass
+    elif sys_name == "windows":
+        try:
+            import ctypes
+            class SYSTEM_POWER_STATUS(ctypes.Structure):
+                _fields_ = [
+                    ('ACLineStatus', ctypes.c_byte),
+                    ('BatteryFlag', ctypes.c_byte),
+                    ('BatteryLifePercent', ctypes.c_byte),
+                    ('SystemStatusFlag', ctypes.c_byte),
+                    ('BatteryLifeTime', ctypes.c_ulong),
+                    ('BatteryFullLifeTime', ctypes.c_ulong)
+                ]
+            status = SYSTEM_POWER_STATUS()
+            if ctypes.windll.kernel32.GetSystemPowerStatus(ctypes.byref(status)):
+                percent = int(status.BatteryLifePercent)
+                if percent != 255:  # 255 = status desconhecido
+                    carregando = status.ACLineStatus == 1
+                    st = "Carregando" if carregando else "Na Bateria"
+                    return {"presente": True, "porcentagem": percent, "carregando": carregando, "status": st}
+        except Exception:
+            pass
 
-    # Windows ou sem bateria detectada
-    return {"presente": True, "porcentagem": 88, "carregando": True, "status": "Plugged"}
+    # Fallback seguro para desktop sem bateria
+    return {"presente": False, "porcentagem": 100, "carregando": True, "status": "Plugged"}
 
 
 # ==============================================================================
@@ -221,6 +250,9 @@ def api_state(request: Request):
                 "voice_enabled": brain.config.get("voice_enabled", True),
                 "youtube_url": brain.config.get("youtube_url", "https://www.youtubekids.com"),
                 "netflix_url": brain.config.get("netflix_url", "https://www.netflix.com/Kids"),
+                "geo_cidade": brain.config.get("geo_cidade", "São Paulo"),
+                "geo_estado": brain.config.get("geo_estado", "São Paulo"),
+                "geo_pais": brain.config.get("geo_pais", "Brasil"),
             },
             "greeting": f"Olá, {brain.name}! Eu sou o Járvis! Seu companheiro de aventuras está pronto para brincar!",
             "local_ip": local_ip,
@@ -433,6 +465,23 @@ def api_alimentos_avaliar(request: Request):
 
 
 # ==============================================================================
+# ROTAS DE HIGIENE PESSOAL & AUTOCUIDADO INFANTIL
+# ==============================================================================
+
+
+@app.route("/api/higiene/missoes", methods=["GET"])
+def api_higiene_missoes(request: Request):
+    return json_response(hygiene_mgr.obter_missoes())
+
+
+@app.route("/api/higiene/concluir", methods=["POST"])
+def api_higiene_concluir(request: Request):
+    data = request.json or {}
+    missao_id = data.get("missao_id", "")
+    return json_response(hygiene_mgr.concluir_missao(missao_id))
+
+
+# ==============================================================================
 # ROTAS DE DATAS COMEMORATIVAS & CLIMA
 # ==============================================================================
 
@@ -458,6 +507,11 @@ def api_clima_atual(request: Request):
 @app.route("/api/clima/estacoes", methods=["GET"])
 def api_clima_estacoes(request: Request):
     return json_response(weather_mgr.obter_dados_estacoes())
+
+
+@app.route("/api/clima/geografia", methods=["GET"])
+def api_clima_geografia(request: Request):
+    return json_response(weather_mgr.obter_geografia_infantil())
 
 
 # ==============================================================================
@@ -814,9 +868,19 @@ def api_config(request: Request):
         "netflix_url",
         "youtube_url",
         "picovoice_access_key",
+        "geo_cidade",
+        "geo_estado",
+        "geo_pais",
     ):
         if key in data:
             brain.config[key] = data[key]
+
+    # Atualiza localização geográfica no clima
+    weather_mgr.definir_localizacao(
+        brain.config.get("geo_cidade", "São Paulo"),
+        brain.config.get("geo_estado", "São Paulo"),
+        brain.config.get("geo_pais", "Brasil")
+    )
 
     if "gemini_api_key" in data and data["gemini_api_key"].strip():
         brain.config["gemini_api_key"] = data["gemini_api_key"].strip()
