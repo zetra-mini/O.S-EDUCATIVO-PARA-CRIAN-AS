@@ -1,0 +1,110 @@
+name: Compilar Pacotes e Releases do JARVIS Kids OS
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-packages:
+    name: Compilar Pacotes (.deb, .AppImage, Desktop ZIP)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar Repositório
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: 📦 Instalar Dependências de Build
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y dpkg-dev binutils tar gzip
+          python -m pip install --upgrade pip
+          pip install microdot edge-tts pyinstaller
+
+      - name: 🏗️ 1. Compilar Pacote Debian (.deb)
+        run: |
+          VERSION="2.6.0"
+          ARCH="all"
+          DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
+          mkdir -p "${DEB_DIR}/DEBIAN"
+          mkdir -p "${DEB_DIR}/opt/jarvis-kids-os"
+          mkdir -p "${DEB_DIR}/usr/bin"
+          mkdir -p "${DEB_DIR}/usr/share/applications"
+
+          # Copia código fonte do SO
+          cp -r ./* "${DEB_DIR}/opt/jarvis-kids-os/" 2>/dev/null || true
+          rm -rf "${DEB_DIR}/opt/jarvis-kids-os/${DEB_DIR}"
+
+          # Script executável /usr/bin/jarvis-kids
+          cat << 'EOF' > "${DEB_DIR}/usr/bin/jarvis-kids"
+          #!/bin/sh
+          python3 /opt/jarvis-kids-os/deploy/desktop_app/jarvis_desktop.py "$@"
+          EOF
+          chmod +x "${DEB_DIR}/usr/bin/jarvis-kids"
+
+          # Arquivo .desktop
+          cat << 'EOF' > "${DEB_DIR}/usr/share/applications/jarvis-kids.desktop"
+          [Desktop Entry]
+          Name=JARVIS Kids OS
+          Comment=Sistema Operacional Educativo Inteligente para Crianças
+          Exec=/usr/bin/jarvis-kids
+          Icon=/opt/jarvis-kids-os/static/icons/icon-192.png
+          Terminal=false
+          Type=Application
+          Categories=Education;KidsGame;
+          EOF
+
+          # Metadados de controle DEBIAN
+          cat << EOF > "${DEB_DIR}/DEBIAN/control"
+          Package: jarvis-kids-os
+          Version: ${VERSION}
+          Section: education
+          Priority: optional
+          Architecture: ${ARCH}
+          Depends: python3, python3-pip, chromium-browser | google-chrome-stable | firefox
+          Maintainer: Equipe Jarvis Kids OS <contato@jarvis-kids.local>
+          Description: Sistema Operacional Educativo Inteligente para Crianças
+           O JARVIS Kids OS transforma netbooks modestos e desktops comuns em uma
+           estação educativa completa e segura, com IA afetuosa, controle dos pais e jogos.
+          EOF
+
+          dpkg-deb --build "${DEB_DIR}"
+          mv "${DEB_DIR}.deb" jarvis-kids-os_${VERSION}.deb
+          echo "✅ Pacote .deb gerado com sucesso!"
+
+      - name: 🏗️ 2. Empacotar Versão Autônoma Desktop (.tar.gz)
+        run: |
+          VERSION="2.6.0"
+          TAR_DIR="jarvis-kids-os-${VERSION}-desktop"
+          mkdir -p "${TAR_DIR}"
+          cp -r ./* "${TAR_DIR}/" 2>/dev/null || true
+          rm -rf "${TAR_DIR}/${TAR_DIR}"
+          tar -czf "jarvis-kids-os-${VERSION}-linux-desktop.tar.gz" "${TAR_DIR}"
+          echo "✅ Bundle autônomo gerado com sucesso!"
+
+      - name: 📤 Salvar Artefatos de Compilação
+        uses: actions/upload-artifact@v4
+        with:
+          name: jarvis-kids-os-packages
+          path: |
+            *.deb
+            *.tar.gz
+
+      - name: 🚀 Publicar GitHub Release (se for tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            *.deb
+            *.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

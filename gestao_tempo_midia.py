@@ -100,9 +100,43 @@ class MediaTimeManager:
         return int(self._load_usage().get("books_read", 0))
 
     def grant_bonus_minutes(self, minutes: int = 15):
+        """Libera tempo extra temporário com teto seguro para não ser cumulativo infinito."""
         data = self._load_usage()
-        data["bonus_minutes"] = int(data.get("bonus_minutes", 0)) + minutes
+        # Não permite acúmulo descontrolado: teto máximo de 45 minutos adicionais
+        atual = int(data.get("bonus_minutes", 0))
+        novo_bonus = min(45, max(atual, 0) + minutes)
+        data["bonus_minutes"] = novo_bonus
         self._save_usage(data)
+        return novo_bonus
+
+    def revoke_all_media_time(self) -> dict:
+        """
+        Remove imediatamente todo o tempo liberado de cinema (Ação Rápida dos Pais).
+        Trava o acesso ao YouTube Kids / Netflix e encerra processos de vídeo se houver.
+        """
+        data = self._load_usage()
+        data["bonus_minutes"] = 0
+        cfg = self.brain.config
+        daily_limit_min = int(cfg.get("media_daily_minutes", 25))
+        # Define os segundos assistidos como iguais ao limite diário para zerar os minutos restantes
+        data["seconds_watched"] = daily_limit_min * 60
+        self._save_usage(data)
+
+        # Encerra processo do navegador de mídia se estiver aberto
+        if self.browser_proc:
+            try:
+                self.browser_proc.terminate()
+            except Exception:
+                pass
+            self.browser_proc = None
+        self.session_active = False
+
+        return {
+            "ok": True,
+            "allowed": False,
+            "remaining_seconds": 0,
+            "message": "Cinema Stark travado com sucesso! Todo o tempo liberado foi removido pelos pais."
+        }
 
     def check_permission(self) -> dict:
         """Retorna se o Cinema está liberado agora, quantos segundos restam ou o motivo pedagógico."""

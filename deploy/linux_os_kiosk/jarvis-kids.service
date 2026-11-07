@@ -1,0 +1,22 @@
+[Unit]
+Description=JARVIS Kids OS Backend Ultraleve (Microdot ASGI/WSGI)
+Documentation=https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS
+After=network.target sound.target
+
+[Service]
+Type=simple
+User=jarvis
+WorkingDirectory=/opt/jarvis-kids-os
+ExecStart=/usr/bin/python3 /opt/jarvis-kids-os/run_server.py 8000
+Restart=always
+RestartSec=3
+KillMode=process
+LimitNOFILE=65536
+Environment=PYTHONUNBUFFERED=1
+Environment=JARVIS_PORT=8000
+
+# Gestão defensiva de memória para hardware modesto (Atom N450 com 1GB RAM)
+MemoryMax=180M
+
+[Install]
+WantedBy=multi-user.target

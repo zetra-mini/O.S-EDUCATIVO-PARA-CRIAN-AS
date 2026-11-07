@@ -411,6 +411,9 @@
         <button type="button" class="btn btn-success" onclick="giveBonus(15)">
           🎁 Liberar +15m Cinema
         </button>
+        <button type="button" class="btn" style="background:#dc2626; color:#ffffff; border:1px solid #ef4444;" onclick="zerarTempoCinema()">
+          🚫 Travar / Zerar Cinema
+        </button>
         <button type="button" class="btn btn-warning" id="btn-pause-toggle" onclick="togglePause()">
           🍽️ Pausar Tela Agora
         </button>
@@ -1093,6 +1096,20 @@
       await fetch('/api/media/bonus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ minutes: mins }) });
       showToast(`🎁 +${mins} minutos concedidos com sucesso!`);
       await carregarEstadoGeral();
+    }
+
+    async function zerarTempoCinema() {
+      if (!confirm('Deseja realmente bloquear o Cinema Stark e zerar todo o tempo restante agora?')) return;
+      try {
+        const res = await fetch('/api/admin/media/zerar', { method: 'POST' });
+        const d = await res.json();
+        showToast('🚫 ' + (d.message || 'Cinema travado e tempo zerado!'));
+        const el = document.getElementById('val-cinema');
+        if (el) el.textContent = '0m';
+        await carregarEstadoGeral();
+      } catch (e) {
+        showToast('Erro ao zerar tempo de cinema.');
+      }
     }
 
     async function togglePause() {

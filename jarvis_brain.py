@@ -111,16 +111,75 @@ class JarvisBrain:
 
     def _child_system_instruction(self) -> str:
         return (
-            f"Você é o J.A.R.V.I.S., o robozinho super fofo, companheiro, animado e protetor do pequeno {self.name} (criança de 4 anos). "
-            f"Você tem olhinhos azuis de neon brilhantes, um reator no peito e muito carinho pelo Kaleu!\n"
-            f"REGRAS INFANTIS INDISPENSÁVEIS:\n"
-            f"1. Fale sempre em Português do Brasil com carinho, bipes alegres (bip bip!), ternura e vocabulário simples e lúdico.\n"
-            f"2. Você é o assistente robô e melhor amigo do Kaleu.\n"
-            f"3. A criança NÃO SABE LER NEM ESCREVER! Sua resposta será ouvida em voz alta. Responda em no máximo 2 frases curtas e meigas!\n"
-            f"4. NUNCA use formatação markdown como asteriscos (*), hashtags (#), hifens (-) ou tópicos.\n"
-            f"5. Incentive o hábito de escovar os dentinhos, comer frutinhas, ler historinhas e respirar fundo quando ficar agitado.\n"
-            f"6. Termine com uma perguntinha divertida para ele responder falando no microfone!"
+            f"Você é o J.A.R.V.I.S., o robozinho super fofo, companheiro, animado e protetor do herói {self.name} (criança de 4 a 10 anos). "
+            f"Você tem olhinhos azuis de neon brilhantes, um reator no peito e muito carinho pelo {self.name}!\n"
+            f"DIRETRIZES FUNDAMENTAIS DE SEGURANÇA INFANTIL (ZERO RISCO):\n"
+            f"1. Fale SEMPRE em Português do Brasil com ternura, bipes alegres (bip bip!), afeto e vocabulário simples e lúdico.\n"
+            f"2. A criança está ouvindo sua voz em voz alta no netbook. NUNCA gere formatações markdown, asteriscos, códigos, links ou listas.\n"
+            f"3. Responda em no máximo 2 ou 3 frases curtas, doces, que façam sentido total para o universo infantil.\n"
+            f"4. NUNCA mencione violência, armas, sangue, morte, terror, pesadelos, bebidas, drogas, conteúdos adultos ou temas complexos.\n"
+            f"5. Se a criança perguntar algo impróprio, confuso ou fora do universo infantil, responda com doçura e redirecione para animais, brinquedos, naves ou dinossauros.\n"
+            f"6. Incentive sempre virtudes heróicas: arrumar os brinquedos, escovar os dentes, obedecer ao papai e à mamãe e respirar fundo com calma!"
         )
+
+    def sanitizar_resposta_infantil(self, raw_text: str) -> str:
+        """
+        Filtro de Segurança e Heurística de Conteúdo Infantil (Child-Safe Guardrails):
+        1. Remove qualquer marcação técnica (Markdown, HTML, JSON, código, chaves, asteriscos).
+        2. Detecta termos impróprios, violentos, pesados, adultos ou assustadores.
+        3. Se detectar conteúdo inadequado ou sem sentido, intercepta e substitui por resposta segura e carinhosa.
+        4. Garante frases curtas, afetuosas e fáceis de ouvir para uma criança de 4 a 10 anos.
+        """
+        if not raw_text or not isinstance(raw_text, str):
+            return f"Eu estou aqui com você, {self.name}! Sobre o que você quer conversar agora?"
+
+        text = raw_text.strip()
+
+        # Remove blocos de código e tags HTML
+        text = re.sub(r'```[\s\S]*?```', '', text)
+        text = re.sub(r'<[^>]+>', '', text)
+        # Remove asteriscos de negrito/itálico e hashtags
+        text = re.sub(r'[*#_`~]', '', text)
+
+        # Detecta alucinações de programação ou erros de sistema
+        padroes_tecnicos = [
+            r'def\s+\w+\(', r'function\s*\(', r'import\s+\w+', r'undefined', r'null', r'NaN',
+            r'traceback', r'exception', r'http[s]?://', r'\{[\s\S]*?\}', r'\[[\s\S]*?\]'
+        ]
+        for p in padroes_tecnicos:
+            if re.search(p, text, re.IGNORECASE):
+                return f"Que pergunta legal, {self.name}! O Jarvis adora conversar com você! Vamos brincar de adivinhar animais agora?"
+
+        # Lista de Termos Sensíveis/Inadequados para Crianças (Blacklist de Segurança Infantil)
+        termos_inapropriados = [
+            'morte', 'morrer', 'matar', 'assassino', 'arma', 'tiro', 'revólver', 'faca', 'sangue',
+            'violência', 'violento', 'briga', 'bater', 'machucar', 'espancar', 'terror', 'monstro do mal',
+            'pesadelo', 'assombração', 'fantasma mau', 'inferno', 'demônio', 'droga', 'remédio escondido',
+            'veneno', 'álcool', 'cerveja', 'cigarro', 'fumar', 'crime', 'ladrão', 'presídio', 'cadeia',
+            'sexo', 'nudez', 'pornografia', 'palavrão', 'merda', 'bosta', 'porra', 'caralho', 'desgraça',
+            'maldito', 'política', 'partido', 'eleição', 'guerra', 'bomba', 'explosão fatal'
+        ]
+        text_lower = text.lower()
+        for termo in termos_inapropriados:
+            if re.search(r'\b' + re.escape(termo) + r'\b', text_lower):
+                return (
+                    f"Essa é uma curiosidade para quando você crescer mais um pouquinho, super-herói {self.name}! "
+                    f"Que tal a gente inventar uma historinha bem divertida de animais ou naves espaciais agora?"
+                )
+
+        # Limpeza de espaçamentos múltiplos
+        text = re.sub(r'\s+', ' ', text).strip()
+
+        # Se ficou muito curto ou vazio
+        if len(text) < 4:
+            return f"Bip bip! Eu te ouvi, {self.name}! Vamos brincar juntos?"
+
+        # Limita a 2 a 3 frases no máximo para não sobrecarregar a fala
+        frases = re.split(r'([.!?]+)', text)
+        if len(frases) > 6:
+            text = "".join(frases[:6]).strip()
+
+        return text
 
     def interpret_command(self, user_text: str) -> dict:
         """
@@ -553,45 +612,45 @@ class JarvisBrain:
         if prov == "opencode":
             ans = self._call_opencode(user_input)
             if ans:
-                return ans, "opencode"
+                return self.sanitizar_resposta_infantil(ans), "opencode"
             # Fallback para Ollama se disponível localmente
             ans_local = self._call_ollama(user_input)
             if ans_local:
-                return ans_local, "ollama"
+                return self.sanitizar_resposta_infantil(ans_local), "ollama"
 
         elif prov == "gemini":
             ans = self._call_gemini_interactions(user_input)
             if ans:
-                return ans, "gemini"
+                return self.sanitizar_resposta_infantil(ans), "gemini"
             # Fallback para Ollama se disponível localmente
             ans_local = self._call_ollama(user_input)
             if ans_local:
-                return ans_local, "ollama"
+                return self.sanitizar_resposta_infantil(ans_local), "ollama"
 
         elif prov == "openai":
             ans = self._call_openai(user_input)
             if ans:
-                return ans, "openai"
+                return self.sanitizar_resposta_infantil(ans), "openai"
             ans_local = self._call_ollama(user_input)
             if ans_local:
-                return ans_local, "ollama"
+                return self.sanitizar_resposta_infantil(ans_local), "ollama"
 
         elif prov == "groq":
             ans = self._call_groq(user_input)
             if ans:
-                return ans, "groq"
+                return self.sanitizar_resposta_infantil(ans), "groq"
             ans_local = self._call_ollama(user_input)
             if ans_local:
-                return ans_local, "ollama"
+                return self.sanitizar_resposta_infantil(ans_local), "ollama"
 
         elif prov == "ollama":
             ans_local = self._call_ollama(user_input)
             if ans_local:
-                return ans_local, "ollama"
+                return self.sanitizar_resposta_infantil(ans_local), "ollama"
             if self.get_effective_gemini_key():
                 ans_gem = self._call_gemini_interactions(user_input)
                 if ans_gem:
-                    return ans_gem, "gemini"
+                    return self.sanitizar_resposta_infantil(ans_gem), "gemini"
 
         return "", ""
 

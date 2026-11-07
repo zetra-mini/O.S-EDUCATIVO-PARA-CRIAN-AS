@@ -2318,6 +2318,14 @@
         </div>
       </div>
 
+      <div class="drawer-card-item drawer-card-p1" onclick="abrirAtividadeDrawer(openSpeechTrainingGame)">
+        <div class="drawer-card-icon">🗣️</div>
+        <div>
+          <div class="drawer-card-name">Fonoaudiologia & Dicção do Herói</div>
+          <div class="drawer-card-desc">Treino de pronúncia, sílabas e trava-línguas</div>
+        </div>
+      </div>
+
       <div class="drawer-card-item drawer-card-p1" onclick="abrirAtividadeDrawer(openLiteracyAcademy)">
         <div class="drawer-card-icon">🔤</div>
         <div>
@@ -3010,10 +3018,10 @@
     }, 4500);
 
     // =========================================================================
-    // CENTRAL DE JOGOS & ESTUDOS DO KALEO (PAGINADO, ZERO SCROLL, 16 JOGOS)
+    // CENTRAL DE JOGOS & ESTUDOS DO KALEO (PAGINADO, ZERO SCROLL, 17 JOGOS)
     // =========================================================================
     let paginaJogosModalAtual = 1;
-    const TOTAL_PAGINAS_JOGOS = 4;
+    const TOTAL_PAGINAS_JOGOS = 5;
 
     const JOGOS_KATALOGO = [
       // PÁGINA 1: HISTÓRIAS, LETRINHAS, DEDINHOS E IDIOMAS
@@ -3166,6 +3174,17 @@
         icone: '🔷',
         cor: '#6366f1',
         acao: () => abrirFormasCoresModal()
+      },
+
+      // PÁGINA 5: FONOAUDIOLOGIA & DICÇÃO DO HERÓI (APRENDA A FALAR)
+      {
+        id: 'diccao',
+        pagina: 5,
+        nome: 'Fonoaudiologia & Dicção do Herói',
+        desc: 'Treino de pronúncia, sílabas e trava-línguas do herói',
+        icone: '🗣️',
+        cor: '#ec4899',
+        acao: () => openSpeechTrainingGame()
       }
     ];
 
@@ -3221,7 +3240,7 @@
               ◀ Página Anterior
             </button>
             <div style="display:flex; align-items:center; gap:8px;">
-              ${[1, 2, 3, 4].map(p => `
+              ${Array.from({length: TOTAL_PAGINAS_JOGOS}, (_, i) => i + 1).map(p => `
                 <span onclick="mudarPaginaMenuJogosDireto(${p})" style="width:14px; height:14px; border-radius:50%; background:${p === paginaJogosModalAtual ? '#38bdf8' : '#334155'}; cursor:pointer; box-shadow:${p === paginaJogosModalAtual ? '0 0 10px #38bdf8' : 'none'};"></span>
               `).join('')}
               <span style="font-size:0.95rem; font-weight:900; color:#38bdf8; margin-left:6px;">${paginaJogosModalAtual} / ${TOTAL_PAGINAS_JOGOS}</span>
@@ -8471,6 +8490,294 @@
     }
 
     // =========================================================================
+    // 5.4 FONOAUDIOLOGIA & DICÇÃO DO HERÓI (ENSINA A FALAR PALAVRAS & BOA DICÇÃO)
+    // =========================================================================
+    let abaDiccaoAtiva = 'silabas'; // 'silabas' | 'palavras' | 'travalinguas'
+    let indiceDiccaoAtual = 0;
+    let palavrasTreinadasHoje = 0;
+
+    const TREINO_DICCAO_BANCO = {
+      silabas: [
+        {
+          id: 's1',
+          titulo: 'Som do R Vibrante (Ponta da Língua)',
+          palavra: 'A - RA - RA',
+          silabas: ['A', 'RA', 'RA'],
+          destaque: 'RA - RE - RI - RO - RU',
+          dica: 'Vibre a pontinha da língua no céu da boca: R-R-R-A!',
+          fala_lenta: 'A... RA... RA... Muito bem! A arara voa alto e canta alegre!',
+          icone: '🦜',
+          cor: '#f59e0b'
+        },
+        {
+          id: 's2',
+          titulo: 'Som do R Forte (Garganta)',
+          palavra: 'RA - TO',
+          silabas: ['RA', 'TO'],
+          destaque: 'RA - RE - RI - RO - RU',
+          dica: 'Solte o arzinho na garganta como um gatinho ronronando: R-R-R-A-TO!',
+          fala_lenta: 'RA... TO... Que dicção forte de super herói!',
+          icone: '🐭',
+          cor: '#ef4444'
+        },
+        {
+          id: 's3',
+          titulo: 'Encontro Consonantal TR & PR',
+          palavra: 'PRA - TO',
+          silabas: ['PRA', 'TO'],
+          destaque: 'PRA - PRE - PRI - PRO - PRU',
+          dica: 'Junte os lábios no P e solte no R: P-R-A!',
+          fala_lenta: 'PRA... TO... O prato dos campeões com comidinha saudável!',
+          icone: '🍽️',
+          cor: '#10b981'
+        },
+        {
+          id: 's4',
+          titulo: 'Som do Sopro Suave S',
+          palavra: 'SA - PO',
+          silabas: ['SA', 'PO'],
+          destaque: 'SA - SE - SI - SO - SU',
+          dica: 'Dê um sorrisinho e solte o vento pelos dentes: S-S-S-A!',
+          fala_lenta: 'SA... PO... O sapinho pula bem alto na lagoa!',
+          icone: '🐸',
+          cor: '#06b6d4'
+        },
+        {
+          id: 's5',
+          titulo: 'Som do Trenzinho Chiado CH',
+          palavra: 'CHO - CO - LA - TE',
+          silabas: ['CHO', 'CO', 'LA', 'TE'],
+          destaque: 'CHA - CHE - CHI - CHO - CHU',
+          dica: 'Faça o biquinho do trenzinho: CH-CH-CH!',
+          fala_lenta: 'CHO... CO... LA... TE... Que delícia de palavra!',
+          icone: '🍫',
+          cor: '#8b5cf6'
+        }
+      ],
+      palavras: [
+        {
+          id: 'p1',
+          titulo: 'Palavra das Estrelas (4 Sílabas)',
+          palavra: 'AS - TRO - NAU - TA',
+          silabas: ['AS', 'TRO', 'NAU', 'TA'],
+          destaque: '4 Sílabas Poderosas',
+          dica: 'Bata uma palminha para cada pedacinho: AS - TRO - NAU - TA!',
+          fala_lenta: 'AS... TRO... NAU... TA... Rumo ao espaço sideral com o Jarvis!',
+          icone: '👨‍🚀',
+          cor: '#38bdf8'
+        },
+        {
+          id: 'p2',
+          titulo: 'Cores da Natureza (4 Sílabas)',
+          palavra: 'BOR - BO - LE - TA',
+          silabas: ['BOR', 'BO', 'LE', 'TA'],
+          destaque: '4 Sílabas Suaves',
+          dica: 'Abra bem a boca nas vogais O e E: BOR - BO - LE - TA!',
+          fala_lenta: 'BOR... BO... LE... TA... As asas voam no jardim!',
+          icone: '🦋',
+          cor: '#ec4899'
+        },
+        {
+          id: 'p3',
+          titulo: 'Gigante Pré-Histórico (4 Sílabas)',
+          palavra: 'DI - NOS - SAU - RO',
+          silabas: ['DI', 'NOS', 'SAU', 'RO'],
+          destaque: '4 Sílabas Fortes',
+          dica: 'Fale com voz de dinossauro corajoso: DI - NOS - SAU - RO!',
+          fala_lenta: 'DI... NOS... SAU... RO... Rugido forte de herói!',
+          icone: '🦖',
+          cor: '#22c55e'
+        },
+        {
+          id: 'p4',
+          titulo: 'Máquina dos Ares (5 Sílabas)',
+          palavra: 'HE - LI - CÓP - TE - RO',
+          silabas: ['HE', 'LI', 'CÓP', 'TE', 'RO'],
+          destaque: '5 Sílabas Desafiadoras',
+          dica: 'Respire fundo e articule devagar: HE - LI - CÓP - TE - RO!',
+          fala_lenta: 'HE... LI... CÓP... TE... RO... As hélices estão girando nos céus!',
+          icone: '🚁',
+          cor: '#f97316'
+        }
+      ],
+      travalinguas: [
+        {
+          id: 't1',
+          titulo: 'Trava-Língua do Rei e do Ratinho',
+          palavra: 'O rato roeu a roupa do rei de Roma!',
+          silabas: ['O', 'ra-to', 'ro-eu', 'a', 'rou-pa', 'do', 'rei', 'de', 'Ro-ma!'],
+          destaque: 'Treino de R Forte e Rápido',
+          dica: 'Fale devagarzinho primeiro e depois tente falar sem tropeçar!',
+          fala_lenta: 'O... rato... roeu... a... roupa... do... rei... de... Roma!',
+          icone: '👑',
+          cor: '#eab308'
+        },
+        {
+          id: 't2',
+          titulo: 'Trava-Língua dos Três Tigres',
+          palavra: 'Três pratos de trigo para três tigres tristes!',
+          silabas: ['Três', 'pra-tos', 'de', 'tri-go', 'pa-ra', 'três', 'ti-gres', 'tris-tes!'],
+          destaque: 'Treino de TR e PR',
+          dica: 'Cuidado para não enrolar a língua nos pratinhos!',
+          fala_lenta: 'Três... pratos... de... trigo... para... três... tigres... tristes!',
+          icone: '🐯',
+          cor: '#f97316'
+        },
+        {
+          id: 't3',
+          titulo: 'Trava-Língua do Sapo no Saco',
+          palavra: 'Olha o sapo dentro do saco, o saco com o sapo dentro!',
+          silabas: ['O-lha', 'o', 'sa-po', 'den-tro', 'do', 'sa-co!'],
+          destaque: 'Treino do som do S',
+          dica: 'O sapo cantando e o saco batendo papo!',
+          fala_lenta: 'Olha... o... sapo... dentro... do... saco... o... saco... com... o... sapo... dentro!',
+          icone: '🛍️',
+          cor: '#10b981'
+        }
+      ]
+    };
+
+    function openSpeechTrainingGame() {
+      pushModalScreen('🗣️ FONOAUDIOLOGIA & DICÇÃO DO HERÓI', (body) => {
+        playTone(523, 90);
+        speak(`Bem-vindo à Academia de Fala e Dicção, ${appState.config.child_name || 'Kaleo'}! Vamos treinar a boquinha e falar palavras incríveis!`);
+        renderSpeechTrainingBody(body);
+      }, true);
+    }
+
+    function renderSpeechTrainingBody(body) {
+      const listaAtual = TREINO_DICCAO_BANCO[abaDiccaoAtiva] || TREINO_DICCAO_BANCO.silabas;
+      if (indiceDiccaoAtual >= listaAtual.length) indiceDiccaoAtual = 0;
+      const item = listaAtual[indiceDiccaoAtual];
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box; overflow:hidden;">
+          
+          <!-- TOPO: ABAS DE CATEGORIA DE DICÇÃO -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.92rem; font-weight:800; ${abaDiccaoAtiva === 'silabas' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('silabas')">
+                🗣️ Sílabas & Sons (R, L, S, CH)
+              </button>
+              <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.92rem; font-weight:800; ${abaDiccaoAtiva === 'palavras' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('palavras')">
+                ⭐ Palavras Poderosas
+              </button>
+              <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.92rem; font-weight:800; ${abaDiccaoAtiva === 'travalinguas' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b; opacity:0.8;'}" onclick="alternarAbaDiccao('travalinguas')">
+                🎪 Trava-Línguas Divertidos
+              </button>
+            </div>
+            <span style="font-size:0.85rem; font-weight:800; background:#064e3b; color:#a7f3d0; border:1px solid #10b981; padding:4px 10px; border-radius:999px;">
+              🌟 Palavras praticadas: ${palavrasTreinadasHoje}
+            </span>
+          </div>
+
+          <!-- ÁREA CENTRAL DO TREINO (CARD GIGANTE DE ALTO CONTRASTE) -->
+          <div style="background:linear-gradient(145deg, #0b1a33 0%, #060e1e 100%); border:3px solid ${item.cor}; border-radius:20px; padding:18px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; flex:1; min-height:260px; box-shadow:0 0 30px ${item.cor}33; text-align:center;">
+            
+            <div style="display:flex; align-items:center; gap:12px;">
+              <span style="font-size:3.5rem; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));">${item.icone}</span>
+              <div>
+                <span style="background:#1e293b; color:#38bdf8; border:1px solid #38bdf8; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">${item.destaque}</span>
+                <div style="font-size:1.15rem; font-weight:900; color:#ffffff; margin-top:4px;">${item.titulo}</div>
+              </div>
+            </div>
+
+            <!-- SÍLABAS EM DESTAQUE NEON GIGANTE -->
+            <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin:4px 0;">
+              ${item.silabas.map(s => `
+                <div style="background:#030712; border:2.5px solid ${item.cor}; color:#ffffff; font-size:2.2rem; font-weight:900; padding:8px 18px; border-radius:14px; box-shadow:0 0 16px ${item.cor}66; letter-spacing:1px;">
+                  ${s}
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- DICA FONOAUDIOLÓGICA DE FALA -->
+            <div style="background:rgba(15,23,42,0.8); border:1.5px solid #334155; border-radius:12px; padding:8px 16px; max-width:620px; color:#e2e8f0; font-size:0.95rem; font-weight:700;">
+              💡 <strong>Dica da Boquinha:</strong> ${item.dica}
+            </div>
+
+            <!-- BOTÕES DE AÇÃO: OUVIR E FALAR COM O JARVIS -->
+            <div style="display:flex; gap:12px; justify-content:center; width:100%; max-width:540px; margin-top:4px;">
+              <button type="button" class="big-btn" style="flex:1; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #38bdf8; padding:10px 16px; font-size:1.02rem; font-weight:900;" onclick="ouvirJarvisFalarPalavra('${item.fala_lenta.replace(/'/g, "\\'")}')">
+                🔊 Ouvir o Jarvis Falar
+              </button>
+              <button type="button" class="big-btn" id="btn-diccao-falar" style="flex:1; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; padding:10px 16px; font-size:1.02rem; font-weight:900;" onclick="treinarMinhaVozDiccao('${item.palavra.replace(/'/g, "\\'")}')">
+                🎙️ Minha Vez de Falar!
+              </button>
+            </div>
+
+          </div>
+
+          <!-- RODAPÉ DE NAVEGAÇÃO TÁTIL -->
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#071224; border:1.5px solid #1e293b; border-radius:14px; padding:8px 16px;">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1.5px solid #475569; padding:8px 18px; font-size:0.95rem; font-weight:900;" onclick="mudarItemDiccao(-1)">
+              ◀ Palavra Anterior
+            </button>
+            <span style="font-size:0.95rem; font-weight:900; color:#38bdf8;">
+              Item ${indiceDiccaoAtual + 1} de ${listaAtual.length}
+            </span>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:1.5px solid #38bdf8; padding:8px 18px; font-size:0.95rem; font-weight:900;" onclick="mudarItemDiccao(1)">
+              Próxima Palavra ▶
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function alternarAbaDiccao(aba) {
+      abaDiccaoAtiva = aba;
+      indiceDiccaoAtual = 0;
+      playTone(587, 80);
+      const body = document.getElementById('modal-body');
+      if (body) renderSpeechTrainingBody(body);
+    }
+
+    function mudarItemDiccao(delta) {
+      const listaAtual = TREINO_DICCAO_BANCO[abaDiccaoAtiva] || TREINO_DICCAO_BANCO.silabas;
+      indiceDiccaoAtual = ((indiceDiccaoAtual + delta + listaAtual.length) % listaAtual.length);
+      playTone(659, 80);
+      const body = document.getElementById('modal-body');
+      if (body) renderSpeechTrainingBody(body);
+    }
+
+    function ouvirJarvisFalarPalavra(frase) {
+      pararTodosAudiosESpeech();
+      playTone(523, 70);
+      speak(frase);
+    }
+
+    async function treinarMinhaVozDiccao(palavraAlvo) {
+      pararTodosAudiosESpeech();
+      playTone(880, 150);
+      soltarCoracoes();
+      palavrasTreinadasHoje++;
+
+      // Efeito visual na boca do robô
+      const mouthSmile = document.getElementById('pou-mouth-smile');
+      const eyesHappy = document.getElementById('robot-eyes-happy');
+      if (eyesHappy) eyesHappy.style.display = 'block';
+
+      showToast(`🌟 Sensacional! Pronúncia de "${palavraAlvo}" Nota 10! +5 Moedas!`);
+      speak(`Sensacional, super-herói ${appState.config.child_name || 'Kaleo'}! Sua pronúncia e dicção ficaram perfeitas! Você ganhou cinco moedas de herói!`);
+
+      try {
+        await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ quantidade: 5, motivo: `Treino de Dicção: ${palavraAlvo}` })
+        });
+        atualizarPoteVisual();
+      } catch (e) {}
+
+      setTimeout(() => {
+        if (eyesHappy && voiceState !== 'speaking') eyesHappy.style.display = 'none';
+        const body = document.getElementById('modal-body');
+        if (body) renderSpeechTrainingBody(body);
+      }, 1800);
+    }
+
+    // =========================================================================
     // 5.5 CLIMA DE HOJE & AS 4 ESTAÇÕES DO ANO (INTERATIVO & PEDAGÓGICO)
     // =========================================================================
     let hasExploredSeasonsOnce = false;
@@ -10101,6 +10408,33 @@
           atualizarMonitorBateria(data.bateria);
         }
 
+        // 4.1 AVISO E PERGUNTA DE CINEMA LIBERADO POR HORÁRIO
+        if (data.media_permission) {
+          appState.media_permission = data.media_permission;
+          if (data.media_permission.allowed) {
+            const janelaKey = `${data.media_permission.remaining_seconds > 0}_${data.config ? data.config.media_start_time : ''}_${data.config ? data.config.media_end_time : ''}`;
+            if (!window._cinemaNotificadoKey || window._cinemaNotificadoKey !== janelaKey) {
+              window._cinemaNotificadoKey = janelaKey;
+              const modalOverlay = document.getElementById('modal-overlay');
+              const isModalOpen = modalOverlay && modalOverlay.classList.contains('active');
+              if (!isModalOpen) {
+                const relModal = document.getElementById('media-time-release-modal');
+                if (relModal && relModal.style.display !== 'flex') {
+                  relModal.style.display = 'flex';
+                  pararTodosAudiosESpeech();
+                  playTone(587, 100);
+                  speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! O Cinema Stark foi liberado pelos seus pais! Você gostaria de assistir agora?`);
+                }
+              }
+            }
+          } else {
+            const relModal = document.getElementById('media-time-release-modal');
+            if (relModal && relModal.style.display === 'flex') {
+              relModal.style.display = 'none';
+            }
+          }
+        }
+
         // 5. ALARME SONORO E VISUAL DE ROTINA DISPARADO PELOS PAIS
         if (data.alarme && data.alarme.ativo && (!window._alarmeAtivoId || window._alarmeAtivoId !== data.alarme.id)) {
           dispararAlarmeVisualESonoro(data.alarme);
@@ -10321,6 +10655,19 @@
       dispararIntervencaoSosLocal('guardar_brinquedos');
     }
 
+    function aceitarCinemaLiberado() {
+      const m = document.getElementById('media-time-release-modal');
+      if (m) m.style.display = 'none';
+      openCinemaStark();
+    }
+
+    function recusarCinemaLiberado() {
+      const m = document.getElementById('media-time-release-modal');
+      if (m) m.style.display = 'none';
+      playTone(523, 80);
+      speak(`Combinado, ${appState.config.child_name || 'Kaleo'}! Vamos continuar nos divertindo com as nossas brincadeiras!`);
+    }
+
     // CARREGAMENTO INSTANTÂNEO NO ARRANQUE (BOOT NO SEGUNDO ZERO)
     async function carregarEstadoBootInicial() {
       try {
@@ -10340,6 +10687,24 @@
     }
     carregarEstadoBootInicial();
   </script>
+  <!-- OVERLAY DE LIBERAÇÃO DE HORÁRIO DE CINEMA COM PERGUNTA AO USUÁRIO -->
+  <div id="media-time-release-modal" style="display:none; position:fixed; inset:0; background:rgba(4,10,24,0.92); backdrop-filter:blur(14px); z-index:910; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:linear-gradient(145deg, #1e1035 0%, #0c0618 100%); border:3px solid #c084fc; border-radius:24px; padding:24px 20px; max-width:540px; width:100%; text-align:center; box-shadow:0 0 50px rgba(192,132,252,0.6); display:flex; flex-direction:column; align-items:center; gap:14px; box-sizing:border-box;">
+      <div style="font-size:4.2rem; filter:drop-shadow(0 0 20px #c084fc);">🎬🍿</div>
+      <div style="font-size:1.35rem; font-weight:900; color:#f3e8ff;">CINEMA STARK LIBERADO PELA FAMÍLIA!</div>
+      <div id="media-release-text" style="font-size:1.05rem; color:#ffffff; line-height:1.4; background:rgba(15,23,42,0.7); border:1.5px solid #a855f7; border-radius:14px; padding:12px 16px; width:100%; box-sizing:border-box;">
+        O papai e a mamãe liberaram o Cinema Stark! Você gostaria de assistir aos seus vídeos favoritos agora ou prefere continuar brincando?
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+        <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; font-size:1.1rem; padding:12px 20px; font-weight:900;" onclick="aceitarCinemaLiberado()">
+          🎬 SIM, QUERO ASSISTIR AGORA!
+        </button>
+        <button type="button" class="big-btn" style="background:#1e293b; border:2px solid #475569; font-size:1rem; padding:10px 20px; color:#cbd5e1; font-weight:800;" onclick="recusarCinemaLiberado()">
+          🎮 DEPOIS, QUERO CONTINUAR BRINCANDO!
+        </button>
+      </div>
+    </div>
+  </div>
   <!-- TELA DE PAUSA REMOTA DOS PAIS (ALMOÇO / JANTAR) -->
   <div id="remote-pause-screen" style="position:fixed; inset:0; background:radial-gradient(circle, #78350f 0%, #040914 90%); z-index:9000; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
     <div style="font-size:6rem; margin-bottom:16px;">🍽️</div>

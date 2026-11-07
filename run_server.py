@@ -99,13 +99,15 @@ def get_local_ip() -> str:
 
 
 def json_response(data: Any, status_code: int = 200) -> Response:
-    """Helper ultraleve para respostas JSON com serialização compacta e permissões de mídia."""
+    """Helper ultraleve para respostas JSON com serialização compacta e permissões de mídia seguras."""
     return Response(
         body=json.dumps(data, ensure_ascii=False),
         status_code=status_code,
         headers={
             "Content-Type": "application/json; charset=utf-8",
             "Access-Control-Allow-Origin": "*",
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "SAMEORIGIN",
             "Permissions-Policy": "microphone=(self), camera=(self)",
         },
     )
@@ -207,9 +209,11 @@ def service_worker(request: Request):
 
 @app.route("/static/<path:path>")
 def static_files(request: Request, path: str):
-    """Serve imagens, sons e sprites diretamente do disco em pequenos blocos."""
-    safe_path = os.path.normpath(path).lstrip(os.sep).lstrip("/").lstrip("\\")
-    full_path = os.path.join(STATIC_DIR, safe_path)
+    """Serve imagens, sons e sprites diretamente do disco com proteção estrita contra Path Traversal."""
+    base_static = os.path.abspath(STATIC_DIR)
+    full_path = os.path.abspath(os.path.join(base_static, path))
+    if not full_path.startswith(base_static):
+        return Response("Acesso negado: fora do diretório permitido", status_code=403)
 
     if not os.path.exists(full_path) or not os.path.isfile(full_path):
         return Response("Arquivo não encontrado", status_code=404)
@@ -585,6 +589,11 @@ def api_admin_mensagem_enviar(request: Request):
     texto = data.get("texto") or data.get("conteudo_texto", "")
     midia = data.get("caminho_midia", "")
     midia_base64 = data.get("midia_base64", "")
+    if midia_base64 and len(midia_base64) > 25 * 1024 * 1024:
+        return json_response(
+            {"sucesso": False, "erro": "Arquivo muito grande. O limite de segurança do netbook é de 20MB."},
+            status_code=413
+        )
     res = messages_mgr.enviar_mensagem(
         remetente=remetente,
         tipo=tipo,
@@ -1011,8 +1020,16 @@ def api_media_tick(request: Request):
 def api_media_bonus(request: Request):
     data = request.json or {}
     mins = int(data.get("minutes", 15))
-    media_mgr.grant_bonus_minutes(mins)
-    return json_response({"ok": True, "added": mins})
+    novo_bonus = media_mgr.grant_bonus_minutes(mins)
+    return json_response({"ok": True, "added": mins, "total_bonus": novo_bonus})
+
+
+@app.route("/api/media/zerar", methods=["POST"])
+@app.route("/api/admin/media/zerar", methods=["POST"])
+def api_admin_media_zerar(request: Request):
+    """Zera e trava todo o tempo de cinema liberado imediatamente."""
+    res = media_mgr.revoke_all_media_time()
+    return json_response(res)
 
 
 @app.route("/api/media/close", methods=["POST"])
