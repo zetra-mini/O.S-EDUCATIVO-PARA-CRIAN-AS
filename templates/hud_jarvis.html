@@ -3363,7 +3363,7 @@
     // CENTRAL DE JOGOS & ESTUDOS DO KALEO (PAGINADO, ZERO SCROLL, 17 JOGOS)
     // =========================================================================
     let paginaJogosModalAtual = 1;
-    const TOTAL_PAGINAS_JOGOS = 5;
+    const TOTAL_PAGINAS_JOGOS = 6;
 
     const JOGOS_KATALOGO = [
       // PÁGINA 1: HISTÓRIAS, LETRINHAS, DEDINHOS E IDIOMAS
@@ -3518,7 +3518,7 @@
         acao: () => abrirFormasCoresModal()
       },
 
-      // PÁGINA 5: FONOAUDIOLOGIA & DICÇÃO DO HERÓI (APRENDA A FALAR)
+      // PÁGINA 5: DICÇÃO, SISTEMA SOLAR, REINO ANIMAL E O RELÓGIO MÁGICO
       {
         id: 'diccao',
         pagina: 5,
@@ -3527,6 +3527,71 @@
         icone: '🗣️',
         cor: '#ec4899',
         acao: () => openSpeechTrainingGame()
+      },
+      {
+        id: 'solar',
+        pagina: 5,
+        nome: 'Sistema Solar & Planetas do Universo',
+        desc: 'Pilote a nave espacial, visite planetas e estrelas',
+        icone: '🪐',
+        cor: '#8b5cf6',
+        acao: () => openSolarSystemGame()
+      },
+      {
+        id: 'animais',
+        pagina: 5,
+        nome: 'Reino Animal & Sons da Natureza',
+        desc: 'Descubra os animais, habitats e adivinhe o som',
+        icone: '🦁',
+        cor: '#f59e0b',
+        acao: () => openAnimalSoundsGame()
+      },
+      {
+        id: 'relogio',
+        pagina: 5,
+        nome: 'O Relógio Mágico do Tempo & Horas',
+        desc: 'Aprenda horas, minutos, dia, noite e rotina',
+        icone: '⏰',
+        cor: '#06b6d4',
+        acao: () => openMagicClockGame()
+      },
+
+      // PÁGINA 6: DETETIVE STARK, CIÊNCIAS, ACADEMIA DE XADREZ E DINOSSAUROS
+      {
+        id: 'detetive',
+        pagina: 6,
+        nome: 'Detetive Stark: Jogo dos 7 Erros',
+        desc: 'Olhos de águia para encontrar detalhes secretos',
+        icone: '🕵️',
+        cor: '#10b981',
+        acao: () => openDetectiveErrorsGame()
+      },
+      {
+        id: 'ciencias',
+        pagina: 6,
+        nome: 'Laboratório de Misturas & Ciências',
+        desc: 'Cores mágicas, estados da água e super ímã',
+        icone: '🔬',
+        cor: '#3b82f6',
+        acao: () => openScienceLabGame()
+      },
+      {
+        id: 'xadrez',
+        pagina: 6,
+        nome: 'Academia de Xadrez do Pequeno Mestre',
+        desc: 'Peão, Cavalo em L, Torre e grandes jogadas',
+        icone: '♟️',
+        cor: '#eab308',
+        acao: () => openChessAcademyGame()
+      },
+      {
+        id: 'dinossauros',
+        pagina: 6,
+        nome: 'Parque dos Dinossauros & Fósseis Stark',
+        desc: 'Escave fósseis de T-Rex e monte o esqueleto gigante',
+        icone: '🦖',
+        cor: '#ef4444',
+        acao: () => openDinosaurFossilsGame()
       }
     ];
 
@@ -4619,6 +4684,13 @@
               openSpeechTrainingGame();
               setTimeout(() => sortearNovaPalavraMagicaJarvis(), 350);
             }
+            else if (data.acao_frontend === 'abrir_sistema_solar') openSolarSystemGame();
+            else if (data.acao_frontend === 'abrir_reino_animal') openAnimalSoundsGame();
+            else if (data.acao_frontend === 'abrir_relogio_tempo') openMagicClockGame();
+            else if (data.acao_frontend === 'abrir_detetive_erros') openDetectiveErrorsGame();
+            else if (data.acao_frontend === 'abrir_ciencias_misturas') openScienceLabGame();
+            else if (data.acao_frontend === 'abrir_xadrez_mestre') openChessAcademyGame();
+            else if (data.acao_frontend === 'abrir_dinossauros_fosseis') openDinosaurFossilsGame();
 
             // O MICROFONE PERMANECE 100% DESLIGADO! ZERO WAKE-WORD. ZERO REINÍCIO OCULTO.
           }
@@ -10297,6 +10369,1080 @@
       const scr = document.getElementById('standby-mascote-screen');
       if (scr) scr.classList.remove('hidden');
       playTone(440, 150);
+    }
+
+
+    // =========================================================================
+    // JOGO 18: SISTEMA SOLAR & PLANETAS DO UNIVERSO
+    // =========================================================================
+    const BANCO_SISTEMA_SOLAR = [
+      { id: 'sol', nome: 'Sol ☀️', cor: '#f59e0b', tipo: 'Estrela Mágica', diametro: '1.392.700 km', temp: '5.500°C', icon: '☀️', desc: 'O Sol é a estrela mãe do nosso Sistema Solar! Ele nos aquece com calor quentinho, ilumina as plantinhas e faz a vida existir na Terra!' },
+      { id: 'mercurio', nome: 'Mercúrio ☿', cor: '#94a3b8', tipo: 'Planeta Rochoso', diametro: '4.880 km', temp: '430°C / -180°C', icon: '🪐', desc: 'O menor planeta de todos e o mais vizinho do Sol! De dia ele fica tão quente quanto um forno e de noite congela!' },
+      { id: 'venus', nome: 'Vênus ♀', cor: '#facc15', tipo: 'Planeta Brilhante', diametro: '12.104 km', temp: '465°C', icon: '⭐', desc: 'O planeta mais quente de todos e o que mais brilha no céu! Ele é coberto por nuvens douradas espessas!' },
+      { id: 'terra', nome: 'Terra 🌍', cor: '#38bdf8', tipo: 'Nosso Lar Mágico', diametro: '12.742 km', temp: '15°C', icon: '🌍', desc: 'O nosso amado planeta azul! O único lugar conhecido no universo com oceanos, árvores, animais e você, super-herói!' },
+      { id: 'lua', nome: 'Lua 🌙', cor: '#e2e8f0', tipo: 'Satélite Fiel', diametro: '3.474 km', temp: '120°C / -130°C', icon: '🌙', desc: 'A melhor amiga da Terra no céu noturno! Os astronautas já pisaram na Lua e deram pulos gigantes sem gravidade!' },
+      { id: 'marte', nome: 'Marte ♂', cor: '#ef4444', tipo: 'Planeta Vermelho', diametro: '6.779 km', temp: '-60°C', icon: '🔴', desc: 'O famoso Planeta Vermelho! Ele tem o Monte Olimpo, o maior vulcão do Sistema Solar, 3 vezes mais alto que o Everest!' },
+      { id: 'jupiter', nome: 'Júpiter ♃', cor: '#d97706', tipo: 'Gigante Gasoso', diametro: '139.820 km', temp: '-110°C', icon: '🟠', desc: 'O rei dos gigantes! Júpiter é tão enorme que todos os outros planetas juntos caberiam dentro dele!' },
+      { id: 'saturno', nome: 'Saturno ♄', cor: '#eab308', tipo: 'Senhor dos Anéis', diametro: '116.460 km', temp: '-140°C', icon: '🪐', desc: 'O planeta mais charmoso do espaço! Ele possui anéis gigantescos e brilhantes feitos de gelo e poeira cósmica!' },
+      { id: 'urano', nome: 'Urano ♅', cor: '#06b6d4', tipo: 'Gigante de Gelo', diametro: '50.724 km', temp: '-195°C', icon: '💎', desc: 'Um lindo planeta azul-esverdeado de gelo que gira deitadinho no espaço, parecendo uma bola rolando!' },
+      { id: 'netuno', nome: 'Netuno ♆', cor: '#2563eb', tipo: 'Planeta dos Ventos', diametro: '49.244 km', temp: '-200°C', icon: '🌀', desc: 'O planeta azul mais distante do Sol! Lá sopram os ventos mais velozes de todo o Sistema Solar, mais rápidos que um jato!' }
+    ];
+
+    let corpoSolarIdx = 0;
+    let quizSolarPergunta = null;
+
+    function openSolarSystemGame() {
+      pushModalScreen('🪐 SISTEMA SOLAR & PLANETAS DO UNIVERSO', (body) => {
+        playTone(587, 100);
+        speak(`Aperte os cintos, astronauta ${appState.config.child_name || 'Kaleo'}! O Jarvis está no comando da nossa nave espacial! Vamos explorar os planetas do Sistema Solar!`);
+        renderSolarSystemBody(body);
+      }, true);
+    }
+
+    function renderSolarSystemBody(body) {
+      const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+          
+          <!-- SELETOR DE PLANETAS HORIZONTAL TOUCH -->
+          <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch;">
+            ${BANCO_SISTEMA_SOLAR.map((item, idx) => `
+              <button type="button" class="big-btn" style="padding:6px 12px; font-size:0.85rem; font-weight:800; border-radius:12px; white-space:nowrap; ${idx === corpoSolarIdx ? `background:${item.cor}22; border:2px solid ${item.cor}; color:#fff;` : 'background:#0f172a; border:1px solid #334155; color:#94a3b8;'}" onclick="selecionarCorpoSolar(${idx})">
+                ${item.icon} ${item.nome.split(' ')[0]}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- CARD PRINCIPAL DO PLANETA -->
+          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:3px solid ${p.cor}; border-radius:20px; padding:16px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; flex:1; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
+            
+            <div style="font-size:4rem; line-height:1; filter:drop-shadow(0 0 20px ${p.cor}); animation:pulse 2s infinite;">${p.icon}</div>
+            
+            <div>
+              <div style="display:flex; gap:8px; justify-content:center; align-items:center;">
+                <span style="background:${p.cor}33; color:${p.cor}; border:1px solid ${p.cor}; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">${p.tipo}</span>
+                <span style="background:#1e293b; color:#94a3b8; padding:2px 8px; border-radius:999px; font-size:0.75rem;">🌡️ ${p.temp}</span>
+              </div>
+              <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-top:4px;">${p.nome}</div>
+            </div>
+
+            <div style="font-size:1.02rem; color:#e2e8f0; max-width:620px; line-height:1.4; background:rgba(0,0,0,0.4); padding:10px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+              ${p.desc}
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
+              <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="ouvirCuriosidadeSolar()">
+                🔊 Pousar Nave & Ouvir o Jarvis
+              </button>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="iniciarQuizAstronauta()">
+                ⭐ Desafio do Astronauta (+5 🪙)
+              </button>
+            </div>
+          </div>
+
+          <!-- ÁREA DO QUIZ ASTRONAUTA (SE ATIVO) -->
+          <div id="quiz-astronauta-box" style="display:none; background:#0f172a; border:2px solid #a855f7; border-radius:14px; padding:12px; text-align:center;"></div>
+        </div>
+      `;
+    }
+
+    function selecionarCorpoSolar(idx) {
+      corpoSolarIdx = idx;
+      playTone(523 + (idx * 40), 90);
+      const b = document.querySelector('.modal-body');
+      if (b) renderSolarSystemBody(b);
+    }
+
+    function ouvirCuriosidadeSolar() {
+      const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
+      playTone(659, 100);
+      speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! Pousamos em ${p.nome}! ${p.desc}`);
+    }
+
+    function iniciarQuizAstronauta() {
+      const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
+      const perguntas = [
+        { q: `Qual planeta tem anéis gigantescos e brilhantes de gelo?`, correta: 'Saturno ♄', opcoes: ['Saturno ♄', 'Marte ♂', 'Terra 🌍'] },
+        { q: `Qual é o famoso Planeta Vermelho com o Monte Olimpo?`, correta: 'Marte ♂', opcoes: ['Vênus ♀', 'Marte ♂', 'Netuno ♆'] },
+        { q: `Qual é o maior planeta gigante de todo o Sistema Solar?`, correta: 'Júpiter ♃', opcoes: ['Lua 🌙', 'Júpiter ♃', 'Mercúrio ☿'] },
+        { q: `Qual é o planeta azul onde nós moramos e tem oceanos?`, correta: 'Terra 🌍', opcoes: ['Terra 🌍', 'Urano ♅', 'Sol ☀️'] },
+        { q: `Qual é a estrela mãe que aquece e ilumina todos os planetas?`, correta: 'Sol ☀️', opcoes: ['Sol ☀️', 'Saturno ♄', 'Marte ♂'] }
+      ];
+      const quiz = perguntas[Math.floor(Math.random() * perguntas.length)];
+      const box = document.getElementById('quiz-astronauta-box');
+      if (!box) return;
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div style="font-size:1.05rem; font-weight:900; color:#c084fc; margin-bottom:8px;">🚀 MISSÃO ASTRONAUTA: ${quiz.q}</div>
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          ${quiz.opcoes.map(op => `
+            <button type="button" class="big-btn" style="padding:8px 16px; background:#1e293b; border:2px solid #38bdf8; color:#fff; border-radius:10px; font-weight:800; cursor:pointer;" onclick="responderQuizAstronauta('${op}', '${quiz.correta}')">
+              ${op}
+            </button>
+          `).join('')}
+        </div>
+      `;
+      speak(quiz.q);
+    }
+
+    async function responderQuizAstronauta(escolha, correta) {
+      if (escolha === correta) {
+        playCelebrationFanfare();
+        dispararChuvaCoracoes();
+        speak(`Excelente resposta, astronauta! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
+        showToast('🌟 Resposta Correta! +5 Moedas do Tesouro!');
+        await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 5, motivo: 'quiz_sistema_solar' })
+        }).catch(() => null);
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        const box = document.getElementById('quiz-astronauta-box');
+        if (box) box.style.display = 'none';
+      } else {
+        playTone(260, 150);
+        speak(`Quase lá! Tente de novo, super-herói! Você consegue!`);
+        showToast('Tente outra opção!');
+      }
+    }
+
+
+    // =========================================================================
+    // JOGO 19: REINO ANIMAL & SONS DA NATUREZA (BIÓLOGO STARK)
+    // =========================================================================
+    const BANCO_ANIMAIS_STARK = [
+      { id: 'leao', nome: 'Leão Majestoso', icon: '🦁', habitat: 'Savana Africana', curiosidade: 'O leão é conhecido como o rei dos animais! O seu rugido forte pode ser ouvido a até 8 quilômetros de distância na savana!' },
+      { id: 'elefante', nome: 'Elefante Gentil', icon: '🐘', habitat: 'Florestas & Savanas', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba comprida para beber água, cheirar e até abraçar os filhotes!' },
+      { id: 'golfinho', nome: 'Golfinho Curioso', icon: '🐬', habitat: 'Oceanos Azuis', curiosidade: 'Um dos animais mais inteligentes e alegres dos oceanos! Eles conversam com assobios e adoram dar saltos acrobáticos!' },
+      { id: 'sapo', nome: 'Sapinho Cantor', icon: '🐸', habitat: 'Lagoas e Rios', curiosidade: 'Os sapos cantam na beira d água para chamar os amigos e ajudam a natureza comendo insetos e mosquitinhos!' },
+      { id: 'passaro', nome: 'Passarinho Cantador', icon: '🐦', habitat: 'Copas das Árvores', curiosidade: 'Eles acordam bem cedinho cantando para avisar a floresta que o sol nasceu e um novo dia começou!' },
+      { id: 'cavalo', nome: 'Cavalo Veloz', icon: '🐴', habitat: 'Fazendas e Campos', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
+      { id: 'coruja', nome: 'Coruja Sábia', icon: '🦉', habitat: 'Noite na Floresta', curiosidade: 'As corujas têm olhos gigantescos que enxergam no escuro e conseguem girar o pescoço quase uma volta inteira!' },
+      { id: 'baleia', nome: 'Baleia Gigante', icon: '🐋', habitat: 'Fundo do Mar', curiosidade: 'As baleias são gigantes gentis dos oceanos e cantam canções profundas que viajam por centenas de quilômetros na água!' }
+    ];
+
+    let animalSelecionadoIdx = 0;
+
+    function openAnimalSoundsGame() {
+      pushModalScreen('🦁 REINO ANIMAL & SONS DA NATUREZA', (body) => {
+        playTone(523, 100);
+        speak(`Bem-vindo à Expedição dos Bichos, biólogo ${appState.config.child_name || 'Kaleo'}! Escolha um animal para ouvir o som e aprender sobre a natureza!`);
+        renderAnimalSoundsBody(body);
+      }, true);
+    }
+
+    function renderAnimalSoundsBody(body) {
+      const a = BANCO_ANIMAIS_STARK[animalSelecionadoIdx];
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+          
+          <!-- GRID DE ÍCONES DOS ANIMAIS -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(70px, 1fr)); gap:6px;">
+            ${BANCO_ANIMAIS_STARK.map((item, idx) => `
+              <button type="button" class="big-btn" style="padding:8px 4px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:3px; ${idx === animalSelecionadoIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarAnimal(${idx})">
+                <span style="font-size:1.8rem; line-height:1;">${item.icon}</span>
+                <span style="font-size:0.72rem; font-weight:800; color:#fff;">${item.nome.split(' ')[0]}</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- CARD PRINCIPAL DO ANIMAL -->
+          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:3px solid #10b981; border-radius:20px; padding:16px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
+            <div style="font-size:4.5rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
+            
+            <div>
+              <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
+              <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-top:4px;">${a.nome}</div>
+            </div>
+
+            <div style="font-size:1.02rem; color:#d1fae5; max-width:600px; line-height:1.4; background:rgba(0,0,0,0.35); padding:10px 16px; border-radius:12px;">
+              ${a.curiosidade}
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
+              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}')">
+                🔊 Tocar o Som do ${a.nome.split(' ')[0]}
+              </button>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:2px solid #fde047; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="iniciarDesafioSomAnimal()">
+                🎧 Adivinhar o Bicho (+5 🪙)
+              </button>
+            </div>
+          </div>
+
+          <!-- ÁREA DO DESAFIO DO OUVIDO -->
+          <div id="desafio-bicho-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:14px; padding:10px; text-align:center;"></div>
+        </div>
+      `;
+    }
+
+    function selecionarAnimal(idx) {
+      animalSelecionadoIdx = idx;
+      const a = BANCO_ANIMAIS_STARK[idx];
+      tocarSomAnimalStark(a.id);
+      const b = document.querySelector('.modal-body');
+      if (b) renderAnimalSoundsBody(b);
+    }
+
+    function tocarSomAnimalStark(tipo) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (tipo === 'leao') {
+          // Rugido grave modulado
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(140, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 1.2);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 1.2);
+        } else if (tipo === 'elefante') {
+          // Tromba ascendente
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(260, ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(520, ctx.currentTime + 0.8);
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 0.8);
+        } else if (tipo === 'passaro') {
+          // Trinado agudo
+          [1600, 2100, 1800, 2400].forEach((f, i) => {
+            setTimeout(() => playTone(f, 60), i * 70);
+          });
+        } else if (tipo === 'sapo') {
+          // Coaxar em 2 tempos
+          playTone(130, 90);
+          setTimeout(() => playTone(110, 110), 120);
+        } else if (tipo === 'golfinho') {
+          // Cliques ultra-rápidos
+          [2400, 2900, 3200, 2700, 3400].forEach((f, i) => {
+            setTimeout(() => playTone(f, 40), i * 50);
+          });
+        } else if (tipo === 'cavalo') {
+          // Relincho vibrato
+          [440, 520, 660, 580, 500].forEach((f, i) => {
+            setTimeout(() => playTone(f, 80), i * 75);
+          });
+        } else if (tipo === 'coruja') {
+          // Duplo pio suave
+          playTone(420, 140);
+          setTimeout(() => playTone(360, 180), 220);
+        } else {
+          // Baleia profunda
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(90, ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(180, ctx.currentTime + 1.4);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.4);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 1.4);
+        }
+      } catch(e) {
+        playTone(440, 150);
+      }
+    }
+
+    function iniciarDesafioSomAnimal() {
+      const idxSorteado = Math.floor(Math.random() * BANCO_ANIMAIS_STARK.length);
+      const correto = BANCO_ANIMAIS_STARK[idxSorteado];
+      // Escolhe 2 outros animais aleatórios diferentes
+      const outros = BANCO_ANIMAIS_STARK.filter(x => x.id !== correto.id).sort(() => 0.5 - Math.random()).slice(0, 2);
+      const opcoes = [correto, ...outros].sort(() => 0.5 - Math.random());
+
+      const box = document.getElementById('desafio-bicho-box');
+      if (!box) return;
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div style="font-size:1.05rem; font-weight:900; color:#fde047; margin-bottom:6px;">🎧 OUÇA O SOM E ADIVINHE QUAL É O BICHO:</div>
+        <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 14px; border-radius:10px; font-weight:900; margin-bottom:8px;" onclick="tocarSomAnimalStark('${correto.id}')">
+          🔊 Tocar o Som Novamente
+        </button>
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+          ${opcoes.map(op => `
+            <button type="button" class="big-btn" style="padding:8px 14px; background:#1e293b; border:2px solid #38bdf8; color:#fff; border-radius:12px; font-weight:800; cursor:pointer;" onclick="responderDesafioBicho('${op.id}', '${correto.id}')">
+              <span style="font-size:1.4rem;">${op.icon}</span> ${op.nome.split(' ')[0]}
+            </button>
+          `).join('')}
+        </div>
+      `;
+      tocarSomAnimalStark(correto.id);
+      speak(`Ouça com atenção o som que o Jarvis tocou e descubra qual é o animal!`);
+    }
+
+    async function responderDesafioBicho(escolha, corretaId) {
+      if (escolha === corretaId) {
+        const bicho = BANCO_ANIMAIS_STARK.find(x => x.id === corretaId);
+        playCelebrationFanfare();
+        dispararChuvaCoracoes();
+        speak(`Sensacional, herói! Você reconheceu perfeitamente o som do ${bicho ? bicho.nome : 'animal'}! Ganhou 5 moedas!`);
+        showToast('🎉 Acertou o Animal! +5 Moedas!');
+        await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 5, motivo: 'desafio_animais' })
+        }).catch(() => null);
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        const box = document.getElementById('desafio-bicho-box');
+        if (box) box.style.display = 'none';
+      } else {
+        playTone(260, 140);
+        speak('Não foi esse bicho! Ouça de novo e tente mais uma vez!');
+      }
+    }
+
+
+    // =========================================================================
+    // JOGO 20: O RELÓGIO MÁGICO DO TEMPO & HORAS
+    // =========================================================================
+    let horaRelogioAtual = 12;
+    let minutoRelogioAtual = 0;
+    let missaoRelogioCorrente = null;
+
+    function openMagicClockGame() {
+      pushModalScreen('⏰ O RELÓGIO MÁGICO DO TEMPO & HORAS', (body) => {
+        playTone(587, 100);
+        speak(`Bem-vindo ao Relógio do Tempo, ${appState.config.child_name || 'Kaleo'}! Vamos aprender as horas, os minutos e os momentos do dia!`);
+        renderMagicClockBody(body);
+      }, true);
+    }
+
+    function renderMagicClockBody(body) {
+      const isDia = horaRelogioAtual >= 6 && horaRelogioAtual < 18;
+      const isNoite = !isDia;
+      const horaStr = String(horaRelogioAtual).padStart(2, '0');
+      const minStr = String(minutoRelogioAtual).padStart(2, '0');
+      
+      // Ângulos dos ponteiros (360 graus)
+      const anguloMin = minutoRelogioAtual * 6; // 360 / 60 = 6
+      const anguloHora = ((horaRelogioAtual % 12) * 30) + (minutoRelogioAtual * 0.5); // 360 / 12 = 30
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
+          
+          <!-- BANNER DO CÉU (DIA / NOITE) -->
+          <div style="display:flex; justify-content:space-between; align-items:center; background:${isDia ? 'linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)' : 'linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%)'}; border-radius:12px; padding:8px 16px; border:2px solid ${isDia ? '#7dd3fc' : '#818cf8'}; color:#fff;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.8rem;">${isDia ? '☀️' : '🌙'}</span>
+              <div>
+                <div style="font-size:0.95rem; font-weight:900;">${isDia ? 'Céu de Dia Ensolarado' : 'Céu da Noite Estrelada'}</div>
+                <div style="font-size:0.75rem; color:#e0f2fe;">${isDia ? 'Hora de brincar, aprender e se alimentar bem!' : 'Hora de descansar o corpinho e dormir!'}</div>
+              </div>
+            </div>
+            <!-- DISPLAY DIGITAL NEON -->
+            <div style="background:#030712; border:2px solid #38bdf8; border-radius:10px; padding:4px 14px; font-size:1.6rem; font-weight:900; color:#38bdf8; font-family:monospace; box-shadow:0 0 14px rgba(56,189,248,0.5);">
+              ${horaStr}:${minStr}
+            </div>
+          </div>
+
+          <!-- ÁREA DO RELÓGIO ANALÓGICO VETORIAL -->
+          <div style="display:flex; justify-content:center; align-items:center; flex:1; position:relative;">
+            <svg viewBox="0 0 200 200" style="width:200px; height:200px; filter:drop-shadow(0 0 16px rgba(56,189,248,0.35));">
+              <!-- Borda do Relógio -->
+              <circle cx="100" cy="100" r="94" fill="#0f172a" stroke="#38bdf8" stroke-width="6" />
+              <circle cx="100" cy="100" r="88" fill="#030712" stroke="#1e293b" stroke-width="2" />
+              
+              <!-- Marcadores de 1 a 12 -->
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n => {
+                const ang = (n * 30 - 90) * (Math.PI / 180);
+                const x = 100 + 72 * Math.cos(ang);
+                const y = 100 + 72 * Math.sin(ang) + 5;
+                return `<text x="${x}" y="${y}" font-size="13" font-weight="900" fill="#facc15" text-anchor="middle">${n}</text>`;
+              }).join('')}
+
+              <!-- Ponteiro das Horas (Curto, Dourado/Vermelho) -->
+              <g transform="rotate(${anguloHora} 100 100)">
+                <line x1="100" y1="100" x2="100" y2="52" stroke="#ef4444" stroke-width="6" stroke-linecap="round" />
+              </g>
+
+              <!-- Ponteiro dos Minutos (Comprido, Azul Ciano) -->
+              <g transform="rotate(${anguloMin} 100 100)">
+                <line x1="100" y1="100" x2="100" y2="30" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" />
+              </g>
+
+              <!-- Pino Central -->
+              <circle cx="100" cy="100" r="6" fill="#facc15" stroke="#ffffff" stroke-width="2" />
+            </svg>
+          </div>
+
+          <!-- BOTÕES DE CONTROLE DO TEMPO -->
+          <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #38bdf8; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarHoraRelogio(-1)">
+              -1 Hora
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #38bdf8; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarHoraRelogio(1)">
+              +1 Hora
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #facc15; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarMinutoRelogio(-15)">
+              -15 Min
+            </button>
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #facc15; color:#fff; padding:6px 12px; border-radius:10px; font-weight:800;" onclick="ajustarMinutoRelogio(15)">
+              +15 Min
+            </button>
+          </div>
+
+          <!-- AÇÕES DO JOGO: FALAR A HORA & MISSÃO DA ROTINA -->
+          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:2px;">
+            <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="ouvirHoraRelogio()">
+              🔊 Jarvis Fala as Horas
+            </button>
+            <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:8px 16px; border-radius:12px; font-weight:900;" onclick="iniciarMissaoRotinaRelogio()">
+              🎯 Missão da Rotina (+5 🪙)
+            </button>
+          </div>
+
+          <!-- BOX DA MISSÃO ATIVA -->
+          <div id="missao-relogio-box" style="display:none; background:#0f172a; border:2px solid #a855f7; border-radius:12px; padding:10px; text-align:center;"></div>
+        </div>
+      `;
+    }
+
+    function ajustarHoraRelogio(delta) {
+      horaRelogioAtual = (horaRelogioAtual + delta + 24) % 24;
+      playTone(440, 60);
+      const b = document.querySelector('.modal-body');
+      if (b) renderMagicClockBody(b);
+    }
+
+    function ajustarMinutoRelogio(delta) {
+      minutoRelogioAtual = (minutoRelogioAtual + delta + 60) % 60;
+      playTone(660, 60);
+      const b = document.querySelector('.modal-body');
+      if (b) renderMagicClockBody(b);
+    }
+
+    function ouvirHoraRelogio() {
+      const minTxt = minutoRelogioAtual === 0 ? 'em ponto' : `${minutoRelogioAtual} minutos`;
+      const periodo = horaRelogioAtual >= 18 ? 'da noite' : (horaRelogioAtual >= 12 ? 'da tarde' : 'da manhã');
+      const fala = `Agora no relógio são exatamente ${horaRelogioAtual} horas e ${minTxt} ${periodo}!`;
+      playTone(587, 80);
+      speak(fala);
+    }
+
+    function iniciarMissaoRotinaRelogio() {
+      const rotinas = [
+        { hora: 12, min: 0, titulo: 'Hora do Almoço dos Campeões', dica: 'Coloque o relógio em 12:00 para almoçar!' },
+        { hora: 7, min: 0, titulo: 'Hora de Acordar e Espreguiçar', dica: 'O sol nasceu! Coloque o relógio em 07:00!' },
+        { hora: 20, min: 0, titulo: 'Hora de Escovar os Dentes e Dormir', dica: 'Hora da caminha! Coloque o relógio em 20:00!' },
+        { hora: 15, min: 30, titulo: 'Hora do Lanchinho da Tarde', dica: 'Lanche gostoso! Coloque o relógio em 15:30!' }
+      ];
+      missaoRelogioCorrente = rotinas[Math.floor(Math.random() * rotinas.length)];
+      const box = document.getElementById('missao-relogio-box');
+      if (!box) return;
+      box.style.display = 'block';
+      box.innerHTML = `
+        <div style="font-size:1.05rem; font-weight:900; color:#c084fc;">🎯 MISSÃO: ${missaoRelogioCorrente.titulo}</div>
+        <div style="font-size:0.9rem; color:#e2e8f0; margin:4px 0 8px 0;">${missaoRelogioCorrente.dica}</div>
+        <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:6px 18px; border-radius:10px; font-weight:900;" onclick="validarMissaoRelogio()">
+          ✓ Confirmar Posição do Relógio!
+        </button>
+      `;
+      speak(missaoRelogioCorrente.dica);
+    }
+
+    async function validarMissaoRelogio() {
+      if (!missaoRelogioCorrente) return;
+      if (horaRelogioAtual === missaoRelogioCorrente.hora && minutoRelogioAtual === missaoRelogioCorrente.min) {
+        playCelebrationFanfare();
+        dispararChuvaCoracoes();
+        speak(`Incrível, herói! Você acertou exatamente o horário de ${missaoRelogioCorrente.titulo}! Ganhou 5 moedas do tempo!`);
+        showToast('⏰ Missão Cumprida! +5 Moedas do Tesouro!');
+        await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 5, motivo: 'missao_relogio_tempo' })
+        }).catch(() => null);
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        const box = document.getElementById('missao-relogio-box');
+        if (box) box.style.display = 'none';
+      } else {
+        playTone(260, 150);
+        speak(`Ainda não está certo! O horário pedido é ${missaoRelogioCorrente.hora} horas e ${missaoRelogioCorrente.min} minutos. Ajuste os botões e tente de novo!`);
+      }
+    }
+
+
+    // =========================================================================
+    // JOGO 21: DETETIVE STARK: JOGO DOS 7 ERROS / OLHOS DE ÁGUIA
+    // =========================================================================
+    const ERROS_DETETIVE = [
+      { id: 1, x: 28, y: 32, nome: 'Estrela Espacial Extra' },
+      { id: 2, x: 74, y: 22, nome: 'Planeta Dourado na Janela' },
+      { id: 3, x: 50, y: 56, nome: 'Emblema Stark no Robô' },
+      { id: 4, x: 18, y: 78, nome: 'Florzinha Neon no Vaso' },
+      { id: 5, x: 82, y: 80, nome: 'Moeda Mágica Escondida' },
+      { id: 6, x: 38, y: 26, nome: 'Nuvem Lilás no Céu' },
+      { id: 7, x: 62, y: 82, nome: 'Parafuso Dourado no Chão' }
+    ];
+    let errosDetetiveEncontrados = [];
+
+    function openDetectiveErrorsGame() {
+      errosDetetiveEncontrados = [];
+      pushModalScreen('🕵️ DETETIVE STARK: JOGO DOS 7 ERROS', (body) => {
+        playTone(523, 100);
+        speak(`Atenção, super detetive ${appState.config.child_name || 'Kaleo'}! Abra bem os olhinhos de águia! Encontre os 7 detalhes diferentes na cena da direita!`);
+        renderDetectiveErrorsBody(body);
+      }, true);
+    }
+
+    function renderDetectiveErrorsBody(body) {
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
+          
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:6px 14px; border-radius:12px; border:1px solid #334155;">
+            <div style="font-size:0.95rem; font-weight:900; color:#38bdf8;">
+              🔍 Erros Encontrados: <span style="color:#22c55e;">${errosDetetiveEncontrados.length}</span> / 7
+            </div>
+            <button type="button" class="big-btn" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:4px 12px; border-radius:8px; font-size:0.85rem; font-weight:800;" onclick="darDicaDetetive()">
+              💡 Pedir Dica ao Jarvis
+            </button>
+          </div>
+
+          <!-- DUAS CENAS LADO A LADO -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1;">
+            
+            <!-- CENA A (ORIGINAL) -->
+            <div style="background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+              <span style="position:absolute; top:6px; left:8px; background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px;">Cena Original</span>
+              <div style="font-size:5rem; line-height:1;">🤖</div>
+              <div style="display:flex; gap:14px; font-size:2rem; margin-top:10px;">
+                <span>🪴</span><span>⚙️</span><span>🪟</span><span>🚀</span>
+              </div>
+            </div>
+
+            <!-- CENA B (COM ERROS PARA CLICAR) -->
+            <div id="cena-erros-b" style="background:#020617; border:2px solid #a855f7; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; cursor:crosshair;">
+              <span style="position:absolute; top:6px; left:8px; background:#7c3aed; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px;">Clique nos 7 Erros Aqui!</span>
+              <div style="font-size:5rem; line-height:1;">🤖</div>
+              <div style="display:flex; gap:14px; font-size:2rem; margin-top:10px;">
+                <span>🪴</span><span>🪙</span><span>⭐</span><span>🚀</span>
+              </div>
+
+              <!-- PONTOS CLICÁVEIS DOS ERROS -->
+              ${ERROS_DETETIVE.map(e => `
+                <div style="position:absolute; left:${e.x}%; top:${e.y}%; width:44px; height:44px; transform:translate(-50%, -50%); display:flex; align-items:center; justify-content:center; cursor:pointer;" onclick="clicarErroDetetive(${e.id})">
+                  ${errosDetetiveEncontrados.includes(e.id) ? `
+                    <div style="width:34px; height:34px; border:3px solid #22c55e; background:rgba(34,197,94,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:1.1rem; box-shadow:0 0 12px #22c55e;">✓</div>
+                  ` : `
+                    <div style="width:28px; height:28px; border:1px dashed rgba(255,255,255,0.25); border-radius:50%;"></div>
+                  `}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function clicarErroDetetive(id) {
+      if (errosDetetiveEncontrados.includes(id)) return;
+      errosDetetiveEncontrados.push(id);
+      playTone(784, 120);
+      showToast(`🎯 Erro ${errosDetetiveEncontrados.length} de 7 Encontrado!`);
+
+      if (errosDetetiveEncontrados.length >= 7) {
+        playCelebrationFanfare();
+        dispararChuvaCoracoes();
+        speak(`Incrível, super detetive! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
+        await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 10, motivo: 'jogo_7_erros_detetive' })
+        }).catch(() => null);
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
+      } else {
+        speak(`Muito bem! Você encontrou o erro número ${errosDetetiveEncontrados.length}! Continue procurando!`);
+      }
+
+      const b = document.querySelector('.modal-body');
+      if (b) renderDetectiveErrorsBody(b);
+    }
+
+    function darDicaDetetive() {
+      const restantes = ERROS_DETETIVE.filter(e => !errosDetetiveEncontrados.includes(e.id));
+      if (!restantes.length) return;
+      const dica = restantes[0];
+      playTone(660, 90);
+      speak(`Dica do Jarvis: procure atentamente perto de ${dica.nome}!`);
+    }
+
+
+    // =========================================================================
+    // JOGO 22: LABORATÓRIO DE MISTURAS & CIÊNCIAS
+    // =========================================================================
+    let abaCienciaAtiva = 'cores'; // 'cores', 'agua', 'ima'
+    let coresSelecionadasLab = [];
+    let resultadoMisturaLab = null;
+
+    function openScienceLabGame() {
+      pushModalScreen('🔬 LABORATÓRIO DE MISTURAS & CIÊNCIAS', (body) => {
+        playTone(659, 100);
+        speak(`Bem-vindo ao Laboratório Científico Stark, cientista ${appState.config.child_name || 'Kaleo'}! Vamos misturar poções mágicas, transformar a água e brincar com ímãs!`);
+        renderScienceLabBody(body);
+      }, true);
+    }
+
+    function renderScienceLabBody(body) {
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+          
+          <!-- ABAS DE EXPERIMENTOS CIENTÍFICOS -->
+          <div style="display:flex; justify-content:center; gap:8px;">
+            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'cores' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('cores')">
+              🎨 Mistura de Cores
+            </button>
+            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'agua' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('agua')">
+              🧊 Estados da Água
+            </button>
+            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'ima' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('ima')">
+              🧲 O Super Ímã
+            </button>
+          </div>
+
+          <!-- ÁREA DO EXPERIMENTO ATIVO -->
+          <div style="background:#030712; border:3px solid #38bdf8; border-radius:18px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center;">
+            ${abaCienciaAtiva === 'cores' ? renderExperimentoCores() : (abaCienciaAtiva === 'agua' ? renderExperimentoAgua() : renderExperimentoIma())}
+          </div>
+        </div>
+      `;
+    }
+
+    function alternarAbaCiencia(aba) {
+      abaCienciaAtiva = aba;
+      playTone(523, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderScienceLabBody(b);
+    }
+
+    function renderExperimentoCores() {
+      return `
+        <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">🧪 O Caldeirão de Cores Primárias</div>
+        <div style="font-size:0.9rem; color:#94a3b8;">Escolha dois tubos coloridos e aperte em "Misturar no Caldeirão"!</div>
+
+        <div style="display:flex; gap:16px; justify-content:center; margin:8px 0;">
+          <button type="button" class="big-btn" style="padding:12px 18px; border-radius:14px; background:#ef4444; color:#fff; font-weight:900; border:${coresSelecionadasLab.includes('vermelho') ? '4px solid #fff' : '2px solid transparent'};" onclick="selecionarCorLab('vermelho')">
+            🔴 Vermelho
+          </button>
+          <button type="button" class="big-btn" style="padding:12px 18px; border-radius:14px; background:#3b82f6; color:#fff; font-weight:900; border:${coresSelecionadasLab.includes('azul') ? '4px solid #fff' : '2px solid transparent'};" onclick="selecionarCorLab('azul')">
+            🔵 Azul
+          </button>
+          <button type="button" class="big-btn" style="padding:12px 18px; border-radius:14px; background:#eab308; color:#fff; font-weight:900; border:${coresSelecionadasLab.includes('amarelo') ? '4px solid #fff' : '2px solid transparent'};" onclick="selecionarCorLab('amarelo')">
+            🟡 Amarelo
+          </button>
+        </div>
+
+        <button type="button" class="big-btn" style="background:#8b5cf6; border:2px solid #c084fc; color:#fff; padding:8px 24px; border-radius:12px; font-weight:900;" onclick="misturarCoresLab()">
+          ✨ Misturar Poção Mágica!
+        </button>
+
+        ${resultadoMisturaLab ? `
+          <div style="background:${resultadoMisturaLab.bg}; border:3px solid #fff; border-radius:16px; padding:12px 24px; color:#fff; font-size:1.3rem; font-weight:900; animation:pulse 1s; box-shadow:0 0 25px ${resultadoMisturaLab.bg}; margin-top:8px;">
+            ${resultadoMisturaLab.texto}
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function selecionarCorLab(cor) {
+      playTone(440, 70);
+      if (coresSelecionadasLab.includes(cor)) {
+        coresSelecionadasLab = coresSelecionadasLab.filter(c => c !== cor);
+      } else {
+        if (coresSelecionadasLab.length >= 2) coresSelecionadasLab.shift();
+        coresSelecionadasLab.push(cor);
+      }
+      const b = document.querySelector('.modal-body');
+      if (b) renderScienceLabBody(b);
+    }
+
+    async function misturarCoresLab() {
+      if (coresSelecionadasLab.length < 2) {
+        speak('Selecione duas cores primárias para misturar!');
+        return;
+      }
+      playTone(660, 100);
+      const c = coresSelecionadasLab.sort().join('+');
+      let res = { bg: '#22c55e', texto: '🟢 Criou a cor VERDE!' };
+      let fala = 'Azul misturado com amarelo se transforma no lindo verde da natureza!';
+
+      if (c === 'amarelo+azul') {
+        res = { bg: '#22c55e', texto: '🟢 AZUL + AMARELO = VERDE!' };
+        fala = 'Azul com amarelo se transforma no verde brilhante!';
+      } else if (c === 'azul+vermelho') {
+        res = { bg: '#7c3aed', texto: '🟣 VERMELHO + AZUL = ROXO / VIOLETA!' };
+        fala = 'Vermelho com azul se transforma no roxo mágico dos magos!';
+      } else if (c === 'amarelo+vermelho') {
+        res = { bg: '#f97316', texto: '🟠 VERMELHO + AMARELO = LARANJA!' };
+        fala = 'Vermelho com amarelo se transforma no laranja vibrante do fogo!';
+      }
+
+      resultadoMisturaLab = res;
+      playCelebrationFanfare();
+      speak(fala);
+      showToast('🧪 Mistura Realizada com Sucesso! +5 Moedas!');
+      await fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 5, motivo: 'ciencia_cores' })
+      }).catch(() => null);
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+
+      const b = document.querySelector('.modal-body');
+      if (b) renderScienceLabBody(b);
+    }
+
+    function renderExperimentoAgua() {
+      return `
+        <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">🧊 Os 3 Estados Físicos da Água</div>
+        <div style="font-size:0.9rem; color:#94a3b8;">Altere a temperatura para ver a água se transformar!</div>
+
+        <div style="display:flex; gap:12px; margin:14px 0;">
+          <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:10px 16px; border-radius:12px; font-weight:800;" onclick="mudarEstadoAgua('gelo')">
+            ❄️ Congelante (Gelo)
+          </button>
+          <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:10px 16px; border-radius:12px; font-weight:800;" onclick="mudarEstadoAgua('liquido')">
+            💧 Temperatura Ambiente (Líquido)
+          </button>
+          <button type="button" class="big-btn" style="background:#dc2626; border:2px solid #f87171; color:#fff; padding:10px 16px; border-radius:12px; font-weight:800;" onclick="mudarEstadoAgua('vapor')">
+            🔥 Fervendo (Vapor)
+          </button>
+        </div>
+
+        <div id="agua-estado-view" style="font-size:4rem; line-height:1; animation:pulse 1.5s infinite;">💧</div>
+        <div id="agua-estado-desc" style="font-size:1.05rem; color:#fff; font-weight:900; max-width:500px;">
+          A água em temperatura normal é líquida e deliciosa para beber!
+        </div>
+      `;
+    }
+
+    function mudarEstadoAgua(estado) {
+      const v = document.getElementById('agua-estado-view');
+      const d = document.getElementById('agua-estado-desc');
+      if (!v || !d) return;
+
+      if (estado === 'gelo') {
+        playTone(330, 100);
+        v.textContent = '🧊';
+        d.textContent = 'Estado Sólido: A água congelou no frio e virou um cubo de gelo duro e fresquinho!';
+        speak('No frio abaixo de zero graus, a água congela e vira gelo sólido!');
+      } else if (estado === 'liquido') {
+        playTone(523, 100);
+        v.textContent = '💧';
+        d.textContent = 'Estado Líquido: A água flui pelo copo e é essencial para hidratar o nosso corpo!';
+        speak('Em temperatura agradável, a água é líquida e perfeita para beber!');
+      } else {
+        playTone(784, 100);
+        v.textContent = '☁️♨️';
+        d.textContent = 'Estado Gasoso: A água esquentou no fogo, evaporou e subiu para formar as nuvens!';
+        speak('Quando esquenta muito, a água ferve, vira vapor invisível e sobe para o céu para formar as nuvens de chuva!');
+      }
+    }
+
+    function renderExperimentoIma() {
+      return `
+        <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">🧲 O Super Ímã Magnético Stark</div>
+        <div style="font-size:0.9rem; color:#94a3b8;">Aperte nos objetos para ver se o ímã atrai ou não atrai!</div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:10px; width:100%; max-width:550px; margin:14px 0;">
+          <button type="button" class="big-btn" style="background:#1e293b; border:2px solid #64748b; color:#fff; padding:10px; border-radius:12px; font-weight:800;" onclick="testarIma('prego', true)">
+            🔩 Parafuso (Metal)
+          </button>
+          <button type="button" class="big-btn" style="background:#1e293b; border:2px solid #64748b; color:#fff; padding:10px; border-radius:12px; font-weight:800;" onclick="testarIma('moeda', true)">
+            🪙 Moeda (Metal)
+          </button>
+          <button type="button" class="big-btn" style="background:#1e293b; border:2px solid #64748b; color:#fff; padding:10px; border-radius:12px; font-weight:800;" onclick="testarIma('madeira', false)">
+            🪵 Madeira
+          </button>
+          <button type="button" class="big-btn" style="background:#1e293b; border:2px solid #64748b; color:#fff; padding:10px; border-radius:12px; font-weight:800;" onclick="testarIma('borracha', false)">
+            🦆 Patinho de Borracha
+          </button>
+        </div>
+
+        <div id="ima-resultado-view" style="font-size:3rem; line-height:1;">🧲</div>
+        <div id="ima-resultado-desc" style="font-size:1.02rem; color:#fff; font-weight:800;">
+          Clique em um material para testar a força magnética!
+        </div>
+      `;
+    }
+
+    function testarIma(nome, atrai) {
+      const v = document.getElementById('ima-resultado-view');
+      const d = document.getElementById('ima-resultado-desc');
+      if (!v || !d) return;
+
+      if (atrai) {
+        playTone(880, 100);
+        v.innerHTML = '🧲⚡🔩';
+        d.innerHTML = `<span style="color:#22c55e;">ATRAIU!</span> O ímã tem superpoder magnético e puxou o metal com força!`;
+        speak('Uau! O ímã adora metais de ferro e puxou o objeto na hora!');
+      } else {
+        playTone(220, 100);
+        v.innerHTML = '🧲 ❌ 🪵';
+        d.innerHTML = `<span style="color:#ef4444;">NÃO ATRAIU!</span> Ímãs não atraem madeira ou plástico.`;
+        speak('Ímãs só atraem metais como o ferro! Madeira e plástico não grudam!');
+      }
+    }
+
+
+    // =========================================================================
+    // JOGO 23: ACADEMIA DE XADREZ DO PEQUENO MESTRE
+    // =========================================================================
+    const PECAS_XADREZ = [
+      { id: 'peao', nome: 'Peão Valente', icon: '♙', cor: '#38bdf8', movimento: 'Anda 1 casinha para frente, mas captura o inimigo na diagonal!', dica: 'O soldadinho fiel do reino!' },
+      { id: 'torre', nome: 'Torre Forte', icon: '♖', cor: '#f59e0b', movimento: 'Anda em linha reta (para frente, trás, direita ou esquerda) quantas casas quiser!', dica: 'A fortaleza que nunca desvia!' },
+      { id: 'cavalo', nome: 'Cavalo Saltador', icon: '♘', cor: '#10b981', movimento: 'O único que PULA por cima das outras peças! Anda no formato da letra L (duas casas retas e uma para o lado)!', dica: 'Pula barreiras como mágica!' },
+      { id: 'bispo', nome: 'Bispo Veloz', icon: '♗', cor: '#8b5cf6', movimento: 'Anda nas diagonais mantendo sempre a mesma cor da casinha onde nasceu!', dica: 'O raio das diagonais!' },
+      { id: 'rainha', nome: 'Rainha Poderosa', icon: '♕', cor: '#ec4899', movimento: 'A peça mais forte! Anda em linhas retas e diagonais para onde quiser!', dica: 'A protetora de todo o reino!' },
+      { id: 'rei', nome: 'Rei Real', icon: '♔', cor: '#eab308', movimento: 'Anda 1 casinha em qualquer direção. Deve ser protegido com todo amor!', dica: 'O coração do tabuleiro!' }
+    ];
+
+    let pecaXadrezIdx = 2; // Começa no Cavalo (favorito das crianças)
+
+    function openChessAcademyGame() {
+      pushModalScreen('♟️ ACADEMIA DE XADREZ DO PEQUENO MESTRE', (body) => {
+        playTone(523, 100);
+        speak(`Bem-vindo ao Reino do Xadrez, pequeno grande mestre ${appState.config.child_name || 'Kaleo'}! Vamos aprender o movimento do Cavalo, da Torre e de todas as peças!`);
+        renderChessAcademyBody(body);
+      }, true);
+    }
+
+    function renderChessAcademyBody(body) {
+      const p = PECAS_XADREZ[pecaXadrezIdx];
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+          
+          <!-- SELETOR DE PEÇAS DE XADREZ -->
+          <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:6px;">
+            ${PECAS_XADREZ.map((item, idx) => `
+              <button type="button" class="big-btn" style="padding:6px 2px; border-radius:12px; display:flex; flex-direction:column; align-items:center; ${idx === pecaXadrezIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarPecaXadrez(${idx})">
+                <span style="font-size:2rem; line-height:1; color:#fff;">${item.icon}</span>
+                <span style="font-size:0.75rem; font-weight:800; color:#e2e8f0;">${item.nome.split(' ')[0]}</span>
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- MINI-TABULEIRO INTERATIVO DE DESAFIO (5x5) -->
+          <div style="background:#030712; border:3px solid ${p.cor}; border-radius:18px; padding:12px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
+            <div style="font-size:1.3rem; font-weight:900; color:#fff;">${p.icon} ${p.nome} — ${p.dica}</div>
+            
+            <div style="font-size:0.95rem; color:#38bdf8; max-width:550px; text-align:center;">
+              ${p.movimento}
+            </div>
+
+            <!-- TABULEIRO 5x5 ESTILIZADO -->
+            <div style="display:grid; grid-template-columns:repeat(5, 42px); grid-template-rows:repeat(5, 42px); gap:2px; background:#0f172a; padding:4px; border:2px solid #38bdf8; border-radius:10px;">
+              ${gerarCasasTabuleiroXadrez(p)}
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
+              <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900;" onclick="ouvirDicaXadrez()">
+                🔊 Ouvir Dica da Peça
+              </button>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #86efac; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900;" onclick="concluirDesafioXadrez()">
+                ⭐ Desafio Concluído! (+5 🪙)
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function gerarCasasTabuleiroXadrez(peca) {
+      // Cria 25 casas (5x5). O centro é (2,2)
+      let html = '';
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const isPar = (r + c) % 2 === 0;
+          const bg = isPar ? '#1e293b' : '#0f172a';
+          const isCenter = r === 2 && c === 2;
+
+          // Se for o cavalo no centro, as casas válidas em L são:
+          let isValido = false;
+          if (peca.id === 'cavalo') {
+            const dr = Math.abs(r - 2);
+            const dc = Math.abs(c - 2);
+            isValido = (dr === 1 && dc === 2) || (dr === 2 && dc === 1);
+          } else if (peca.id === 'torre') {
+            isValido = (r === 2 || c === 2) && !isCenter;
+          } else if (peca.id === 'bispo') {
+            isValido = (Math.abs(r - 2) === Math.abs(c - 2)) && !isCenter;
+          } else if (peca.id === 'peao') {
+            isValido = (r === 1 && c === 2);
+          } else if (peca.id === 'rei') {
+            isValido = (Math.abs(r - 2) <= 1 && Math.abs(c - 2) <= 1) && !isCenter;
+          } else if (peca.id === 'rainha') {
+            isValido = (r === 2 || c === 2 || Math.abs(r - 2) === Math.abs(c - 2)) && !isCenter;
+          }
+
+          html += `
+            <div style="background:${isValido ? 'rgba(34,197,94,0.35)' : bg}; border:${isValido ? '2px solid #22c55e' : '1px solid rgba(255,255,255,0.05)'}; display:flex; align-items:center; justify-content:center; cursor:${isValido ? 'pointer' : 'default'}; border-radius:4px;" onclick="${isValido ? `clicarMovimentoXadrez('${peca.id}')` : ''}">
+              ${isCenter ? `<span style="font-size:1.8rem; line-height:1; color:#fff;">${peca.icon}</span>` : (isValido ? '<span style="font-size:0.9rem; color:#22c55e; font-weight:900;">⭐</span>' : '')}
+            </div>
+          `;
+        }
+      }
+      return html;
+    }
+
+    function selecionarPecaXadrez(idx) {
+      pecaXadrezIdx = idx;
+      playTone(440 + idx * 50, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderChessAcademyBody(b);
+    }
+
+    function ouvirDicaXadrez() {
+      const p = PECAS_XADREZ[pecaXadrezIdx];
+      playTone(660, 90);
+      speak(`${p.nome}! ${p.movimento}`);
+    }
+
+    function clicarMovimentoXadrez(tipo) {
+      playTone(880, 100);
+      showToast('✓ Movimento Perfeito do Xadrez!');
+      speak('Pulo perfeito! Você moveu a peça para a casa correta!');
+    }
+
+    async function concluirDesafioXadrez() {
+      playCelebrationFanfare();
+      dispararChuvaCoracoes();
+      speak(`Xeque-mate no tédio, mestre do xadrez! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
+      showToast('♟️ Mestre do Xadrez! +5 Moedas!');
+      await fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 5, motivo: 'academia_xadrez' })
+      }).catch(() => null);
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+    }
+
+
+    // =========================================================================
+    // JOGO 24: PARQUE DOS DINOSSAUROS & FÓSSEIS STARK
+    // =========================================================================
+    const BANCO_DINOSSAUROS = [
+      { id: 'trex', nome: 'Tiranossauro Rex', icon: '🦖', dieta: 'Carnívoro Feroz', tamanho: '12 metros', curiosidade: 'O rei dos dinossauros! Tinha mais de 50 dentes enormes e afiados, e a mordida mais forte de todos os tempos!' },
+      { id: 'brachio', nome: 'Braquiossauro Gigante', icon: '🦕', dieta: 'Herbívoro Amigo', tamanho: '25 metros', curiosidade: 'Pescoço gigantesco para comer as folhas mais altas das árvores! Ele pesava o mesmo que 10 elefantes juntos!' },
+      { id: 'trici', nome: 'Tricerátops Valente', icon: '🦏', dieta: 'Herbívoro com Chifres', tamanho: '9 metros', curiosidade: 'Ele tinha três chifres pontudos e um escudo de osso na cabeça para se proteger de outros predadores!' },
+      { id: 'raptor', nome: 'Velociraptor Ágil', icon: '⚡', dieta: 'Carnívoro Veloz', tamanho: '2 metros', curiosidade: 'Ele corria muito rápido, como um raio na selva! Era esperto e caçava em bandos de amigos dinos!' },
+      { id: 'ptero', nome: 'Pterodáctilo Alado', icon: '🦅', dieta: 'Pescador Voador', tamanho: '6 metros de asas', curiosidade: 'O mestre dos céus pré-históricos! Ele planava sobre os lagos e pegava peixinhos com seu bico comprido!' }
+    ];
+
+    let dinoIdx = 0;
+    let blocosEscavadosDino = 0;
+
+    function openDinosaurFossilsGame() {
+      blocosEscavadosDino = 0;
+      pushModalScreen('🦖 PARQUE DOS DINOSSAUROS & FÓSSEIS STARK', (body) => {
+        playTone(440, 100);
+        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Kaleo'}! Pegue seu pincel e seu martelo! Vamos desenterrar fósseis de dinossauros gigantes!`);
+        renderDinosaurFossilsBody(body);
+      }, true);
+    }
+
+    function renderDinosaurFossilsBody(body) {
+      const d = BANCO_DINOSSAUROS[dinoIdx];
+      const completo = blocosEscavadosDino >= 6;
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+          
+          <!-- SELETOR DE DINOSSAUROS -->
+          <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
+            ${BANCO_DINOSSAUROS.map((item, idx) => `
+              <button type="button" class="big-btn" style="padding:6px 12px; border-radius:12px; white-space:nowrap; ${idx === dinoIdx ? 'background:#b91c1c; border:2px solid #f87171;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarDino(${idx})">
+                <span style="font-size:1.1rem;">${item.icon}</span> ${item.nome.split(' ')[0]}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- SÍTIO DE ESCAVAÇÃO ARQUEOLÓGICA -->
+          <div style="background:radial-gradient(circle at center, #451a03 0%, #1c0a00 100%); border:3px solid #f59e0b; border-radius:18px; padding:16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;">
+            
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span style="background:#78350f; color:#fde047; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">${d.dieta}</span>
+              <span style="background:#1e293b; color:#cbd5e1; padding:2px 8px; border-radius:999px; font-size:0.8rem;">📏 ${d.tamanho}</span>
+            </div>
+
+            <div style="font-size:1.6rem; font-weight:900; color:#fff;">${d.nome}</div>
+
+            <!-- ESQUELETO OU DINOSSAURO COMPLETO -->
+            <div style="font-size:5rem; line-height:1; animation:${completo ? 'bounce 1s infinite' : 'pulse 2s infinite'};">
+              ${completo ? d.icon : '🦴'}
+            </div>
+
+            <div style="font-size:0.95rem; color:#fde68a; max-width:550px; background:rgba(0,0,0,0.4); padding:8px 14px; border-radius:10px;">
+              ${completo ? d.curiosidade : 'Clique nas rochas pré-históricas abaixo para escavar com o pincel e desenterrar os ossos!'}
+            </div>
+
+            <!-- BLOCOS DE ROCHA PARA ESCAVAR (6 BLOCOS) -->
+            ${!completo ? `
+              <div style="display:grid; grid-template-columns:repeat(6, 48px); gap:6px;">
+                ${Array.from({length: 6}).map((_, i) => `
+                  <button type="button" class="big-btn" style="height:48px; border-radius:10px; ${i < blocosEscavadosDino ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'}" onclick="escavarBlocoDino(${i})">
+                    ${i < blocosEscavadosDino ? '🦴' : '⛏️'}
+                  </button>
+                `).join('')}
+              </div>
+            ` : `
+              <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:10px 22px; border-radius:14px; font-weight:900; font-size:1.05rem;" onclick="comemorarDinoCompleto()">
+                🎉 Fóssil 100% Desenterrado! (+10 🪙)
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function selecionarDino(idx) {
+      dinoIdx = idx;
+      blocosEscavadosDino = 0;
+      playTone(440, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderDinosaurFossilsBody(b);
+    }
+
+    function escavarBlocoDino(idx) {
+      if (idx !== blocosEscavadosDino) return;
+      blocosEscavadosDino++;
+      playTone(320 + blocosEscavadosDino * 60, 90);
+      showToast(`⛏️ Escavando fóssil... ${blocosEscavadosDino} de 6 limpos!`);
+
+      if (blocosEscavadosDino >= 6) {
+        playCelebrationFanfare();
+        dispararChuvaCoracoes();
+        const d = BANCO_DINOSSAUROS[dinoIdx];
+        speak(`Incrível! O esqueleto do ${d.nome} foi completamente desenterrado! Ele ganhou vida!`);
+      }
+
+      const b = document.querySelector('.modal-body');
+      if (b) renderDinosaurFossilsBody(b);
+    }
+
+    async function comemorarDinoCompleto() {
+      const d = BANCO_DINOSSAUROS[dinoIdx];
+      playCelebrationFanfare();
+      dispararChuvaCoracoes();
+      speak(`Parabéns, super paleontólogo! Você descobriu o ${d.nome}! ${d.curiosidade} Ganhou 10 moedas de ouro!`);
+      showToast('🦖 Fóssil Descoberto! +10 Moedas!');
+      await fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 10, motivo: 'paleontologia_dino' })
+      }).catch(() => null);
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
     }
 
     // =========================================================================

@@ -189,25 +189,43 @@ sudo dpkg -i jarvis-kids-os_3.3.3.deb
 
 ---
 
-## 🎮 Catálogo dos 17 Jogos & Atividades Educativas
+## 🎮 Catálogo dos 24 Jogos & Atividades Educativas (6 Páginas 2x2)
 
-1. **🎨 Laboratório de Pintura Neon:** Lousa artística com pincéis coloridos e salvamento de desenhos.
-2. **🎵 Laboratório Musical Stark:** Teclado Dó-Ré-Mi, bateria de ritmo e músicas infantis guiadas.
-3. **🔢 Desafio dos Dedinhos:** Matemática visual e contagem de 1 a 10 com mãozinhas animadas.
-4. **🔤 Ler & Escrever (Método Fônico):** Sons de cada letra do alfabeto e escrita na lousa neon.
-5. **🌍 Idiomas Mágicos:** Cartões falantes em Português, Inglês e Espanhol.
-6. **🚦 Semáforo & Atenção:** Treino de autorregulação e reflexos estilo "luz verde, luz vermelha".
-7. **🌸 Centro das Emoções & Flor da Calma:** Identificação de sentimentos e respiração guiada.
-8. **🍎 Prato dos Super Campeões:** Educação alimentar com divisão dos 4 grupos de nutrientes.
-9. **🧼 Academia de Higiene Pessoal:** 4 missões práticas de autocuidado (mãos, dentes, banho e unhas).
-10. **💻 Academia Tech & Treino do Mouse:** Foguete (scroll up), Submarino (scroll down), mira e clique.
-11. **🇧🇷 Festas & Datas Comemorativas do Brasil:** Celebrações culturais brasileiras no calendário.
-12. **🪢 Labirinto Espacial:** Coordenação motora fina e raciocínio lógico em labirintos estelares.
-13. **🧩 Jogo da Memória dos Heróis:** Cartas mágicas com pares de personagens e virtudes.
-14. **🪐 Cores e Formas Espaciais:** Geometria lúdica com círculos, quadrados, triângulos e estrelas.
-15. **🧮 Quebra-Cabeça Numérico:** Ordenação de peças numeradas com estímulo cognitivo.
-16. **🗃️ Baú Leitner de Repetição Espaçada:** Memorização inteligente de fatos e conceitos.
+### 📄 Página 1: Alfabetização, Matemática e Linguagens
+1. **📚 Biblioteca Mágica de Histórias:** Livros ilustrados interativos e histórias com decisões morais.
+2. **🔤 Ler & Escrever (Método Fônico):** Sons de cada letra do alfabeto e escrita na lousa neon.
+3. **🖐️ Desafio dos Dedinhos:** Matemática visual e contagem de 1 a 10 com mãozinhas animadas.
+4. **🌍 Idiomas Mágicos (English & Español):** Cartões falantes em 3 idiomas e miniquiz com moedas reais.
+
+### 📄 Página 2: Nutrição, Higiene, Arte e Música
+5. **🍎 Prato dos Super Campeões:** Educação alimentar lúdica com os 4 grupos de nutrientes essenciais.
+6. **🧼 Super Herói Limpinho (Higiene):** 4 missões práticas de autocuidado (dentes, banho, mãos e unhas).
+7. **🎨 Pintura & Lousa Mágica Neon:** Lousa artística com pincéis coloridos e salvamento de desenhos.
+8. **🎵 Laboratório Musical Stark:** Teclado Dó-Ré-Mi, bateria de ritmo e músicas infantis guiadas.
+
+### 📄 Página 3: Tecnologia, Cultura e Informação
+9. **💻 Academia Tech: Mouse, Teclado & Scroll:** Foguete (scroll up), Submarino (scroll down), mira e clique.
+10. **🇧🇷 Festas & Datas Comemorativas do Brasil:** Celebrações culturais brasileiras no calendário interativo.
+11. **🎬 Cinema & Desenhos Stark:** Gestão segura de tempo de vídeo no YouTube Kids e Netflix.
+12. **🌤️ Clima, Geografia & Meu Lugar no Mundo:** Sua cidade, estado, Brasil, mapa e as 4 estações do ano.
+
+### 📄 Página 4: Mente, Emoções e Cognição
+13. **🚦 Desafio do Semáforo Stark:** Treino de atenção rápida, reflexos e controle inibitório.
+14. **💚 Flor da Calma & Emoções:** Respiração guiada, identificação de sentimentos e regulação emocional.
+15. **📦 Baú Leitner da Memória:** Repetição espaçada e memorização inteligente de fatos e conceitos.
+16. **🔷 Cores, Formas & Lógica Espacial:** Geometria lúdica com círculos, quadrados, triângulos e estrelas.
+
+### 📄 Página 5: Dicção, Espaço, Natureza e Tempo
 17. **🗣️ Fonoaudiologia & Dicção do Super-Herói:** 66 desafios de fala com sílabas neon, dica da boquinha, fala pausada e sorteio de palavras mágicas pelo robô Jarvis!
+18. **🪐 Sistema Solar & Planetas do Universo:** Pilote a nave espacial, visite planetas (Marte, Júpiter, Saturno), aprenda curiosidades espaciais e dispute o Quiz Astronauta.
+19. **🦁 Reino Animal & Sons da Natureza (Biólogo Stark):** Conheça os animais, ouça sons característicos sintetizados e adivinhe o bicho pelo som no Desafio do Ouvido!
+20. **⏰ O Relógio Mágico do Tempo & Horas:** Mostrador analógico e digital interativo, ciclo visual dia/noite e missões de rotina (hora de acordar, almoçar e dormir).
+
+### 📄 Página 6: Raciocínio, Ciências, Estratégia e Aventura Pré-Histórica
+21. **🕵️ Detetive Stark: Jogo dos 7 Erros:** Olhos de águia para encontrar detalhes secretos em cenas de alta visibilidade com incentivos do Jarvis.
+22. **🔬 Laboratório de Misturas & Ciências:** Misturador de cores primárias (vermelho, azul, amarelo), termômetro dos 3 estados da água (gelo, líquido, vapor) e o super ímã magnético.
+23. **♟️ Academia de Xadrez do Pequeno Mestre:** Aprenda o movimento do Peão, Cavalo em L, Torre e grandes jogadas com mini-tabuleiro interativo e dicas do Jarvis.
+24. **🦖 Parque dos Dinossauros & Fósseis Stark:** Sítio paleontológico com pincel e martelo para desenterrar fósseis de T-Rex, Braquiossauro e Tricerátops, com rugidos épicos e curiosidades.
 
 ---
 

@@ -398,8 +398,8 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        # 13. Clima / Tempo / Estações
-        if any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "sol", "estação", "estacoes", "geografia"]):
+        # 13. Clima / Tempo / Estações (não conflita com Sistema Solar)
+        if ("solar" not in text_lower) and (any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "previsão", "estação", "estacoes", "geografia"]) or re.search(r'\b(sol|ensolarado)\b', text_lower)):
             try:
                 from clima_estacoes import weather_mgr
                 cidade_cfg = self.config.get("geo_cidade", "Campo Largo")
@@ -461,7 +461,78 @@ class JarvisBrain:
                 "dados": {"duracao_segundos": 180},
             }
 
-        # 17. Jogar / Brincar geral
+        # 17. Novos Jogos Educativos (Sistema Solar, Animais, Relógio, Detetive, Ciências, Xadrez, Dinos)
+        if any(w in text_lower for w in ["sistema solar", "planetas", "planeta", "astronomia", "galáxia", "saturno", "marte", "júpiter"]):
+            reply = f"Nave espacial Stark pronta para decolar, astronauta {self.name}! Abrindo o mapa do Sistema Solar e dos planetas!"
+            return {
+                "ok": True,
+                "intencao": "sistema_solar",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_sistema_solar",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["animais", "animal", "sons dos animais", "som dos animais", "bicho", "bichos", "natureza"]):
+            reply = f"Expedição dos Bichos ativada, {self.name}! Vamos ouvir os sons dos animais e aprender sobre a natureza com o Jarvis!"
+            return {
+                "ok": True,
+                "intencao": "reino_animal",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_reino_animal",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["relógio", "relogio", "que horas são", "horas", "minutos"]):
+            reply = f"Abrindo o Relógio Mágico do Tempo, herói {self.name}! Vamos aprender as horas e a rotina do dia juntos!"
+            return {
+                "ok": True,
+                "intencao": "relogio_tempo",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_relogio_tempo",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["detetive", "sete erros", "7 erros", "jogo dos erros", "olhos de águia"]):
+            reply = f"Ativando olhos de águia, super detetive {self.name}! Vamos encontrar todos os 7 detalhes escondidos na cena!"
+            return {
+                "ok": True,
+                "intencao": "detetive_erros",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_detetive_erros",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["ciência", "ciencias", "experiência", "experiencia", "laboratório", "mistura", "misturas"]):
+            reply = f"Laboratório Científico Stark ativo, cientista {self.name}! Vamos misturar poções mágicas e brincar com ímãs!"
+            return {
+                "ok": True,
+                "intencao": "ciencias_misturas",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_ciencias_misturas",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["xadrez", "jogar xadrez", "aprender xadrez", "peça de xadrez", "cavalo em l", "torre"]):
+            reply = f"Bem-vindo ao Reino do Xadrez, pequeno grande mestre {self.name}! Vamos aprender a movimentar o Cavalo, a Torre e o Peão!"
+            return {
+                "ok": True,
+                "intencao": "xadrez_mestre",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_xadrez_mestre",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["dinossauro", "dinossauros", "fóssil", "fósseis", "fossil", "fosseis", "t-rex", "t rex", "paleontologia"]):
+            reply = f"Pás e pincéis a postos, paleontólogo {self.name}! Vamos escavar a rocha e desenterrar o esqueleto do T-Rex!"
+            return {
+                "ok": True,
+                "intencao": "dinossauros_fosseis",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_dinossauros_fosseis",
+                "dados": {},
+            }
+
+        # 18. Jogar / Brincar geral
         if any(w in text_lower for w in ["jogar", "jogo", "brincar", "brincadeira", "jogos"]):
             reply = "Eba! Adoro brincar com você, Kaleo! Escolha um dos nossos jogos incríveis ou vamos jogar a bolinha mágica!"
             return {
