@@ -11441,138 +11441,364 @@
       if (b) renderScienceLabBody(b);
     }
 
+    // =========================================================================
+    // CALDEIRÃO MÁGICO DE CORES 100% FLUIDO & INSTANTÂNEO (60 FPS NO ATOM N450)
+    // =========================================================================
+    const CATALOGO_CORES_CALDEIRAO = {
+      'vermelho': { id: 'vermelho', nome: 'Vermelho', bg: '#ef4444', icone: '🔴', texto: '#ffffff' },
+      'azul': { id: 'azul', nome: 'Azul', bg: '#3b82f6', icone: '🔵', texto: '#ffffff' },
+      'amarelo': { id: 'amarelo', nome: 'Amarelo', bg: '#eab308', icone: '🟡', texto: '#000000' },
+      'branco': { id: 'branco', nome: 'Branco', bg: '#f8fafc', icone: '⚪', texto: '#0f172a' },
+      'preto': { id: 'preto', nome: 'Preto', bg: '#0f172a', icone: '⚫', texto: '#ffffff' },
+      'verde': { id: 'verde', nome: 'Verde', bg: '#22c55e', icone: '🟢', texto: '#ffffff' }
+    };
+
+    const RECEITAS_CALDEIRAO = {
+      'amarelo+azul': { cor: '#22c55e', nome: 'VERDE DA NATUREZA', icone: '🌿', fala: 'Azul com amarelo se transforma no verde brilhante das florestas!' },
+      'azul+vermelho': { cor: '#8b5cf6', nome: 'ROXO DOS MAGOS', icone: '🔮', fala: 'Vermelho com azul cria a poção roxa e misteriosa dos grandes magos!' },
+      'amarelo+vermelho': { cor: '#f97316', nome: 'LARANJA DO SOL', icone: '☀️', fala: 'Vermelho com amarelo se transforma no laranja quente e radiante do sol!' },
+      'branco+vermelho': { cor: '#f472b6', nome: 'ROSA ALGODÃO DOCE', icone: '🌸', fala: 'O branco suavizou o vermelho e criou o rosa super fofinho do algodão doce!' },
+      'azul+branco': { cor: '#38bdf8', nome: 'AZUL CELESTE DO CÉU', icone: '🩵', fala: 'O branco clareou o azul e criou a cor mágica do céu num dia ensolarado!' },
+      'amarelo+branco': { cor: '#fef08a', nome: 'AMARELO BAUNILHA', icone: '🍦', fala: 'O branco deixou o amarelo suave como um delicioso sorvete de baunilha!' },
+      'amarelo+verde': { cor: '#84cc16', nome: 'VERDE LIMÃO REFRESCANTE', icone: '🍏', fala: 'Verde com amarelo se misturam no verde limão super brilhante e refrescante!' },
+      'azul+verde': { cor: '#06b6d4', nome: 'TURQUESA DO OCEANO', icone: '🌊', fala: 'Azul misturado com verde criou o turquesa cristalino das águas do mar!' },
+      'preto+vermelho': { cor: '#78350f', nome: 'MARROM CHOCOLATE', icone: '🍫', fala: 'O preto escureceu o vermelho criando a cor saborosa do chocolate!' },
+      'branco+preto': { cor: '#94a3b8', nome: 'CINZA METÁLICO STARK', icone: '🤖', fala: 'Branco e preto formam o cinza titânio da armadura de alta tecnologia!' },
+      'verde+vermelho': { cor: '#592c10', nome: 'MARROM TERRA', icone: '🌰', fala: 'Vermelho com verde forma o marrom fértil da terra das florestas!' },
+      'azul+preto': { cor: '#1e3a8a', nome: 'AZUL CÓSMICO PROFUNDO', icone: '🌌', fala: 'O preto aprofundou o azul criando o azul marinho do espaço sideral!' },
+      'amarelo+preto': { cor: '#854d0e', nome: 'DOURADO OLIVA', icone: '🫒', fala: 'Amarelo com preto se misturam no tom dourado oliva!' },
+      'preto+verde': { cor: '#14532d', nome: 'VERDE ESMERALDA', icone: '🌲', fala: 'O preto criou o verde profundo dos pinheiros da floresta!' },
+      'branco+verde': { cor: '#86efac', nome: 'VERDE MENTA SUAVE', icone: '🍃', fala: 'O branco criou o verde menta super suave e refrescante!' }
+    };
+
+    let caldeiraoSlot1 = null;
+    let caldeiraoSlot2 = null;
+    let desafioCaldeiraoAtual = null;
+
+    function playMagicalChord() {
+      playTone(523, 100);
+      setTimeout(() => playTone(659, 120), 70);
+      setTimeout(() => playTone(784, 140), 140);
+      setTimeout(() => playTone(1046, 200), 210);
+    }
+
     function renderExperimentoCores() {
-      const opcoesCores = [
-        { id: 'vermelho', nome: 'Vermelho', bg: '#ef4444', icone: '🔴' },
-        { id: 'azul', nome: 'Azul', bg: '#3b82f6', icone: '🔵' },
-        { id: 'amarelo', nome: 'Amarelo', bg: '#eab308', icone: '🟡' },
-        { id: 'branco', nome: 'Branco', bg: '#f8fafc', color: '#000', icone: '⚪' },
-        { id: 'preto', nome: 'Preto', bg: '#1e293b', icone: '⚫' },
-        { id: 'verde', nome: 'Verde', bg: '#22c55e', icone: '🟢' }
-      ];
+      caldeiraoSlot1 = null;
+      caldeiraoSlot2 = null;
+      desafioCaldeiraoAtual = null;
 
       return `
-        <div style="font-size:1.2rem; font-weight:900; color:#38bdf8;">🧪 O Caldeirão de Cores Mágicas</div>
-        <div style="font-size:0.85rem; color:#94a3b8;">Escolha duas cores para misturar no caldeirão ou use uma receita mágica!</div>
-
-        <!-- 6 TUBOS COLORIDOS -->
-        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:6px 0;">
-          ${opcoesCores.map(c => `
-            <button type="button" class="big-btn" style="padding:8px 14px; border-radius:12px; background:${c.bg}; color:${c.color || '#fff'}; font-weight:900; font-size:0.85rem; border:${coresSelecionadasLab.includes(c.id) ? '4px solid #fff; box-shadow:0 0 14px #fff;' : '2px solid transparent'};" onclick="selecionarCorLab('${c.id}')">
-              ${c.icone} ${c.nome}
-            </button>
-          `).join('')}
-        </div>
-
-        <!-- RECEITAS RÁPIDAS -->
-        <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
-          <button type="button" class="big-btn" style="background:#831843; border:1px solid #f472b6; color:#fbcfe8; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('vermelho', 'branco')">
-            🌸 Criar Rosa
-          </button>
-          <button type="button" class="big-btn" style="background:#581c87; border:1px solid #c084fc; color:#e9d5ff; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('azul', 'vermelho')">
-            🟣 Criar Roxo
-          </button>
-          <button type="button" class="big-btn" style="background:#7c2d12; border:1px solid #fb923c; color:#ffedd5; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('amarelo', 'vermelho')">
-            🟠 Criar Laranja
-          </button>
-          <button type="button" class="big-btn" style="background:#134e4a; border:1px solid #2dd4bf; color:#ccfbf1; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('azul', 'verde')">
-            🌊 Criar Turquesa
-          </button>
-          <button type="button" class="big-btn" style="background:#365314; border:1px solid #a3e635; color:#ecfccb; padding:3px 8px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="aplicarReceitaCor('verde', 'amarelo')">
-            🍏 Criar Verde Limão
-          </button>
-        </div>
-
-        <!-- BOTÃO DE MISTURAR -->
-        <button type="button" class="big-btn" style="background:#8b5cf6; border:2px solid #c084fc; color:#fff; padding:8px 24px; border-radius:12px; font-weight:900; margin-top:6px;" onclick="misturarCoresLab()">
-          ✨ Misturar Poção Mágica!
-        </button>
-
-        ${resultadoMisturaLab ? `
-          <div style="background:${resultadoMisturaLab.bg}; border:3px solid #fff; border-radius:16px; padding:10px 20px; color:#fff; font-size:1.15rem; font-weight:900; animation:pulse 1s; box-shadow:0 0 25px ${resultadoMisturaLab.bg}; margin-top:4px;">
-            ${resultadoMisturaLab.texto}
+        <div style="display:flex; flex-direction:column; align-items:center; width:100%; max-width:680px; gap:8px;">
+          
+          <!-- TÍTULO & INSTRUÇÃO DINÂMICA -->
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:6px;">
+            <div style="text-align:left;">
+              <div style="font-size:1.25rem; font-weight:900; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+                <span>🧪 O Caldeirão Mágico de Cores</span>
+              </div>
+              <div id="caldeirao-instrucao" style="font-size:0.86rem; color:#fde047; font-weight:800; margin-top:2px;">
+                Toque em uma poção colorida para despejar no caldeirão!
+              </div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="big-btn" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:5px 12px; font-size:0.8rem; font-weight:800; border-radius:8px;" onclick="iniciarDesafioMagoCaldeirao()">
+                🎯 Desafio do Mago
+              </button>
+              <button type="button" class="big-btn" style="background:#334155; border:1px solid #64748b; color:#fff; padding:5px 12px; font-size:0.8rem; font-weight:800; border-radius:8px;" onclick="limparCaldeiraoMágico(true)">
+                🧹 Limpar
+              </button>
+            </div>
           </div>
-        ` : ''}
+
+          <!-- ÁREA DO CALDEIRÃO VETORIAL + SLOTS DE INGREDIENTES -->
+          <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin:4px 0; flex-wrap:wrap;">
+            
+            <!-- SLOT 1 -->
+            <div id="slot-cor-1" style="min-width:90px; height:64px; background:#071224; border:2px dashed #38bdf8; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px; transition:all 0.2s ease;">
+              <span style="font-size:1.4rem;">⚪</span>
+              <span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">1ª Cor</span>
+            </div>
+
+            <div style="font-size:1.6rem; font-weight:900; color:#38bdf8;">+</div>
+
+            <!-- SLOT 2 -->
+            <div id="slot-cor-2" style="min-width:90px; height:64px; background:#071224; border:2px dashed #38bdf8; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px 8px; transition:all 0.2s ease;">
+              <span style="font-size:1.4rem;">⚪</span>
+              <span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">2ª Cor</span>
+            </div>
+
+            <div style="font-size:1.6rem; font-weight:900; color:#38bdf8;">=</div>
+
+            <!-- O CALDEIRÃO MÁGICO VETORIAL INTERATIVO -->
+            <div id="caldeirao-box" style="position:relative; width:130px; height:105px; display:flex; align-items:center; justify-content:center; transition:transform 0.25s ease;">
+              <svg width="130" height="105" viewBox="0 0 160 130">
+                <!-- Fumaça mágica animada -->
+                <g id="caldeirao-fumaca" style="animation:pulse 1.4s infinite;">
+                  <text x="60" y="20" font-size="20">✨</text>
+                  <text x="82" y="16" font-size="18">🫧</text>
+                </g>
+                <!-- Alças laterais -->
+                <path d="M 28,58 C 12,58 12,78 28,78" fill="none" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 132,58 C 148,58 148,78 132,78" fill="none" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
+                <!-- Pés do caldeirão -->
+                <path d="M 44,110 L 36,124" stroke="#1e293b" stroke-width="7" stroke-linecap="round"/>
+                <path d="M 80,114 L 80,126" stroke="#1e293b" stroke-width="7" stroke-linecap="round"/>
+                <path d="M 116,110 L 124,124" stroke="#1e293b" stroke-width="7" stroke-linecap="round"/>
+                <!-- Bojo do caldeirão -->
+                <ellipse cx="80" cy="86" rx="54" ry="34" fill="#0f172a" stroke="#334155" stroke-width="3"/>
+                <!-- Borda do caldeirão -->
+                <ellipse cx="80" cy="54" rx="48" ry="14" fill="#1e293b" stroke="#64748b" stroke-width="2.5"/>
+                <!-- Líquido Mágico Borbulhante -->
+                <ellipse id="caldeirao-liquido-cor" cx="80" cy="54" rx="42" ry="10" fill="#1e293b" style="transition:fill 0.3s ease;"/>
+                <!-- Bolhas flutuantes -->
+                <circle id="caldeirao-b1" cx="68" cy="53" r="3" fill="#ffffff" opacity="0.8" style="animation:pulse 0.7s infinite;"/>
+                <circle id="caldeirao-b2" cx="92" cy="55" r="3.5" fill="#ffffff" opacity="0.8" style="animation:pulse 1.1s infinite;"/>
+                <circle id="caldeirao-b3" cx="80" cy="51" r="2.5" fill="#ffffff" opacity="0.8" style="animation:pulse 0.9s infinite;"/>
+              </svg>
+            </div>
+
+          </div>
+
+          <!-- BANNER DE RESULTADO DA POÇÃO MÁGICA -->
+          <div id="caldeirao-resultado-banner" style="width:100%; min-height:44px; background:rgba(30,41,59,0.7); border:2px solid #334155; border-radius:12px; padding:6px 14px; display:flex; align-items:center; justify-content:center; text-align:center; font-size:1.02rem; font-weight:900; color:#cbd5e1; box-sizing:border-box; transition:all 0.25s ease;">
+            Toque nos tubos coloridos abaixo para fazer sua poção!
+          </div>
+
+          <!-- 6 TUBOS DE POÇÕES COLORIDAS (GRANDES E TÁTEIS) -->
+          <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:2px 0;">
+            ${Object.values(CATALOGO_CORES_CALDEIRAO).map(c => `
+              <button type="button" class="big-btn" id="btn-tubo-${c.id}" style="padding:10px 16px; border-radius:14px; background:${c.bg}; color:${c.texto}; font-weight:900; font-size:0.95rem; border:2px solid #fff; box-shadow:0 3px 10px rgba(0,0,0,0.4); cursor:pointer; transition:transform 0.1s ease;" onclick="tocarTuboCor('${c.id}')">
+                ${c.icone} ${c.nome}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- LIVRO DE FEITIÇOS & RECEITAS RÁPIDAS -->
+          <div style="width:100%; background:rgba(15,23,42,0.85); border:1px solid #1e293b; border-radius:12px; padding:8px 12px; box-sizing:border-box;">
+            <div style="font-size:0.78rem; font-weight:800; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+              📖 Livro de Poções Mágicas dos Campeões:
+            </div>
+            <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+              <button type="button" class="big-btn" style="background:#831843; border:1px solid #f472b6; color:#fbcfe8; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('vermelho', 'branco')">
+                🌸 Poção Rosa
+              </button>
+              <button type="button" class="big-btn" style="background:#581c87; border:1px solid #c084fc; color:#e9d5ff; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('azul', 'vermelho')">
+                🟣 Poção Roxa
+              </button>
+              <button type="button" class="big-btn" style="background:#7c2d12; border:1px solid #fb923c; color:#ffedd5; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('amarelo', 'vermelho')">
+                🟠 Poção Laranja
+              </button>
+              <button type="button" class="big-btn" style="background:#14532d; border:1px solid #4ade80; color:#dcfce7; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('amarelo', 'azul')">
+                🟢 Poção Verde
+              </button>
+              <button type="button" class="big-btn" style="background:#134e4a; border:1px solid #2dd4bf; color:#ccfbf1; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('azul', 'verde')">
+                🌊 Poção Turquesa
+              </button>
+              <button type="button" class="big-btn" style="background:#365314; border:1px solid #a3e635; color:#ecfccb; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('verde', 'amarelo')">
+                🍏 Verde Limão
+              </button>
+              <button type="button" class="big-btn" style="background:#451a03; border:1px solid #b45309; color:#fef3c7; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('preto', 'vermelho')">
+                🍫 Poção Chocolate
+              </button>
+              <button type="button" class="big-btn" style="background:#0369a1; border:1px solid #38bdf8; color:#e0f2fe; padding:4px 10px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="aplicarFeiticoRapido('azul', 'branco')">
+                🩵 Azul Celeste
+              </button>
+            </div>
+          </div>
+
+        </div>
       `;
     }
 
-    function selecionarCorLab(cor) {
-      playTone(440, 70);
-      if (coresSelecionadasLab.includes(cor)) {
-        coresSelecionadasLab = coresSelecionadasLab.filter(c => c !== cor);
+    function tocarTuboCor(corId) {
+      const cor = CATALOGO_CORES_CALDEIRAO[corId];
+      if (!cor) return;
+
+      playTone(580, 70);
+
+      // Efeito de clique no botão do tubo
+      const btn = document.getElementById(`btn-tubo-${corId}`);
+      if (btn) {
+        btn.style.transform = 'scale(0.92)';
+        setTimeout(() => { if (btn) btn.style.transform = 'scale(1)'; }, 120);
+      }
+
+      // Se ambos os slots já estavam preenchidos, limpa e recomeça com a nova cor no Slot 1
+      if (caldeiraoSlot1 && caldeiraoSlot2) {
+        caldeiraoSlot1 = null;
+        caldeiraoSlot2 = null;
+      }
+
+      const s1 = document.getElementById('slot-cor-1');
+      const s2 = document.getElementById('slot-cor-2');
+      const liquido = document.getElementById('caldeirao-liquido-cor');
+      const instrucao = document.getElementById('caldeirao-instrucao');
+      const banner = document.getElementById('caldeirao-resultado-banner');
+
+      if (!caldeiraoSlot1) {
+        // Colocando o 1º ingrediente no caldeirão
+        caldeiraoSlot1 = corId;
+        if (s1) {
+          s1.style.background = cor.bg;
+          s1.style.border = '2px solid #fff';
+          s1.innerHTML = `<span style="font-size:1.4rem;">${cor.icone}</span><span style="font-size:0.75rem; color:${cor.texto}; font-weight:900;">${cor.nome}</span>`;
+        }
+        if (s2) {
+          s2.style.background = '#071224';
+          s2.style.border = '2px dashed #38bdf8';
+          s2.innerHTML = '<span style="font-size:1.4rem;">⚪</span><span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">2ª Cor</span>';
+        }
+        if (liquido) liquido.setAttribute('fill', cor.bg);
+        if (instrucao) instrucao.textContent = `Você adicionou ${cor.nome}! Agora toque na 2ª cor para misturar!`;
+        if (banner) {
+          banner.style.background = 'rgba(30,41,59,0.7)';
+          banner.style.borderColor = '#334155';
+          banner.style.color = '#94a3b8';
+          banner.textContent = `Aguardando segunda cor para misturar com ${cor.nome}...`;
+        }
       } else {
-        if (coresSelecionadasLab.length >= 2) coresSelecionadasLab.shift();
-        coresSelecionadasLab.push(cor);
+        // Colocando o 2º ingrediente e misturando imediatamente
+        caldeiraoSlot2 = corId;
+        if (s2) {
+          s2.style.background = cor.bg;
+          s2.style.border = '2px solid #fff';
+          s2.innerHTML = `<span style="font-size:1.4rem;">${cor.icone}</span><span style="font-size:0.75rem; color:${cor.texto}; font-weight:900;">${cor.nome}</span>`;
+        }
+        processarMisturaImediata(caldeiraoSlot1, caldeiraoSlot2);
       }
-      const b = document.querySelector('.modal-body');
-      if (b) renderScienceLabBody(b);
     }
 
-    function aplicarReceitaCor(c1, c2) {
-      coresSelecionadasLab = [c1, c2];
-      misturarCoresLab();
-    }
+    function processarMisturaImediata(c1, c2) {
+      const chave = [c1, c2].sort().join('+');
+      const receita = RECEITAS_CALDEIRAO[chave] || {
+        cor: '#10b981',
+        nome: 'POÇÃO MULTICOLORIDA',
+        icone: '✨',
+        fala: 'Mistura mágica concluída com sucesso no caldeirão!'
+      };
 
-    async function misturarCoresLab() {
-      if (coresSelecionadasLab.length < 2) {
-        speak('Selecione duas cores coloridas para misturar!');
-        return;
-      }
-      playTone(660, 100);
-      const c = [...coresSelecionadasLab].sort().join('+');
-      
-      let res = { bg: '#22c55e', texto: '🟢 Criou a cor VERDE!' };
-      let fala = 'Mistura realizada com sucesso!';
+      const liquido = document.getElementById('caldeirao-liquido-cor');
+      const caldeiraoBox = document.getElementById('caldeirao-box');
+      const banner = document.getElementById('caldeirao-resultado-banner');
+      const instrucao = document.getElementById('caldeirao-instrucao');
 
-      if (c === 'amarelo+azul') {
-        res = { bg: '#22c55e', texto: '🟢 AZUL + AMARELO = VERDE DA NATUREZA!' };
-        fala = 'Azul com amarelo se transforma no verde brilhante da natureza!';
-      } else if (c === 'azul+vermelho') {
-        res = { bg: '#7c3aed', texto: '🟣 VERMELHO + AZUL = ROXO / VIOLETA!' };
-        fala = 'Vermelho com azul se transforma no lindo roxo dos magos!';
-      } else if (c === 'amarelo+vermelho') {
-        res = { bg: '#f97316', texto: '🟠 VERMELHO + AMARELO = LARANJA DO SOL!' };
-        fala = 'Vermelho com amarelo se transforma no laranja vibrante do fogo!';
-      } else if (c === 'branco+vermelho') {
-        res = { bg: '#f472b6', texto: '🌸 VERMELHO + BRANCO = ROSA ALGODÃO DOCE!' };
-        fala = 'O branco clareou o vermelho e criou o rosa super fofinho!';
-      } else if (c === 'azul+branco') {
-        res = { bg: '#38bdf8', texto: '🩵 AZUL + BRANCO = AZUL CELESTE DO CÉU!' };
-        fala = 'O branco transformou o azul no azul celeste do céu de verão!';
-      } else if (c === 'amarelo+branco') {
-        res = { bg: '#fef08a', color: '#000', texto: '🍦 AMARELO + BRANCO = AMARELO BAUNILHA!' };
-        fala = 'O branco suavizou o amarelo criando um tom cremoso de baunilha!';
-      } else if (c === 'amarelo+verde') {
-        res = { bg: '#84cc16', texto: '🍏 VERDE + AMARELO = VERDE LIMÃO BRILHANTE!' };
-        fala = 'Verde com amarelo se transforma no verde limão super refrescante!';
-      } else if (c === 'azul+verde') {
-        res = { bg: '#06b6d4', texto: '🌊 AZUL + VERDE = TURQUESA DO OCEANO!' };
-        fala = 'Azul com verde criou o turquesa cristalino do fundo do mar!';
-      } else if (c === 'preto+vermelho') {
-        res = { bg: '#78350f', texto: '🍫 VERMELHO + PRETO = MARROM CHOCOLATE!' };
-        fala = 'O preto escureceu o vermelho criando a cor deliciosa do chocolate!';
-      } else if (c === 'branco+preto') {
-        res = { bg: '#64748b', texto: '🩶 BRANCO + PRETO = CINZA METÁLICO STARK!' };
-        fala = 'Branco e preto formam o cinza metálico da armadura do Stark!';
-      } else if (c === 'verde+vermelho') {
-        res = { bg: '#592c10', texto: '🌰 VERMELHO + VERDE = MARROM TERRA!' };
-        fala = 'Vermelho misturado com verde cria a cor marrom da terra fértil!';
+      // Animação mágica imediata no caldeirão
+      if (liquido) liquido.setAttribute('fill', receita.cor);
+      if (caldeiraoBox) {
+        caldeiraoBox.style.transform = 'scale(1.12)';
+        setTimeout(() => { if (caldeiraoBox) caldeiraoBox.style.transform = 'scale(1)'; }, 280);
       }
 
-      resultadoMisturaLab = res;
-      playCelebrationFanfare();
-      speak(fala);
-      showToast('🧪 Mistura Realizada com Sucesso! +5 Moedas!');
-      await fetch('/api/fichas/bonificar', {
+      playMagicalChord();
+      confetti({ particleCount: 65, spread: 60, origin: { y: 0.6 } });
+
+      const cor1Info = CATALOGO_CORES_CALDEIRAO[c1] || { nome: c1 };
+      const cor2Info = CATALOGO_CORES_CALDEIRAO[c2] || { nome: c2 };
+
+      if (banner) {
+        banner.style.background = receita.cor;
+        banner.style.borderColor = '#ffffff';
+        banner.style.color = '#ffffff';
+        banner.style.boxShadow = `0 0 24px ${receita.cor}`;
+        banner.innerHTML = `${receita.icone} <strong>${cor1Info.nome.toUpperCase()} + ${cor2Info.nome.toUpperCase()} = ${receita.nome}!</strong>`;
+      }
+
+      if (instrucao) {
+        instrucao.textContent = '🎉 Feitiço criado com sucesso! Toque em outra cor para uma nova poção!';
+      }
+
+      speak(receita.fala);
+
+      // Verificação do Desafio do Mago se ativo
+      if (desafioCaldeiraoAtual && receita.nome.includes(desafioCaldeiraoAtual.toUpperCase())) {
+        setTimeout(() => {
+          playCelebrationFanfare();
+          speak(`Sensacional, super cientista ${appState.config.child_name || 'Kaleu'}! Você completou o Desafio do Mago e criou a cor ${receita.nome}! Ganhou moedas bônus!`);
+          showToast('🌟 Desafio do Mago Cumprido! +10 Moedas!');
+        }, 1200);
+        desafioCaldeiraoAtual = null;
+      }
+
+      // Bonificação em segundo plano sem congelar a UI
+      fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 5, motivo: 'ciencia_cores' })
+        body: JSON.stringify({ quantidade: 5, motivo: 'caldeirao_cores' })
+      }).then(r => r.json()).then(d => {
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl && d.novo_saldo !== undefined) pEl.textContent = d.novo_saldo;
       }).catch(() => null);
-      const pEl = document.getElementById('pote-fichas-val');
-      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+    }
 
-      const b = document.querySelector('.modal-body');
-      if (b) renderScienceLabBody(b);
+    function aplicarFeiticoRapido(c1, c2) {
+      caldeiraoSlot1 = c1;
+      caldeiraoSlot2 = c2;
+      const s1 = document.getElementById('slot-cor-1');
+      const s2 = document.getElementById('slot-cor-2');
+      const cor1 = CATALOGO_CORES_CALDEIRAO[c1];
+      const cor2 = CATALOGO_CORES_CALDEIRAO[c2];
+      if (s1 && cor1) {
+        s1.style.background = cor1.bg;
+        s1.style.border = '2px solid #fff';
+        s1.innerHTML = `<span style="font-size:1.4rem;">${cor1.icone}</span><span style="font-size:0.75rem; color:${cor1.texto}; font-weight:900;">${cor1.nome}</span>`;
+      }
+      if (s2 && cor2) {
+        s2.style.background = cor2.bg;
+        s2.style.border = '2px solid #fff';
+        s2.innerHTML = `<span style="font-size:1.4rem;">${cor2.icone}</span><span style="font-size:0.75rem; color:${cor2.texto}; font-weight:900;">${cor2.nome}</span>`;
+      }
+      processarMisturaImediata(c1, c2);
+    }
+
+    function limparCaldeiraoMágico(tocarSom = true) {
+      caldeiraoSlot1 = null;
+      caldeiraoSlot2 = null;
+      if (tocarSom) playTone(400, 90);
+
+      const s1 = document.getElementById('slot-cor-1');
+      const s2 = document.getElementById('slot-cor-2');
+      const liquido = document.getElementById('caldeirao-liquido-cor');
+      const banner = document.getElementById('caldeirao-resultado-banner');
+      const instrucao = document.getElementById('caldeirao-instrucao');
+
+      if (s1) {
+        s1.style.background = '#071224';
+        s1.style.border = '2px dashed #38bdf8';
+        s1.innerHTML = '<span style="font-size:1.4rem;">⚪</span><span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">1ª Cor</span>';
+      }
+      if (s2) {
+        s2.style.background = '#071224';
+        s2.style.border = '2px dashed #38bdf8';
+        s2.innerHTML = '<span style="font-size:1.4rem;">⚪</span><span style="font-size:0.75rem; color:#94a3b8; font-weight:700;">2ª Cor</span>';
+      }
+      if (liquido) liquido.setAttribute('fill', '#1e293b');
+      if (banner) {
+        banner.style.background = 'rgba(30,41,59,0.7)';
+        banner.style.borderColor = '#334155';
+        banner.style.color = '#cbd5e1';
+        banner.style.boxShadow = 'none';
+        banner.textContent = 'Caldeirão limpinho! Toque nas cores para criar novas poções!';
+      }
+      if (instrucao) instrucao.textContent = 'Toque em uma poção colorida para despejar no caldeirão!';
+      if (tocarSom) speak('Caldeirão limpinho e pronto para novas magias!');
+    }
+
+    function iniciarDesafioMagoCaldeirao() {
+      const metas = ['VERDE', 'ROXO', 'LARANJA', 'ROSA', 'TURQUESA'];
+      desafioCaldeiraoAtual = metas[Math.floor(Math.random() * metas.length)];
+      playTone(700, 120);
+      limparCaldeiraoMágico(false);
+      const instrucao = document.getElementById('caldeirao-instrucao');
+      const banner = document.getElementById('caldeirao-resultado-banner');
+      const txt = `🎯 MISSÃO DO MAGO: Misture duas cores para criar a cor ${desafioCaldeiraoAtual}!`;
+      if (instrucao) instrucao.textContent = txt;
+      if (banner) {
+        banner.style.background = '#1e3a8a';
+        banner.style.borderColor = '#38bdf8';
+        banner.style.color = '#fde047';
+        banner.textContent = txt;
+      }
+      speak(`Atenção, Mago ${appState.config.child_name || 'Kaleu'}! O seu desafio é misturar duas poções para criar a cor ${desafioCaldeiraoAtual}! Quais cores você vai misturar?`);
     }
 
     function renderExperimentoVulcao() {
