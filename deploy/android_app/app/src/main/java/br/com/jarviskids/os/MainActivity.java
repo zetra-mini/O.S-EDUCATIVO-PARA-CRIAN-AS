@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.PermissionRequest;
@@ -24,7 +25,6 @@ public class MainActivity extends Activity {
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final String PREF_NAME = "JarvisKidsPrefs";
     private static final String KEY_SERVER_URL = "server_url";
-    private static final String DEFAULT_REMOTE_URL = "https://jarvis.novaflix.app.br/admin";
     private static final String FALLBACK_LOCAL_URL = "file:///android_asset/painel_pais.html";
 
     private WebView webView;
@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Tela cheia imersiva (oculta barra de enderecos) e mantem tela ligada
+        // Tela cheia imersiva permanente e mantem tela ligada
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemUI();
 
@@ -47,13 +47,15 @@ public class MainActivity extends Activity {
         configurarWebView();
         solicitarPermissoesNativas();
 
-        // Aponta nativamente (hardcoded) para a URL segura do painel administrativo remoto
-        String targetUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_REMOTE_URL);
-        if (targetUrl == null || targetUrl.trim().isEmpty() || targetUrl.contains("127.0.0.1:8000")) {
-            targetUrl = DEFAULT_REMOTE_URL;
-        }
+        // Recupera URL configurada pelo pai/mãe
+        String targetUrl = prefs.getString(KEY_SERVER_URL, "");
 
-        webView.loadUrl(targetUrl);
+        // Se nunca configurou ou se ainda tinha o dominio de exemplo (novaflix.app.br), exibe o seletor
+        if (targetUrl == null || targetUrl.trim().isEmpty() || targetUrl.contains("novaflix.app.br")) {
+            exibirDialogoPrimeiroAcesso();
+        } else {
+            conectar(targetUrl);
+        }
     }
 
     private void hideSystemUI() {
@@ -80,8 +82,8 @@ public class MainActivity extends Activity {
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
-        
-        // Habilita acesso total a arquivos e assets locais offline
+
+        // Habilita assets locais offline
         settings.setAllowFileAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
@@ -92,29 +94,23 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient() {
             private String normalizarUrl(String url) {
-                if (url == null || url.trim().isEmpty()) return DEFAULT_LOCAL_URL;
+                if (url == null || url.trim().isEmpty()) return FALLBACK_LOCAL_URL;
                 if (url.endsWith("/pais") || url.equals("file:///pais") || url.contains("/pais")) {
-                    return "file:///android_asset/painel_pais.html";
-                }
-                if (url.equals("file:///") || url.endsWith("/hud_jarvis.html")) {
-                    return "file:///android_asset/hud_jarvis.html";
+                    return FALLBACK_LOCAL_URL;
                 }
                 return url;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                String target = normalizarUrl(url);
-                view.loadUrl(target);
+                view.loadUrl(normalizarUrl(url));
                 return true;
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    String url = request.getUrl().toString();
-                    String target = normalizarUrl(url);
-                    view.loadUrl(target);
+                    view.loadUrl(normalizarUrl(request.getUrl().toString()));
                     return true;
                 }
                 return false;
@@ -133,102 +129,179 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-
-            private void lidarComErroConexao(String url) {
-                if (url != null && url.startsWith("file:")) {
-                    return; // Arquivos locais em assets nao geram aviso de Wi-Fi
-                }
-                // Em caso de falha de conexao com IP externo, reverte imediatamente para o modo autonomo offline!
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "Robô na rede Wi-Fi não encontrado. Modo Autônomo Offline Ativado!", Toast.LENGTH_LONG).show();
-                        prefs.edit().putString(KEY_SERVER_URL, DEFAULT_LOCAL_URL).apply();
-                        webView.loadUrl(DEFAULT_LOCAL_URL);
-                    }
-                });
-            }
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            for (String res : request.getResources()) {
-                                if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(res)) {
-                                    pendingPermissionRequest = request;
-                                    if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
-                                            == PackageManager.PERMISSION_GRANTED) {
-                                        request.grant(request.getResources());
-                                    } else {
-                                        requestPermissions(
-                                                new String[]{android.Manifest.permission.RECORD_AUDIO},
-                                                PERMISSION_REQUEST_CODE);
-                                    }
-                                    return;
+                runOnUiThread(() -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        for (String res : request.getResources()) {
+                            if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(res)) {
+                                pendingPermissionRequest = request;
+                                if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO)
+                                        == PackageManager.PERMISSION_GRANTED) {
+                                    request.grant(request.getResources());
+                                } else {
+                                    requestPermissions(
+                                            new String[]{android.Manifest.permission.RECORD_AUDIO},
+                                            PERMISSION_REQUEST_CODE);
                                 }
+                                return;
                             }
                         }
-                        request.grant(request.getResources());
                     }
+                    request.grant(request.getResources());
                 });
             }
         });
 
-        // Toque longo com 2 dedos para abrir menu de conexao
-        webView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                exibirMenuModo();
-                return true;
-            }
+        // Toque longo em qualquer área abre menu rápido de conexão
+        webView.setOnLongClickListener(v -> {
+            exibirMenuModo();
+            return true;
         });
     }
 
-    private void exibirMenuModo() {
+    private void lidarComErroConexao(String url) {
+        if (url != null && url.startsWith("file:")) {
+            return;
+        }
+
+        runOnUiThread(() -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("📡 Falha na Conexão");
+            builder.setMessage("Não foi possível conectar ao Jarvis OS em:\n" + url + "\n\nO netbook está ligado e conectado na mesma rede ou com o túnel ativo?");
+            builder.setCancelable(false);
+
+            builder.setPositiveButton("🔄 Tentar Novamente", (d, w) -> {
+                conectar(url);
+            });
+
+            builder.setNeutralButton("⚙️ Trocar Conexão", (d, w) -> {
+                exibirMenuModo();
+            });
+
+            builder.setNegativeButton("📱 Usar Modo Offline", (d, w) -> {
+                webView.loadUrl(FALLBACK_LOCAL_URL);
+                Toast.makeText(MainActivity.this, "Painel dos Pais Offline carregado!", Toast.LENGTH_SHORT).show();
+            });
+
+            builder.show();
+        });
+    }
+
+    private void conectar(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            url = FALLBACK_LOCAL_URL;
+        } else {
+            url = url.trim();
+            if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://")) {
+                url = "http://" + url;
+            }
+            if (!url.endsWith("/admin") && !url.startsWith("file:")) {
+                if (url.endsWith("/")) {
+                    url += "admin";
+                } else {
+                    url += "/admin";
+                }
+            }
+        }
+        prefs.edit().putString(KEY_SERVER_URL, url).apply();
+        webView.loadUrl(url);
+    }
+
+    private void exibirDialogoPrimeiroAcesso() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("⚙️ Modo do JARVIS Kids Mobile");
+        builder.setTitle("🚀 Conexão Jarvis Kids Mobile");
+        builder.setMessage("Como você deseja conectar o aplicativo ao Jarvis OS?");
+        builder.setCancelable(false);
+
         String[] opcoes = {
-            "🎮 Modo Autônomo Offline (Jogar Direto no Celular)",
-            "👨‍👩‍👧 Painel dos Pais (Autônomo Local)",
-            "📡 Conectar ao Netbook / PC na Rede Wi-Fi"
+            "🏠 1. Rede Wi-Fi de Casa (IP Local, ex: 192.168.1.X:8000)",
+            "⚡ 2. Túnel Remoto Cloudflare (URL trycloudflare.com ou domínio)",
+            "📱 3. Modo Local Offline (Sem Robô Conectado)"
         };
 
         builder.setItems(opcoes, (dialog, which) -> {
             if (which == 0) {
-                prefs.edit().putString(KEY_SERVER_URL, DEFAULT_LOCAL_URL).apply();
-                webView.loadUrl(DEFAULT_LOCAL_URL);
-                Toast.makeText(MainActivity.this, "Modo Autônomo Ativado!", Toast.LENGTH_SHORT).show();
+                solicitarIpLocal();
             } else if (which == 1) {
-                String paisUrl = "file:///android_asset/painel_pais.html";
-                webView.loadUrl(paisUrl);
-            } else if (which == 2) {
-                solicitarIpServidor();
+                solicitarUrlNuvem();
+            } else {
+                conectar(FALLBACK_LOCAL_URL);
             }
         });
         builder.show();
     }
 
-    private void solicitarIpServidor() {
+    private void exibirMenuModo() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Conectar ao Robô na Rede");
-        builder.setMessage("Digite o IP do Netbook ou Computador (Ex: 192.168.1.100:8000):");
+        builder.setTitle("⚙️ Configurações de Conexão");
+        String[] opcoes = {
+            "🏠 Conectar via Wi-Fi de Casa (IP Local)",
+            "⚡ Conectar via Túnel Cloudflare (Remoto)",
+            "📱 Abrir Painel Offline",
+            "🔄 Recarregar Página Atual"
+        };
+
+        builder.setItems(opcoes, (dialog, which) -> {
+            if (which == 0) {
+                solicitarIpLocal();
+            } else if (which == 1) {
+                solicitarUrlNuvem();
+            } else if (which == 2) {
+                conectar(FALLBACK_LOCAL_URL);
+            } else if (which == 3) {
+                webView.reload();
+            }
+        });
+        builder.setNegativeButton("Fechar", null);
+        builder.show();
+    }
+
+    private void solicitarIpLocal() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("🏠 Conexão Wi-Fi Local (Casa)");
+        builder.setMessage("Digite o IP do netbook exibido na aba 'Conexão Remota' do painel (ex: 192.168.1.105:8000):");
 
         final EditText input = new EditText(this);
-        input.setHint("Ex: 192.168.1.100:8000");
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        input.setHint("192.168.1.105:8000");
+        String saved = prefs.getString(KEY_SERVER_URL, "");
+        if (saved != null && saved.contains("192.168.")) {
+            input.setText(saved.replace("http://", "").replace("/admin", ""));
+        }
         builder.setView(input);
 
         builder.setPositiveButton("Conectar", (dialog, which) -> {
-            String ip = input.getText().toString().trim();
-            if (!ip.isEmpty()) {
-                if (!ip.startsWith("http://") && !ip.startsWith("https://")) {
-                    ip = "http://" + ip;
-                }
-                prefs.edit().putString(KEY_SERVER_URL, ip).apply();
-                webView.loadUrl(ip);
+            String valor = input.getText().toString().trim();
+            if (!valor.isEmpty()) {
+                conectar("http://" + valor);
+            }
+        });
+        builder.setNegativeButton("Cancelar", null);
+        builder.show();
+    }
+
+    private void solicitarUrlNuvem() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("⚡ Conexão Remota Cloudflare");
+        builder.setMessage("Cole o link gerado no botão 'Túnel Rápido' (ex: https://xxx.trycloudflare.com) ou seu domínio próprio:");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+        input.setHint("https://seu-tunel.trycloudflare.com");
+        String saved = prefs.getString(KEY_SERVER_URL, "");
+        if (saved != null && (saved.contains("trycloudflare.com") || saved.contains("https://"))) {
+            input.setText(saved);
+        }
+        builder.setView(input);
+
+        builder.setPositiveButton("Conectar", (dialog, which) -> {
+            String valor = input.getText().toString().trim();
+            if (!valor.isEmpty()) {
+                conectar(valor);
             }
         });
         builder.setNegativeButton("Cancelar", null);

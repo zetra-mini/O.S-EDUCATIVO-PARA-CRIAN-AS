@@ -3931,6 +3931,10 @@
         currentBufferSource = null;
       }
       // 4. Pausa qualquer áudio HTML5
+      const bgTimerAudio = document.getElementById('audio-timer-young-love');
+      if (bgTimerAudio) {
+        try { bgTimerAudio.pause(); bgTimerAudio.currentTime = 0; } catch (e) {}
+      }
       if (currentAudio) {
         try {
           currentAudio.pause();
@@ -13418,6 +13422,12 @@
         </div>
       `;
       speak('Missão Dente Brilhante iniciada! Pegue a escova e a pasta! Dois minutos de escovação caprichada!');
+      const bgAudio = document.getElementById('audio-timer-young-love');
+      if (bgAudio) {
+        bgAudio.currentTime = 0;
+        bgAudio.volume = 0.45;
+        bgAudio.play().catch(() => {});
+      }
       const timer = setInterval(() => {
         segundos--;
         const el = document.getElementById('cronometro-dente');
@@ -13435,6 +13445,11 @@
     }
 
     async function concluirMissaoDente() {
+      const bgAudioDente = document.getElementById('audio-timer-young-love');
+      if (bgAudioDente) {
+        try { bgAudioDente.pause(); bgAudioDente.currentTime = 0; } catch (e) {}
+      }
+      if (typeof window.confetti === 'function') window.confetti({ particleCount: 60 });
       closeModal();
       playTone(880, 200);
       try {

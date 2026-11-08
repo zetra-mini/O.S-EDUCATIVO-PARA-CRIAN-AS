@@ -3,6 +3,7 @@ __pycache__/
 *$py.class
 config.json
 uso_diario.json
+config_nuvem.json
 .env
 .venv/
 venv/

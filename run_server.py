@@ -1329,11 +1329,19 @@ def api_nuvem_configurar(request: Request):
     return json_response(res)
 
 
+@app.route("/api/admin/nuvem/iniciar_rapido", methods=["POST"])
+def api_nuvem_iniciar_rapido(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    porta_local = 8000
+    return json_response(tunnel_mgr.iniciar_tunnel_rapido(porta_local=porta_local))
+
+
 @app.route("/api/admin/nuvem/iniciar", methods=["POST"])
 def api_nuvem_iniciar(request: Request):
     if not esta_autenticado_admin(request):
         return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
-    return json_response(tunnel_mgr.iniciar_tunnel())
+    return json_response(tunnel_mgr.iniciar_tunnel_dominio())
 
 
 @app.route("/api/admin/nuvem/parar", methods=["POST"])

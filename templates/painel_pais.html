@@ -897,59 +897,107 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- ABA 8: CONEXÃO REMOTA (CLOUDFLARE TUNNEL & REGISTRO.BR) -->
+  <!-- ABA 8: CONEXÃO REMOTA & REDE LOCAL (CLOUDFLARE TUNNEL & WI-FI) -->
   <!-- ========================================================================= -->
   <div class="tab-pane" id="pane-remoto">
-    <div class="card">
-      <div class="card-title">🌐 Conexão Remota & Cloudflare Tunnel (Zero Port Forwarding)</div>
-      <div style="font-size:0.95rem; color:var(--text-muted); line-height:1.5;">
-        Acesse o painel do Jarvis e envie mensagens ao seu filho de qualquer lugar do mundo pelo celular, sem precisar de IP fixo nem mexer nas portas do roteador residencial!
+    <!-- AVISO DE ESCLARECIMENTO SOBRE DOMÍNIO -->
+    <div style="background:rgba(2,132,199,0.12); border:1.5px solid var(--cyan); border-radius:14px; padding:14px 18px; font-size:0.92rem; color:#e0f2fe; line-height:1.5;">
+      💡 <strong>Esclarecimento Importante sobre Domínio:</strong><br/>
+      O nome <code>jarvis.novaflix.app.br</code> citado anteriormente foi <strong>apenas um exemplo ilustrativo</strong>! Você <strong>NÃO precisa comprar nenhum domínio</strong> para acessar o Jarvis pelo celular fora de casa. Você pode usar o <strong>Túnel Rápido Gratuito</strong> com 1 clique abaixo ou conectar diretamente pelo Wi-Fi de casa!
+    </div>
+
+    <!-- 1. ACESSO LOCAL DIRETO (WI-FI DE CASA) -->
+    <div class="card" style="border: 2px solid #10b981; background:linear-gradient(180deg, #06231a 0%, #071120 100%);">
+      <div class="card-title" style="color:#34d399;">🏠 1. Acesso Direto na Rede Wi-Fi de Casa (0ms / Sem Gastar Internet)</div>
+      <div style="font-size:0.92rem; color:var(--text-muted); line-height:1.5;">
+        Quando o seu celular ou notebook estiver conectado no <strong>mesmo Wi-Fi do netbook</strong>, acesse diretamente pelo IP local. Não consome internet e responde instantaneamente:
       </div>
-      <div style="background:rgba(15,23,42,0.8); border:1.5px solid var(--card-border); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:#040e14; border:1.5px solid #10b981; border-radius:12px; padding:12px 16px; margin-top:8px; flex-wrap:wrap; gap:10px;">
         <div>
-          <label style="display:block; font-size:0.88rem; font-weight:800; color:#38bdf8; margin-bottom:6px;">Seu Domínio ou Subdomínio (ex: jarvis.novaflix.app.br):</label>
-          <input type="text" id="nuvem-dominio-input" placeholder="jarvis.novaflix.app.br" style="font-family:monospace; font-size:1rem;" />
+          <span style="font-size:0.8rem; color:#94a3b8; font-weight:700;">ENDEREÇO WI-FI LOCAL:</span>
+          <div style="font-size:1.3rem; font-family:monospace; font-weight:900; color:#34d399;" id="wifi-local-link">http://localhost:8000/admin</div>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-primary" onclick="configurarTunnelAdmin()" style="flex:1;">
-            🚀 Gerar / Atualizar Túnel Cloudflare
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-success" style="font-size:0.85rem; padding:8px 16px;" onclick="copiarLinkLocal()">
+            📋 Copiar Link Local
           </button>
-          <button type="button" class="btn btn-success" id="btn-iniciar-tunnel" onclick="iniciarTunnelAdmin()">
-            ▶️ Iniciar Túnel
-          </button>
-          <button type="button" class="btn btn-danger" id="btn-parar-tunnel" onclick="pararTunnelAdmin()">
-            ⏹️ Parar Túnel
-          </button>
-        </div>
-        <div id="nuvem-status-box" style="background:#071120; border:1px solid #1e3a5f; border-radius:10px; padding:12px; font-size:0.9rem; color:#cbd5e1;">
-          Status do Túnel: <span id="nuvem-status-badge" style="font-weight:900; color:#facc15;">Carregando status...</span>
+          <a href="/admin" target="_blank" class="btn btn-secondary" style="font-size:0.85rem; padding:8px 16px; text-decoration:none;">
+            🔗 Abrir
+          </a>
         </div>
       </div>
     </div>
 
-    <!-- CARD APONTAMENTO DNS REGISTRO.BR -->
-    <div class="card" style="border: 2px solid var(--gold);">
-      <div class="card-title">📋 Apontamento DNS Exato para Registro.br / Cloudflare</div>
+    <!-- 2. TÚNEL RÁPIDO GRATUITO (SEM DOMÍNIO / 1 CLIQUE) -->
+    <div class="card" style="border: 2px solid var(--cyan); background:linear-gradient(180deg, #091a33 0%, #071120 100%);">
+      <div class="card-title" style="color:var(--cyan);">⚡ 2. Túnel Rápido Gratuito Cloudflare (100% Grátis / Sem Comprar Domínio)</div>
       <div style="font-size:0.92rem; color:var(--text-muted); line-height:1.5;">
-        No painel de gerenciamento DNS do seu domínio (Registro.br ou Cloudflare DNS), adicione exatamente esta entrada CNAME:
+        Cria um endereço público mundial seguro com certificado HTTPS oficial na hora. Ideal para ver as câmeras ou mandar recados quando estiver no trabalho ou na rua:
       </div>
-      <div style="background:#050c18; border:2px dashed var(--gold); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px; font-family:monospace;">
-        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding-bottom:6px;">
-          <span style="color:#94a3b8;">TIPO:</span>
-          <span style="color:#10b981; font-weight:900;">CNAME</span>
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary" onclick="iniciarTunnelRapidoAdmin()" style="flex:1; font-size:1rem; padding:12px;">
+          ⚡ Iniciar Túnel Rápido Gratuito
+        </button>
+        <button type="button" class="btn btn-danger" onclick="pararTunnelAdmin()" style="font-size:0.95rem; padding:10px 18px;">
+          ⏹️ Parar Túnel
+        </button>
+      </div>
+      <div id="quick-tunnel-box" style="margin-top:12px; background:#050d1a; border:1.5px solid #1e3a5f; border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+          <span style="font-size:0.82rem; font-weight:800; color:#94a3b8;">LINK PÚBLICO HTTPS MUNDIAL:</span>
+          <span id="quick-tunnel-status" style="font-size:0.85rem; font-weight:900; color:#facc15;">Aguardando início</span>
         </div>
-        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding-bottom:6px;">
-          <span style="color:#94a3b8;">NOME:</span>
-          <span style="color:#38bdf8; font-weight:900;" id="dns-cname-nome">jarvis</span>
+        <div id="quick-tunnel-url" style="font-size:1.15rem; font-family:monospace; font-weight:900; color:var(--cyan); word-break:break-all;">
+          Nenhum túnel rápido ativo. Clique no botão acima para iniciar!
         </div>
-        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
-          <span style="color:#94a3b8;">DADOS / DESTINO:</span>
-          <span style="color:#facc15; font-weight:900;" id="dns-cname-destino">Aguardando geração do túnel</span>
+        <div style="display:flex; gap:8px; margin-top:4px;">
+          <button type="button" class="btn btn-secondary" style="font-size:0.85rem; padding:6px 14px;" onclick="copiarLinkNuvem()">
+            📋 Copiar Link de Acesso
+          </button>
+          <a href="#" id="quick-tunnel-btn-abrir" target="_blank" class="btn btn-primary" style="font-size:0.85rem; padding:6px 14px; text-decoration:none; display:none;">
+            🚀 Abrir Painel Remoto
+          </a>
         </div>
       </div>
-      <button type="button" class="btn btn-warning" onclick="copiarDnsRegistroBr()" style="font-size:0.9rem;">
-        📋 Copiar Dados de Apontamento DNS
-      </button>
+    </div>
+
+    <!-- 3. TÚNEL COM DOMÍNIO PRÓPRIO (REGISTRO.BR / CLOUDFLARE DNS) -->
+    <div class="card" style="border: 2px solid var(--gold);">
+      <div class="card-title" style="color:var(--gold);">🌐 3. Túnel com Domínio Próprio (Opcional — Para quem tem domínio no Registro.br)</div>
+      <div style="font-size:0.92rem; color:var(--text-muted); line-height:1.5;">
+        Se você já comprou um domínio próprio (ex: <code>jarvis.seusite.com.br</code> ou qualquer outro), digite-o abaixo para mapear:
+      </div>
+      <div style="background:#071120; border:1px solid #1e3a5f; border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+        <div>
+          <label style="display:block; font-size:0.85rem; font-weight:800; color:#38bdf8; margin-bottom:4px;">Seu Domínio Pessoal:</label>
+          <input type="text" id="nuvem-dominio-input" placeholder="ex: jarvis.meusite.com.br" style="font-family:monospace; font-size:0.95rem;" />
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-warning" onclick="configurarTunnelAdmin()" style="flex:1;">
+            ⚙️ Gerar Configuração de Domínio
+          </button>
+          <button type="button" class="btn btn-success" onclick="iniciarTunnelAdmin()">
+            ▶️ Iniciar com Domínio
+          </button>
+        </div>
+        <div style="background:#050c18; border:1px dashed var(--gold); border-radius:10px; padding:12px; font-family:monospace; font-size:0.88rem; display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:#94a3b8;">TIPO:</span>
+            <span style="color:#10b981; font-weight:900;">CNAME</span>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:#94a3b8;">NOME:</span>
+            <span style="color:#38bdf8; font-weight:900;" id="dns-cname-nome">jarvis</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px;">
+            <span style="color:#94a3b8;">DESTINO:</span>
+            <span style="color:#facc15; font-weight:900;" id="dns-cname-destino">Aguardando geração</span>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="copiarDnsRegistroBr()" style="font-size:0.85rem;">
+          📋 Copiar Entrada CNAME para Registro.br
+        </button>
+      </div>
     </div>
   </div>
 
@@ -2039,24 +2087,88 @@
       try {
         const res = await fetch('/api/admin/nuvem/status');
         const data = await res.json();
+
+        // 1. Atualiza endereço Wi-Fi Local da casa
+        if (data.rede_local) {
+          const localLink = document.getElementById('wifi-local-link');
+          if (localLink) localLink.textContent = data.rede_local.url_admin_local || 'http://localhost:8000/admin';
+        }
+
+        // 2. Atualiza Túnel Rápido Gratuito (Quick Tunnel)
+        const quickUrl = data.status ? (data.status.quick_url || '') : '';
+        const quickEl = document.getElementById('quick-tunnel-url');
+        const quickStatus = document.getElementById('quick-tunnel-status');
+        const quickBtnAbrir = document.getElementById('quick-tunnel-btn-abrir');
+
+        if (quickUrl && data.esta_rodando) {
+          const adminUrl = `${quickUrl}/admin`;
+          if (quickEl) quickEl.innerHTML = `<a href="${adminUrl}" target="_blank" style="color:#00f0ff; text-decoration:underline;">${adminUrl}</a>`;
+          if (quickStatus) {
+            quickStatus.textContent = '🟢 Online e Criptografado!';
+            quickStatus.style.color = '#10b981';
+          }
+          if (quickBtnAbrir) {
+            quickBtnAbrir.href = adminUrl;
+            quickBtnAbrir.style.display = 'inline-block';
+          }
+        } else {
+          if (quickStatus) {
+            quickStatus.textContent = data.esta_rodando ? '🟢 Túnel Ativo' : '⚪ Inativo';
+            quickStatus.style.color = data.esta_rodando ? '#10b981' : '#94a3b8';
+          }
+        }
+
+        // 3. Atualiza Domínio Próprio se houver
         if (data.status) {
           const domInput = document.getElementById('nuvem-dominio-input');
           if (domInput && !domInput.value && data.status.dominio) {
             domInput.value = data.status.dominio;
           }
-          const badge = document.getElementById('nuvem-status-badge');
-          if (badge) {
-            badge.textContent = data.esta_rodando ? '🟢 Túnel Ativo (Online)' : '⚪ Inativo';
-            badge.style.color = data.esta_rodando ? '#10b981' : '#94a3b8';
-          }
           if (data.apontamento_dns) {
             const nomeEl = document.getElementById('dns-cname-nome');
             const destEl = document.getElementById('dns-cname-destino');
             if (nomeEl) nomeEl.textContent = data.apontamento_dns.nome || 'jarvis';
-            if (destEl) destEl.textContent = data.apontamento_dns.destino || 'Aguardando geração do túnel';
+            if (destEl) destEl.textContent = data.apontamento_dns.destino || 'Aguardando geração';
           }
         }
       } catch (e) {}
+    }
+
+    async function iniciarTunnelRapidoAdmin() {
+      showToast('⚡ Conectando ao Cloudflare Quick Tunnels...');
+      try {
+        const res = await fetch('/api/admin/nuvem/iniciar_rapido', { method: 'POST' });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast('✅ Túnel Rápido Gratuito iniciado!');
+          setTimeout(carregarStatusNuvemAdmin, 1500);
+        } else {
+          showToast(d.erro || 'Falha ao iniciar túnel');
+        }
+      } catch (e) { showToast('Erro de conexão com o servidor'); }
+    }
+
+    function copiarLinkLocal() {
+      const link = document.getElementById('wifi-local-link').textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(link).then(() => showToast('📋 Link local copiado!'));
+      } else {
+        prompt('Copie o endereço local abaixo:', link);
+      }
+    }
+
+    function copiarLinkNuvem() {
+      const el = document.getElementById('quick-tunnel-url');
+      const link = el ? el.textContent.trim() : '';
+      if (link && !link.includes('Nenhum')) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(link).then(() => showToast('📋 Link público copiado!'));
+        } else {
+          prompt('Copie o link público abaixo:', link);
+        }
+      } else {
+        showToast('Inicie o túnel primeiro para gerar o link!');
+      }
     }
 
     async function configurarTunnelAdmin() {
