@@ -45,13 +45,35 @@ if [ "$SCRIPT_DIR" != "$APP_DIR" ]; then
 fi
 chmod +x "$APP_DIR/jarvis_os.py"
 
-echo "[3/6] Otimizando memória RAM (ZRAM + Swappiness) para o Intel Atom N450..."
+echo "[3/6] Otimizando memória RAM (ZRAM + Swappiness) e GPU Intel GMA 3150 para o Intel Atom N450..."
 if [ -f /etc/default/zramswap ]; then
   sudo sed -i 's/^#*ALGO=.*/ALGO=lz4/' /etc/default/zramswap || true
   sudo sed -i 's/^#*PERCENT=.*/PERCENT=50/' /etc/default/zramswap || true
   sudo service zramswap restart || true
 fi
 echo "vm.swappiness=15" | sudo tee /etc/sysctl.d/99-jarvis-kids.conf >/dev/null
+
+# Otimização VRAM Intel GMA 3150 (SNA + TearFree)
+sudo mkdir -p /etc/X11/xorg.conf.d
+sudo tee /etc/X11/xorg.conf.d/20-intel.conf > /dev/null << 'EOF'
+Section "Device"
+    Identifier "Intel Graphics"
+    Driver "intel"
+    Option "AccelMethod" "sna"
+    Option "TearFree" "true"
+EndSection
+EOF
+
+# Desativa Bluetooth para economia de bateria e processos
+sudo rfkill block bluetooth 2>/dev/null || true
+sudo systemctl disable bluetooth 2>/dev/null || true
+sudo service bluetooth stop 2>/dev/null || true
+
+# Configura Firewall UFW
+sudo ufw default deny incoming 2>/dev/null || true
+sudo ufw default allow outgoing 2>/dev/null || true
+sudo ufw allow 8000/tcp 2>/dev/null || true
+sudo ufw --force enable 2>/dev/null || true
 
 echo "[4/6] Configurando GCompris para GPU Intel GMA 3150 (Renderização por Software + PT-BR + 4 Anos)..."
 mkdir -p "$HOME/.config/gcompris"

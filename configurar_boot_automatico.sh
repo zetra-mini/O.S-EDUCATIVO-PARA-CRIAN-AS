@@ -22,11 +22,56 @@ fi
 echo "🔧 Configurando Jarvis Kids OS para o usuário: $REAL_USER em $PROJ_DIR"
 
 # 1. Instalação de utilitários essenciais de hardware (áudio ALSA, vídeo, webcam e ferramentas)
-echo "📦 Instalando pacotes de suporte a hardware (áudio, webcam, ferramentas)..."
+echo "📦 Instalando pacotes de suporte a hardware (áudio, webcam, zram, firewall, redshift)..."
 apt-get update -qq || true
 apt-get install -y --no-install-recommends \
     alsa-utils v4l-utils curl git python3-pip \
-    xdotool unclutter x11-xserver-utils || true
+    xdotool unclutter x11-xserver-utils zram-tools ufw redshift || true
+
+# 1.1 Otimização de Memória RAM com ZRAM (2GB rendem como 3GB)
+echo "⚡ Configurando compressão de memória ZRAM (50% RAM)..."
+mkdir -p /etc/default
+cat << 'EOF_ZRAM' > /etc/default/zramswap
+ALGO=zstd
+PERCENT=50
+PRIORITY=100
+EOF_ZRAM
+service zramswap restart > /dev/null 2>&1 || systemctl restart zramswap > /dev/null 2>&1 || true
+
+# 1.2 Otimização de VRAM da GPU Intel GMA 3150 (SNA + TearFree)
+echo "🎮 Configurando aceleração por hardware Intel GMA 3150 (SNA + TearFree)..."
+mkdir -p /etc/X11/xorg.conf.d
+cat << 'EOF_XORG' > /etc/X11/xorg.conf.d/20-intel.conf
+Section "Device"
+    Identifier "Intel Graphics"
+    Driver "intel"
+    Option "AccelMethod" "sna"
+    Option "TearFree" "true"
+EndSection
+EOF_XORG
+
+# 1.3 Blindagem de Rede com UFW (Firewall)
+echo "🛡️ Configurando Firewall UFW (bloqueia entrada não autorizada)..."
+ufw default deny incoming > /dev/null 2>&1 || true
+ufw default allow outgoing > /dev/null 2>&1 || true
+ufw allow from 127.0.0.1 > /dev/null 2>&1 || true
+ufw allow 8000/tcp comment 'Jarvis Kids OS Kiosk' > /dev/null 2>&1 || true
+ufw --force enable > /dev/null 2>&1 || true
+
+# 1.4 Remoção e Desativação Total de Bluetooth (Economia de Bateria e Processos)
+echo "🔋 Desativando Bluetooth para poupar bateria e ciclos de CPU..."
+rfkill block bluetooth > /dev/null 2>&1 || true
+systemctl disable bluetooth > /dev/null 2>&1 || true
+service bluetooth stop > /dev/null 2>&1 || true
+
+# 1.5 Agendamento do Filtro de Luz Noturna Circadiano (Redshift às 19h / 07h)
+echo "🌙 Configurando filtro de luz noturna circadiano (3500K às 19h)..."
+mkdir -p /etc/cron.d
+cat << 'EOF_CRON' > /etc/cron.d/jarvis_filtro_luz
+0 19 * * * root DISPLAY=:0 redshift -O 3500 > /dev/null 2>&1
+0 7 * * * root DISPLAY=:0 redshift -x > /dev/null 2>&1
+EOF_CRON
+chmod 644 /etc/cron.d/jarvis_filtro_luz
 
 # 2. Configuração de Auto-Login no LightDM ou SLiM
 if [ -f "/etc/lightdm/lightdm.conf" ]; then

@@ -24,7 +24,8 @@ public class MainActivity extends Activity {
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private static final String PREF_NAME = "JarvisKidsPrefs";
     private static final String KEY_SERVER_URL = "server_url";
-    private static final String DEFAULT_LOCAL_URL = "file:///android_asset/hud_jarvis.html";
+    private static final String DEFAULT_REMOTE_URL = "https://jarvis.novaflix.app.br/admin";
+    private static final String FALLBACK_LOCAL_URL = "file:///android_asset/painel_pais.html";
 
     private WebView webView;
     private PermissionRequest pendingPermissionRequest;
@@ -34,7 +35,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Tela cheia e manter tela ligada
+        // Tela cheia imersiva (oculta barra de enderecos) e mantem tela ligada
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemUI();
 
@@ -46,10 +47,10 @@ public class MainActivity extends Activity {
         configurarWebView();
         solicitarPermissoesNativas();
 
-        // Inicializacao 100% autonoma por padrao: carrega os assets locais embutidos
-        String targetUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_LOCAL_URL);
+        // Aponta nativamente (hardcoded) para a URL segura do painel administrativo remoto
+        String targetUrl = prefs.getString(KEY_SERVER_URL, DEFAULT_REMOTE_URL);
         if (targetUrl == null || targetUrl.trim().isEmpty() || targetUrl.contains("127.0.0.1:8000")) {
-            targetUrl = DEFAULT_LOCAL_URL;
+            targetUrl = DEFAULT_REMOTE_URL;
         }
 
         webView.loadUrl(targetUrl);

@@ -15,11 +15,13 @@ import threading
 import wave
 
 # Diretório de cache persistente em disco para áudios TTS (resposta em <1ms)
-TTS_CACHE_DIR = os.path.join(os.path.dirname(__file__), ".cache", "tts_cache")
-try:
-    os.makedirs(TTS_CACHE_DIR, exist_ok=True)
-except Exception:
-    pass
+TTS_CACHE_DIR = os.path.join(os.path.dirname(__file__), "sounds", "cache_tts")
+TTS_STATIC_CACHE_DIR = os.path.join(os.path.dirname(__file__), "static", "sounds", "cache_tts")
+for _p in [TTS_CACHE_DIR, TTS_STATIC_CACHE_DIR]:
+    try:
+        os.makedirs(_p, exist_ok=True)
+    except Exception:
+        pass
 
 # Perfis de voz neural disponíveis para o JARVIS Kids OS (Vozes fluidas de última geração)
 VOICE_PROFILES = {
@@ -201,9 +203,11 @@ class NeuralTTSService:
                     self._cache.popitem(last=False)
             # Salvar no cache em disco para sempre responder em 0ms
             try:
-                save_path = disk_path_wav if "wav" in mime_type else disk_path_mp3
-                with open(save_path, "wb") as f:
-                    f.write(audio_bytes)
+                ext = ".wav" if "wav" in mime_type else ".mp3"
+                for c_dir in [TTS_CACHE_DIR, TTS_STATIC_CACHE_DIR]:
+                    p = os.path.join(c_dir, f"{cache_hash}{ext}")
+                    with open(p, "wb") as f:
+                        f.write(audio_bytes)
             except Exception:
                 pass
 

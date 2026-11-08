@@ -10,11 +10,10 @@ ROOT_DIR="$( cd "$DIR/../.." && pwd )"
 
 echo "=== Compilador Nativo de APK - JARVIS Kids OS ==="
 
-# Assegura copia atualizada dos templates e assets para dentro do app Android
+# Assegura copia atualizada dos templates essenciais sem arquivos pesados de midia
 mkdir -p app/src/main/assets
-cp "$ROOT_DIR/templates/hud_jarvis.html" app/src/main/assets/
 cp "$ROOT_DIR/templates/painel_pais.html" app/src/main/assets/
-cp -r "$ROOT_DIR/static" app/src/main/assets/ 2>/dev/null || true
+# Imagens e sons pesados do netbook nao sao embutidos para manter o APK leve (< 3 MB)
 
 # Localiza ANDROID_HOME / ANDROID_SDK_ROOT
 SDK_DIR="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"

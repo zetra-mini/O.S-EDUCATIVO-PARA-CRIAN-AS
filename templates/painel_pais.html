@@ -356,6 +356,8 @@
     <button type="button" class="tab-btn" onclick="switchAdminTab('perfil')">👦 Filho & Voz Neural</button>
     <button type="button" class="tab-btn" onclick="switchAdminTab('midia')">🎬 Cinema & Horários</button>
     <button type="button" class="tab-btn" onclick="switchAdminTab('livros')">📚 Histórias & Desenvolvimento</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('remoto')">🌐 Conexão Remota</button>
+    <button type="button" class="tab-btn" onclick="switchAdminTab('hardware')">💻 Hardware & Energia</button>
     <button type="button" class="tab-btn" onclick="switchAdminTab('diag')">🛠️ Diagnóstico & Logs</button>
   </nav>
 
@@ -385,6 +387,49 @@
         <div class="stat-box">
           <div class="stat-val" id="val-diccao" style="color:#ec4899;">0</div>
           <div class="stat-lbl">🗣️ Palavras Faladas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRÁFICOS LEVES DE DESEMPENHO (100% CSS PURO, 0% CPU, SEM CHART.JS) -->
+    <div class="card" style="border: 2px solid var(--card-border);">
+      <div class="card-title">📈 Metas Educativas & Hábitos do Campeão (CSS Puro)</div>
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:4px;">
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; margin-bottom:4px;">
+            <span style="color:#38bdf8;">📖 Leitura de Histórias & Virtudes</span>
+            <span style="color:#38bdf8;" id="bar-lbl-livros">100% (Meta Atingida)</span>
+          </div>
+          <div style="background:#071120; border-radius:999px; height:12px; overflow:hidden; border:1px solid #1e293b;">
+            <div id="bar-val-livros" style="width: 100%; height:100%; background:linear-gradient(90deg, #0284c7, #00f0ff); border-radius:999px; transition:width 0.5s;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; margin-bottom:4px;">
+            <span style="color:#10b981;">🧼 Higiene & Escovação dos Dentes</span>
+            <span style="color:#10b981;" id="bar-lbl-higiene">80% (Quase Completo)</span>
+          </div>
+          <div style="background:#071120; border-radius:999px; height:12px; overflow:hidden; border:1px solid #1e293b;">
+            <div id="bar-val-higiene" style="width: 80%; height:100%; background:linear-gradient(90deg, #059669, #10b981); border-radius:999px; transition:width 0.5s;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; margin-bottom:4px;">
+            <span style="color:#facc15;">🗣️ Treino de Dicção & Articulação</span>
+            <span style="color:#facc15;" id="bar-lbl-diccao">85% (Super Herói)</span>
+          </div>
+          <div style="background:#071120; border-radius:999px; height:12px; overflow:hidden; border:1px solid #1e293b;">
+            <div id="bar-val-diccao" style="width: 85%; height:100%; background:linear-gradient(90deg, #d97706, #facc15); border-radius:999px; transition:width 0.5s;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; margin-bottom:4px;">
+            <span style="color:#ec4899;">🍎 Alimentação Saudável & Prato Limpo</span>
+            <span style="color:#ec4899;" id="bar-lbl-alimentacao">90% (Excelente)</span>
+          </div>
+          <div style="background:#071120; border-radius:999px; height:12px; overflow:hidden; border:1px solid #1e293b;">
+            <div id="bar-val-alimentacao" style="width: 90%; height:100%; background:linear-gradient(90deg, #db2777, #f472b6); border-radius:999px; transition:width 0.5s;"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -851,6 +896,130 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- ABA 8: CONEXÃO REMOTA (CLOUDFLARE TUNNEL & REGISTRO.BR) -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-remoto">
+    <div class="card">
+      <div class="card-title">🌐 Conexão Remota & Cloudflare Tunnel (Zero Port Forwarding)</div>
+      <div style="font-size:0.95rem; color:var(--text-muted); line-height:1.5;">
+        Acesse o painel do Jarvis e envie mensagens ao seu filho de qualquer lugar do mundo pelo celular, sem precisar de IP fixo nem mexer nas portas do roteador residencial!
+      </div>
+      <div style="background:rgba(15,23,42,0.8); border:1.5px solid var(--card-border); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px;">
+        <div>
+          <label style="display:block; font-size:0.88rem; font-weight:800; color:#38bdf8; margin-bottom:6px;">Seu Domínio ou Subdomínio (ex: jarvis.novaflix.app.br):</label>
+          <input type="text" id="nuvem-dominio-input" placeholder="jarvis.novaflix.app.br" style="font-family:monospace; font-size:1rem;" />
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" onclick="configurarTunnelAdmin()" style="flex:1;">
+            🚀 Gerar / Atualizar Túnel Cloudflare
+          </button>
+          <button type="button" class="btn btn-success" id="btn-iniciar-tunnel" onclick="iniciarTunnelAdmin()">
+            ▶️ Iniciar Túnel
+          </button>
+          <button type="button" class="btn btn-danger" id="btn-parar-tunnel" onclick="pararTunnelAdmin()">
+            ⏹️ Parar Túnel
+          </button>
+        </div>
+        <div id="nuvem-status-box" style="background:#071120; border:1px solid #1e3a5f; border-radius:10px; padding:12px; font-size:0.9rem; color:#cbd5e1;">
+          Status do Túnel: <span id="nuvem-status-badge" style="font-weight:900; color:#facc15;">Carregando status...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD APONTAMENTO DNS REGISTRO.BR -->
+    <div class="card" style="border: 2px solid var(--gold);">
+      <div class="card-title">📋 Apontamento DNS Exato para Registro.br / Cloudflare</div>
+      <div style="font-size:0.92rem; color:var(--text-muted); line-height:1.5;">
+        No painel de gerenciamento DNS do seu domínio (Registro.br ou Cloudflare DNS), adicione exatamente esta entrada CNAME:
+      </div>
+      <div style="background:#050c18; border:2px dashed var(--gold); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px; font-family:monospace;">
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding-bottom:6px;">
+          <span style="color:#94a3b8;">TIPO:</span>
+          <span style="color:#10b981; font-weight:900;">CNAME</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; border-bottom:1px solid #1e293b; padding-bottom:6px;">
+          <span style="color:#94a3b8;">NOME:</span>
+          <span style="color:#38bdf8; font-weight:900;" id="dns-cname-nome">jarvis</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+          <span style="color:#94a3b8;">DADOS / DESTINO:</span>
+          <span style="color:#facc15; font-weight:900;" id="dns-cname-destino">Aguardando geração do túnel</span>
+        </div>
+      </div>
+      <button type="button" class="btn btn-warning" onclick="copiarDnsRegistroBr()" style="font-size:0.9rem;">
+        📋 Copiar Dados de Apontamento DNS
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- ABA 9: CONTROLE DE HARDWARE & ENERGIA (antiX Linux) -->
+  <!-- ========================================================================= -->
+  <div class="tab-pane" id="pane-hardware">
+    <div class="card">
+      <div class="card-title">📶 Redes Wi-Fi do Netbook (nmcli)</div>
+      <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <button type="button" class="btn btn-primary" onclick="escanearWifiAdmin()" style="font-size:0.9rem;">
+          🔍 Escanear Redes Wi-Fi Próximas
+        </button>
+      </div>
+      <div id="hw-wifi-lista" style="display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto;">
+        <div style="color:#94a3b8; text-align:center; padding:12px;">Clique em escanear para listar redes disponíveis.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔊 Áudio e Volume ALSA (amixer)</div>
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; font-size:0.85rem; font-weight:700; color:#94a3b8; margin-bottom:4px;">Volume Mestre:</label>
+          <input type="range" id="hw-volume-range" min="0" max="100" value="75" onchange="alterarVolumeAdmin(this.value)" style="width:100%; accent-color:var(--cyan);" />
+        </div>
+        <div style="font-size:1.4rem; font-weight:900; color:var(--cyan); min-width:60px;" id="hw-volume-val">75%</div>
+        <button type="button" class="btn btn-secondary" onclick="alternarMuteAdmin()" id="hw-btn-mute" style="font-size:0.9rem;">
+          🔊 Mudo / Ativar
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 Brilho da Tela e Filtro Noturno Circadiano</div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <label style="display:block; font-size:0.85rem; font-weight:700; color:#94a3b8; margin-bottom:4px;">Brilho do Visor (xrandr):</label>
+          <input type="range" id="hw-brilho-range" min="0.3" max="1.0" step="0.05" value="1.0" onchange="alterarBrilhoAdmin(this.value)" style="width:100%; accent-color:var(--gold);" />
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-warning" onclick="aplicarFiltroLuzAdmin(true)" style="flex:1;">
+            🌙 Ativar Filtro de Luz Noturna (3500K - Proteção dos Olhos)
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="aplicarFiltroLuzAdmin(false)" style="flex:1;">
+            ☀️ Luz Diurna Normal (6500K)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border: 2px solid #ef4444;">
+      <div class="card-title" style="color:#ef4444;">⚙️ Modo Manutenção e Energia do Netbook</div>
+      <div style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
+        Libere a área de trabalho do Linux para instalar softwares ou encerre o computador com segurança:
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary" onclick="liberarKioskAdmin()" style="flex:1;">
+          🔓 Liberar Desktop Linux para Manutenção (Kiosk Bypass)
+        </button>
+        <button type="button" class="btn btn-warning" onclick="dispararEnergiaAdmin('reboot')" style="flex:1;">
+          🔄 Reiniciar Netbook
+        </button>
+        <button type="button" class="btn btn-danger" onclick="dispararEnergiaAdmin('shutdown')" style="flex:1;">
+          🛑 Desligar Netbook
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast-msg"></div>
 
   <!-- JAVASCRIPT DO PAINEL ADMINISTRATIVO -->
@@ -968,6 +1137,8 @@
       if (tabId === 'livros') carregarLivrosAdmin();
       if (tabId === 'diag') carregarLogsAdmin();
       if (tabId === 'tesouros') carregarResgatesFamiliaAdmin();
+      if (tabId === 'remoto') carregarStatusNuvemAdmin();
+      if (tabId === 'hardware') carregarHardwareAdmin();
     }
 
     function showToast(msg) {
@@ -1859,6 +2030,233 @@
       } catch (e) {
         showToast('Erro ao creditar moedas.');
       }
+    }
+
+    // =========================================================================
+    // CONEXÃO REMOTA: CLOUDFLARE TUNNEL & REGISTRO.BR
+    // =========================================================================
+    async function carregarStatusNuvemAdmin() {
+      try {
+        const res = await fetch('/api/admin/nuvem/status');
+        const data = await res.json();
+        if (data.status) {
+          const domInput = document.getElementById('nuvem-dominio-input');
+          if (domInput && !domInput.value && data.status.dominio) {
+            domInput.value = data.status.dominio;
+          }
+          const badge = document.getElementById('nuvem-status-badge');
+          if (badge) {
+            badge.textContent = data.esta_rodando ? '🟢 Túnel Ativo (Online)' : '⚪ Inativo';
+            badge.style.color = data.esta_rodando ? '#10b981' : '#94a3b8';
+          }
+          if (data.apontamento_dns) {
+            const nomeEl = document.getElementById('dns-cname-nome');
+            const destEl = document.getElementById('dns-cname-destino');
+            if (nomeEl) nomeEl.textContent = data.apontamento_dns.nome || 'jarvis';
+            if (destEl) destEl.textContent = data.apontamento_dns.destino || 'Aguardando geração do túnel';
+          }
+        }
+      } catch (e) {}
+    }
+
+    async function configurarTunnelAdmin() {
+      const dom = (document.getElementById('nuvem-dominio-input').value || '').trim();
+      if (!dom) {
+        showToast('Digite o seu domínio ou subdomínio!');
+        return;
+      }
+      showToast('⏳ Configurando Cloudflare Tunnel...');
+      try {
+        const res = await fetch('/api/admin/nuvem/configurar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ dominio: dom, porta_local: 8000 })
+        });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('✅ Túnel gerado com sucesso!');
+          carregarStatusNuvemAdmin();
+        } else {
+          showToast(data.erro || 'Erro ao gerar túnel');
+        }
+      } catch (e) {
+        showToast('Falha na comunicação com o servidor');
+      }
+    }
+
+    async function iniciarTunnelAdmin() {
+      showToast('Iniciando túnel...');
+      try {
+        const res = await fetch('/api/admin/nuvem/iniciar', { method: 'POST' });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('🚀 Túnel Cloudflare iniciado com sucesso!');
+          carregarStatusNuvemAdmin();
+        } else {
+          showToast(data.erro || 'Erro ao iniciar túnel');
+        }
+      } catch (e) { showToast('Falha de conexão'); }
+    }
+
+    async function pararTunnelAdmin() {
+      showToast('Parando túnel...');
+      try {
+        const res = await fetch('/api/admin/nuvem/parar', { method: 'POST' });
+        const data = await res.json();
+        if (data.sucesso) {
+          showToast('⏹️ Túnel interrompido!');
+          carregarStatusNuvemAdmin();
+        }
+      } catch (e) { showToast('Falha de conexão'); }
+    }
+
+    function copiarDnsRegistroBr() {
+      const nome = document.getElementById('dns-cname-nome').textContent;
+      const dest = document.getElementById('dns-cname-destino').textContent;
+      const texto = `Tipo: CNAME\nNome: ${nome}\nDestino: ${dest}`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(texto).then(() => {
+          showToast('📋 Apontamento DNS copiado para a área de transferência!');
+        }).catch(() => {
+          prompt('Copie os dados abaixo para o Registro.br:', texto);
+        });
+      } else {
+        prompt('Copie os dados abaixo para o Registro.br:', texto);
+      }
+    }
+
+    // =========================================================================
+    // CONTROLE DE HARDWARE & ENERGIA (antiX Linux)
+    // =========================================================================
+    async function carregarHardwareAdmin() {
+      try {
+        const res = await fetch('/volume');
+        const data = await res.json();
+        const range = document.getElementById('hw-volume-range');
+        const val = document.getElementById('hw-volume-val');
+        if (range && val && data.volume !== undefined) {
+          range.value = data.volume;
+          val.textContent = `${data.volume}%`;
+        }
+      } catch (e) {}
+    }
+
+    async function escanearWifiAdmin() {
+      const container = document.getElementById('hw-wifi-lista');
+      container.innerHTML = '<div style="color:#38bdf8; text-align:center; padding:12px;">🔍 Escaneando redes Wi-Fi via nmcli...</div>';
+      try {
+        const res = await fetch('/api/admin/hardware/wifi/scan');
+        const data = await res.json();
+        const redes = data.redes || [];
+        if (redes.length === 0) {
+          container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:12px;">Nenhuma rede sem fio encontrada.</div>';
+          return;
+        }
+        container.innerHTML = '';
+        redes.forEach(r => {
+          const item = document.createElement('div');
+          item.style.cssText = 'background:#071224; border:1px solid #1e3a5f; border-radius:10px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;';
+          item.innerHTML = `
+            <div>
+              <span style="font-weight:900; color:#fff;">${r.conectado ? '🟢 ' : '📶 '}${r.ssid}</span>
+              <span style="font-size:0.8rem; color:#94a3b8; margin-left:8px;">${r.signal} (${r.security})</span>
+            </div>
+            <button type="button" class="btn btn-primary" style="font-size:0.8rem; padding:6px 14px;" onclick="conectarWifiPrompt('${r.ssid}')">
+              ${r.conectado ? 'Conectado' : 'Conectar'}
+            </button>
+          `;
+          container.appendChild(item);
+        });
+      } catch (e) {
+        container.innerHTML = '<div style="color:#ef4444; text-align:center; padding:12px;">Erro ao escanear redes.</div>';
+      }
+    }
+
+    async function conectarWifiPrompt(ssid) {
+      const senha = prompt(`Digite a senha da rede Wi-Fi '${ssid}':`);
+      if (senha === null) return;
+      showToast(`Conectando à rede '${ssid}'...`);
+      try {
+        const res = await fetch('/api/admin/hardware/wifi/connect', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ ssid, senha })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          showToast(`✅ ${d.mensagem}`);
+          escanearWifiAdmin();
+        } else {
+          showToast(d.erro || 'Falha ao conectar');
+        }
+      } catch (e) { showToast('Erro de conexão'); }
+    }
+
+    async function alterarVolumeAdmin(val) {
+      document.getElementById('hw-volume-val').textContent = `${val}%`;
+      try {
+        await fetch('/volume', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ volume: parseInt(val) })
+        });
+      } catch (e) {}
+    }
+
+    async function alternarMuteAdmin() {
+      try {
+        const res = await fetch('/volume', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ mute: true })
+        });
+        const d = await res.json();
+        showToast(d.mutado ? '🔇 Áudio colocado em Mudo' : '🔊 Áudio desmutado');
+      } catch (e) {}
+    }
+
+    async function alterarBrilhoAdmin(val) {
+      try {
+        await fetch('/api/admin/hardware/brilho', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ brilho: parseFloat(val) })
+        });
+      } catch (e) {}
+    }
+
+    async function aplicarFiltroLuzAdmin(ativar) {
+      try {
+        const res = await fetch('/api/admin/hardware/filtro_luz', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ ativar })
+        });
+        const d = await res.json();
+        showToast(ativar ? '🌙 Filtro noturno ativado (3500K)!' : '☀️ Luz diurna restaurada (6500K)!');
+      } catch (e) {}
+    }
+
+    async function liberarKioskAdmin() {
+      if (!confirm('Deseja realmente fechar o navegador quiosque para acessar a área de trabalho do Linux?')) return;
+      try {
+        const res = await fetch('/manutencao', { method: 'POST' });
+        const d = await res.json();
+        showToast(d.mensagem || 'Desktop liberado!');
+      } catch (e) { showToast('Comando disparado'); }
+    }
+
+    async function dispararEnergiaAdmin(acao) {
+      const msg = acao === 'reboot' ? 'reiniciar' : 'desligar';
+      if (!confirm(`Tem certeza de que deseja ${msg} o netbook agora?`)) return;
+      try {
+        await fetch('/api/admin/hardware/energia', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ acao })
+        });
+        showToast(`Comando de ${msg} enviado!`);
+      } catch (e) {}
     }
 
     // Inicialização e Polling Rápido em Tempo Real (3s)

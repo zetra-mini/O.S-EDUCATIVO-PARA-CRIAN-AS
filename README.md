@@ -1,10 +1,52 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.4.7 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.5.0 — Versão Final Definitiva (Stark High Performance)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
 ---
 
-## 🌟 Novidades da Versão 3.4.7
+## 🌟 Novidades da Versão 3.5.0 (Versão Final Definitiva)
+
+### 🌐 1. Gestão Automatizada de Domínio & Cloudflare Tunnel (`config_nuvem.py`)
+- **Acesso Parental de Qualquer Lugar:** Painel dos Pais acessível remotamente em HTTPS sem necessidade de IP fixo, DDNS ou abertura de portas no roteador.
+- **Integração com `cloudflared` CLI:** Criação automatizada do túnel `jarvis` via subprocess, extração de UUID e geração de `config.yml` mapeando para a porta local do Jarvis.
+- **Apontamento DNS CNAME para Registro.br:** Exibição clara na interface com 1 clique para copiar o registro DNS (`Tipo: CNAME | Nome: jarvis | Destino: [UUID].cfargotunnel.com`).
+
+### 🛡️ 2. Roteamento Estrito & Proteção Parental (`run_server.py`)
+- **Modo Quiosque Puro na Raiz (`/`):** A raiz do sistema renderiza EXCLUSIVAMENTE o `hud_jarvis.html` em modo quiosque sem acesso a configurações administrativas.
+- **Painel Administrativo Protegido (`/admin`):** O painel dos pais requer autenticação ou PIN de segurança quando acessado remotamente, mantendo o controle total nas mãos dos pais.
+- **Redirecionamento Inteligente:** Rota `/pais` redireciona via HTTP 302 para `/admin`.
+
+### 💻 3. Módulo de Controle de Hardware & Energia (`config_hardware.py`)
+- **Gestão de Wi-Fi:** Escaneamento e conexão a redes Wi-Fi em background via `nmcli`.
+- **Áudio & Mute:** Controle fino de volume ALSA e botão Mute instantâneo via `amixer`.
+- **Brilho & Filtro Noturno Circadiano:** Controle de iluminação da tela via `xrandr` e ativação agendada de `redshift -O 3500` às 19h00 (restaurando 6500K às 07h00) para proteção ocular infantil.
+- **Kiosk Bypass (`/manutencao`):** Encerra navegadores quiosque via `pkill` para liberar a área de trabalho do Linux aos pais para manutenções do sistema.
+- **Gestão de Energia:** Comandos seguros de reinicialização (`sudo reboot`) e desligamento (`sudo shutdown`).
+
+### ⚡ 4. Otimização Profunda do Sistema Operacional (antiX Linux / Atom N450)
+- **ZRAM Ativo:** Compressão de memória RAM (`zram-tools` com `zstd`/`lz4` a 50% de RAM), fazendo os 2 GB físicos renderem com a folga de 3 GB.
+- **VRAM & Aceleração GPU Intel GMA 3150:** Configuração de `/etc/X11/xorg.conf.d/20-intel.conf` com `Option "AccelMethod" "sna"` e `Option "TearFree" "true"`, transferindo a carga gráfica das animações CSS para a GPU e liberando a CPU.
+- **Firewall UFW:** Bloqueio de tráfego de entrada não essencial, mantendo apenas portas locais e túnel Cloudflare ativos.
+- **Eliminação Absoluta de Bluetooth:** Remoção e bloqueio de serviços Bluetooth via `rfkill block bluetooth` para poupar bateria e ciclos de processamento.
+
+### 🎨 5. Bibliotecas Leves & Quarto de Engenharia (Blockly)
+- **Animate.css & SweetAlert2:** Transições fluidas e alertas visuais adaptados ao tema Stark.
+- **Canvas-Confetti (Dopamina 2D):** Disparo de partículas festivas ao concluir missões com 0% de sobrecarga na CPU.
+- **SortableJS:** Drag-and-drop leve integrado.
+- **Quarto de Engenharia (`/engenharia`):** Bancada de programação visual infantil estilo Google Blockly onde a criança monta sequências de comandos para o robô Jarvis executar!
+- **KenneyNL UI Kit:** Assets vetoriais organizados em `/static/ui/`.
+
+### 🎵 6. Gamificação, Sonoplastia & Trilha em Loop
+- **Minijogo "Descobre o Som":** O Jarvis reproduz áudios reais de animais gravados da natureza e a criança escolhe entre 3 opções de bichos ou dinossauros, recebendo confetes e moedas SQLite WAL.
+- **Trilha Sonora em Loop:** Música temática *BoxCat Games - Young Love.mp3* reproduzida em loop via tag HTML `<audio>` durante desafios com timer e escovação de dentes.
+
+### 📱 7. App Android Remoto Otimizado (< 3 MB)
+- **WebView Nativo:** Aponta nativamente para a URL segura do painel remoto em tela cheia imersiva (sem barra de endereços).
+- **Sem Assets Pesados:** Imagens e áudios pesados do netbook foram desvinculados do pacote Android, gerando um APK extremamente leve e rápido.
+
+---
+
+## 🌟 Novidades da Versão 3.5.0
 
 ### 🦁 1. Reino Animal: Som Real 100% Autônomo & Grade Simétrica 2x9
 - **Áudio Real Exclusivo (Sem o Jarvis Falar):** Ao acionar o som de qualquer um dos 18 animais, o sistema reproduz imediatamente apenas o som natural e biológico gravado do bicho, sem que o robô Jarvis fale por cima ou interrompa o áudio.
@@ -164,11 +206,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.4.7.deb` | `sudo dpkg -i jarvis-kids-os_3.4.7.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.4.7-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.4.7-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.4.7-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.4.7-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.5.0.deb` | `sudo dpkg -i jarvis-kids-os_3.5.0.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.5.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.5.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.5.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.5.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -205,7 +247,7 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.4.7.deb
+sudo dpkg -i jarvis-kids-os_3.5.0.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
@@ -280,7 +322,7 @@ sudo dpkg -i jarvis-kids-os_3.4.7.deb
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.4.7.deb`). O sistema inicia 100% automático no boot.
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.5.0.deb`). O sistema inicia 100% automático no boot.
 >
 > O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
 

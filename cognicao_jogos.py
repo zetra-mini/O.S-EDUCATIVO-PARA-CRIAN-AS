@@ -174,6 +174,93 @@ class CognitionGamesManager:
                 "nova_caixa": 1,
             }
 
+    # ==========================================================================
+    # DESCOBRE O SOM (Gamificação & Sonoplastia)
+    # ==========================================================================
+    def obter_desafio_descobre_som(self) -> Dict[str, Any]:
+        """
+        Gera um desafio de 'Descobre o Som':
+        1. Sorteia um animal com áudio gravado em sounds/animais/.
+        2. Sorteia 2 opções distratoras de animais ou dinossauros.
+        3. Retorna o áudio a tocar e 3 opções embaralhadas.
+        """
+        banco_sons = [
+            {"id": "leao", "nome": "Leão", "emoji": "🦁", "som": "/static/sounds/animais/leao.mp3"},
+            {"id": "elefante", "nome": "Elefante", "emoji": "🐘", "som": "/static/sounds/animais/elefante.mp3"},
+            {"id": "sapo", "nome": "Sapo Cururu", "emoji": "🐸", "som": "/static/sounds/animais/sapo.mp3"},
+            {"id": "cavalo", "nome": "Cavalo", "emoji": "🐴", "som": "/static/sounds/animais/cavalo.mp3"},
+            {"id": "passaro", "nome": "Pássaro Cantador", "emoji": "🐦", "som": "/static/sounds/animais/passaro.mp3"},
+            {"id": "arara", "nome": "Arara Azul", "emoji": "🦜", "som": "/static/sounds/animais/arara.mp3"},
+            {"id": "mico", "nome": "Mico Leão", "emoji": "🐒", "som": "/static/sounds/animais/mico.mp3"},
+            {"id": "onca", "nome": "Onça Pintada", "emoji": "🐆", "som": "/static/sounds/animais/onca.mp3"},
+            {"id": "coruja", "nome": "Coruja Sábia", "emoji": "🦉", "som": "/static/sounds/animais/coruja.mp3"},
+            {"id": "golfinho", "nome": "Golfinho", "emoji": "🐬", "som": "/static/sounds/animais/golfinho.mp3"},
+            {"id": "jacare", "nome": "Jacaré", "emoji": "🐊", "som": "/static/sounds/animais/jacare.mp3"},
+            {"id": "baleia", "nome": "Baleia Jubarte", "emoji": "🐋", "som": "/static/sounds/animais/baleia.mp3"},
+            {"id": "cachorro", "nome": "Cachorrinho", "emoji": "🐶", "som": "/static/sounds/animais/cachorro.mp3"},
+            {"id": "gato", "nome": "Gatinho", "emoji": "🐱", "som": "/static/sounds/animais/gato.mp3"},
+            {"id": "vaca", "nome": "Vaquinha", "emoji": "🐮", "som": "/static/sounds/animais/vaca.mp3"},
+            {"id": "pato", "nome": "Patinho", "emoji": "🦆", "som": "/static/sounds/animais/pato.mp3"},
+            {"id": "urso", "nome": "Urso Pardo", "emoji": "🐻", "som": "/static/sounds/animais/urso.mp3"},
+            {"id": "pinguim", "nome": "Pinguim", "emoji": "🐧", "som": "/static/sounds/animais/pinguim.mp3"},
+        ]
+
+        distratores_extras = [
+            {"id": "dino_trex", "nome": "T-Rex Fóssil", "emoji": "🦖", "imagem": "/static/images/dinossauros/trex.webp"},
+            {"id": "dino_triceratops", "nome": "Tricerátops", "emoji": "🦕", "imagem": "/static/images/dinossauros/triceratops.webp"},
+            {"id": "dino_spinosaurus", "nome": "Espinossauro", "emoji": "🐊", "imagem": "/static/images/dinossauros/spinosaurus.webp"},
+            {"id": "dino_stegosaurus", "nome": "Estegossauro", "emoji": "🛡️", "imagem": "/static/images/dinossauros/stegosaurus.webp"},
+        ]
+
+        alvo = random.choice(banco_sons)
+        # Sorteia 2 distratores diferentes do alvo
+        outros_animais = [a for a in banco_sons if a["id"] != alvo["id"]]
+        piscina = outros_animais + distratores_extras
+        distratores = random.sample(piscina, 2)
+
+        opcoes = [
+            {"id": alvo["id"], "nome": alvo["nome"], "emoji": alvo["emoji"], "imagem": alvo.get("imagem", "")},
+            {"id": distratores[0]["id"], "nome": distratores[0]["nome"], "emoji": distratores[0]["emoji"], "imagem": distratores[0].get("imagem", "")},
+            {"id": distratores[1]["id"], "nome": distratores[1]["nome"], "emoji": distratores[1]["emoji"], "imagem": distratores[1].get("imagem", "")},
+        ]
+        random.shuffle(opcoes)
+
+        return {
+            "alvo_id": alvo["id"],
+            "alvo_nome": alvo["nome"],
+            "audio_url": alvo["som"],
+            "pergunta": "Quem faz esse som incrível da natureza? Ouça com atenção!",
+            "opcoes": opcoes,
+        }
+
+    def validar_descobre_som(self, alvo_id: str, resposta_id: str) -> Dict[str, Any]:
+        """
+        Valida o palpite do minijogo. Acertos geram confetes na tela e moedas no SQLite (WAL).
+        """
+        alvo = str(alvo_id or "").strip().lower()
+        resp = str(resposta_id or "").strip().lower()
+        acertou = (alvo == resp) and bool(alvo)
+
+        if acertou:
+            token_mgr.creditar_fichas(5, "Acerto no Descobre o Som", "JOGO")
+            token_mgr.creditar_estrela(1)
+            pet_mgr.brincar(12, "Descobre o Som")
+            return {
+                "acertou": True,
+                "confetes": True,
+                "fichas_ganhas": 5,
+                "saldo": token_mgr.obter_status_pote()["saldo"],
+                "mensagem": "🎉 Maravilha, Kaleu! Você tem um super ouvido de biólogo! Ganhou +5 Moedas e +1 Estrela!",
+            }
+        else:
+            return {
+                "acertou": False,
+                "confetes": False,
+                "fichas_ganhas": 0,
+                "mensagem": "Quase lá, super-herói! Aperte para ouvir de novo e tente mais uma vez!",
+            }
+
+
 
 # Instância global
 cognition_mgr = CognitionGamesManager()

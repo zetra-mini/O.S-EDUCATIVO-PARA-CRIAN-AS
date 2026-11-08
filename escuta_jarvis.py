@@ -6,6 +6,7 @@ Projetado para rodar em thread separada sem consumir CPU excessiva do Intel Atom
 3. Notificação instantânea para o frontend ao detectar o chamado do Kaleu.
 """
 
+import os
 import threading
 import time
 import uuid
@@ -110,3 +111,49 @@ def iniciar_escuta_segura(access_key: str = "") -> bool:
 def parar_escuta():
     global _is_running
     _is_running = False
+
+
+# ==============================================================================
+# CACHE TTS E REPOSTAS DE VOZ INSTANTÂNEAS (OFFLINE EM 0MS)
+# ==============================================================================
+SOUNDS_CACHE_DIR = os.path.join(os.path.dirname(__file__), "sounds", "cache_tts")
+STATIC_CACHE_DIR = os.path.join(os.path.dirname(__file__), "static", "sounds", "cache_tts")
+
+for _d in [SOUNDS_CACHE_DIR, STATIC_CACHE_DIR]:
+    try:
+        os.makedirs(_d, exist_ok=True)
+    except Exception:
+        pass
+
+
+def obter_audio_tts_em_cache(texto: str, profile_key: str = "jarvis_antonio") -> Optional[tuple]:
+    """
+    Verifica se a frase já possui o arquivo .mp3 gerado localmente em sounds/cache_tts/.
+    Retorna (bytes_do_audio, 'audio/mpeg') se encontrado, garantindo resposta em 0ms
+    e funcionamento 100% offline antes de qualquer requisição externa.
+    """
+    import hashlib
+    limpo = " ".join(texto.strip().split())
+    if not limpo:
+        return None
+
+    # Verifica pelo hash do texto com e sem perfil
+    hashes = [
+        hashlib.md5(f"{profile_key}:True:{limpo}".encode("utf-8")).hexdigest(),
+        hashlib.md5(f"{profile_key}:False:{limpo}".encode("utf-8")).hexdigest(),
+        hashlib.md5(limpo.encode("utf-8")).hexdigest(),
+    ]
+
+    for h in hashes:
+        for cdir in [SOUNDS_CACHE_DIR, STATIC_CACHE_DIR]:
+            mp3_path = os.path.join(cdir, f"{h}.mp3")
+            if os.path.exists(mp3_path):
+                try:
+                    with open(mp3_path, "rb") as f:
+                        conteudo = f.read()
+                    if conteudo:
+                        return conteudo, "audio/mpeg"
+                except Exception:
+                    pass
+    return None
+

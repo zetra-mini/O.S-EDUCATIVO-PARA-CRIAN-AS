@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>J.A.R.V.I.S. Kids — Quarto de Engenharia Stark (Blockly)</title>
+  <link rel="stylesheet" href="/static/libs/animate.min.css">
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: #091326;
+      --border: #1e3a5f;
+      --cyan: #00f0ff;
+      --gold: #facc15;
+      --green: #10b981;
+      --text: #f8fafc;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-drag: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    /* TOP BAR */
+    header {
+      background: #0f172a;
+      border: 2px solid var(--cyan);
+      border-radius: 14px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      flex-shrink: 0;
+    }
+    .titulo-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .titulo-box h1 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--cyan);
+    }
+    .btn-voltar {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1.5px solid #38bdf8;
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ÁREA PRINCIPAL DIVIDIDA EM 2 COLUNAS */
+    .workspace {
+      display: grid;
+      grid-template-columns: 280px 1fr 240px;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* COLUNA 1: CAIXA DE BLOCOS (TOOLBOX) */
+    .panel {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 10px;
+      overflow-y: auto;
+    }
+    .panel-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1.5px solid #1e293b;
+      padding-bottom: 6px;
+    }
+
+    .block-item {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      transition: transform 0.1s;
+    }
+    .block-item:active { transform: scale(0.96); }
+
+    .block-fala { background: linear-gradient(135deg, #0284c7, #0369a1); border: 2px solid #38bdf8; color: #fff; }
+    .block-luz { background: linear-gradient(135deg, #eab308, #ca8a04); border: 2px solid #fef08a; color: #000; }
+    .block-som { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border: 2px solid #c4b5fd; color: #fff; }
+    .block-anim { background: linear-gradient(135deg, #10b981, #047857); border: 2px solid #6ee7b7; color: #fff; }
+    .block-confetti { background: linear-gradient(135deg, #f43f5e, #be123c); border: 2px solid #fda4af; color: #fff; }
+
+    /* COLUNA 2: ÁREA DE MONTAGEM DO PROGRAMA */
+    .program-canvas {
+      background: #060d1d;
+      border: 2px dashed #0284c7;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 10px;
+      overflow-y: auto;
+    }
+    .program-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 120px;
+    }
+    .slot-item {
+      background: #0f1c36;
+      border: 2px solid #00f0ff;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 0.95rem;
+      animation: zoomIn 0.3s;
+    }
+    .slot-item.executando {
+      border-color: #facc15;
+      background: #1e3a5f;
+      box-shadow: 0 0 15px #facc15;
+    }
+    .btn-del-block {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      width: 26px;
+      height: 26px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    /* COLUNA 3: SIMULADOR DO ROBÔ EM TEMPO REAL */
+    .robot-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: #081124;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      gap: 12px;
+    }
+    .robot-head {
+      width: 90px;
+      height: 90px;
+      background: #0f172a;
+      border: 3px solid var(--cyan);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+      transition: all 0.3s;
+    }
+    .robot-balao {
+      background: #1e293b;
+      border: 1.5px solid var(--cyan);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      color: #38bdf8;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .btn-executar {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 900;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+    .btn-limpar {
+      background: #334155;
+      color: #cbd5e1;
+      border: none;
+      border-radius: 12px;
+      padding: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="titulo-box">
+      <span style="font-size: 1.4rem;">⚙️</span>
+      <h1>Quarto de Engenharia Stark (Blockly Educativo)</h1>
+    </div>
+    <a href="/" class="btn-voltar">🏠 Voltar ao Jarvis</a>
+  </header>
+
+  <div class="workspace">
+    <!-- TOOLBOX -->
+    <div class="panel">
+      <div class="panel-title">🧩 Blocos de Programação</div>
+      <div class="block-item block-fala" onclick="adicionarBloco('fala', '🗣️ Falar: Bip Bip, Kaleu Noah!')">
+        🗣️ Falar Mensagem
+      </div>
+      <div class="block-item block-luz" onclick="adicionarBloco('luz', '💡 Ligar Reator Dourado')">
+        💡 Mudar Cor do Reator
+      </div>
+      <div class="block-item block-som" onclick="adicionarBloco('som_dino', '🦖 Rugido do T-Rex')">
+        🦖 Som de Dinossauro
+      </div>
+      <div class="block-item block-som" onclick="adicionarBloco('som_leao', '🦁 Som do Rei Leão')">
+        🦁 Som de Animal Real
+      </div>
+      <div class="block-item block-anim" onclick="adicionarBloco('pulo', '🦘 Pulinho de Vitória!')">
+        🦘 Pulinho do Robô
+      </div>
+      <div class="block-item block-confetti" onclick="adicionarBloco('confetti', '🎉 Chuva de Confetes!')">
+        🎉 Efeito Dopamina
+      </div>
+    </div>
+
+    <!-- PROGRAM CANVAS -->
+    <div class="program-canvas">
+      <div class="panel-title">📜 Sequência de Comandos da Criança</div>
+      <div class="program-list" id="program-list">
+        <!-- Blocos inseridos aparecem aqui -->
+      </div>
+    </div>
+
+    <!-- ROBOT PREVIEW & CONTROLS -->
+    <div class="robot-preview">
+      <div class="robot-head" id="robot-head">🤖</div>
+      <div class="robot-balao" id="robot-balao">Monte seus blocos e clique em Executar!</div>
+      <button class="btn-executar" onclick="executarPrograma()">▶️ Executar Código</button>
+      <button class="btn-limpar" onclick="limparPrograma()">🧹 Limpar Blocos</button>
+    </div>
+  </div>
+
+  <script src="/static/libs/canvas-confetti.min.js"></script>
+  <script src="/static/libs/sweetalert2.all.min.js"></script>
+  <script>
+    // Bloqueia clique direito e seleções no modo quiosque
+    window.addEventListener('contextmenu', e => e.preventDefault());
+
+    let programa = [
+      { tipo: 'luz', label: '💡 Ligar Reator Dourado' },
+      { tipo: 'fala', label: '🗣️ Falar: Bip Bip, Kaleu Noah!' },
+      { tipo: 'confetti', label: '🎉 Chuva de Confetes!' }
+    ];
+
+    function renderizarPrograma() {
+      const list = document.getElementById('program-list');
+      list.innerHTML = '';
+      if (programa.length === 0) {
+        list.innerHTML = '<div style="color:#64748b;text-align:center;padding:30px 10px;font-weight:700;">Arraste ou clique nos blocos à esquerda para programar o Jarvis!</div>';
+        return;
+      }
+
+      programa.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'slot-item';
+        div.id = `slot-${idx}`;
+        div.innerHTML = `
+          <span>${idx + 1}. ${item.label}</span>
+          <button class="btn-del-block" onclick="removerBloco(${idx})">✕</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function adicionarBloco(tipo, label) {
+      if (programa.length >= 8) {
+        Swal.fire({
+          title: 'Programa Cheio!',
+          text: 'Você já adicionou 8 comandos! Vamos executar antes de colocar mais?',
+          icon: 'info'
+        });
+        return;
+      }
+      programa.push({ tipo, label });
+      renderizarPrograma();
+    }
+
+    function removerBloco(idx) {
+      programa.splice(idx, 1);
+      renderizarPrograma();
+    }
+
+    function limparPrograma() {
+      programa = [];
+      renderizarPrograma();
+      document.getElementById('robot-balao').textContent = 'Pronto para um novo código!';
+    }
+
+    async function executarPrograma() {
+      if (programa.length === 0) {
+        Swal.fire({
+          title: 'Adicione Blocos!',
+          text: 'Clique nos blocos coloridos da esquerda para criar sua sequência de programação!',
+          icon: 'question'
+        });
+        return;
+      }
+
+      const head = document.getElementById('robot-head');
+      const balao = document.getElementById('robot-balao');
+
+      for (let i = 0; i < programa.length; i++) {
+        const b = programa[i];
+        const slotEl = document.getElementById(`slot-${i}`);
+        if (slotEl) slotEl.classList.add('executando');
+
+        if (b.tipo === 'luz') {
+          head.style.borderColor = '#facc15';
+          head.style.boxShadow = '0 0 35px #facc15';
+          balao.textContent = '💡 Reator Ark brilhando com força máxima!';
+          await delay(800);
+        } else if (b.tipo === 'fala') {
+          balao.textContent = '🗣️ "Bip bip, sou o Jarvis! Muito bem, Kaleu Noah!"';
+          if ('speechSynthesis' in window) {
+            const u = new SpeechSynthesisUtterance('Bip bip, sou o Jarvis! Muito bem, Kaleu Noah!');
+            u.lang = 'pt-BR';
+            window.speechSynthesis.speak(u);
+          }
+          await delay(1600);
+        } else if (b.tipo === 'som_dino') {
+          balao.textContent = '🦖 GROOOAAAR! O T-Rex acordou na sala de engenharia!';
+          const audio = new Audio('/static/sounds/animais/leao.mp3');
+          audio.play().catch(() => {});
+          await delay(1200);
+        } else if (b.tipo === 'som_leao') {
+          balao.textContent = '🦁 ROAAAR! Som real do Leão africano!';
+          const audio = new Audio('/static/sounds/animais/leao.mp3');
+          audio.play().catch(() => {});
+          await delay(1200);
+        } else if (b.tipo === 'pulo') {
+          balao.textContent = '🦘 O robô deu um super pulo de comemoração!';
+          head.classList.add('animate__animated', 'animate__bounceIn');
+          await delay(900);
+          head.classList.remove('animate__animated', 'animate__bounceIn');
+        } else if (b.tipo === 'confetti') {
+          balao.textContent = '🎉 Chuva de estrelas e confetes de engenheiro!';
+          if (window.confetti) window.confetti({ particleCount: 50 });
+          await delay(1000);
+        }
+
+        if (slotEl) slotEl.classList.remove('executando');
+      }
+
+      head.style.borderColor = '#00f0ff';
+      head.style.boxShadow = '0 0 25px rgba(0, 240, 255, 0.4)';
+      balao.textContent = '⭐ Programa concluído com sucesso total!';
+      if (window.confetti) window.confetti({ particleCount: 30 });
+    }
+
+    function delay(ms) {
+      return new Promise(res => setTimeout(res, ms));
+    }
+
+    renderizarPrograma();
+  </script>
+</body>
+</html>

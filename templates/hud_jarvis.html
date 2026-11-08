@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0284c7" />
   <link rel="manifest" href="/manifest.json" />
+  <link rel="stylesheet" href="/static/libs/animate.min.css" />
   <title>◈ J.A.R.V.I.S. Kids OS v2.2 — Sistema Educativo Infantil Stark</title>
   <style>
     @media (max-width: 680px) {
@@ -39,6 +40,9 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
       font-family: "Segoe UI", system-ui, sans-serif;
       scrollbar-width: none !important;
       -ms-overflow-style: none !important;
@@ -2773,6 +2777,24 @@
 
   <div class="toast-banner" id="toast-banner"></div>
 
+    <!-- BIBLIOTECAS OPEN-SOURCE LEVES PARA O INTEL ATOM (0% CPU) -->
+  <script src="/static/libs/canvas-confetti.min.js">
+    // =========================================================================
+    // KIOSK HARDENING & BLOQUEIO DE SELEÇÃO / CLIQUE DIREITO
+    // =========================================================================
+    window.addEventListener('contextmenu', e => e.preventDefault());
+    window.addEventListener('dragstart', e => e.preventDefault());
+
+    window.dispararConfetesDopamina = function(count = 50) {
+      if (typeof window.confetti === 'function') {
+        window.confetti({ particleCount: count });
+      }
+    };
+  </script>
+  <script src="/static/libs/sweetalert2.all.min.js"></script>
+  <script src="/static/libs/sortable.min.js"></script>
+  <!-- MÚSICA BOXCAT GAMES - YOUNG LOVE EM LOOP DURANTE TAREFAS COM TIMER -->
+  <audio id="audio-timer-young-love" src="/static/assets_poupy/musica/BoxCat Games - Young Love.mp3" loop preload="none"></audio>
   <script>
     // =========================================================================
     // MODO AUTÔNOMO LOCAL OFFLINE (FALLBACK PARA APP MOBILE E SISTEMA DESCONECTADO)
@@ -3633,6 +3655,7 @@
           <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 14px; display:flex; align-items:center; justify-content:space-between;">
             <div style="font-size:1.02rem; font-weight:900; color:#38bdf8; display:flex; align-items:center; gap:8px;">
               <span>⭐ Escolha uma atividade para brincar:</span>
+              <a href="/engenharia" id="quarto-engenharia-btn" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.8rem; font-weight:900; padding:4px 10px; border-radius:8px; text-decoration:none; margin-left:8px;">⚙️ Quarto de Engenharia (Blockly)</a>
             </div>
             <span style="font-size:0.85rem; font-weight:900; background:#1e293b; color:#fde047; padding:4px 12px; border-radius:999px;">
               Página ${paginaJogosModalAtual} de ${TOTAL_PAGINAS_JOGOS}
@@ -10602,6 +10625,7 @@
     async function responderQuizAstronauta(escolha, correta) {
       if (escolha === correta) {
         playCelebrationFanfare();
+        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
         dispararChuvaCoracoes();
         speak(`Excelente resposta, astronauta! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
         showToast('🌟 Resposta Correta! +5 Moedas do Tesouro!');
@@ -10769,6 +10793,7 @@
       if (escolha === corretaId) {
         const bicho = BANCO_ANIMAIS_STARK.find(x => x.id === corretaId);
         playCelebrationFanfare();
+        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
         dispararChuvaCoracoes();
         speak(`Sensacional, herói! Você reconheceu perfeitamente o som do ${bicho ? bicho.nome : 'animal'}! Ganhou 5 moedas!`);
         showToast('🎉 Acertou o Animal! +5 Moedas!');
@@ -11008,6 +11033,8 @@
 
       let segRestantes = 30;
       if (timerDesafio30s) clearInterval(timerDesafio30s);
+      const bgAudio = document.getElementById('audio-timer-young-love');
+      if (bgAudio) { bgAudio.currentTime = 0; bgAudio.play().catch(() => {}); }
 
       speak(`Desafio dos 30 segundos ativado, herói ${appState.config.child_name || 'Kaleo'}! Missão: guarde 3 brinquedos ou dê 5 pulos bem altos antes do tempo acabar! Valendo!`);
 
@@ -11025,6 +11052,9 @@
 
         if (segRestantes <= 0) {
           clearInterval(timerDesafio30s);
+          const bgAudioEnd = document.getElementById('audio-timer-young-love');
+          if (bgAudioEnd) { bgAudioEnd.pause(); bgAudioEnd.currentTime = 0; }
+          if (typeof window.confetti === 'function') window.confetti({ particleCount: 60 });
           playCelebrationFanfare();
           dispararChuvaCoracoes();
           speak(`Tempo esgotado! Missão superada com sucesso! Você é super veloz, super-herói! Ganhou 5 moedas!`);
@@ -11065,6 +11095,7 @@
       if (!missaoRelogioCorrente) return;
       if (horaRelogioAtual === missaoRelogioCorrente.hora && minutoRelogioAtual === missaoRelogioCorrente.min) {
         playCelebrationFanfare();
+        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
         dispararChuvaCoracoes();
         speak(`Incrível, herói! Você acertou exatamente o horário de ${missaoRelogioCorrente.titulo}! Ganhou 5 moedas do tempo!`);
         showToast('⏰ Missão Cumprida! +5 Moedas do Tesouro!');
@@ -11179,6 +11210,7 @@
 
       if (errosDetetiveEncontrados.length >= 7) {
         playCelebrationFanfare();
+        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
         dispararChuvaCoracoes();
         speak(`Incrível, super detetive! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
         await fetch('/api/fichas/bonificar', {
@@ -11969,6 +12001,7 @@
       if (blocosDinoEscavadosSet.size >= 6) {
         tocarRugidoDinoStark();
         playCelebrationFanfare();
+        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
         dispararChuvaCoracoes();
         const d = BANCO_DINOSSAUROS[dinoIdx];
         speak(`Incrível, paleontólogo! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu!`);
