@@ -1,4 +1,4 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.4 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.4.5 — Stark Educational System (Para Kaleo Noah)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
@@ -269,6 +269,16 @@ sudo dpkg -i jarvis-kids-os_3.4.4.deb
 ### Pré-requisitos (Modo Dev)
 - Python 3.10 ou superior
 - Navegador moderno (Chromium, Chrome, Edge ou Firefox)
+
+### 🚀 Como colocar no Netbook com antiX Linux (Instalação 100% Automática)
+
+Basta baixar o arquivo `.deb` da versão mais recente nas [Releases do GitHub](https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS/releases) (ou passar via pendrive) e executar no terminal do antiX:
+
+```bash
+sudo dpkg -i jarvis-kids-os_*.deb
+```
+
+Pronto! O sistema do Jarvis já configura inicialização automática no boot do antiX Linux. Ao ligar o netbook ou abrir pelo menu/área de trabalho, o robô Jarvis e todos os 24 jogos abrem sozinhos em tela cheia sem que a criança precise abrir terminal ou digitar comandos! Que o pequeno campeão aproveite muito o seu novo computadorzinho!
 
 ### Instalação em Modo de Desenvolvimento
 ```bash
