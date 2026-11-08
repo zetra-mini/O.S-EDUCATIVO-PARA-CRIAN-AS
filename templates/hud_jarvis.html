@@ -2241,12 +2241,8 @@
         </div>
       </div>
 
-      <!-- NAVEGADOR DE CÔMODOS FUTURISTA TOUCH (CENTRO GEOMÉTRICO ABSOLUTO) -->
-      <div class="pou-room-nav-pill">
-        <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(-1)" title="Cômodo Anterior">◀</button>
-        <span id="pou-room-title" class="pou-room-title">Sala de Brincar</span>
-        <button type="button" class="btn-room-arrow" onclick="trocarComodoPou(1)" title="Próximo Cômodo">▶</button>
-      </div>
+      <!-- ESPAÇO CENTRAL LIVRE E DESOBSTRUÍDO -->
+      <span id="pou-room-title" style="display:none;"></span>
 
       <!-- PAINEL DOS PAIS -->
       <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:6px 14px; font-size:1.05rem;" title="Painel dos Pais">⚙️</button>
@@ -2260,11 +2256,7 @@
 
     <!-- 2. SALA CENTRAL DO ROBOZINHO J.A.R.V.I.S. (NO CENTRO DA TELA) -->
     <div class="pou-room-stage" id="pou-room-stage">
-      <!-- Cordinha do Abajur (Quarto) -->
-      <div class="pou-lamp-container" id="pou-lamp-cord" onclick="alternarAbajurSonoPou()" title="Puxar cordinha para dormir">
-        <div class="lamp-cord"></div>
-        <div class="lamp-knob"></div>
-      </div>
+
 
       <!-- O MASCOTE ROBOZINHO J.A.R.V.I.S. NO CENTRO (CARINHO AFETUOSO SEM LIGAR MICROFONE) -->
       <div class="pou-mascot-box lucky-mascot-box" id="pou-mascot" onclick="clicarNoJarvis(event)" title="Toque no Jarvis para dar carinho!">
@@ -2548,13 +2540,11 @@
         <span class="pou-btn-label">Jogos</span>
       </button>
 
-      <!-- FERRAMENTA DINÂMICA DO CÔMODO (CENTRO) -->
-      <div class="pou-center-tool" id="pou-room-tool-center">
-        <!-- Na Sala de Brincar: Bolinha -->
-        <button type="button" class="tool-circle-btn" id="btn-tool-active" onclick="acionarFerramentaComodo()" title="Brincar com a Bolinha do Jarvis">
-          🎾
-        </button>
-      </div>
+      <!-- BOTÃO HISTÓRIAS (ACESSO DIRETO À BIBLIOTECA MÁGICA) -->
+      <button type="button" class="pou-bottom-btn" onclick="openBooksLibrary()" title="Abrir Biblioteca Mágica de Histórias">
+        <div class="pou-btn-icon-box" style="border-color:#38bdf8; background:rgba(2,132,199,0.25);">📚</div>
+        <span class="pou-btn-label">Histórias</span>
+      </button>
 
       <!-- BOTÃO LOJA & ARMÁRIO (VESTIR ACESSÓRIOS & TESOURO REAL) -->
       <button type="button" class="pou-bottom-btn" onclick="abrirLojaTesouro()" title="Abrir Armário de Acessórios & Loja do Tesouro">
@@ -14475,20 +14465,7 @@
         return;
       }
 
-      // 2. Se na sala principal do Jarvis: swipe horizontal troca de cômodo!
-      if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3 && deltaTime < 700) {
-        const target = e.target;
-        if (target && (target.closest('button') || target.closest('input') || target.closest('.pou-coin-badge') || target.closest('.pou-lamp-container'))) {
-          return;
-        }
-        if (deltaX < 0) {
-          // Deslizou para a esquerda -> próximo cômodo
-          trocarComodoPou(1);
-        } else {
-          // Deslizou para a direita -> cômodo anterior
-          trocarComodoPou(-1);
-        }
-      }
+      // Troca de cômodo desativada para evitar acidentes
     }, { passive: true });
 
     // CARREGAMENTO INSTANTÂNEO NO ARRANQUE (BOOT NO SEGUNDO ZERO)

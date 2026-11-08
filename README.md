@@ -1,4 +1,4 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.6.5 — Edição Definitiva (Stark High Performance)
+# 🚀 J.A.R.V.I.S. Kids OS v3.6.6 — Edição Definitiva (Stark High Performance)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
@@ -8,10 +8,10 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 
 Telas reais capturadas diretamente do sistema em execução na resolução nativa do netbook (1024x600):
 
-| 🤖 1. HUD Principal — Sala de Brincar do Robô Jarvis | 🦸‍♂️ 2. Quartel-General das Missões do Herói |
+| 🤖 1. HUD Principal — Sala de Comando do Robô Jarvis | 🦸‍♂️ 2. Quartel-General das Missões do Herói |
 | :---: | :---: |
 | ![HUD Jarvis](docs/screenshots/01_hud_jarvis_sala_brincar.png) | ![Missões do Herói](docs/screenshots/02_missoes_do_heroi.png) |
-| *Mascote Jarvis interativo com humor emocional, clima em tempo real, economia de moedas no Pote do Tesouro, status de bateria e botões táteis gigantes.* | *Quartel-General de Missões reformulado com barra de conquista diária de super-herói, abas de filtro (Todas, Para Fazer, Concluídas) e atalhos rápidos.* |
+| *Mascote Jarvis interativo em tela desobstruída e limpa (sem modais superiores intrusivos), clima em tempo real, moedas do Pote do Tesouro, bateria e barra inferior com Jogos, Histórias e Loja.* | *Quartel-General de Missões reformulado com barra de conquista diária de super-herói, abas de filtro (Todas, Para Fazer, Concluídas) e atalhos rápidos.* |
 
 | 📚 3. Biblioteca Mágica de Histórias (Estante) | 🌟 4. Tela de Conquista & Celebração do Livro |
 | :---: | :---: |
@@ -32,6 +32,20 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 | :---: |
 | ![Quarto de Engenharia](docs/screenshots/09_quarto_engenharia.png) |
 | *Bancada de lógica computacional e robótica infantil estilo Google Blockly: a criança programa sequências de passos e ações para o robô Jarvis executar!* |
+
+---
+
+## 🌟 Novidades da Versão 3.6.6 (HUD Clean & Acesso Direto a Histórias)
+
+### 🚀 1. Interface Desobstruída & Limpa (Sem Modal Superior)
+- **Visão 100% Limpa e Espaçosa:** Remoção do modal flutuante superior ("Sala de Brincar") e do seletor de cômodos, eliminando distrações visuais e desobstruindo a área central para o robô Jarvis e para a criança.
+- **🛡️ Proteção Anti-Deslize:** Desativação de gestos de swipe acidentais na tela principal que causavam trocas involuntárias de cenário ou escurecimento de tela.
+
+### 📚 2. Acesso Direto à Biblioteca Mágica na Barra Inferior
+- **Tríade de Ouro de Alta Usabilidade:** A barra inferior agora exibe 3 pilares imediatos de 1 toque:
+  1. `[🎮 Jogos]` — Central de 24 jogos educativos paginados.
+  2. `[📚 Histórias]` — Acesso direto e instantâneo à Biblioteca Mágica de Histórias com virtudes e valores (sem precisar caçar no catálogo).
+  3. `[🏪 Loja / Armário]` — Personalização de roupinhas/acessórios e Pote do Tesouro.
 
 ---
 
@@ -198,11 +212,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.6.5.deb` | `sudo dpkg -i jarvis-kids-os_3.6.5.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.6.5-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.6.5-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.6.5-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.6.5-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.6.6.deb` | `sudo dpkg -i jarvis-kids-os_3.6.6.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.6.6-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.6.6-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.6.6-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.6.6-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/admin` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -239,7 +253,7 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.6.5.deb
+sudo dpkg -i jarvis-kids-os_3.6.6.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
