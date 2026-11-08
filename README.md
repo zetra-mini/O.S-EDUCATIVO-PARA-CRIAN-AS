@@ -1,4 +1,4 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.4.5 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.4.6 — Stark Educational System (Para Kaleo Noah)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
@@ -10,7 +10,7 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 - **Zero Scrollbar no Netbook 1024x600:** Cada página acomoda exatamente 4 jogos em grade 2x2, sem estourar a altura útil da tela.
 - **Novos Jogos Didáticos & Científicos:**
   - **🪐 Sistema Solar & Simulador de Gravidade:** Pilote naves espaciais, observe planetas e experimente o simulador de gravidade na Terra ($1.0\times$), Lua ($0.16\times$) e Júpiter ($2.5\times$).
-  - **🦁 Reino Animal & Fauna Brasileira:** 12 animais com áudio sintetizado em tempo real, incluindo Onça-Pintada, Mico-Leão-Dourado, Arara-Azul, Lobo-Guará e Tucano.
+  - **🦁 Reino Animal com Sons Reais (18 Animais):** Áudios reais gravados de leão, elefante, sapo, cavalo, pássaro, arara, mico, onça, coruja, golfinho, jacaré, baleia, cachorro, gato, vaca, pato, urso e pinguim.
   - **⏰ Relógio Mágico & Cronômetro de 30s:** Ensino de horas com mostrador analógico/digital e cronômetro gamificado com contagem regressiva sonora para lavar as mãos e escovar os dentes.
   - **🕵️ Detetive Stark (Jogo dos 7 Erros):** Desafios visuais com efeitos sonoros e pistas do robô Jarvis.
   - **🔬 Laboratório de Ciências & Vulcão Químico:** Estados da água (Gelo, Líquido, Vapor), misturador de cores primárias e o experimento do Vulcão Químico (Bicarbonato + Vinagre) com erupção borbulhante e fumaça neon.

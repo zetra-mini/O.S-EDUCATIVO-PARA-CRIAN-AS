@@ -6420,15 +6420,15 @@
           }
 
           stage.innerHTML = `
-            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; padding:4px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; padding:4px;">
               ${palavras.map(p => `
-                <div class="lang-word-card" onclick="falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')" style="background:#071224; border:2px solid #1e3a8a; border-radius:16px; padding:12px; display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer; transition:transform 0.15s, border-color 0.15s; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-                  <div style="font-size:2.8rem; margin-bottom:4px;">${p.icone}</div>
-                  <div style="font-size:1.35rem; font-weight:900; color:#38bdf8; letter-spacing:0.5px;">${p.palavra}</div>
-                  <div style="font-size:0.85rem; color:#facc15; font-style:italic; margin-top:2px;">"${p.pronuncia_som}"</div>
-                  <div style="font-size:0.9rem; color:#e2e8f0; font-weight:bold; margin-top:4px;">${p.pt}</div>
-                  ${p.gesto ? `<div style="font-size:0.75rem; color:#94a3b8; margin-top:6px; background:#0f172a; padding:4px 8px; border-radius:6px; width:100%; box-sizing:border-box;">👉 ${p.gesto}</div>` : ''}
-                  <button type="button" class="big-btn" style="width:100%; margin-top:8px; padding:6px; font-size:0.85rem; background:#0284c7;" onclick="event.stopPropagation(); falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')">
+                <div class="lang-word-card" onclick="falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')" style="background:#071224; border:2px solid #1e3a8a; border-radius:14px; padding:8px 6px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; cursor:pointer; min-height:185px; max-height:220px; box-sizing:border-box; transition:transform 0.15s, border-color 0.15s; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+                  <div style="font-size:2.2rem; line-height:1; margin-bottom:2px;">${p.icone}</div>
+                  <div style="${p.palavra.length > 10 ? 'font-size:1.05rem;' : 'font-size:1.22rem;'} font-weight:900; color:#38bdf8; letter-spacing:0.3px; line-height:1.15; word-break:break-word;">${p.palavra}</div>
+                  <div style="font-size:0.78rem; color:#facc15; font-style:italic; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${p.pronuncia_som}">"${p.pronuncia_som}"</div>
+                  <div style="font-size:0.85rem; color:#e2e8f0; font-weight:bold; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${p.pt}">${p.pt}</div>
+                  ${p.gesto ? `<div style="font-size:0.7rem; color:#94a3b8; margin-top:4px; background:#0f172a; padding:3px 6px; border-radius:6px; width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${p.gesto}">👉 ${p.gesto}</div>` : ''}
+                  <button type="button" class="big-btn" style="width:100%; margin-top:6px; padding:5px; font-size:0.8rem; background:#0284c7; border-radius:8px;" onclick="event.stopPropagation(); falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')">
                     🔊 Ouvir
                   </button>
                 </div>
@@ -10699,139 +10699,36 @@
     function tocarSomAnimalStark(tipo, falar = true) {
       try {
         destravarAudioNavegador();
+        const somPath = (window.location.protocol === 'file:')
+          ? `sounds/animais/${tipo}.mp3`
+          : `/static/sounds/animais/${tipo}.mp3`;
+        const audio = new Audio(somPath);
+        audio.volume = 1.0;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            tocarSomAnimalSintetizadoFallback(tipo);
+          });
+        }
+      } catch (err) {
+        tocarSomAnimalSintetizadoFallback(tipo);
+      }
+
+      if (falar) {
+        const animalObj = BANCO_ANIMAIS_STARK.find(x => x.id === tipo);
+        if (animalObj && animalObj.falaOnomatopeia) {
+          setTimeout(() => speak(animalObj.falaOnomatopeia), 1800);
+        }
+      }
+    }
+
+    function tocarSomAnimalSintetizadoFallback(tipo) {
+      try {
+        destravarAudioNavegador();
         const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
         const now = ctx.currentTime;
-
-        if (tipo === 'leao') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(140, now);
-          osc.frequency.exponentialRampToValueAtTime(45, now + 1.2);
-          gain.gain.setValueAtTime(0.35, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 1.2);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 1.2);
-        } else if (tipo === 'elefante') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(220, now);
-          osc.frequency.linearRampToValueAtTime(560, now + 0.9);
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.9);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 0.9);
-        } else if (tipo === 'sapo') {
-          playTone(130, 90, 'triangle');
-          setTimeout(() => playTone(105, 110, 'triangle'), 130);
-        } else if (tipo === 'cavalo') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(800, now);
-          osc.frequency.exponentialRampToValueAtTime(380, now + 0.85);
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.85);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 0.85);
-        } else if (tipo === 'passaro') {
-          [1800, 2400, 2100, 2700].forEach((f, i) => {
-            setTimeout(() => playTone(f, 55, 'sine', 0.22), i * 65);
-          });
-        } else if (tipo === 'arara') {
-          playTone(980, 110, 'sawtooth', 0.25);
-          setTimeout(() => playTone(840, 130, 'sawtooth', 0.22), 130);
-        } else if (tipo === 'mico') {
-          [900, 1200, 1050, 1300].forEach((f, i) => {
-            setTimeout(() => playTone(f, 40, 'triangle', 0.2), i * 50);
-          });
-        } else if (tipo === 'onca') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(120, now);
-          osc.frequency.exponentialRampToValueAtTime(32, now + 1.1);
-          gain.gain.setValueAtTime(0.35, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 1.1);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 1.1);
-        } else if (tipo === 'coruja') {
-          playTone(420, 150, 'sine', 0.25);
-          setTimeout(() => playTone(360, 200, 'sine', 0.22), 240);
-        } else if (tipo === 'golfinho') {
-          [2600, 3100, 3400, 2800, 3600].forEach((f, i) => {
-            setTimeout(() => playTone(f, 35, 'sine', 0.2), i * 45);
-          });
-        } else if (tipo === 'jacare') {
-          playTone(85, 180, 'triangle', 0.3);
-          setTimeout(() => playTone(70, 220, 'triangle', 0.25), 190);
-        } else if (tipo === 'cachorro') {
-          playTone(460, 75, 'sawtooth', 0.28);
-          setTimeout(() => playTone(540, 80, 'sawtooth', 0.26), 110);
-          setTimeout(() => playTone(500, 95, 'sawtooth', 0.24), 230);
-        } else if (tipo === 'gato') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(520, now);
-          osc.frequency.exponentialRampToValueAtTime(920, now + 0.35);
-          osc.frequency.exponentialRampToValueAtTime(420, now + 0.75);
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 0.75);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 0.75);
-        } else if (tipo === 'vaca') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(160, now);
-          osc.frequency.linearRampToValueAtTime(130, now + 0.6);
-          osc.frequency.linearRampToValueAtTime(105, now + 1.1);
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 1.1);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 1.1);
-        } else if (tipo === 'pato') {
-          playTone(390, 85, 'sawtooth', 0.26);
-          setTimeout(() => playTone(340, 95, 'sawtooth', 0.24), 120);
-          setTimeout(() => playTone(310, 110, 'sawtooth', 0.22), 250);
-        } else if (tipo === 'urso') {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(115, now);
-          osc.frequency.exponentialRampToValueAtTime(55, now + 1.0);
-          gain.gain.setValueAtTime(0.32, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 1.0);
-        } else if (tipo === 'pinguim') {
-          [1450, 1750, 1600].forEach((f, i) => {
-            setTimeout(() => playTone(f, 65, 'sine', 0.22), i * 75);
-          });
-        } else {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(90, now);
-          osc.frequency.linearRampToValueAtTime(180, now + 0.8);
-          osc.frequency.linearRampToValueAtTime(75, now + 1.4);
-          gain.gain.setValueAtTime(0.3, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 1.4);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 1.4);
-        }
-
-        if (falar) {
-          const animalObj = BANCO_ANIMAIS_STARK.find(x => x.id === tipo);
-          if (animalObj && animalObj.falaOnomatopeia) {
-            setTimeout(() => speak(animalObj.falaOnomatopeia), 400);
-          }
-        }
-      } catch(e) {
-        playTone(440, 150);
-      }
+        playTone(320, 150, 'triangle');
+      } catch (e) {}
     }
 
     function iniciarDesafioSomAnimal() {
@@ -11183,13 +11080,13 @@
     // JOGO 21: DETETIVE STARK: JOGO DOS 7 ERROS / OLHOS DE ÁGUIA
     // =========================================================================
     const ERROS_DETETIVE = [
-      { id: 1, x: 22, y: 20, nome: 'Céu (Sol vs Lua Sorridente)', iconeA: '☀️', iconeB: '🌙' },
-      { id: 2, x: 80, y: 20, nome: 'Espaço (Foguete vs Disco Voador)', iconeA: '🚀', iconeB: '🛸' },
-      { id: 3, x: 50, y: 24, nome: 'Antena do Robô (Lâmpada vs Raio)', iconeA: '💡', iconeB: '⚡' },
-      { id: 4, x: 50, y: 52, nome: 'Peito do Robô (Coração vs Estrela)', iconeA: '❤️', iconeB: '⭐' },
-      { id: 5, x: 18, y: 80, nome: 'Vaso de Plantas (Flor vs Cacto)', iconeA: '🌸', iconeB: '🌵' },
-      { id: 6, x: 50, y: 84, nome: 'Chão do Laboratório (Engrenagem vs Moeda)', iconeA: '⚙️', iconeB: '🪙' },
-      { id: 7, x: 82, y: 80, nome: 'Parede Direita (Janela vs Quadro)', iconeA: '🪟', iconeB: '🎨' }
+      { id: 1, x: 22, y: 22, nome: 'Céu (Sol vs Lua Sorridente)', iconeA: '☀️', iconeB: '🌙' },
+      { id: 2, x: 78, y: 22, nome: 'Espaço (Foguete vs Disco Voador)', iconeA: '🚀', iconeB: '🛸' },
+      { id: 3, x: 50, y: 20, nome: 'Antena do Robô (Lâmpada vs Raio)', iconeA: '💡', iconeB: '⚡' },
+      { id: 4, x: 50, y: 50, nome: 'Peito do Robô (Coração vs Estrela)', iconeA: '❤️', iconeB: '⭐' },
+      { id: 5, x: 20, y: 76, nome: 'Vaso de Plantas (Flor vs Cacto)', iconeA: '🌸', iconeB: '🌵' },
+      { id: 6, x: 50, y: 76, nome: 'Chão do Laboratório (Engrenagem vs Moeda)', iconeA: '⚙️', iconeB: '🪙' },
+      { id: 7, x: 80, y: 76, nome: 'Parede Direita (Janela vs Quadro)', iconeA: '🪟', iconeB: '🎨' }
     ];
     let errosDetetiveEncontrados = [];
 
@@ -11215,22 +11112,28 @@
             </button>
           </div>
 
-          <!-- DUAS CENAS LADO A LADO -->
+          <!-- DUAS CENAS LADO A LADO (CLICÁVEIS EM AMBAS AS CENAS) -->
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1;">
             
-            <!-- CENA A (ORIGINAL) -->
-            <div style="background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; user-select:none;">
-              <span style="position:absolute; top:6px; left:8px; background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px; z-index:5;">Cena A (Original)</span>
+            <!-- CENA A (ORIGINAL - TAMBÉM CLICÁVEL) -->
+            <div id="cena-erros-a" style="background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; user-select:none;">
+              <span style="position:absolute; top:6px; left:8px; background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:6px; z-index:5;">Cena A (Toque Aqui ou na Cena B)</span>
               
-              <!-- Elementos Visuais Fixos na Cena A -->
-              <div style="position:absolute; left:22%; top:20%; transform:translate(-50%, -50%); font-size:2.2rem;">☀️</div>
-              <div style="position:absolute; left:80%; top:20%; transform:translate(-50%, -50%); font-size:2.2rem;">🚀</div>
-              <div style="position:absolute; left:50%; top:24%; transform:translate(-50%, -50%); font-size:1.8rem;">💡</div>
-              <div style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:5rem; line-height:1; pointer-events:none;">🤖</div>
-              <div style="position:absolute; left:50%; top:52%; transform:translate(-50%, -50%); font-size:1.6rem;">❤️</div>
-              <div style="position:absolute; left:18%; top:80%; transform:translate(-50%, -50%); font-size:2.2rem;">🌸</div>
-              <div style="position:absolute; left:50%; top:84%; transform:translate(-50%, -50%); font-size:2rem;">⚙️</div>
-              <div style="position:absolute; left:82%; top:80%; transform:translate(-50%, -50%); font-size:2.2rem;">🪟</div>
+              <!-- Robô ao fundo -->
+              <div style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:5rem; line-height:1; pointer-events:none; z-index:1;">🤖</div>
+
+              <!-- PONTOS CLICÁVEIS NA CENA A -->
+              ${ERROS_DETETIVE.map(e => {
+                const encontrado = errosDetetiveEncontrados.includes(e.id);
+                return `
+                  <div style="position:absolute; left:${e.x}%; top:${e.y}%; width:72px; height:72px; transform:translate(-50%, -50%); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:50; pointer-events:auto;" onclick="clicarErroDetetive(${e.id})" title="Clique para marcar erro!">
+                    <div style="font-size:2.2rem; pointer-events:none;">${e.iconeA}</div>
+                    ${encontrado ? `
+                      <div style="position:absolute; width:56px; height:56px; border:3px solid #22c55e; background:rgba(34,197,94,0.35); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:1.5rem; box-shadow:0 0 16px #22c55e; pointer-events:none;">✓</div>
+                    ` : ''}
+                  </div>
+                `;
+              }).join('')}
             </div>
 
             <!-- CENA B (COM ERROS PARA CLICAR) -->
@@ -11240,16 +11143,16 @@
               <!-- Robô ao fundo sem interceptar cliques -->
               <div style="position:absolute; left:50%; top:45%; transform:translate(-50%, -50%); font-size:5rem; line-height:1; pointer-events:none; z-index:1;">🤖</div>
 
-              <!-- PONTOS CLICÁVEIS DOS 7 ERROS COM Z-INDEX ALTO E TOQUE AMPLO -->
+              <!-- PONTOS CLICÁVEIS DOS 7 ERROS COM Z-INDEX ALTO E HITBOX AMPLA (72px) -->
               ${ERROS_DETETIVE.map(e => {
                 const encontrado = errosDetetiveEncontrados.includes(e.id);
                 return `
-                  <div style="position:absolute; left:${e.x}%; top:${e.y}%; width:58px; height:58px; transform:translate(-50%, -50%); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:50; pointer-events:auto;" onclick="clicarErroDetetive(${e.id})">
+                  <div style="position:absolute; left:${e.x}%; top:${e.y}%; width:72px; height:72px; transform:translate(-50%, -50%); display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:50; pointer-events:auto;" onclick="clicarErroDetetive(${e.id})" title="Clique para marcar erro!">
                     <div style="font-size:2.2rem; pointer-events:none;">${e.iconeB}</div>
                     ${encontrado ? `
-                      <div style="position:absolute; width:52px; height:52px; border:3px solid #22c55e; background:rgba(34,197,94,0.35); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:1.4rem; box-shadow:0 0 16px #22c55e; pointer-events:none;">✓</div>
+                      <div style="position:absolute; width:56px; height:56px; border:3px solid #22c55e; background:rgba(34,197,94,0.35); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:1.5rem; box-shadow:0 0 16px #22c55e; pointer-events:none;">✓</div>
                     ` : `
-                      <div style="position:absolute; width:48px; height:48px; border:2px dashed rgba(255,255,255,0.3); border-radius:50%; pointer-events:none;"></div>
+                      <div style="position:absolute; width:50px; height:50px; border:2px dashed rgba(255,255,255,0.35); border-radius:50%; pointer-events:none;"></div>
                     `}
                   </div>
                 `;
@@ -11883,8 +11786,8 @@
 
             <div style="font-size:1.5rem; font-weight:900; color:#fff;">${d.nome}</div>
 
-            <!-- ESQUELETO OU DINOSSAURO COMPLETO -->
-            <div style="font-size:4.8rem; line-height:1; animation:${completo ? 'bounce 1s infinite' : 'pulse 2s infinite'};">
+            <!-- ESQUELETO OU DINOSSAURO COMPLETO (TAMBÉM ESCAVA AO CLICAR) -->
+            <div id="dino-fossil-center" onclick="escavarProximoBlocoDino()" title="Clique para desenterrar!" style="font-size:4.8rem; line-height:1; cursor:pointer; animation:${completo ? 'bounce 1s infinite' : 'pulse 2s infinite'};">
               ${completo ? d.icon : '🦴'}
             </div>
 
@@ -11892,14 +11795,14 @@
               ${completo ? d.curiosidade : `Ossos Desenterrados: ${blocosDinoEscavadosSet.size} de 6. Clique em qualquer pedra abaixo para escavar!`}
             </div>
 
-            <!-- 6 SÍTIOS DE ESCAVAÇÃO LIVRES -->
-            <div style="display:grid; grid-template-columns:repeat(6, minmax(44px, 54px)); gap:6px; margin:4px 0;">
+            <!-- 6 SÍTIOS DE ESCAVAÇÃO EM GRADE 2x3 100% VISÍVEL E CONFORTÁVEL -->
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); max-width:320px; width:100%; gap:8px; margin:6px auto;">
               ${PARTES_FOSSIL_DINO.map((p, i) => {
                 const escavado = blocosDinoEscavadosSet.has(i);
                 return `
-                  <button type="button" class="big-btn" style="height:50px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
-                    <span style="font-size:1.3rem; line-height:1;">${escavado ? p.icone : '⛏️'}</span>
-                    <span style="font-size:0.65rem; font-weight:800; margin-top:2px;">${escavado ? '✓ Limpo' : 'Pedra'}</span>
+                  <button type="button" class="big-btn" style="min-height:55px; border-radius:12px; padding:6px 4px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
+                    <span style="font-size:1.4rem; line-height:1;">${escavado ? p.icone : '⛏️'}</span>
+                    <span style="font-size:0.7rem; font-weight:800; margin-top:2px;">${escavado ? '✓ ' + p.nome.split(' ')[0] : 'Pedra ' + (i+1)}</span>
                   </button>
                 `;
               }).join('')}
@@ -11921,6 +11824,15 @@
       playTone(440, 80);
       const b = document.querySelector('.modal-body');
       if (b) renderDinosaurFossilsBody(b);
+    }
+
+    function escavarProximoBlocoDino() {
+      for (let i = 0; i < 6; i++) {
+        if (!blocosDinoEscavadosSet.has(i)) {
+          escavarBlocoDino(i);
+          return;
+        }
+      }
     }
 
     function escavarBlocoDino(idx) {
