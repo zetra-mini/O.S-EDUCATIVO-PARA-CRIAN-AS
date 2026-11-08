@@ -2783,7 +2783,10 @@
   <div class="toast-banner" id="toast-banner"></div>
 
     <!-- BIBLIOTECAS OPEN-SOURCE LEVES PARA O INTEL ATOM (0% CPU) -->
-  <script src="/static/libs/canvas-confetti.min.js">
+  <script src="/static/libs/canvas-confetti.min.js"></script>
+  <script src="/static/libs/sweetalert2.all.min.js"></script>
+  <script src="/static/libs/sortable.min.js"></script>
+  <script>
     // =========================================================================
     // KIOSK HARDENING & BLOQUEIO DE SELEÇÃO / CLIQUE DIREITO
     // =========================================================================
@@ -2791,13 +2794,25 @@
     window.addEventListener('dragstart', e => e.preventDefault());
 
     window.dispararConfetesDopamina = function(count = 50) {
-      if (typeof window.confetti === 'function') {
-        window.confetti({ particleCount: count });
-      }
+      try {
+        if (typeof window.confetti === 'function') {
+          window.confetti({ particleCount: count, origin: { y: 0.6 } });
+        }
+      } catch (e) {}
+    };
+
+    window.dispararChuvaCoracoes = function(count = 50) {
+      try {
+        if (typeof window.confetti === 'function') {
+          window.confetti({
+            particleCount: count,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+        }
+      } catch (e) {}
     };
   </script>
-  <script src="/static/libs/sweetalert2.all.min.js"></script>
-  <script src="/static/libs/sortable.min.js"></script>
   <!-- MÚSICA BOXCAT GAMES - YOUNG LOVE EM LOOP DURANTE TAREFAS COM TIMER -->
   <audio id="audio-timer-young-love" src="/static/assets_poupy/musica/BoxCat Games - Young Love.mp3" loop preload="none"></audio>
   <script>
@@ -3900,6 +3915,38 @@
         };
       } catch (e) {}
     }
+
+    // FANFARRA TRIUNFAL DE VITÓRIA (WEB AUDIO API - 0ms LATÊNCIA, 0 REDE, 0 ENGASGO)
+    function playCelebrationFanfare() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => playTone(freq, 150, 'triangle', 0.22), idx * 80);
+        });
+      } catch (e) {}
+    }
+    window.playCelebrationFanfare = playCelebrationFanfare;
+
+    function dispararChuvaCoracoes(count = 50) {
+      try {
+        if (typeof window.confetti === 'function') {
+          window.confetti({ particleCount: count, spread: 70, origin: { y: 0.6 } });
+        }
+      } catch (e) {}
+    }
+    window.dispararChuvaCoracoes = dispararChuvaCoracoes;
+
+    window.showHudToast = function(msg, isError = false) {
+      if (typeof showToast === 'function') showToast(msg, isError);
+    };
+
+    // Fallbacks seguros de higiene para prevenir referências nulas
+    window.eliminarGerme = window.eliminarGerme || function() {};
+    window.escovarParteDente = window.escovarParteDente || function() {};
+    window.concluirEtapaBanho = window.concluirEtapaBanho || function() {};
+    window.concluirUnhasCabelo = window.concluirUnhasCabelo || function() {};
 
     function setSpeakingVisual(speaking) {
       const mascot = document.getElementById('pou-mascot');
@@ -5859,19 +5906,27 @@
       if (pageIdx < book.pages.length - 1) {
         document.getElementById('btn-next').onclick = () => openBookPage(body, bookIdx, pageIdx + 1);
       } else {
-        document.getElementById('btn-finish').onclick = async () => {
-          const res = await fetch('/api/book-finished', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ book_id: book.id })
-          });
-          const d = await res.json();
-          appState.books_read_today = d.books_read_today;
-          document.getElementById('books-badge').textContent = `📖 Livros hoje: ${d.books_read_today}`;
+        document.getElementById('btn-finish').onclick = () => {
+          // Resposta imediata em 0ms: fanfarra, confetes, estrelas e fala
+          playCelebrationFanfare();
+          dispararChuvaCoracoes(60);
           addStar(2);
           const moralTexto = book.moral ? ` E a grande lição de hoje é: ${book.moral}` : '';
           speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
           voltarTelaModal();
+
+          // Sincronização em segundo plano não-bloqueante
+          fetch('/api/book-finished', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book_id: book.id })
+          }).then(res => res.json()).then(d => {
+            if (d && d.books_read_today !== undefined) {
+              appState.books_read_today = d.books_read_today;
+              const bBadge = document.getElementById('books-badge');
+              if (bBadge) bBadge.textContent = `📖 Livros hoje: ${d.books_read_today}`;
+            }
+          }).catch(err => console.warn('Erro ao sincronizar livro lido:', err));
         };
       }
     }
@@ -10774,22 +10829,23 @@
       speak(quiz.q);
     }
 
-    async function responderQuizAstronauta(escolha, correta) {
+    function responderQuizAstronauta(escolha, correta) {
       if (escolha === correta) {
         playCelebrationFanfare();
-        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
-        dispararChuvaCoracoes();
-        speak(`Excelente resposta, astronauta! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
+        dispararChuvaCoracoes(50);
+        speak(`Excelente resposta, astronauta ${appState.config.child_name || 'Kaleo'}! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
         showToast('🌟 Resposta Correta! +5 Moedas do Tesouro!');
-        await fetch('/api/fichas/bonificar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 5, motivo: 'quiz_sistema_solar' })
-        }).catch(() => null);
+        
         const pEl = document.getElementById('pote-fichas-val');
         if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
         const box = document.getElementById('quiz-astronauta-box');
         if (box) box.style.display = 'none';
+
+        fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 5, motivo: 'quiz_sistema_solar' })
+        }).catch(() => null);
       } else {
         playTone(260, 150);
         speak(`Quase lá! Tente de novo, super-herói! Você consegue!`);
@@ -10941,23 +10997,24 @@
       speak(`Ouça com atenção o som que o Jarvis tocou e descubra qual é o animal!`);
     }
 
-    async function responderDesafioBicho(escolha, corretaId) {
+    function responderDesafioBicho(escolha, corretaId) {
       if (escolha === corretaId) {
         const bicho = BANCO_ANIMAIS_STARK.find(x => x.id === corretaId);
         playCelebrationFanfare();
-        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
-        dispararChuvaCoracoes();
+        dispararChuvaCoracoes(50);
         speak(`Sensacional, herói! Você reconheceu perfeitamente o som do ${bicho ? bicho.nome : 'animal'}! Ganhou 5 moedas!`);
         showToast('🎉 Acertou o Animal! +5 Moedas!');
-        await fetch('/api/fichas/bonificar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 5, motivo: 'desafio_animais' })
-        }).catch(() => null);
+        
         const pEl = document.getElementById('pote-fichas-val');
         if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
         const box = document.getElementById('desafio-bicho-box');
         if (box) box.style.display = 'none';
+
+        fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 5, motivo: 'desafio_animais' })
+        }).catch(() => null);
       } else {
         playTone(260, 140);
         speak('Não foi esse bicho! Ouça de novo e tente mais uma vez!');
@@ -11206,18 +11263,17 @@
           clearInterval(timerDesafio30s);
           const bgAudioEnd = document.getElementById('audio-timer-young-love');
           if (bgAudioEnd) { bgAudioEnd.pause(); bgAudioEnd.currentTime = 0; }
-          if (typeof window.confetti === 'function') window.confetti({ particleCount: 60 });
           playCelebrationFanfare();
-          dispararChuvaCoracoes();
+          dispararChuvaCoracoes(60);
           speak(`Tempo esgotado! Missão superada com sucesso! Você é super veloz, super-herói! Ganhou 5 moedas!`);
           showToast('⚡ Desafio dos 30s Concluído! +5 Moedas!');
-          await fetch('/api/fichas/bonificar', {
+          const pEl = document.getElementById('pote-fichas-val');
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+          fetch('/api/fichas/bonificar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ quantidade: 5, motivo: 'desafio_30s_relogio' })
           }).catch(() => null);
-          const pEl = document.getElementById('pote-fichas-val');
-          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
         }
       }, 1000);
     }
@@ -11243,23 +11299,22 @@
       speak(missaoRelogioCorrente.dica);
     }
 
-    async function validarMissaoRelogio() {
+    function validarMissaoRelogio() {
       if (!missaoRelogioCorrente) return;
       if (horaRelogioAtual === missaoRelogioCorrente.hora && minutoRelogioAtual === missaoRelogioCorrente.min) {
         playCelebrationFanfare();
-        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
-        dispararChuvaCoracoes();
+        dispararChuvaCoracoes(50);
         speak(`Incrível, herói! Você acertou exatamente o horário de ${missaoRelogioCorrente.titulo}! Ganhou 5 moedas do tempo!`);
         showToast('⏰ Missão Cumprida! +5 Moedas do Tesouro!');
-        await fetch('/api/fichas/bonificar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 5, motivo: 'missao_relogio_tempo' })
-        }).catch(() => null);
         const pEl = document.getElementById('pote-fichas-val');
         if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
         const box = document.getElementById('missao-relogio-box');
         if (box) box.style.display = 'none';
+        fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 5, motivo: 'missao_relogio_tempo' })
+        }).catch(() => null);
       } else {
         playTone(260, 150);
         speak(`Ainda não está certo! O horário pedido é ${missaoRelogioCorrente.hora} horas e ${missaoRelogioCorrente.min} minutos. Ajuste os botões e tente de novo!`);
@@ -11294,14 +11349,31 @@
       body.innerHTML = `
         <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
           
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:6px 14px; border-radius:12px; border:1px solid #334155;">
-            <div style="font-size:0.95rem; font-weight:900; color:#38bdf8;">
-              🔍 Erros Encontrados: <span style="color:#22c55e;">${errosDetetiveEncontrados.length}</span> / 7
+          ${errosDetetiveEncontrados.length >= 7 ? `
+            <div style="background:linear-gradient(135deg, #15803d, #166534); border:2px solid #86efac; border-radius:14px; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 0 25px rgba(34,197,94,0.4); animation:pulse 2s infinite;">
+              <div>
+                <div style="font-size:1.15rem; font-weight:900; color:#fff;">🏆 MISSÃO DE DETETIVE CUMPRIDA! (7 / 7)</div>
+                <div style="font-size:0.85rem; color:#bbf7d0;">Olhos de águia imbatíveis! Você ganhou +10 Moedas de Ouro 🪙!</div>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="big-btn" style="background:#f59e0b; border:2px solid #fde047; color:#000; font-weight:900; padding:6px 14px; border-radius:10px; font-size:0.88rem;" onclick="reiniciarJogoDetetive()">
+                  🔄 Jogar de Novo
+                </button>
+                <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; font-weight:900; padding:6px 14px; border-radius:10px; font-size:0.88rem;" onclick="voltarTelaModal()">
+                  🏠 Outro Jogo
+                </button>
+              </div>
             </div>
-            <button type="button" class="big-btn" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:4px 12px; border-radius:8px; font-size:0.85rem; font-weight:800;" onclick="darDicaDetetive()">
-              💡 Pedir Dica ao Jarvis
-            </button>
-          </div>
+          ` : `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:6px 14px; border-radius:12px; border:1px solid #334155;">
+              <div style="font-size:0.95rem; font-weight:900; color:#38bdf8;">
+                🔍 Erros Encontrados: <span style="color:#22c55e;">${errosDetetiveEncontrados.length}</span> / 7
+              </div>
+              <button type="button" class="big-btn" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:4px 12px; border-radius:8px; font-size:0.85rem; font-weight:800;" onclick="darDicaDetetive()">
+                💡 Pedir Dica ao Jarvis
+              </button>
+            </div>
+          `}
 
           <!-- DUAS CENAS LADO A LADO (CLICÁVEIS EM AMBAS AS CENAS) -->
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1;">
@@ -11354,7 +11426,7 @@
       `;
     }
 
-    async function clicarErroDetetive(id) {
+    function clicarErroDetetive(id) {
       if (errosDetetiveEncontrados.includes(id)) return;
       errosDetetiveEncontrados.push(id);
       playTone(784, 120);
@@ -11362,22 +11434,34 @@
 
       if (errosDetetiveEncontrados.length >= 7) {
         playCelebrationFanfare();
-        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
-        dispararChuvaCoracoes();
-        speak(`Incrível, super detetive! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
-        await fetch('/api/fichas/bonificar', {
+        dispararChuvaCoracoes(70);
+        speak(`Incrível, super detetive ${appState.config.child_name || 'Kaleo'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
+        showToast('🏆 Missão Cumprida! +10 Moedas de Ouro!');
+        
+        // Bonificação imediata no pote visual (0ms)
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
+
+        // Requisição não-bloqueante em segundo plano
+        fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ quantidade: 10, motivo: 'jogo_7_erros_detetive' })
         }).catch(() => null);
-        const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
       } else {
         speak(`Muito bem! Você encontrou o erro número ${errosDetetiveEncontrados.length}! Continue procurando!`);
       }
 
       const b = document.querySelector('.modal-body');
       if (b) renderDetectiveErrorsBody(b);
+    }
+
+    function reiniciarJogoDetetive() {
+      errosDetetiveEncontrados = [];
+      playTone(523, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderDetectiveErrorsBody(b);
+      speak('Cena reiniciada! Abra bem os olhinhos e encontre os 7 erros!');
     }
 
     function darDicaDetetive() {
@@ -11879,17 +11963,18 @@
       } catch(e) {}
 
       playCelebrationFanfare();
-      dispararChuvaCoracoes();
+      dispararChuvaCoracoes(50);
       speak(`CABUUUM! O vulcão entrou em erupção total! As bolhas de gás do bicarbonato com vinagre fizeram a lava subir e escorrer pela montanha! Experimento fantástico!`);
       showToast('🌋 Erupção Espetacular! +5 Moedas!');
       
-      await fetch('/api/fichas/bonificar', {
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+
+      fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantidade: 5, motivo: 'experimento_vulcao' })
       }).catch(() => null);
-      const pEl = document.getElementById('pote-fichas-val');
-      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
 
       const b = document.querySelector('.modal-body');
       if (b) renderScienceLabBody(b);
@@ -12131,18 +12216,18 @@
       speak(`${p.nome}! ${p.movimento}`);
     }
 
-    async function concluirDesafioXadrez() {
+    function concluirDesafioXadrez() {
       playCelebrationFanfare();
-      dispararChuvaCoracoes();
-      speak(`Xeque-mate no tédio, mestre do xadrez! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
+      dispararChuvaCoracoes(50);
+      speak(`Xeque-mate no tédio, mestre do xadrez ${appState.config.child_name || 'Kaleo'}! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
       showToast('♟️ Mestre do Xadrez! +5 Moedas!');
-      await fetch('/api/fichas/bonificar', {
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+      fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ quantidade: 5, motivo: 'academia_xadrez' })
       }).catch(() => null);
-      const pEl = document.getElementById('pote-fichas-val');
-      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
     }
 
 
@@ -12295,9 +12380,17 @@
               </div>
 
               ${completo ? `
-                <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:6px 18px; border-radius:10px; font-weight:900; font-size:0.95rem; margin-top:2px;" onclick="comemorarDinoCompleto()">
-                  🎉 Fóssil 100% Restaurado! (+10 🪙)
-                </button>
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:2px; animation:bounceIn 0.5s ease;">
+                  <button type="button" class="big-btn" style="background:#15803d; border:2px solid #86efac; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900; font-size:0.92rem;" onclick="proximoDinoEscavacao()">
+                    🦖 Próximo Dinossauro! ➔
+                  </button>
+                  <button type="button" class="big-btn" style="background:#d97706; border:2px solid #fde047; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900; font-size:0.92rem;" onclick="alternarModoDino('museu')">
+                    🏛️ Ver na Galeria do Museu
+                  </button>
+                  <button type="button" class="big-btn" style="background:#334155; border:1px solid #64748b; color:#e2e8f0; padding:6px 12px; border-radius:10px; font-weight:800; font-size:0.85rem;" onclick="blocosDinoEscavadosSet.clear(); const b = document.querySelector('.modal-body'); if (b) renderDinosaurFossilsBody(b);">
+                    🔄 Escavar de Novo
+                  </button>
+                </div>
               ` : ''}
             </div>
           ` : `
@@ -12377,16 +12470,38 @@
       showToast(`⛏️ ${parte.nome} limpo com sucesso! (${blocosDinoEscavadosSet.size}/6)`);
 
       if (blocosDinoEscavadosSet.size >= 6) {
+        // Conclusão 100% imediata e automática no 6º bloco!
         tocarRugidoDinoStark();
         playCelebrationFanfare();
-        if (typeof window.confetti === 'function') window.confetti({ particleCount: 50 });
-        dispararChuvaCoracoes();
+        dispararChuvaCoracoes(60);
         const d = BANCO_DINOSSAUROS[dinoIdx];
-        speak(`Incrível, paleontólogo! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu!`);
+        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Kaleo'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 10 moedas de ouro!`);
+        showToast('🦖 Fóssil 100% Restaurado! +10 Moedas!');
+
+        // Bonificação imediata no pote (0ms)
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
+
+        // Envio assíncrono em segundo plano
+        fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 10, motivo: 'paleontologia_dino' })
+        }).catch(() => null);
       }
 
       const b = document.querySelector('.modal-body');
       if (b) renderDinosaurFossilsBody(b);
+    }
+
+    function proximoDinoEscavacao() {
+      dinoIdx = (dinoIdx + 1) % BANCO_DINOSSAUROS.length;
+      blocosDinoEscavadosSet.clear();
+      playTone(523, 80);
+      const b = document.querySelector('.modal-body');
+      if (b) renderDinosaurFossilsBody(b);
+      const d = BANCO_DINOSSAUROS[dinoIdx];
+      speak(`Novo sítio de escavação: ${d.nome}! Limpe os 6 blocos de terra!`);
     }
 
     function tocarRugidoDinoStark() {
