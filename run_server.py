@@ -408,6 +408,7 @@ def api_state(request: Request):
             "ultimo_alarme_concluido": REMOTE_STATE.get("ultimo_alarme_concluido"),
             "ultimo_recado_visto": REMOTE_STATE.get("ultimo_recado_visto"),
             "bateria": bat,
+            "missoes": listar_missoes_rotina(),
         }
     )
 
