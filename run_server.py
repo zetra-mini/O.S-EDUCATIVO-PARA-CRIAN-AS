@@ -177,12 +177,19 @@ def obter_nivel_bateria() -> Dict[str, Any]:
 
 _TEMPLATE_RAM_CACHE: Dict[str, bytes] = {}
 
+_TEMPLATE_MTIME_CACHE = {}
+
 def obter_template_cache(nome_arquivo: str) -> bytes:
-    """Carrega o template HTML em cache de memória RAM para 0ms de I/O em disco no Netbook."""
-    if nome_arquivo not in _TEMPLATE_RAM_CACHE:
-        caminho = os.path.join(TEMPLATES_DIR, nome_arquivo)
+    """Carrega o template HTML em RAM com recarga automática imediata ao modificar o arquivo."""
+    caminho = os.path.join(TEMPLATES_DIR, nome_arquivo)
+    try:
+        mtime = os.path.getmtime(caminho)
+    except Exception:
+        mtime = 0
+    if nome_arquivo not in _TEMPLATE_RAM_CACHE or _TEMPLATE_MTIME_CACHE.get(nome_arquivo) != mtime:
         with open(caminho, "rb") as f:
             _TEMPLATE_RAM_CACHE[nome_arquivo] = f.read()
+            _TEMPLATE_MTIME_CACHE[nome_arquivo] = mtime
     return _TEMPLATE_RAM_CACHE[nome_arquivo]
 
 
@@ -235,6 +242,9 @@ def index(request: Request):
         "Content-Type": "text/html; charset=utf-8",
         "Permissions-Policy": "microphone=(self), camera=(self)",
         "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
     }
     return Response(body=conteudo, status_code=200, headers=headers)
 
@@ -247,6 +257,9 @@ def painel_admin(request: Request):
         "Content-Type": "text/html; charset=utf-8",
         "Permissions-Policy": "microphone=(self), camera=(self)",
         "Access-Control-Allow-Origin": "*",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
     }
     return Response(body=conteudo, status_code=200, headers=headers)
 
