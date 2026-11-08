@@ -1,10 +1,28 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.4.6 — Stark Educational System (Para Kaleo Noah)
+# 🚀 J.A.R.V.I.S. Kids OS v3.4.7 — Stark Educational System (Para Kaleo Noah)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
 ---
 
-## 🌟 Novidades da Versão 3.4
+## 🌟 Novidades da Versão 3.4.7
+
+### 🦁 1. Reino Animal: Som Real 100% Autônomo & Grade Simétrica 2x9
+- **Áudio Real Exclusivo (Sem o Jarvis Falar):** Ao acionar o som de qualquer um dos 18 animais, o sistema reproduz imediatamente apenas o som natural e biológico gravado do bicho, sem que o robô Jarvis fale por cima ou interrompa o áudio.
+- **Botão Dedicado de Curiosidade Falada (💡 Falar Curiosidade):** A explicação educativa narrada pelo Jarvis fica disponível sob demanda da criança em um botão separado, permitindo foco total na audição pura dos animais.
+- **Grade 2x9 Perfeitamente Proporcional:** O grid do reino animal foi ajustado para grid-template-columns: repeat(9, 1fr), exibindo exatamente 2 linhas simétricas de 9 botões com nomes concisos, preenchendo a tela do netbook 1024x600 sem sobras ou cortes, e com slider tátil suave no mobile.
+
+### 🦖 2. Museu & Sítio dos Dinossauros com Arte Científica Real e Ferramentas
+- **8 Dinossauros com Fotos e Posters Reais de Museu:** Ilustrações científicas de alta definição extraídas do acervo paleontológico (*T-Rex, Tricerátops, Espinossauro, Estegossauro, Pteranodonte, Anquilossauro, Apatossauro e Carnotauro*).
+- **3 Ferramentas Interativas de Escavação Paleontológica:**
+  - 🔨 **Martelinho Fóssil:** Quebra rochas duras com efeito sonoro de impacto.
+  - 🖌️ **Pincel Suave:** Varre a poeira e areia dos fósseis com som de cerdas.
+  - 🔍 **Super Lupa:** Inspeciona detalhes anatômicos e curiosidades da ossada.
+- **Modo Galeria do Museu Stark:** Exposição com imagem real do fóssil em moldura holográfica dourada, badges geológicas (*Período, Alimentação, Porte*) e rugidos pré-históricos.
+- **Suporte a MIME Type .webp no Microdot:** Servidor backend atualizado com suporte nativo a imagens .webp.
+
+---
+
+## 🌟 Novidades da Versão 3.4.6
 
 ### 🎮 1. Catálogo Expandido para 24 Jogos Educativos (6 Páginas 2x2)
 - **Zero Scrollbar no Netbook 1024x600:** Cada página acomoda exatamente 4 jogos em grade 2x2, sem estourar a altura útil da tela.
@@ -146,11 +164,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.4.4.deb` | `sudo dpkg -i jarvis-kids-os_3.4.4.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.4.4-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.4.4-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.4.4-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.4.4-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.4.7.deb` | `sudo dpkg -i jarvis-kids-os_3.4.7.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.4.7-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.4.7-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.4.7-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.4.7-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -187,7 +205,7 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.4.4.deb
+sudo dpkg -i jarvis-kids-os_3.4.7.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
@@ -262,7 +280,7 @@ sudo dpkg -i jarvis-kids-os_3.4.4.deb
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.4.4.deb`). O sistema inicia 100% automático no boot.
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.4.7.deb`). O sistema inicia 100% automático no boot.
 >
 > O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
 

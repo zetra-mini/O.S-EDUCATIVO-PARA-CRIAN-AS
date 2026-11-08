@@ -7,6 +7,18 @@
   <link rel="manifest" href="/manifest.json" />
   <title>◈ J.A.R.V.I.S. Kids OS v2.2 — Sistema Educativo Infantil Stark</title>
   <style>
+    @media (max-width: 680px) {
+      .reino-animal-grid {
+        display: flex !important;
+        overflow-x: auto !important;
+        gap: 6px !important;
+        padding-bottom: 4px !important;
+      }
+      .reino-animal-grid button {
+        flex: 0 0 64px !important;
+        height: 52px !important;
+      }
+    }
     :root {
       --bg: #040914;
       --panel: #0a1628;
@@ -10614,24 +10626,24 @@
     // JOGO 19: REINO ANIMAL & SONS DA NATUREZA (BIÓLOGO STARK)
     // =========================================================================
     const BANCO_ANIMAIS_STARK = [
-      { id: 'leao', nome: 'Leão Majestoso', icon: '🦁', habitat: 'Savana Africana', somNome: 'Rugido Potente', falaOnomatopeia: 'Rrrroaaar! Esse é o rugido forte e imponente do Leão, o rei da savana!', curiosidade: 'O leão é conhecido como o rei dos animais! O seu rugido forte pode ser ouvido a até 8 quilômetros de distância!' },
-      { id: 'elefante', nome: 'Elefante Gentil', icon: '🐘', habitat: 'Florestas & Savanas', somNome: 'Trombeta da Tromba', falaOnomatopeia: 'Fuuuummm! O elefante tocou a sua tromba bem alto para chamar os amigos!', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba comprida para beber água, cheirar e abraçar os filhotes!' },
-      { id: 'sapo', nome: 'Sapinho Cantor', icon: '🐸', habitat: 'Lagoas e Rios', somNome: 'Coaxar da Lagoa', falaOnomatopeia: 'Cróac, cróac! O sapinho está coaxando alegre na beira da água!', curiosidade: 'Os sapos cantam na beira da água e ajudam o planeta comendo insetos e mosquitinhos!' },
-      { id: 'cavalo', nome: 'Cavalo Veloz', icon: '🐴', habitat: 'Campos e Fazendas', somNome: 'Relincho Alegre', falaOnomatopeia: 'Iiiirrrrí-hó-hó! O cavalo relinchou veloz e galopou pelo campo!', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
-      { id: 'passaro', nome: 'Passarinho Cantador', icon: '🐦', habitat: 'Copas das Árvores', somNome: 'Chilreio Matinal', falaOnomatopeia: 'Piu-piu! Fiiu-fiiu! O passarinho acordou cantando na janela para avisar que o sol nasceu!', curiosidade: 'Eles acordam bem cedinho cantando para avisar a floresta que um novo dia cheio de luz começou!' },
-      { id: 'arara', nome: 'Arara Azul 🇧🇷', icon: '🦜', habitat: 'Pantanal & Florestas do Brasil', somNome: 'Canto da Selva', falaOnomatopeia: 'Krrráaa-krrráaa! A linda arara azul voou sobre as árvores do Brasil cantando bem alto!', curiosidade: 'Uma das aves mais deslumbrantes da fauna brasileira! Ela tem penas azul-cobalto e voa sempre em casal!' },
-      { id: 'mico', nome: 'Mico-Leão-Dourado 🇧🇷', icon: '🐒', habitat: 'Mata Atlântica do Brasil', somNome: 'Guincho Saltitante', falaOnomatopeia: 'Ih-ih-ih-á-á! O mico-leão-dourado deu uma gargalhada saltando pelos galhos altos!', curiosidade: 'Um tesouro nacional com juba dourada e brilhante! Ele é super veloz pulando de galho em galho!' },
-      { id: 'onca', nome: 'Onça-Pintada 🇧🇷', icon: '🐆', habitat: 'Floresta Amazônica & Pantanal', somNome: 'Esturro da Selva', falaOnomatopeia: 'Grrrrr-haaaar! A onça-pintada esturrou na floresta com suas patas silenciosas e fortes!', curiosidade: 'O maior felino das Américas e rei das florestas brasileiras! Ela adora nadar nos rios e é super forte!' },
-      { id: 'coruja', nome: 'Coruja Sábia', icon: '🦉', habitat: 'Noite na Floresta', somNome: 'Pio Noturno', falaOnomatopeia: 'Uuuu-uuuu! A corujinha piou suave no galho com seus grandes olhos brilhantes!', curiosidade: 'As corujas têm olhos enormes que enxergam no escuro e conseguem girar o pescoço quase uma volta inteira!' },
-      { id: 'golfinho', nome: 'Golfinho Curioso', icon: '🐬', habitat: 'Oceanos Azuis', somNome: 'Assobios & Cliques', falaOnomatopeia: 'I-i-i-i-tchurr! O golfinho assobiou alegre e deu um salto acrobático fora da água!', curiosidade: 'Um dos animais mais inteligentes e amigáveis dos oceanos! Eles conversam com assobios mágicos!' },
-      { id: 'jacare', nome: 'Jacaré do Pantanal 🇧🇷', icon: '🐊', habitat: 'Rios e Pantanal do Brasil', somNome: 'Rugido Subaquático', falaOnomatopeia: 'Grrr-tchuff! O jacaré deu um mergulho poderoso com sua cauda forte!', curiosidade: 'Ele adora tomar sol na beira do rio para aquecer o corpinho e nada com muita agilidade usando sua cauda potente!' },
-      { id: 'baleia', nome: 'Baleia Gigante', icon: '🐋', habitat: 'Fundo do Mar', somNome: 'Canto dos Oceanos', falaOnomatopeia: 'Uuuuooommm! A grande baleia azul cantou uma canção que viaja por todo o oceano!', curiosidade: 'As baleias são gigantes gentis dos oceanos e cantam canções profundas que viajam por centenas de quilômetros!' },
-      { id: 'cachorro', nome: 'Cachorrinho Leal', icon: '🐶', habitat: 'Lares & Quintais', somNome: 'Latido Amigo', falaOnomatopeia: 'Au-au-au! O cachorrinho abanou o rabo bem feliz ao ver você!', curiosidade: 'O melhor amigo da criança! Ele é super brincalhão, fiel e adora correr atrás da bolinha!' },
-      { id: 'gato', nome: 'Gatinho Fofo', icon: '🐱', habitat: 'Casas & Telhados', somNome: 'Miau & Ronrom', falaOnomatopeia: 'Miau, miau, ron-ron! O gatinho macio ronronou pedindo um cafuné!', curiosidade: 'Eles têm bigodes mágicos que sentem tudo ao redor e conseguem pular muito alto!' },
-      { id: 'vaca', nome: 'Vaquinha Gentil', icon: '🐮', habitat: 'Pastos & Fazendas', somNome: 'Mugido da Fazenda', falaOnomatopeia: 'Muuuuuu! A vaquinha pastou na grama verdinha e deu leite gostoso!', curiosidade: 'As vaquinhas têm melhores amigas e adoram ouvir músicas calmas no pasto!' },
-      { id: 'pato', nome: 'Patinho Alegre', icon: '🦆', habitat: 'Lagos & Lagoas', somNome: 'Grasnado na Água', falaOnomatopeia: 'Quá-quá-quá! O patinho mergulhou na água limpinha e bateu as asas!', curiosidade: 'Suas patinhas funcionam como remos velozes e suas penas não se molham na água!' },
-      { id: 'urso', nome: 'Urso Pardo', icon: '🐻', habitat: 'Florestas & Montanhas', somNome: 'Rugido Fofo', falaOnomatopeia: 'Grrr-uóóór! O grande urso acordou da soneca para comer melzinho docinho!', curiosidade: 'Eles têm um olfato super potente e dormem durante todo o inverno quentinhos na caverna!' },
-      { id: 'pinguim', nome: 'Pinguim do Gelo', icon: '🐧', habitat: 'Gelo da Antártida', somNome: 'Pio Gelado', falaOnomatopeia: 'Gua-gua-piuuu! O pinguim escorregou de barriguinha na neve branquinha!', curiosidade: 'Eles não voam no ar, mas são incríveis mergulhadores e nadam super rápido no oceano!' }
+      { id: 'leao', nome: 'Leão Majestoso', rotuloCurto: 'Leão', icon: '🦁', habitat: 'Savana Africana', curiosidade: 'O rei dos animais! O seu rugido real pode ser ouvido a até 8 quilômetros de distância na savana!' },
+      { id: 'elefante', nome: 'Elefante Gentil', rotuloCurto: 'Elefante', icon: '🐘', habitat: 'Florestas & Savanas', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba para beber água, cheirar e fazer carinho nos filhotes!' },
+      { id: 'sapo', nome: 'Sapinho Cantor', rotuloCurto: 'Sapo', icon: '🐸', habitat: 'Lagoas e Rios', curiosidade: 'Os sapos cantam na beira da água e ajudam o planeta comendo mosquitinhos e insetos!' },
+      { id: 'cavalo', nome: 'Cavalo Veloz', rotuloCurto: 'Cavalo', icon: '🐴', habitat: 'Campos e Fazendas', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
+      { id: 'passaro', nome: 'Passarinho Cantador', rotuloCurto: 'Pássaro', icon: '🐦', habitat: 'Copas das Árvores', curiosidade: 'Eles cantam bem cedinho na janela para avisar toda a floresta que um novo dia de luz começou!' },
+      { id: 'arara', nome: 'Arara Azul 🇧🇷', rotuloCurto: 'Arara', icon: '🦜', habitat: 'Pantanal & Florestas', curiosidade: 'Uma das aves mais belas do Brasil! Ela tem penas azul-cobalto brilhantes e voa sempre em casal!' },
+      { id: 'mico', nome: 'Mico-Leão-Dourado 🇧🇷', rotuloCurto: 'Mico', icon: '🐒', habitat: 'Mata Atlântica', curiosidade: 'Tesouro nacional da fauna brasileira com juba dourada! Ele salta com grande agilidade nos galhos altos!' },
+      { id: 'onca', nome: 'Onça-Pintada 🇧🇷', rotuloCurto: 'Onça', icon: '🐆', habitat: 'Amazônia & Pantanal', curiosidade: 'O maior felino das Américas! Ela adora nadar nos rios e tem patas muito silenciosas e fortes!' },
+      { id: 'coruja', nome: 'Coruja Sábia', rotuloCurto: 'Coruja', icon: '🦉', habitat: 'Noite na Floresta', curiosidade: 'As corujas têm olhos enormes que enxergam no escuro e giram a cabecinha quase uma volta inteira!' },
+      { id: 'golfinho', nome: 'Golfinho Curioso', rotuloCurto: 'Golfinho', icon: '🐬', habitat: 'Oceanos Azuis', curiosidade: 'Um dos animais mais inteligentes do planeta! Eles conversam entre si usando assobios e estalos mágicos!' },
+      { id: 'jacare', nome: 'Jacaré do Pantanal 🇧🇷', rotuloCurto: 'Jacaré', icon: '🐊', habitat: 'Rios e Pantanal', curiosidade: 'Ele toma sol na beira do rio para aquecer o corpo e nada com grande agilidade com a cauda!' },
+      { id: 'baleia', nome: 'Baleia Gigante', rotuloCurto: 'Baleia', icon: '🐋', habitat: 'Fundo do Mar', curiosidade: 'A baleia azul é o maior ser vivo que já existiu! Ela canta canções que viajam centenas de quilômetros no mar!' },
+      { id: 'cachorro', nome: 'Cachorrinho Leal', rotuloCurto: 'Cãozinho', icon: '🐶', habitat: 'Lares & Quintais', curiosidade: 'O melhor amigo da criança! Ele protege nossa casa, abana o rabinho feliz e adora carinho!' },
+      { id: 'gato', nome: 'Gatinho Fofo', rotuloCurto: 'Gatinho', icon: '🐱', habitat: 'Casas & Telhados', curiosidade: 'Eles têm bigodes mágicos para equilíbrio e ronronam baixinho quando estão muito calmos e felizes!' },
+      { id: 'vaca', nome: 'Vaquinha Gentil', rotuloCurto: 'Vaquinha', icon: '🐮', habitat: 'Pastos & Fazendas', curiosidade: 'As vaquinhas pastam a grama verdinha, têm amigas inseparáveis e dão leite quentinho e saudável!' },
+      { id: 'pato', nome: 'Patinho Alegre', rotuloCurto: 'Patinho', icon: '🦆', habitat: 'Lagos & Lagoas', curiosidade: 'Suas patinhas funcionam como remos velozes e suas penas têm um óleo natural que não deixa a água molhar!' },
+      { id: 'urso', nome: 'Urso Pardo', rotuloCurto: 'Urso', icon: '🐻', habitat: 'Florestas & Montanhas', curiosidade: 'Os ursos têm um olfato super potente, dormem o inverno todo na caverna e adoram comer mel docinho!' },
+      { id: 'pinguim', nome: 'Pinguim do Gelo', rotuloCurto: 'Pinguim', icon: '🐧', habitat: 'Gelo da Antártida', curiosidade: 'Eles não voam no ar, mas "voam" nadando velozes debaixo da água gelada e escorregam na neve!' }
     ];
 
     let animalSelecionadoIdx = 0;
@@ -10647,37 +10659,40 @@
     function renderAnimalSoundsBody(body) {
       const a = BANCO_ANIMAIS_STARK[animalSelecionadoIdx];
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
           
-          <!-- GRID DE ÍCONES DOS ANIMAIS -->
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(58px, 1fr)); gap:5px; max-height:130px; overflow-y:auto; padding:2px;">
+          <!-- GRADE PROPORCIONAL DE ANIMAIS (2 LINHAS DE 9 EXATAS EM DESKTOP / FLUIDA EM MOBILE) -->
+          <div class="reino-animal-grid" style="display:grid; grid-template-columns:repeat(9, 1fr); gap:4px; max-height:116px; overflow-y:auto; padding:2px; box-sizing:border-box;">
             ${BANCO_ANIMAIS_STARK.map((item, idx) => `
-              <button type="button" class="big-btn" style="padding:8px 4px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:3px; ${idx === animalSelecionadoIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarAnimal(${idx})">
-                <span style="font-size:1.8rem; line-height:1;">${item.icon}</span>
-                <span style="font-size:0.72rem; font-weight:800; color:#fff;">${item.nome.split(' ')[0]}</span>
+              <button type="button" class="big-btn" style="padding:4px 2px; height:52px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; ${idx === animalSelecionadoIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarAnimal(${idx})" title="${item.nome}">
+                <span style="font-size:1.45rem; line-height:1;">${item.icon}</span>
+                <span style="font-size:0.68rem; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${item.rotuloCurto}</span>
               </button>
             `).join('')}
           </div>
 
           <!-- CARD PRINCIPAL DO ANIMAL -->
-          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:3px solid #10b981; border-radius:20px; padding:14px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
-            <div style="font-size:4.2rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
+          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:3px solid #10b981; border-radius:18px; padding:12px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; flex:1; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
+            <div style="font-size:3.8rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
             
             <div>
-              <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
-              <div style="font-size:1.5rem; font-weight:900; color:#ffffff; margin-top:4px;">${a.nome}</div>
+              <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.78rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
+              <div style="font-size:1.4rem; font-weight:900; color:#ffffff; margin-top:3px;">${a.nome}</div>
             </div>
 
-            <div style="font-size:0.95rem; color:#d1fae5; max-width:580px; line-height:1.4; background:rgba(0,0,0,0.35); padding:8px 14px; border-radius:12px;">
+            <div style="font-size:0.9rem; color:#d1fae5; max-width:580px; line-height:1.35; background:rgba(0,0,0,0.35); padding:6px 14px; border-radius:10px;">
               ${a.curiosidade}
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
-              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}', true)">
-                🔊 Tocar o Som do ${a.nome.split(' ')[0]}
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:2px;">
+              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:7px 16px; font-size:0.92rem; font-weight:900; border-radius:10px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}')">
+                🔊 Ouvir Som Real do ${a.rotuloCurto}
               </button>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:2px solid #fde047; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="iniciarDesafioSomAnimal()">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:2px solid #fde047; color:#fff; padding:7px 16px; font-size:0.92rem; font-weight:900; border-radius:10px; cursor:pointer;" onclick="iniciarDesafioSomAnimal()">
                 🎧 Adivinhar o Bicho (+5 🪙)
+              </button>
+              <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #475569; color:#94a3b8; padding:7px 12px; font-size:0.85rem; font-weight:800; border-radius:10px; cursor:pointer;" onclick="speak('${escapeJs(a.curiosidade)}')">
+                💡 Falar Curiosidade
               </button>
             </div>
           </div>
@@ -10691,12 +10706,12 @@
     function selecionarAnimal(idx) {
       animalSelecionadoIdx = idx;
       const a = BANCO_ANIMAIS_STARK[idx];
-      tocarSomAnimalStark(a.id, true);
+      tocarSomAnimalStark(a.id); // Toca APENAS o som real, sem falar
       const b = document.querySelector('.modal-body');
       if (b) renderAnimalSoundsBody(b);
     }
 
-    function tocarSomAnimalStark(tipo, falar = true) {
+    function tocarSomAnimalStark(tipo) {
       try {
         destravarAudioNavegador();
         const somPath = (window.location.protocol === 'file:')
@@ -10712,13 +10727,6 @@
         }
       } catch (err) {
         tocarSomAnimalSintetizadoFallback(tipo);
-      }
-
-      if (falar) {
-        const animalObj = BANCO_ANIMAIS_STARK.find(x => x.id === tipo);
-        if (animalObj && animalObj.falaOnomatopeia) {
-          setTimeout(() => speak(animalObj.falaOnomatopeia), 1800);
-        }
       }
     }
 
@@ -11729,35 +11737,65 @@
 
 
     // =========================================================================
-    // JOGO 24: PARQUE DOS DINOSSAUROS & FÓSSEIS STARK (ESCAVAÇÃO LIVRE E 100% FUNCIONAL)
+    // JOGO 24: PARQUE DOS DINOSSAUROS & MUSEU PRÉ-HISTÓRICO STARK
     // =========================================================================
     const BANCO_DINOSSAUROS = [
-      { id: 'trex', nome: 'Tiranossauro Rex', icon: '🦖', dieta: 'Carnívoro Feroz', tamanho: '12 metros', curiosidade: 'O rei dos dinossauros! Tinha mais de 50 dentes enormes e afiados, e a mordida mais forte de todos os tempos!' },
-      { id: 'brachio', nome: 'Braquiossauro Gigante', icon: '🦕', dieta: 'Herbívoro Amigo', tamanho: '25 metros', curiosidade: 'Pescoço gigantesco para comer as folhas mais altas das árvores! Ele pesava o mesmo que 10 elefantes juntos!' },
-      { id: 'trici', nome: 'Tricerátops Valente', icon: '🦏', dieta: 'Herbívoro com Chifres', tamanho: '9 metros', curiosidade: 'Ele tinha três chifres pontudos e um escudo de osso na cabeça para se proteger de predadores!' },
-      { id: 'raptor', nome: 'Velociraptor Ágil', icon: '⚡', dieta: 'Carnívoro Veloz', tamanho: '2 metros', curiosidade: 'Ele corria muito rápido, como um raio na selva! Era super esperto e caçava em bandos!' },
-      { id: 'ptero', nome: 'Pterodáctilo Alado', icon: '🦅', dieta: 'Pescador Voador', tamanho: '6 metros de asas', curiosidade: 'O mestre dos céus pré-históricos! Ele planava sobre os lagos e pegava peixinhos com seu bico comprido!' }
+      { id: 'trex', nome: 'Tiranossauro Rex', rotulo: 'T-Rex', icon: '🦖', img: 'trex.webp', periodo: 'Cretáceo (68 mi anos)', dieta: 'Carnívoro Supremo', tamanho: '12 metros / 8 toneladas', curiosidade: 'O rei supremo dos dinossauros! Tinha mais de 50 dentes enormes e afiados, e a mordida mais poderosa de todos os tempos!' },
+      { id: 'triceratops', nome: 'Tricerátops', rotulo: 'Tricerátops', icon: '🦏', img: 'triceratops.webp', periodo: 'Cretáceo (66 mi anos)', dieta: 'Herbívoro Blindado', tamanho: '9 metros / 6 toneladas', curiosidade: 'Ele tinha três chifres pontudos e uma imensa gola de osso na cabeça para se proteger dos ataques do T-Rex!' },
+      { id: 'spinosaurus', nome: 'Espinossauro', rotulo: 'Espinossauro', icon: '🐊', img: 'spinosaurus.webp', periodo: 'Cretáceo (99 mi anos)', dieta: 'Pescador Gigante', tamanho: '15 metros / 7 toneladas', curiosidade: 'O maior predador carnívoro de todos! Tinha uma vela enorme nas costas e nadava como um crocodilo gigante caçando peixes!' },
+      { id: 'stegosaurus', nome: 'Estegossauro', rotulo: 'Estegossauro', icon: '🦕', img: 'stegosaurus.webp', periodo: 'Jurássico (150 mi anos)', dieta: 'Herbívoro das Plantas', tamanho: '9 metros / 5 toneladas', curiosidade: 'Tinha placas triangulares nas costas para regular a temperatura e quatro espinhos pontudos na cauda para se defender!' },
+      { id: 'pteranodon', nome: 'Pteranodonte', rotulo: 'Pteranodonte', icon: '🦅', img: 'pteranodon.webp', periodo: 'Cretáceo (85 mi anos)', dieta: 'Pescador Voador', tamanho: '7 metros de asas', curiosidade: 'O mestre dos céus pré-históricos! Ele planava sobre os oceanos e mergulhava como uma flecha para capturar peixes!' },
+      { id: 'ankylosaurus', nome: 'Anquilossauro', rotulo: 'Anquilossauro', icon: '🛡️', img: 'ankylosaurus.webp', periodo: 'Cretáceo (66 mi anos)', dieta: 'Tanque Blindado', tamanho: '8 metros / 4 toneladas', curiosidade: 'O tanque de guerra da natureza! Seu corpo era uma armadura dura e sua cauda tinha uma clava pesada de osso!' },
+      { id: 'apatosaurus', nome: 'Apatossauro (Brontossauro)', rotulo: 'Apatossauro', icon: '🌿', img: 'apatosaurus.webp', periodo: 'Jurássico (152 mi anos)', dieta: 'Herbívoro Gigante', tamanho: '23 metros / 20 toneladas', curiosidade: 'Pescoço gigantesco para comer as folhas mais altas das árvores! Ele pesava o mesmo que 5 elefantes juntos!' },
+      { id: 'carnotaurus', nome: 'Carnotauro', rotulo: 'Carnotauro', icon: '🐂', img: 'carnotaurus.webp', periodo: 'Cretáceo (71 mi anos)', dieta: 'Carnívoro Veloz', tamanho: '8 metros / 2 toneladas', curiosidade: 'Conhecido como o touro carnívoro! Tinha dois chifres na cabeça e pernas velozes para correr atrás de presas!' }
     ];
 
     const PARTES_FOSSIL_DINO = [
-      { id: 0, nome: 'Crânio Gigante', icone: '💀' },
-      { id: 1, nome: 'Dentes Afiados', icone: '🦷' },
-      { id: 2, nome: 'Coluna Vertebral', icone: '🦴' },
-      { id: 3, nome: 'Costelas Pré-Históricas', icone: '🦴' },
-      { id: 4, nome: 'Garras da Pata', icone: '🐾' },
-      { id: 5, nome: 'Cauda Poderosa', icone: '🦴' }
+      { id: 0, nome: 'Crânio', icone: '💀' },
+      { id: 1, nome: 'Dentes', icone: '🦷' },
+      { id: 2, nome: 'Coluna', icone: '🦴' },
+      { id: 3, nome: 'Costelas', icone: '🦴' },
+      { id: 4, nome: 'Garras', icone: '🐾' },
+      { id: 5, nome: 'Cauda', icone: '🦴' }
     ];
 
     let dinoIdx = 0;
     let blocosDinoEscavadosSet = new Set();
+    let modoDinoAtivo = 'escavacao'; // 'escavacao' ou 'museu'
+    let ferramentaDinoAtiva = 'martelo'; // 'martelo', 'pincel', 'lupa'
+
+    function getDinoImgSrc(filename) {
+      return (window.location.protocol === 'file:')
+        ? `images/dinossauros/${filename}`
+        : `/static/images/dinossauros/${filename}`;
+    }
 
     function openDinosaurFossilsGame() {
       blocosDinoEscavadosSet.clear();
-      pushModalScreen('🦖 PARQUE DOS DINOSSAUROS & FÓSSEIS STARK', (body) => {
+      modoDinoAtivo = 'escavacao';
+      ferramentaDinoAtiva = 'martelo';
+      pushModalScreen('🦖 PARQUE DOS DINOSSAUROS & MUSEU STARK', (body) => {
         playTone(440, 100);
-        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Kaleo'}! Pegue seu pincel e seu martelo! Clique nas pedras para desenterrar os 6 ossos do dinossauro!`);
+        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Kaleo'}! Escolha sua ferramenta de escavação e desenterre os ossos para reconstruir o dinossauro no museu!`);
         renderDinosaurFossilsBody(body);
       }, true);
+    }
+
+    function alternarModoDino(novoModo) {
+      modoDinoAtivo = novoModo;
+      playTone(523, 70);
+      const b = document.querySelector('.modal-body');
+      if (b) renderDinosaurFossilsBody(b);
+    }
+
+    function alternarFerramentaDino(f) {
+      ferramentaDinoAtiva = f;
+      if (f === 'martelo') playTone(240, 80, 'square');
+      else if (f === 'pincel') playTone(680, 70, 'sine');
+      else playTone(880, 90, 'triangle');
+      showToast(`Ferramenta ativa: ${f === 'martelo' ? '🔨 Martelinho' : (f === 'pincel' ? '🖌️ Pincel' : '🔍 Super Lupa')}`);
+      const b = document.querySelector('.modal-body');
+      if (b) renderDinosaurFossilsBody(b);
     }
 
     function renderDinosaurFossilsBody(body) {
@@ -11765,55 +11803,137 @@
       const completo = blocosDinoEscavadosSet.size >= 6;
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
           
-          <!-- SELETOR DE DINOSSAUROS -->
-          <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;">
-            ${BANCO_DINOSSAUROS.map((item, idx) => `
-              <button type="button" class="big-btn" style="padding:6px 12px; border-radius:12px; white-space:nowrap; ${idx === dinoIdx ? 'background:#b91c1c; border:2px solid #f87171;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarDino(${idx})">
-                <span style="font-size:1.1rem;">${item.icon}</span> ${item.nome.split(' ')[0]}
-              </button>
-            `).join('')}
-          </div>
+          <!-- SELETOR DE MODO & SELETOR DE DINOSSAUROS -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:10px; ${modoDinoAtivo === 'escavacao' ? 'background:#b91c1c; border:2px solid #f87171;' : 'background:#1e293b; border:1px solid #334155;'}" onclick="alternarModoDino('escavacao')">
+                  ⛏️ Sítio de Escavação
+                </button>
+                <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:10px; ${modoDinoAtivo === 'museu' ? 'background:#d97706; border:2px solid #fde047;' : 'background:#1e293b; border:1px solid #334155;'}" onclick="alternarModoDino('museu')">
+                  🏛️ Galeria do Museu (${BANCO_DINOSSAUROS.length})
+                </button>
+              </div>
 
-          <!-- SÍTIO DE ESCAVAÇÃO ARQUEOLÓGICA -->
-          <div style="background:radial-gradient(circle at center, #451a03 0%, #1c0a00 100%); border:3px solid #f59e0b; border-radius:18px; padding:14px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;">
-            
-            <div style="display:flex; gap:8px; align-items:center;">
-              <span style="background:#78350f; color:#fde047; padding:2px 10px; border-radius:999px; font-size:0.8rem; font-weight:900;">${d.dieta}</span>
-              <span style="background:#1e293b; color:#cbd5e1; padding:2px 8px; border-radius:999px; font-size:0.8rem;">📏 ${d.tamanho}</span>
-            </div>
-
-            <div style="font-size:1.5rem; font-weight:900; color:#fff;">${d.nome}</div>
-
-            <!-- ESQUELETO OU DINOSSAURO COMPLETO (TAMBÉM ESCAVA AO CLICAR) -->
-            <div id="dino-fossil-center" onclick="escavarProximoBlocoDino()" title="Clique para desenterrar!" style="font-size:4.8rem; line-height:1; cursor:pointer; animation:${completo ? 'bounce 1s infinite' : 'pulse 2s infinite'};">
-              ${completo ? d.icon : '🦴'}
-            </div>
-
-            <div style="font-size:0.92rem; color:#fde68a; max-width:550px; background:rgba(0,0,0,0.4); padding:6px 12px; border-radius:10px;">
-              ${completo ? d.curiosidade : `Ossos Desenterrados: ${blocosDinoEscavadosSet.size} de 6. Clique em qualquer pedra abaixo para escavar!`}
-            </div>
-
-            <!-- 6 SÍTIOS DE ESCAVAÇÃO EM GRADE 2x3 100% VISÍVEL E CONFORTÁVEL -->
-            <div style="display:grid; grid-template-columns:repeat(3, 1fr); max-width:320px; width:100%; gap:8px; margin:6px auto;">
-              ${PARTES_FOSSIL_DINO.map((p, i) => {
-                const escavado = blocosDinoEscavadosSet.has(i);
-                return `
-                  <button type="button" class="big-btn" style="min-height:55px; border-radius:12px; padding:6px 4px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
-                    <span style="font-size:1.4rem; line-height:1;">${escavado ? p.icone : '⛏️'}</span>
-                    <span style="font-size:0.7rem; font-weight:800; margin-top:2px;">${escavado ? '✓ ' + p.nome.split(' ')[0] : 'Pedra ' + (i+1)}</span>
+              ${modoDinoAtivo === 'escavacao' ? `
+                <!-- FERRAMENTAS DE PALEONTOLOGIA -->
+                <div style="display:flex; gap:4px; align-items:center;">
+                  <span style="font-size:0.75rem; color:#94a3b8; font-weight:bold; margin-right:2px;">Ferramenta:</span>
+                  <button type="button" class="big-btn" style="padding:4px 8px; font-size:0.8rem; border-radius:8px; ${ferramentaDinoAtiva === 'martelo' ? 'background:#b45309; border:2px solid #fde047;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('martelo')" title="Martelinho Fóssil">
+                    🔨
                   </button>
-                `;
-              }).join('')}
+                  <button type="button" class="big-btn" style="padding:4px 8px; font-size:0.8rem; border-radius:8px; ${ferramentaDinoAtiva === 'pincel' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('pincel')" title="Pincel Suave">
+                    🖌️
+                  </button>
+                  <button type="button" class="big-btn" style="padding:4px 8px; font-size:0.8rem; border-radius:8px; ${ferramentaDinoAtiva === 'lupa' ? 'background:#15803d; border:2px solid #86efac;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('lupa')" title="Super Lupa">
+                    🔍
+                  </button>
+                </div>
+              ` : ''}
             </div>
 
-            ${completo ? `
-              <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:8px 20px; border-radius:12px; font-weight:900; font-size:1rem; margin-top:4px;" onclick="comemorarDinoCompleto()">
-                🎉 Fóssil 100% Completo! (+10 🪙)
-              </button>
-            ` : ''}
+            <!-- CHIPS PROPORCIONAIS DOS 8 DINOSSAUROS -->
+            <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin;">
+              ${BANCO_DINOSSAUROS.map((item, idx) => `
+                <button type="button" class="big-btn" style="padding:5px 10px; border-radius:10px; white-space:nowrap; flex:0 0 auto; display:flex; align-items:center; gap:4px; ${idx === dinoIdx ? 'background:#7f1d1d; border:2px solid #ef4444;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarDino(${idx})">
+                  <span style="font-size:1.1rem; line-height:1;">${item.icon}</span>
+                  <span style="font-size:0.75rem; font-weight:800; color:#fff;">${item.rotulo}</span>
+                </button>
+              `).join('')}
+            </div>
           </div>
+
+          <!-- ÁREA PRINCIPAL: ESCAVAÇÃO OU MUSEU -->
+          ${modoDinoAtivo === 'escavacao' ? `
+            <!-- MODO ESCAVAÇÃO -->
+            <div style="background:radial-gradient(circle at center, #451a03 0%, #1c0a00 100%); border:3px solid #f59e0b; border-radius:18px; padding:12px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px; text-align:center;">
+              
+              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:center;">
+                <span style="background:#78350f; color:#fde047; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:900;">⏳ ${d.periodo}</span>
+                <span style="background:#1e293b; color:#cbd5e1; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">🥩 ${d.dieta}</span>
+                <span style="background:#0f172a; color:#38bdf8; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">📏 ${d.tamanho}</span>
+              </div>
+
+              <div style="font-size:1.35rem; font-weight:900; color:#fff; letter-spacing:0.3px;">${d.nome}</div>
+
+              <!-- CENTRO: ESQUELETO OU FOTO REAL DO MUSEU -->
+              <div id="dino-fossil-center" onclick="escavarProximoBlocoDino()" title="Clique para desenterrar!" style="display:flex; align-items:center; justify-content:center; cursor:pointer; min-height:120px; max-height:160px; width:100%;">
+                ${completo ? `
+                  <img src="${getDinoImgSrc(d.img)}" style="max-height:140px; width:auto; max-width:85%; border-radius:14px; object-fit:contain; border:2px solid #f59e0b; box-shadow:0 0 25px rgba(245,158,11,0.4); animation:pulse 2s infinite;" alt="${d.nome}">
+                ` : `
+                  <div style="font-size:4.2rem; line-height:1; animation:pulse 2s infinite;">🦴</div>
+                `}
+              </div>
+
+              <div style="font-size:0.85rem; color:#fde68a; max-width:540px; line-height:1.3; background:rgba(0,0,0,0.4); padding:5px 12px; border-radius:10px;">
+                ${completo ? d.curiosidade : `Ossos Desenterrados: ${blocosDinoEscavadosSet.size} de 6. Use sua ferramenta (${ferramentaDinoAtiva === 'martelo' ? '🔨 Martelinho' : (ferramentaDinoAtiva === 'pincel' ? '🖌️ Pincel' : '🔍 Lupa')}) para limpar os blocos abaixo!`}
+              </div>
+
+              <!-- 6 SÍTIOS DE ESCAVAÇÃO EM GRADE 2x3 PROPORCIONAL -->
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); max-width:320px; width:100%; gap:6px; margin:2px auto;">
+                ${PARTES_FOSSIL_DINO.map((p, i) => {
+                  const escavado = blocosDinoEscavadosSet.has(i);
+                  return `
+                    <button type="button" class="big-btn" style="min-height:50px; border-radius:10px; padding:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
+                      <span style="font-size:1.25rem; line-height:1;">${escavado ? p.icone : (ferramentaDinoAtiva === 'martelo' ? '🔨' : (ferramentaDinoAtiva === 'pincel' ? '🖌️' : '🔍'))}</span>
+                      <span style="font-size:0.68rem; font-weight:800; margin-top:2px;">${escavado ? '✓ ' + p.nome : 'Bloco ' + (i+1)}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+
+              ${completo ? `
+                <button type="button" class="big-btn" style="background:#22c55e; border:2px solid #86efac; color:#fff; padding:6px 18px; border-radius:10px; font-weight:900; font-size:0.95rem; margin-top:2px;" onclick="comemorarDinoCompleto()">
+                  🎉 Fóssil 100% Restaurado! (+10 🪙)
+                </button>
+              ` : ''}
+            </div>
+          ` : `
+            <!-- MODO GALERIA DO MUSEU (IMAGENS REAIS EM ALTA DEFINIÇÃO) -->
+            <div style="background:radial-gradient(circle at center, #0f172a 0%, #020617 100%); border:3px solid #38bdf8; border-radius:18px; padding:12px 18px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 30px rgba(56,189,248,0.25);">
+              
+              <div>
+                <span style="background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 10px; border-radius:999px;">🏛️ EXPOSIÇÃO CIENTÍFICA OFICIAL</span>
+                <div style="font-size:1.6rem; font-weight:900; color:#fff; margin-top:4px;">${d.nome}</div>
+              </div>
+
+              <!-- IMAGEM REAL EM ALTA DEFINIÇÃO -->
+              <div style="display:flex; justify-content:center; align-items:center; max-height:170px; width:100%; margin:4px 0;">
+                <img src="${getDinoImgSrc(d.img)}" style="max-height:165px; width:auto; max-width:90%; border-radius:14px; object-fit:contain; border:2px solid #38bdf8; box-shadow:0 0 25px rgba(56,189,248,0.3);" alt="${d.nome}">
+              </div>
+
+              <!-- DADOS CIENTÍFICOS DO MUSEU -->
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; width:100%; max-width:540px;">
+                <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:6px 4px;">
+                  <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">PERÍODO</div>
+                  <div style="font-size:0.78rem; font-weight:900; color:#38bdf8;">${d.periodo}</div>
+                </div>
+                <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:6px 4px;">
+                  <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">ALIMENTAÇÃO</div>
+                  <div style="font-size:0.78rem; font-weight:900; color:#22c55e;">${d.dieta}</div>
+                </div>
+                <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:6px 4px;">
+                  <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">PORTE</div>
+                  <div style="font-size:0.78rem; font-weight:900; color:#facc15;">${d.tamanho}</div>
+                </div>
+              </div>
+
+              <div style="font-size:0.88rem; color:#e2e8f0; line-height:1.35; max-width:560px; background:rgba(0,0,0,0.4); padding:6px 14px; border-radius:10px;">
+                ${d.curiosidade}
+              </div>
+
+              <div style="display:flex; gap:8px; justify-content:center; margin-top:2px;">
+                <button type="button" class="big-btn" style="background:#b91c1c; border:2px solid #f87171; color:#fff; padding:6px 16px; font-size:0.88rem; font-weight:900; border-radius:10px;" onclick="tocarRugidoDinoStark()">
+                  🔊 Ouvir Rugido Pré-Histórico
+                </button>
+                <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 16px; font-size:0.88rem; font-weight:900; border-radius:10px;" onclick="speak('${escapeJs(d.curiosidade)}')">
+                  📖 Narrar Curiosidade
+                </button>
+              </div>
+            </div>
+          `}
         </div>
       `;
     }
@@ -11821,7 +11941,7 @@
     function selecionarDino(idx) {
       dinoIdx = idx;
       blocosDinoEscavadosSet.clear();
-      playTone(440, 80);
+      playTone(440, 70);
       const b = document.querySelector('.modal-body');
       if (b) renderDinosaurFossilsBody(b);
     }
@@ -11840,33 +11960,39 @@
       blocosDinoEscavadosSet.add(idx);
       
       const parte = PARTES_FOSSIL_DINO[idx];
-      playTone(280 + blocosDinoEscavadosSet.size * 60, 90, 'triangle');
-      showToast(`⛏️ ${parte.nome} desenterrado! (${blocosDinoEscavadosSet.size}/6)`);
+      if (ferramentaDinoAtiva === 'martelo') playTone(220 + blocosDinoEscavadosSet.size * 50, 90, 'square');
+      else if (ferramentaDinoAtiva === 'pincel') playTone(540 + blocosDinoEscavadosSet.size * 50, 90, 'sine');
+      else playTone(740 + blocosDinoEscavadosSet.size * 50, 90, 'triangle');
+
+      showToast(`⛏️ ${parte.nome} limpo com sucesso! (${blocosDinoEscavadosSet.size}/6)`);
 
       if (blocosDinoEscavadosSet.size >= 6) {
-        try {
-          destravarAudioNavegador();
-          const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-          const now = ctx.currentTime;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(120, now);
-          osc.frequency.exponentialRampToValueAtTime(30, now + 1.2);
-          gain.gain.setValueAtTime(0.35, now);
-          gain.gain.linearRampToValueAtTime(0.01, now + 1.2);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(now); osc.stop(now + 1.2);
-        } catch(e) {}
-
+        tocarRugidoDinoStark();
         playCelebrationFanfare();
         dispararChuvaCoracoes();
         const d = BANCO_DINOSSAUROS[dinoIdx];
-        speak(`Fantástico, paleontólogo! Você desenterrou todos os 6 ossos do ${d.nome}! O esqueleto do dinossauro ganhou vida!`);
+        speak(`Incrível, paleontólogo! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu!`);
       }
 
       const b = document.querySelector('.modal-body');
       if (b) renderDinosaurFossilsBody(b);
+    }
+
+    function tocarRugidoDinoStark() {
+      try {
+        destravarAudioNavegador();
+        const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(130, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 1.4);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 1.4);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now); osc.stop(now + 1.4);
+      } catch(e) {}
     }
 
     async function comemorarDinoCompleto() {

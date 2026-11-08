@@ -234,6 +234,7 @@ def static_files(request: Request, path: str):
     ext = os.path.splitext(full_path)[1].lower()
     mime_types = {
         ".png": "image/png",
+        ".webp": "image/webp",
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
         ".gif": "image/gif",
