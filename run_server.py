@@ -1240,7 +1240,7 @@ def api_pin_verificar(request: Request):
 
     if not pin_salvo:
         # Sem PIN definido: aceita pergunta de adulto matemática (ex: 7x8=56, 9x8=72, 6x7=42, 1234)
-        if tentativa in ("56", "72", "42", "48", "63", "54", "1234"):
+        if tentativa in ("56", "72", "42", "48", "63", "54", "64", "32", "35", "1234"):
             return json_response({"ok": True, "parental_gate": "pergunta_resolvida"})
         return json_response({"ok": False, "erro": "Resposta incorreta. Tente novamente!"}, status_code=401)
 

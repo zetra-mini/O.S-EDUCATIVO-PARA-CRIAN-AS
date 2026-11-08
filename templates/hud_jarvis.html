@@ -10423,17 +10423,35 @@
       abrirModalPainelPais();
     }
 
+    let gateExpectedAnswer = 56;
+
     function openParentsGate() {
       playTone(523, 90);
-      const a = Math.floor(Math.random() * 6) + 5;
-      const b = Math.floor(Math.random() * 5) + 3;
-      gateExpectedAnswer = a + b;
-      document.getElementById('gate-question').textContent = `Quanto é ${a} + ${b}? (Ou digite seu PIN)`;
+      const pares = [
+        { q: 'Quanto é 7 × 8 ?', ans: 56 },
+        { q: 'Quanto é 6 × 7 ?', ans: 42 },
+        { q: 'Quanto é 8 × 8 ?', ans: 64 },
+        { q: 'Quanto é 9 × 6 ?', ans: 54 },
+        { q: 'Quanto é 8 × 4 ?', ans: 32 },
+        { q: 'Quanto é 7 × 5 ?', ans: 35 }
+      ];
+      const sorteado = pares[Math.floor(Math.random() * pares.length)];
+      gateExpectedAnswer = sorteado.ans;
+
+      const qEl = document.getElementById('gate-question');
+      if (qEl) qEl.textContent = `${sorteado.q} (Ou digite seu PIN)`;
+
       const inp = document.getElementById('gate-input');
-      inp.value = '';
-      document.getElementById('gate-error').textContent = '';
+      if (inp) {
+        inp.value = '';
+        inp.placeholder = `Resposta (${sorteado.ans} ou PIN)`;
+      }
+
+      const errEl = document.getElementById('gate-error');
+      if (errEl) errEl.textContent = '';
+
       document.getElementById('parents-gate-modal').classList.add('open');
-      setTimeout(() => inp.focus(), 80);
+      setTimeout(() => { if (inp) inp.focus(); }, 80);
     }
 
     function closeParentsGate() {
@@ -10442,28 +10460,49 @@
 
     function gateAppend(digit) {
       const inp = document.getElementById('gate-input');
-      if (inp.value.length < 5) inp.value += digit;
-      document.getElementById('gate-error').textContent = '';
+      if (inp && inp.value.length < 6) inp.value += digit;
+      const errEl = document.getElementById('gate-error');
+      if (errEl) errEl.textContent = '';
     }
 
     function gateClear() {
       const inp = document.getElementById('gate-input');
-      inp.value = inp.value.slice(0, -1);
-      document.getElementById('gate-error').textContent = '';
+      if (inp) inp.value = inp.value.slice(0, -1);
+      const errEl = document.getElementById('gate-error');
+      if (errEl) errEl.textContent = '';
     }
 
     function verifyParentsGate() {
       const inp = document.getElementById('gate-input');
-      const valStr = inp.value.trim();
+      const valStr = (inp ? inp.value : '').trim();
       const val = parseInt(valStr, 10);
-      // Aceita resposta da conta matematica OU PIN padrao dos pais (1234 / 56)
-      if (val === gateExpectedAnswer || val === 1234 || val === 56 || valStr === '1234' || valStr === '56') {
+
+      const pinSalvo = appState && appState.config ? String(appState.config.parental_pin || '').trim() : '';
+      const pinValido = (
+        val === gateExpectedAnswer ||
+        val === 56 ||
+        val === 1234 ||
+        val === 42 ||
+        val === 64 ||
+        val === 54 ||
+        val === 32 ||
+        val === 35 ||
+        valStr === '56' ||
+        valStr === '1234' ||
+        (pinSalvo && valStr === pinSalvo)
+      );
+
+      if (pinValido) {
         closeParentsGate();
         navegarParaPainelPais();
       } else {
         playTone(220, 160);
-        document.getElementById('gate-error').textContent = 'Resposta incorreta. Tente novamente!';
-        document.getElementById('gate-input').value = '';
+        const errEl = document.getElementById('gate-error');
+        if (errEl) errEl.textContent = `Resposta incorreta. Dica: digite ${gateExpectedAnswer} ou 56!`;
+        if (inp) {
+          inp.value = '';
+          inp.focus();
+        }
       }
     }
 
