@@ -16,6 +16,7 @@ import socket
 import subprocess
 import sys
 import time
+import urllib.parse
 from datetime import datetime
 from typing import Any, Dict
 
@@ -308,8 +309,9 @@ def service_worker(request: Request):
 @app.route("/static/<path:path>")
 def static_files(request: Request, path: str):
     """Serve imagens, sons e sprites diretamente do disco com proteção estrita contra Path Traversal."""
+    clean_path = urllib.parse.unquote(path)
     base_static = os.path.abspath(STATIC_DIR)
-    full_path = os.path.abspath(os.path.join(base_static, path))
+    full_path = os.path.abspath(os.path.join(base_static, clean_path))
     if not full_path.startswith(base_static):
         return Response("Acesso negado: fora do diretório permitido", status_code=403)
 
