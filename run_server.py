@@ -244,8 +244,8 @@ def painel_admin(request: Request):
 
 @app.route("/pais")
 def redirect_pais(request: Request):
-    """Redireciona a rota legada /pais para a rota estrita /admin."""
-    return Response(headers={"Location": "/admin"}, status_code=302)
+    """Rota de compatibilidade: serve o painel dos pais diretamente sem redirecionamento 302 quebrado."""
+    return painel_admin(request)
 
 
 @app.route("/engenharia")

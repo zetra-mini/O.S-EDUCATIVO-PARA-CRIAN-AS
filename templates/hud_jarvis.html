@@ -3644,6 +3644,30 @@
       }, true);
     }
 
+        function abrirQuartoEngenhariaModal() {
+      const engUrl = window.location.protocol === 'file:' ? 'quarto_engenharia.html' : '/engenharia';
+      pushModalScreen('⚙️ QUARTO DE ENGENHARIA (BLOCKLY)', (body) => {
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; height:calc(100vh - 110px); width:100%; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#0b192e; border:1.5px solid #1e3a63; padding:8px 14px; border-radius:12px; flex-shrink:0;">
+              <span style="font-size:0.92rem; color:#38bdf8; font-weight:800;">
+                🧩 Bancada de Programação Visual Stark
+              </span>
+              <div style="display:flex; gap:8px;">
+                <a href="${engUrl}" target="_blank" style="background:#0284c7; color:#fff; text-decoration:none; font-size:0.82rem; padding:6px 14px; border-radius:8px; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
+                  ↗️ Abrir em Nova Aba
+                </a>
+                <button type="button" style="background:#334155; color:#fff; border:1px solid #475569; font-size:0.82rem; padding:6px 14px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="closeModal()">
+                  ✖ Voltar ao Robô
+                </button>
+              </div>
+            </div>
+            <iframe src="${engUrl}" id="iframe-quarto-engenharia" style="flex:1; width:100%; border:2px solid #1e3a5f; border-radius:14px; background:#030712;"></iframe>
+          </div>
+        `;
+      }, true);
+    }
+
     function renderGamesMenuBody(body) {
       // ZERO chamadas de speak() aqui dentro: mudar de página ou clicar em "Voltar" nunca repete a fala!
       const jogosPagina = JOGOS_KATALOGO.filter(j => j.pagina === paginaJogosModalAtual);
@@ -3655,7 +3679,7 @@
           <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 14px; display:flex; align-items:center; justify-content:space-between;">
             <div style="font-size:1.02rem; font-weight:900; color:#38bdf8; display:flex; align-items:center; gap:8px;">
               <span>⭐ Escolha uma atividade para brincar:</span>
-              <a href="/engenharia" id="quarto-engenharia-btn" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.8rem; font-weight:900; padding:4px 10px; border-radius:8px; text-decoration:none; margin-left:8px;">⚙️ Quarto de Engenharia (Blockly)</a>
+              <a href="/engenharia" id="quarto-engenharia-btn" onclick="event.preventDefault(); abrirQuartoEngenhariaModal();" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.8rem; font-weight:900; padding:4px 10px; border-radius:8px; text-decoration:none; margin-left:8px; cursor:pointer;">⚙️ Quarto de Engenharia (Blockly)</a>
             </div>
             <span style="font-size:0.85rem; font-weight:900; background:#1e293b; color:#fde047; padding:4px 12px; border-radius:999px;">
               Página ${paginaJogosModalAtual} de ${TOTAL_PAGINAS_JOGOS}
@@ -10370,13 +10394,33 @@
     // =========================================================================
     // 6. PAINEL DOS PAIS (SELETOR DINÂMICO DE PROVEDOR + CHAVES + NETFLIX)
     // =========================================================================
-    function navegarParaPainelPais() {
+    function abrirModalPainelPais() {
       sessionStorage.setItem('jarvis_parental_unlocked', 'true');
-      if (window.location.protocol === 'file:') {
-        window.location.href = 'painel_pais.html';
-      } else {
-        window.location.href = '/pais';
-      }
+      const adminUrl = window.location.protocol === 'file:' ? 'painel_pais.html' : '/admin';
+      pushModalScreen('⚙️ PAINEL DOS PAIS & CONFIGURAÇÕES', (body) => {
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; height:calc(100vh - 110px); width:100%; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#0b192e; border:1.5px solid #1e3a63; padding:8px 14px; border-radius:12px; flex-shrink:0;">
+              <span style="font-size:0.92rem; color:#38bdf8; font-weight:800;">
+                🛡️ Configurações, Nuvem & Controle Parental
+              </span>
+              <div style="display:flex; gap:8px;">
+                <a href="${adminUrl}" target="_blank" style="background:#0284c7; color:#fff; text-decoration:none; font-size:0.82rem; padding:6px 14px; border-radius:8px; font-weight:800; display:inline-flex; align-items:center; gap:4px;">
+                  ↗️ Abrir em Nova Aba
+                </a>
+                <button type="button" style="background:#334155; color:#fff; border:1px solid #475569; font-size:0.82rem; padding:6px 14px; border-radius:8px; font-weight:800; cursor:pointer;" onclick="closeModal()">
+                  ✖ Voltar ao Robô
+                </button>
+              </div>
+            </div>
+            <iframe src="${adminUrl}" id="iframe-painel-pais" style="flex:1; width:100%; border:2px solid #1e3a5f; border-radius:14px; background:#030712;" allow="camera; microphone; autoplay"></iframe>
+          </div>
+        `;
+      }, true);
+    }
+
+    function navegarParaPainelPais() {
+      abrirModalPainelPais();
     }
 
     function openParentsGate() {

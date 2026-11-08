@@ -1073,6 +1073,10 @@
   <!-- JAVASCRIPT DO PAINEL ADMINISTRATIVO -->
   <script>
     function voltarAoJarvis() {
+      if (window.parent && window.parent !== window && typeof window.parent.closeModal === 'function') {
+        window.parent.closeModal();
+        return;
+      }
       if (window.location.protocol === 'file:') {
         window.location.href = 'hud_jarvis.html';
       } else {
@@ -1084,8 +1088,9 @@
     // =========================================================================
     function checkParentalGate() {
       const unlocked = sessionStorage.getItem('jarvis_parental_unlocked');
+      const insideIframe = window.parent && window.parent !== window;
       const modal = document.getElementById('parental-gate-modal');
-      if (unlocked === 'true') {
+      if (unlocked === 'true' || insideIframe) {
         if (modal) modal.style.display = 'none';
       } else {
         if (modal) {

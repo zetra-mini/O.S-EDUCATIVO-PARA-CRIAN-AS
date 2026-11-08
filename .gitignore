@@ -19,4 +19,6 @@ temp_check.js
 
 static/uploads_recados/*
 !static/uploads_recados/.gitkeep
+sounds/
+static/sounds/cache_tts/
 
