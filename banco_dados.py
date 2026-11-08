@@ -16,7 +16,7 @@ import queue
 import sqlite3
 import threading
 import time
-from typing import Any, Callable, Generator, List, Optional, Tuple
+from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "banco_educativo.db")
@@ -437,6 +437,68 @@ class DatabaseManager:
             """
         )
 
+        # 14. MISSÕES DE ROTINA & HÁBITOS (PAINEL DOS PAIS / PILAR 1)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS missoes_rotina (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT NOT NULL,
+                descricao TEXT DEFAULT '',
+                recompensa_moedas INTEGER NOT NULL DEFAULT 5,
+                icone TEXT DEFAULT '⭐',
+                categoria TEXT DEFAULT 'Geral',
+                ativa INTEGER NOT NULL DEFAULT 1,
+                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+        )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS missoes_cumpridas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                missao_id INTEGER NOT NULL,
+                data_dia TEXT NOT NULL,
+                hora_cumprida TEXT NOT NULL,
+                moedas_ganhas INTEGER NOT NULL DEFAULT 5,
+                FOREIGN KEY(missao_id) REFERENCES missoes_rotina(id) ON DELETE CASCADE,
+                UNIQUE(missao_id, data_dia)
+            );
+            """
+        )
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_missoes_dia ON missoes_cumpridas (data_dia);")
+
+        # 15. GALERIA DE ARTE DA LOUSA NEON (PILAR 2)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS galeria_arte (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT DEFAULT 'Obra de Arte do Kaleu',
+                imagem_base64 TEXT NOT NULL,
+                data_dia TEXT NOT NULL,
+                hora TEXT NOT NULL,
+                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+        )
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_arte_dia ON galeria_arte (data_dia DESC);")
+
+        # 16. LINHA DO TEMPO DIÁRIA DE ATIVIDADES (PILAR 4)
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS linha_tempo_atividades (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tipo TEXT NOT NULL,
+                titulo TEXT NOT NULL,
+                descricao TEXT DEFAULT '',
+                icone TEXT DEFAULT '🌟',
+                hora TEXT NOT NULL,
+                data_dia TEXT NOT NULL,
+                data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+        )
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_linha_tempo ON linha_tempo_atividades (data_dia DESC, hora DESC);")
+
         conn.commit()
 
         # POPULAR ITENS INICIAIS DA LOJA DO TESOURO SE VAZIA
@@ -526,6 +588,21 @@ class DatabaseManager:
             cursor.executemany(
                 "INSERT INTO agenda_rotina_diaria (id, titulo, horario, aviso_previo_minutos, tipo_acao, icone, pergunta_escolha, recompensa_fichas) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
                 rotinas,
+            )
+
+        # POPULAR MISSÕES DE ROTINA SE VAZIA
+        cursor.execute("SELECT COUNT(*) FROM missoes_rotina;")
+        if cursor.fetchone()[0] == 0:
+            missoes_iniciais = [
+                ("Escovar os Dentes", "Deixar os dentes limpinhos e sorriso brilhante de super-herói!", 5, "🪥", "Higiene"),
+                ("Guardar os Brinquedos", "Deixar o quarto organizado como um quartel-general!", 10, "🧸", "Organização"),
+                ("Beber Água Fresquinha", "Hidratação de super-herói para recarregar as forças!", 5, "💧", "Saúde"),
+                ("Comer Frutas ou Salada", "Alimentação forte com superpoderes e vitaminas!", 10, "🍎", "Saúde"),
+                ("Ler 1 Livro na Biblioteca", "Ler ou ouvir uma história incrível no Jarvis!", 15, "📚", "Estudos"),
+            ]
+            cursor.executemany(
+                "INSERT INTO missoes_rotina (titulo, descricao, recompensa_moedas, icone, categoria) VALUES (?, ?, ?, ?, ?);",
+                missoes_iniciais,
             )
 
         conn.commit()
@@ -644,4 +721,168 @@ def obter_resumo_progresso_idiomas() -> dict:
         resumo["palavras_dominadas"] = row_dom.get("dominadas", 0)
 
     return resumo
+
+
+# ==============================================================================
+# PILAR 1: MISSÕES DE ROTINA & HÁBITOS DOS PAIS
+# ==============================================================================
+
+def listar_missoes_rotina(data_dia: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Lista todas as missões de rotina ativas e indica se já foram cumpridas na data especificada."""
+    import datetime
+    dia = data_dia or datetime.date.today().isoformat()
+    sql = """
+        SELECT m.id, m.titulo, m.descricao, m.recompensa_moedas, m.icone, m.categoria, m.ativa,
+               CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END as cumprida,
+               c.hora_cumprida
+        FROM missoes_rotina m
+        LEFT JOIN missoes_cumpridas c ON m.id = c.missao_id AND c.data_dia = ?
+        WHERE m.ativa = 1
+        ORDER BY cumprida ASC, m.id ASC;
+    """
+    return db.consultar_todos(sql, (dia,))
+
+
+def adicionar_missao_rotina(titulo: str, descricao: str = "", recompensa_moedas: int = 5, icone: str = "⭐", categoria: str = "Geral") -> int:
+    """Adiciona uma nova missão de rotina criada pelos pais."""
+    sql = """
+        INSERT INTO missoes_rotina (titulo, descricao, recompensa_moedas, icone, categoria, ativa)
+        VALUES (?, ?, ?, ?, ?, 1);
+    """
+    res = db.executar_escrita(sql, (titulo.strip(), descricao.strip(), max(1, int(recompensa_moedas)), icone.strip(), categoria.strip()))
+    return int(res or 0)
+
+
+def excluir_missao_rotina(missao_id: int) -> bool:
+    """Desativa ou exclui uma missão de rotina."""
+    try:
+        db.executar_escrita("DELETE FROM missoes_rotina WHERE id = ?;", (int(missao_id),))
+        return True
+    except Exception:
+        return False
+
+
+def cumprir_missao_rotina(missao_id: int, data_dia: Optional[str] = None) -> Dict[str, Any]:
+    """Marca uma missão como cumprida hoje, credita as moedas no cofre e registra na linha do tempo."""
+    import datetime
+    dia = data_dia or datetime.date.today().isoformat()
+    hora = datetime.datetime.now().strftime("%H:%M")
+
+    # Verifica se a missão existe
+    m = db.consultar_um("SELECT id, titulo, recompensa_moedas, icone FROM missoes_rotina WHERE id = ?;", (int(missao_id),))
+    if not m:
+        return {"sucesso": False, "erro": "Missão não encontrada."}
+
+    # Verifica se já foi cumprida hoje
+    ja = db.consultar_um("SELECT id FROM missoes_cumpridas WHERE missao_id = ? AND data_dia = ?;", (int(missao_id), dia))
+    if ja:
+        return {"sucesso": False, "erro": "Esta missão já foi concluída hoje!", "ja_cumprida": True}
+
+    moedas = int(m["recompensa_moedas"])
+    db.executar_escrita(
+        "INSERT INTO missoes_cumpridas (missao_id, data_dia, hora_cumprida, moedas_ganhas) VALUES (?, ?, ?, ?);",
+        (int(missao_id), dia, hora, moedas)
+    )
+
+    # Credita as moedas no pote de fichas do Kaleu
+    from economia_fichas import TokenEconomyManager
+    econ = TokenEconomyManager(db)
+    status_pote = econ.creditar_fichas(moedas, f"Missão cumprida: {m['titulo']}", categoria="MISSAO")
+
+    # Registra evento na linha do tempo diária
+    registrar_atividade_linha_tempo(
+        tipo="missao",
+        titulo=f"Concluiu a missão: {m['titulo']}",
+        descricao=f"+{moedas} moedas de ouro adicionadas ao pote!",
+        icone=m.get("icone") or "⭐"
+    )
+
+    return {
+        "sucesso": True,
+        "missao": m["titulo"],
+        "moedas_ganhas": moedas,
+        "novo_saldo": status_pote.get("saldo", 0),
+        "hora": hora
+    }
+
+
+# ==============================================================================
+# PILAR 2: GALERIA DE ARTE DA LOUSA NEON
+# ==============================================================================
+
+def salvar_desenho_arte(imagem_base64: str, titulo: str = "Desenho Lousa Neon") -> Dict[str, Any]:
+    """Salva um desenho feito pelo Kaleu no banco de dados e adiciona à linha do tempo."""
+    import datetime
+    dia = datetime.date.today().isoformat()
+    hora = datetime.datetime.now().strftime("%H:%M")
+    tit = (titulo or "Desenho do Kaleu").strip()
+
+    sql = """
+        INSERT INTO galeria_arte (titulo, imagem_base64, data_dia, hora)
+        VALUES (?, ?, ?, ?);
+    """
+    res = db.executar_escrita(sql, (tit, imagem_base64, dia, hora))
+    novo_id = int(res or 0)
+
+    # Registra na linha do tempo
+    registrar_atividade_linha_tempo(
+        tipo="arte",
+        titulo="Criou uma nova obra de arte na Lousa Neon!",
+        descricao=f"Obra '{tit}' enviada com carinho para os pais.",
+        icone="🎨"
+    )
+
+    return {"sucesso": True, "id": novo_id, "data_dia": dia, "hora": hora}
+
+
+def listar_galeria_arte(limite: int = 50) -> List[Dict[str, Any]]:
+    """Retorna os desenhos da galeria de arte com miniaturas e metadados."""
+    sql = "SELECT id, titulo, imagem_base64, data_dia, hora FROM galeria_arte ORDER BY id DESC LIMIT ?;"
+    return db.consultar_todos(sql, (max(1, int(limite)),))
+
+
+def excluir_desenho_arte(arte_id: int) -> bool:
+    """Exclui um desenho da galeria de arte."""
+    try:
+        db.executar_escrita("DELETE FROM galeria_arte WHERE id = ?;", (int(arte_id),))
+        return True
+    except Exception:
+        return False
+
+
+# ==============================================================================
+# PILAR 4: LINHA DO TEMPO DIÁRIA DE ATIVIDADES
+# ==============================================================================
+
+def registrar_atividade_linha_tempo(tipo: str, titulo: str, descricao: str = "", icone: str = "🌟") -> None:
+    """Registra uma atividade recente do Kaleu na linha do tempo diária para os pais."""
+    import datetime
+    dia = datetime.date.today().isoformat()
+    hora = datetime.datetime.now().strftime("%H:%M")
+    try:
+        db.executar_escrita(
+            """
+            INSERT INTO linha_tempo_atividades (tipo, titulo, descricao, icone, hora, data_dia)
+            VALUES (?, ?, ?, ?, ?, ?);
+            """,
+            (tipo, titulo, descricao, icone, hora, dia),
+            timeout=2.0
+        )
+    except Exception:
+        pass
+
+
+def listar_linha_tempo(data_dia: Optional[str] = None, limite: int = 50) -> List[Dict[str, Any]]:
+    """Consulta a linha do tempo de atividades do Kaleu para uma determinada data."""
+    import datetime
+    dia = data_dia or datetime.date.today().isoformat()
+    sql = """
+        SELECT id, tipo, titulo, descricao, icone, hora, data_dia
+        FROM linha_tempo_atividades
+        WHERE data_dia = ?
+        ORDER BY id DESC
+        LIMIT ?;
+    """
+    return db.consultar_todos(sql, (dia, max(1, int(limite))))
+
 

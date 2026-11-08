@@ -36,11 +36,20 @@ from microdot import Microdot, Request, Response, send_file
 
 # Importa módulos de negócio do Jarvis Kids OS
 from banco_dados import (
+    adicionar_missao_rotina,
+    cumprir_missao_rotina,
     db,
+    excluir_desenho_arte,
+    excluir_missao_rotina,
     limpar_logs,
+    listar_galeria_arte,
+    listar_linha_tempo,
+    listar_missoes_rotina,
     obter_logs,
     obter_resumo_progresso_idiomas,
+    registrar_atividade_linha_tempo,
     registrar_log,
+    salvar_desenho_arte,
 )
 from biblioteca_livros import BOOKS, library_mgr
 from clima_estacoes import weather_mgr
@@ -1357,11 +1366,28 @@ def api_nuvem_parar(request: Request):
 # CONTROLE DE HARDWARE (antiX Linux / Hardware Real)
 # ==============================================================================
 
+@app.route("/api/admin/hardware/wifi/status", methods=["GET"])
+def api_hardware_wifi_status(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    return json_response({
+        "ok": True,
+        "rede_conectada": hardware_mgr.obter_rede_wifi_conectada()
+    })
+
+
 @app.route("/api/admin/hardware/wifi/scan", methods=["GET"])
 def api_hardware_wifi_scan(request: Request):
     if not esta_autenticado_admin(request):
         return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
-    return json_response({"redes": hardware_mgr.escanear_wifi()})
+    status_con = hardware_mgr.obter_rede_wifi_conectada()
+    lista_redes = hardware_mgr.escanear_wifi()
+    return json_response({
+        "ok": True,
+        "rede_conectada": status_con,
+        "redes": lista_redes,
+        "total": len(lista_redes)
+    })
 
 
 @app.route("/api/admin/hardware/wifi/connect", methods=["POST"])
@@ -1423,6 +1449,114 @@ def api_hardware_manutencao(request: Request):
     if not esta_autenticado_admin(request):
         return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     return json_response(hardware_mgr.liberar_kiosk_para_manutencao())
+
+
+# ==============================================================================
+# PILAR 1: MISSÕES DE ROTINA & HÁBITOS
+# ==============================================================================
+
+@app.route("/api/missoes", methods=["GET"])
+def api_missoes_kiosk(request: Request):
+    """Lista missões ativas e status de hoje para o Kiosk do Kaleu."""
+    return json_response({"ok": True, "missoes": listar_missoes_rotina()})
+
+
+@app.route("/api/missoes/cumprir", methods=["POST"])
+def api_missoes_cumprir(request: Request):
+    """Marca uma missão como concluída pelo Kaleu no Kiosk e premia com moedas."""
+    data = request.json or {}
+    missao_id = data.get("missao_id") or data.get("id")
+    if not missao_id:
+        return json_response({"ok": False, "erro": "ID da missão não informado."}, status_code=400)
+    resultado = cumprir_missao_rotina(int(missao_id))
+    return json_response(resultado)
+
+
+@app.route("/api/admin/missoes", methods=["GET", "POST"])
+def api_admin_missoes(request: Request):
+    """Gerenciamento de missões de rotina pelo painel dos pais."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    if request.method == "POST":
+        data = request.json or {}
+        titulo = str(data.get("titulo", "")).strip()
+        descricao = str(data.get("descricao", "")).strip()
+        recompensa = int(data.get("recompensa_moedas", 5))
+        icone = str(data.get("icone", "⭐")).strip()
+        categoria = str(data.get("categoria", "Geral")).strip()
+        if not titulo:
+            return json_response({"ok": False, "erro": "Título da missão obrigatório."}, status_code=400)
+        novo_id = adicionar_missao_rotina(titulo, descricao, recompensa, icone, categoria)
+        registrar_atividade_linha_tempo("missao", f"Papai/Mamãe adicionou nova missão: {titulo}", f"Recompensa: +{recompensa} moedas", icone)
+        return json_response({"ok": True, "id": novo_id, "mensagem": "Missão criada com sucesso!"})
+    return json_response({"ok": True, "missoes": listar_missoes_rotina()})
+
+
+@app.route("/api/admin/missoes/<id>", methods=["DELETE"])
+def api_admin_missoes_delete(request: Request, id: str):
+    """Exclui uma missão de rotina."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    sucesso = excluir_missao_rotina(int(id))
+    return json_response({"ok": sucesso})
+
+
+# ==============================================================================
+# PILAR 2: GALERIA DE ARTE DA LOUSA NEON
+# ==============================================================================
+
+@app.route("/api/arte/salvar", methods=["POST"])
+def api_arte_salvar(request: Request):
+    """Salva um desenho feito pelo Kaleu na Lousa Neon para os pais verem."""
+    data = request.json or {}
+    imagem = data.get("imagem") or data.get("imagem_base64")
+    titulo = data.get("titulo", "Desenho Lousa Neon")
+    if not imagem:
+        return json_response({"ok": False, "erro": "Nenhuma imagem recebida."}, status_code=400)
+    resultado = salvar_desenho_arte(imagem, titulo)
+    return json_response(resultado)
+
+
+@app.route("/api/admin/arte", methods=["GET"])
+def api_admin_arte_listar(request: Request):
+    """Lista as obras da galeria de arte para os pais."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    return json_response({"ok": True, "galeria": listar_galeria_arte()})
+
+
+@app.route("/api/admin/arte/<id>", methods=["DELETE"])
+def api_admin_arte_delete(request: Request, id: str):
+    """Exclui uma obra da galeria de arte."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    return json_response({"ok": excluir_desenho_arte(int(id))})
+
+
+# ==============================================================================
+# PILAR 4: LINHA DO TEMPO DIÁRIA DE ATIVIDADES
+# ==============================================================================
+
+@app.route("/api/admin/linha_tempo", methods=["GET"])
+def api_admin_linha_tempo(request: Request):
+    """Retorna os eventos da linha do tempo do dia de hoje para os pais."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    dia = request.args.get("data")
+    eventos = listar_linha_tempo(dia)
+    return json_response({"ok": True, "eventos": eventos})
+
+
+@app.route("/api/atividades/registrar", methods=["POST"])
+def api_atividades_registrar(request: Request):
+    """Registra uma atividade do dia para acompanhamento dos pais."""
+    data = request.json or {}
+    tipo = data.get("tipo", "atividade")
+    titulo = data.get("titulo", "Atividade realizada")
+    descricao = data.get("descricao", "")
+    icone = data.get("icone", "🌟")
+    registrar_atividade_linha_tempo(tipo, titulo, descricao, icone)
+    return json_response({"ok": True})
 
 
 # ==============================================================================

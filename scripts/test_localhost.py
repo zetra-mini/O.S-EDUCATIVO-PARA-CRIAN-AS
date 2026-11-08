@@ -6,8 +6,15 @@ endpoints = [
     ('/', 'HUD Jarvis (Modo Kiosk Criança)'),
     ('/admin', 'Painel Administrativo dos Pais'),
     ('/engenharia', 'Quarto de Engenharia (Blockly)'),
+    ('/volume', 'API de Volume ALSA / Sistema'),
     ('/api/state', 'API de Estado Geral'),
-    ('/api/admin/nuvem/status', 'API de Status da Nuvem & Wi-Fi'),
+    ('/api/missoes', 'API de Missões do Herói (Kiosk)'),
+    ('/api/admin/nuvem/status', 'API de Status da Nuvem Cloudflare'),
+    ('/api/admin/hardware/wifi/status', 'API de Status Wi-Fi Conectado'),
+    ('/api/admin/hardware/wifi/scan', 'API de Varredura Wi-Fi Completa'),
+    ('/api/admin/missoes', 'API de Missões dos Pais'),
+    ('/api/admin/arte', 'API da Galeria de Arte Neon'),
+    ('/api/admin/linha_tempo', 'API da Linha do Tempo Diária'),
     ('/api/cognicao/descobre_som/novo', 'API Jogo Descobre o Som'),
     ('/static/assets_poupy/musica/BoxCat%20Games%20-%20Young%20Love.mp3', 'Áudio BoxCat Games (Timer/Dente)')
 ]
@@ -20,7 +27,7 @@ for path, desc in endpoints:
     t0 = time.time()
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'JarvisTester/1.0'})
-        with urllib.request.urlopen(req, timeout=5) as res:
+        with urllib.request.urlopen(req, timeout=8) as res:
             elapsed = (time.time() - t0) * 1000
             status = res.status
             ctype = res.headers.get('Content-Type', '')

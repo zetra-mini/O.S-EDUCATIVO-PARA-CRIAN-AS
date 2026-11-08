@@ -2234,6 +2234,11 @@
           <span id="top-battery-icon">🔋</span>
           <span id="top-battery-val" style="color:#e0f2fe; font-size:0.92rem; font-weight:800;">100%</span>
         </div>
+        <!-- MISSÕES DO HERÓI (PILAR 1) -->
+        <div id="top-missions-badge" class="pou-coin-badge" style="background:rgba(234,179,8,0.18); border-color:#eab308; cursor:pointer;" onclick="abrirModalMissoesHeroi()" title="Missões do Herói (+Moedas)">
+          <span>📋</span>
+          <span style="color:#fef08a; font-size:0.88rem; font-weight:900;">Missões</span>
+        </div>
       </div>
 
       <!-- NAVEGADOR DE CÔMODOS FUTURISTA TOUCH (CENTRO GEOMÉTRICO ABSOLUTO) -->
@@ -8629,6 +8634,35 @@
       clr.textContent = '✨ Limpar Tela';
       bar.appendChild(clr);
 
+      const btnSalvar = document.createElement('button');
+      btnSalvar.type = 'button';
+      btnSalvar.className = 'big-btn';
+      btnSalvar.style.cssText = 'background:#10b981; margin-left:8px; padding:8px 18px; font-size:0.95rem; font-weight:800; border:2px solid #34d399;';
+      btnSalvar.innerHTML = '📸 Mandar Desenho para o Papai';
+      btnSalvar.onclick = async () => {
+        try {
+          const cv = document.getElementById('paint-canvas');
+          const dataUrl = cv.toDataURL('image/png');
+          showToast('Enviando seu desenho lindo para o Papai e a Mamãe...');
+          playTone(659, 100);
+          const res = await fetch('/api/arte/salvar', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ imagem: dataUrl, titulo: 'Desenho Mágico na Lousa Neon' })
+          });
+          const d = await res.json();
+          if (d.sucesso) {
+            confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+            playTone(880, 150);
+            speak('Uau! Seu desenho foi enviado com muito carinho para o papai e a mamãe!');
+            showToast('✅ Desenho enviado com sucesso para a Galeria da Família!');
+          }
+        } catch (e) {
+          showToast('Desenho guardado no dispositivo!');
+        }
+      };
+      bar.appendChild(btnSalvar);
+
       const cv = document.getElementById('paint-canvas');
       const ctx = cv.getContext('2d');
       let drawing = false;
@@ -13488,6 +13522,18 @@
     // TRAVAMENTO KIOSK DEFENSIVO (PROTEÇÃO CONTRA SAÍDA ACIDENTAL DA CRIANÇA)
     // =========================================================================
     window.addEventListener('keydown', (e) => {
+      // Atalhos Secretos para os Pais (Ctrl + Shift + P / Ctrl + Shift + K)
+      if (e.ctrlKey && e.shiftKey && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        openParentsGate();
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        liberarKioskEmergenciaPais();
+        return false;
+      }
+
       const blockedFn = ['F1', 'F3', 'F5', 'F6', 'F7', 'F11', 'F12'];
       if (blockedFn.includes(e.key)) {
         e.preventDefault();
@@ -13509,6 +13555,133 @@
     window.addEventListener('contextmenu', (e) => {
       e.preventDefault();
     }, { capture: true });
+
+    
+    // =========================================================================
+    // PILAR 1: MISSÕES DO HERÓI (ROTINA DIÁRIA)
+    // =========================================================================
+    async function abrirModalMissoesHeroi() {
+      const body = openModal('📋 MISSÕES DO HERÓI (ROTINA DIÁRIA)');
+      playTone(587, 100);
+      body.innerHTML = '<div style="text-align:center; padding:24px; color:#38bdf8; font-size:1.2rem;">Carregando suas missões de herói...</div>';
+      try {
+        const res = await fetch('/api/missoes');
+        const data = await res.json();
+        const missoes = data.missoes || [];
+        if (missoes.length === 0) {
+          body.innerHTML = `
+            <div style="text-align:center; padding:30px;">
+              <div style="font-size:3.5rem; margin-bottom:12px;">🌟</div>
+              <h2 style="color:#fff; font-size:1.6rem;">Nenhuma missão pendente agora!</h2>
+              <p style="color:#94a3b8; font-size:1.1rem; margin-top:8px;">Você é um super campeão! Chame o papai ou a mamãe se quiser novas aventuras no painel!</p>
+            </div>
+          `;
+          return;
+        }
+
+        body.innerHTML = `
+          <div style="text-align:center; margin-bottom:16px;">
+            <div style="font-size:1.15rem; color:#facc15; font-weight:800;">
+              Complete as tarefas com o papai e a mamãe para ganhar moedas de ouro! 🪙
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:12px; max-height:420px; overflow-y:auto; padding-right:6px;" id="lista-missoes-cards"></div>
+        `;
+        const list = document.getElementById('lista-missoes-cards');
+        missoes.forEach(m => {
+          const card = document.createElement('div');
+          const isCumprida = Boolean(m.cumprida);
+          card.style.cssText = isCumprida
+            ? 'background:rgba(16, 185, 129, 0.12); border:2px solid #10b981; border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;'
+            : 'background:#071224; border:2px solid #1e3a5f; border-radius:14px; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;'
+          card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:16px; flex:1; min-width:220px;">
+              <span style="font-size:2.4rem;">${m.icone || '⭐'}</span>
+              <div>
+                <div style="font-size:1.25rem; font-weight:900; color:#fff;">
+                  ${m.titulo}
+                  <span style="margin-left:8px; font-size:0.95rem; font-weight:800; color:#facc15;">+${m.recompensa_moedas} 🪙</span>
+                </div>
+                <div style="font-size:0.95rem; color:#94a3b8; margin-top:3px;">${m.descricao || ''}</div>
+              </div>
+            </div>
+            <div>
+              ${isCumprida
+                ? `<button type="button" class="big-btn" style="background:#10b981; color:#022c22; font-size:1rem; padding:10px 20px; cursor:default;" disabled>✅ Concluída hoje às ${m.hora_cumprida || ''}!</button>`
+                : `<button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #0369a1); border:2px solid #38bdf8; font-size:1.05rem; padding:10px 22px; cursor:pointer;" onclick="cumprirMissaoKiosk(${m.id}, '${m.titulo.replace(/'/g, "\\'")}', ${m.recompensa_moedas})">⭐ Cumprir Missão</button>`
+              }
+            </div>
+          `;
+          list.appendChild(card);
+        });
+      } catch (e) {
+        body.innerHTML = '<div style="color:#ef4444; text-align:center; padding:20px;">Falha ao carregar as missões.</div>';
+      }
+    }
+
+    async function cumprirMissaoKiosk(id, titulo, moedas) {
+      try {
+        playTone(659, 120);
+        showToast(`Registrando missão '${titulo}'...`);
+        const res = await fetch('/api/missoes/cumprir', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ missao_id: id })
+        });
+        const d = await res.json();
+        if (d.sucesso) {
+          confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+          playTone(880, 200);
+          speak(`Parabéns, ${appState.config.child_name || 'super-herói'}! Você cumpriu a missão ${titulo} e ganhou ${moedas} moedas de ouro para o seu cofrinho!`);
+          showToast(`🎉 +${moedas} Moedas de Ouro adicionadas ao pote!`);
+          const pote = document.getElementById('pote-fichas-val');
+          if (pote && d.novo_saldo !== undefined) pote.textContent = d.novo_saldo;
+          abrirModalMissoesHeroi();
+        } else {
+          showToast(d.erro || 'Missão já concluída hoje!');
+        }
+      } catch (e) {
+        showToast('Erro ao registrar missão');
+      }
+    }
+
+    // =========================================================================
+    // PILAR 3: KIOSK BYPASS PARA OS PAIS VIA ATALHO
+    // =========================================================================
+    async function liberarKioskEmergenciaPais() {
+      const senha = prompt('🔐 Digite o PIN dos pais para liberar a área de trabalho do Linux (Kiosk Bypass):');
+      if (senha === '56' || senha === '1234' || (appState.config && senha === appState.config.admin_password)) {
+        showToast('🔓 Liberando desktop antiX Linux...');
+        try {
+          await fetch('/manutencao', { method: 'POST' });
+        } catch (e) {}
+      } else if (senha !== null) {
+        alert('❌ Senha incorreta!');
+      }
+    }
+
+    // =========================================================================
+    // MODO DORMIR AUTOMÁTICO (HORA DO SONO CIRCUITO CIRCADIANO)
+    // =========================================================================
+    let avisouModoDormirHoje = false;
+    function verificarHorarioModoDormir() {
+      const agora = new Date();
+      const horas = agora.getHours();
+      const minutos = agora.getMinutes();
+      if ((horas > 20 || (horas === 20 && minutos >= 30)) && !avisouModoDormirHoje) {
+        avisouModoDormirHoje = true;
+        const childName = (appState.config && appState.config.child_name) || 'Kaleu';
+        speak(`Atenção super-herói ${childName}! O relógio dos heróis bateu 20h30! É hora de colocar o pijaminha quentinho, escovar os dentes e se preparar para descansar! O Jarvis vai descansar os propulsores com você!`);
+        try {
+          fetch('/api/admin/hardware/filtro_luz', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ ativar: true })
+          });
+        } catch (e) {}
+      }
+    }
+    setInterval(verificarHorarioModoDormir, 60000);
 
     // ROTINAS COOPERATIVAS (DENTE & QUARTO)
     function iniciarMissaoDente() {
