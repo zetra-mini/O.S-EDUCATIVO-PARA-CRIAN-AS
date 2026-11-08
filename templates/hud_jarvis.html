@@ -3662,7 +3662,7 @@
                 </button>
               </div>
             </div>
-            <iframe src="${engUrl}" id="iframe-quarto-engenharia" style="flex:1; width:100%; border:2px solid #1e3a5f; border-radius:14px; background:#030712;"></iframe>
+            <iframe src="${engUrl}" id="iframe-quarto-engenharia" style="flex:1; width:100%; border:2px solid #1e3a5f; border-radius:14px; background:#030712;" allow="camera; microphone; autoplay"></iframe>
           </div>
         `;
       }, true);
@@ -3750,6 +3750,37 @@
       if (typeof funcaoAbrir === 'function') {
         funcaoAbrir();
       }
+    }
+
+    let paginaDrawerAtual = 1;
+    const TOTAL_PAGINAS_DRAWER = 3;
+
+    function irParaPaginaDrawer(p) {
+      playTone(587, 80);
+      paginaDrawerAtual = p;
+      atualizarExibicaoDrawer();
+    }
+
+    function mudarPaginaDrawer(delta) {
+      playTone(587, 80);
+      paginaDrawerAtual = ((paginaDrawerAtual - 1 + delta + TOTAL_PAGINAS_DRAWER) % TOTAL_PAGINAS_DRAWER) + 1;
+      atualizarExibicaoDrawer();
+    }
+
+    function atualizarExibicaoDrawer() {
+      for (let p = 1; p <= TOTAL_PAGINAS_DRAWER; p++) {
+        const cards = document.querySelectorAll(`.drawer-card-p${p}`);
+        cards.forEach(c => {
+          c.style.display = (p === paginaDrawerAtual) ? 'flex' : 'none';
+        });
+        const dot = document.getElementById(`drawer-dot-${p}`);
+        if (dot) {
+          if (p === paginaDrawerAtual) dot.classList.add('active');
+          else dot.classList.remove('active');
+        }
+      }
+      const lbl = document.getElementById('drawer-page-lbl');
+      if (lbl) lbl.textContent = `${paginaDrawerAtual} de ${TOTAL_PAGINAS_DRAWER}`;
     }
 
     // ATUALIZAÇÃO DOS 4 STATUS DO POU E ACESSÓRIO VESTÍVEL
@@ -10423,7 +10454,7 @@
       abrirModalPainelPais();
     }
 
-    let gateExpectedAnswer = 56;
+    gateExpectedAnswer = 56;
 
     function openParentsGate() {
       playTone(523, 90);
