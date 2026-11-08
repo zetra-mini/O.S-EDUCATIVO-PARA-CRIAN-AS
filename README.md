@@ -1,10 +1,66 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.5.0 — Versão Final Definitiva (Stark High Performance)
+# 🚀 J.A.R.V.I.S. Kids OS v3.6.5 — Edição Definitiva (Stark High Performance)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
 ---
 
-## 🌟 Novidades da Versão 3.5.0 (Versão Final Definitiva)
+## 📸 Galeria Visual do Sistema em Execução (Screenshots Oficiais 1024x600)
+
+Telas reais capturadas diretamente do sistema em execução na resolução nativa do netbook (1024x600):
+
+| 🤖 1. HUD Principal — Sala de Brincar do Robô Jarvis | 🦸‍♂️ 2. Quartel-General das Missões do Herói |
+| :---: | :---: |
+| ![HUD Jarvis](docs/screenshots/01_hud_jarvis_sala_brincar.png) | ![Missões do Herói](docs/screenshots/02_missoes_do_heroi.png) |
+| *Mascote Jarvis interativo com humor emocional, clima em tempo real, economia de moedas no Pote do Tesouro, status de bateria e botões táteis gigantes.* | *Quartel-General de Missões reformulado com barra de conquista diária de super-herói, abas de filtro (Todas, Para Fazer, Concluídas) e atalhos rápidos.* |
+
+| 📚 3. Biblioteca Mágica de Histórias (Estante) | 🌟 4. Tela de Conquista & Celebração do Livro |
+| :---: | :---: |
+| ![Biblioteca Mágica](docs/screenshots/03_biblioteca_historias.png) | ![Celebração do Livro](docs/screenshots/04_leitor_livro_celebracao.png) |
+| *Estante de livros ilustrados infantis organizados com capas táteis, temas pedagógicos de virtudes, valores e gerador de histórias com IA.* | *Tela de Conquista com chuva de confetes 2D, moral da história destacada, voz amigável de parabéns do Jarvis e 3 botões gigantes de alta visibilidade.* |
+
+| 🦖 5. Parque dos Dinossauros & Sítio Paleontológico | 🕵️ 6. Detetive Stark (Jogo dos 7 Erros) |
+| :---: | :---: |
+| ![Parque dos Dinossauros](docs/screenshots/05_parque_dinossauros.png) | ![Detetive Stark](docs/screenshots/06_detetive_7_erros.png) |
+| *Escavação fóssil interativa com martelinho, pincel e super lupa, além de rugidos pré-históricos e fatos científicos adaptados para crianças.* | *Desafio visual de atenção e foco com contador tátil progressivo, efeitos sonoros imersivos e incentivos falados pelo robô Jarvis.* |
+
+| 🎨 7. Lousa Mágica Neon & Carimbos Colecionáveis | 📱 8. Painel Administrativo dos Pais (`/admin`) |
+| :---: | :---: |
+| ![Lousa Mágica Neon](docs/screenshots/07_lousa_magica_neon.png) | ![Painel dos Pais](docs/screenshots/08_painel_pais_admin.png) |
+| *Quadro de desenho digital com pincéis neon vibrantes, borracha tátil e carimbos colecionáveis (⭐, 🤖, 🚀, 🦖, ❤️, 👑, ⚡).* | *Painel dos pais com indicador de Wi-Fi em tempo real (nmcli), túnel Cloudflare, limite de tempo de tela, controle de volume e mensagens carinhosas.* |
+
+| 🧩 9. Quarto de Engenharia (Programação Visual por Blocos) |
+| :---: |
+| ![Quarto de Engenharia](docs/screenshots/09_quarto_engenharia.png) |
+| *Bancada de lógica computacional e robótica infantil estilo Google Blockly: a criança programa sequências de passos e ações para o robô Jarvis executar!* |
+
+---
+
+## 🌟 Novidades da Versão 3.6.5 (Edição Definitiva de Estabilidade e UX Infantil)
+
+### 🌟 1. Tela de Conquista & Celebração do Livro Definitiva (`v3.6.4`)
+- **Fim do Fechamento Abrupto e Travamento:** O botão de concluir livro agora é uma chamada dourada pulsante `🌟 CONCLUIR HISTÓRIA! (+2 ⭐)` de 68px de altura com feedback tátil instantâneo.
+- **Tela de Conquista Festiva:** Ao terminar uma história, abre-se uma tela comemorativa com o mascote Jarvis feliz, chuva de confetes 2D (`canvas-confetti`), a moral da história destacada em caixa dourada e 3 botões gigantes: `⭐ Pegar Minhas Estrelas!`, `🔄 Ler Novamente` e `📚 Escolher Outro Livro`.
+- **Elogio e Síntese de Voz Sem Conflito:** O Jarvis elogia a criança por voz com tom afetuoso sem silenciar a música de fundo nem congelar a interface.
+
+### 🦸‍♂️ 2. Quartel-General de Missões do Herói Reformulado (`v3.6.3`)
+- **Linha do Tempo Visual de Conquistas:** Barra de progresso vibrante exibindo quantas missões foram concluídas no dia.
+- **Abas de Filtro Ergonômicas:** Filtros rápidos `Todas`, `Para Fazer` e `Concluídas` com tamanho adaptado para dedinhos de crianças pequenas.
+- **Atalhos Contextuais:** Cada missão possui botão com atalho direto para a atividade correspondente (escovação de dentes, dinossauros, livros, etc.).
+
+### 📶 3. Gestão de Wi-Fi em Tempo Real no Painel dos Pais (`/admin`)
+- **Detecção Precisa do SSID Ativo via `nmcli`:** O painel administrativo dos pais detecta e exibe a rede conectada instantaneamente (ex.: `ANJOS_COLCHOES`), com indicador visual de sinal e IP atribuído.
+- **Varredura Segura em Segundo Plano:** Escaneamento de redes disponíveis sem congelamento da interface e conexão guiada com senha protegida.
+
+### ⚡ 4. Servidor Inteligente com Recarregamento Automático e Headers Anti-Cache
+- **Monitoramento de Modificação (`mtime`):** O `run_server.py` detecta alterações nos arquivos de template HTML e recarrega o cache de RAM automaticamente sem necessidade de reiniciar o processo.
+- **Headers HTTP Anti-Cache:** Injeção estrita de `Cache-Control: no-cache, no-store, must-revalidate` e `Pragma: no-cache`, garantindo que o navegador nunca sirva versões antigas de scripts ou estilos.
+
+### 🧩 5. Quarto de Engenharia com Programação Visual (`/engenharia`)
+- **Bancada de Automação Infantil:** Ambiente interativo baseado em blocos visuais onde a criança conecta peças de código (andar, falar, girar, acender luzes) e assiste ao robô Jarvis executar as instruções na tela.
+
+---
+
+## 🌟 Novidades da Versão 3.5.0
 
 ### 🌐 1. Gestão Automatizada de Domínio & Cloudflare Tunnel (`config_nuvem.py`)
 - **Acesso Parental de Qualquer Lugar:** Painel dos Pais acessível remotamente em HTTPS sem necessidade de IP fixo, DDNS ou abertura de portas no roteador.
@@ -33,7 +89,6 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 - **Animate.css & SweetAlert2:** Transições fluidas e alertas visuais adaptados ao tema Stark.
 - **Canvas-Confetti (Dopamina 2D):** Disparo de partículas festivas ao concluir missões com 0% de sobrecarga na CPU.
 - **SortableJS:** Drag-and-drop leve integrado.
-- **Quarto de Engenharia (`/engenharia`):** Bancada de programação visual infantil estilo Google Blockly onde a criança monta sequências de comandos para o robô Jarvis executar!
 - **KenneyNL UI Kit:** Assets vetoriais organizados em `/static/ui/`.
 
 ### 🎵 6. Gamificação, Sonoplastia & Trilha em Loop
@@ -43,24 +98,6 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 ### 📱 7. App Android Remoto Otimizado (< 3 MB)
 - **WebView Nativo:** Aponta nativamente para a URL segura do painel remoto em tela cheia imersiva (sem barra de endereços).
 - **Sem Assets Pesados:** Imagens e áudios pesados do netbook foram desvinculados do pacote Android, gerando um APK extremamente leve e rápido.
-
----
-
-## 🌟 Novidades da Versão 3.5.0
-
-### 🦁 1. Reino Animal: Som Real 100% Autônomo & Grade Simétrica 2x9
-- **Áudio Real Exclusivo (Sem o Jarvis Falar):** Ao acionar o som de qualquer um dos 18 animais, o sistema reproduz imediatamente apenas o som natural e biológico gravado do bicho, sem que o robô Jarvis fale por cima ou interrompa o áudio.
-- **Botão Dedicado de Curiosidade Falada (💡 Falar Curiosidade):** A explicação educativa narrada pelo Jarvis fica disponível sob demanda da criança em um botão separado, permitindo foco total na audição pura dos animais.
-- **Grade 2x9 Perfeitamente Proporcional:** O grid do reino animal foi ajustado para grid-template-columns: repeat(9, 1fr), exibindo exatamente 2 linhas simétricas de 9 botões com nomes concisos, preenchendo a tela do netbook 1024x600 sem sobras ou cortes, e com slider tátil suave no mobile.
-
-### 🦖 2. Museu & Sítio dos Dinossauros com Arte Científica Real e Ferramentas
-- **8 Dinossauros com Fotos e Posters Reais de Museu:** Ilustrações científicas de alta definição extraídas do acervo paleontológico (*T-Rex, Tricerátops, Espinossauro, Estegossauro, Pteranodonte, Anquilossauro, Apatossauro e Carnotauro*).
-- **3 Ferramentas Interativas de Escavação Paleontológica:**
-  - 🔨 **Martelinho Fóssil:** Quebra rochas duras com efeito sonoro de impacto.
-  - 🖌️ **Pincel Suave:** Varre a poeira e areia dos fósseis com som de cerdas.
-  - 🔍 **Super Lupa:** Inspeciona detalhes anatômicos e curiosidades da ossada.
-- **Modo Galeria do Museu Stark:** Exposição com imagem real do fóssil em moldura holográfica dourada, badges geológicas (*Período, Alimentação, Porte*) e rugidos pré-históricos.
-- **Suporte a MIME Type .webp no Microdot:** Servidor backend atualizado com suporte nativo a imagens .webp.
 
 ---
 
@@ -88,37 +125,6 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 - **Persistência Local (localStorage Fallback):** Fichas, moedas, itens da lojinha e histórico de dicção são mantidos localmente no próprio aparelho da criança.
 - **Modo Wi-Fi Opcional com 1 Toque:** Se os pais quiserem conectar o celular ao robô que está rodando no netbook ou PC da casa, basta dar um **toque longo na tela** para abrir o menu de conexão, digitar o IP e alternar na hora.
 
-### 📐 4. Responsividade Mobile & Netbook Kiosk Perfeitas
-- **Mascote Adaptável (`clamp`):** O robô Jarvis redimensiona dinamicamente tanto para celulares quanto para netbooks 1024x600.
-- **Trava Parental (PIN de 4 Dígitos / Desafio de Adulto):** Acesso ao Painel dos Pais protegido no `/pais`.
-- **Cache de RAM de Templates:** O Microdot serve as páginas `/` e `/pais` direto da memória com 0ms de I/O em disco.
-
----
-
-## 🌟 Novidades da Versão 3.3
-
-### 📱 1. Aplicativo Android 100% Autônomo & Offline (Sem Erro de Porta 8000)
-- **Execução Nativa Direta:** O APK Android agora embute todos os templates, jogos, mascote e folhas de estilo dentro do próprio pacote (`assets/` nativo em `file:///android_asset/hud_jarvis.html`), funcionando de forma **100% autônoma e offline** diretamente no celular da criança, sem precisar de servidor rodando ou de IP na porta 8000.
-- **Persistência Local (localStorage Fallback):** Fichas, moedas, itens da lojinha e histórico de dicção são mantidos localmente no próprio aparelho da criança.
-- **Modo Wi-Fi Opcional com 1 Toque:** Se os pais quiserem conectar o celular ao robô que está rodando no netbook ou PC da casa, basta dar um **toque longo na tela** para abrir o menu de conexão, digitar o IP e alternar na hora. Caso haja queda de conexão na rede, o app reverte imediatamente para o modo offline sem exibir tela de erro do Android!
-
-### 📐 2. Responsividade Mobile Completa (Sem Sobreposições de Tela)
-- **Mascote Adaptável (`clamp`):** O robô Jarvis agora redimensiona dinamicamente para se ajustar perfeitamente tanto a telas de smartphones em modo retrato (`max-width: 820px`) quanto paisagem ou netbooks 1024x600.
-- **Top Bar & Pílula Central Fluidas:** Eliminadas todas as colisões entre os badges de moedas/bateria e a pílula de localização do cômodo em telas estreitas de 360-420px.
-- **Modais com Rolagem Suave no Celular:** Os 17 jogos, a Biblioteca Mágica e a Loja agora abrem em layout vertical com scroll suave e ergonômico no celular, mantendo a regra de **ZERO barras de rolagem** quando em telas de netbook/desktop.
-
-### 🛡️ 3. Trava Parental (PIN de 4 Dígitos / Desafio de Adulto)
-- **Parental Gate no `/pais`:** Acesso ao Painel dos Pais protegido por PIN numérico personalizável de 4 dígitos ou desafio de adulto (ex.: *7 × 8 = 56*), impedindo alterações acidentais feitas pelas crianças.
-- **Gestão Segura de PIN:** Possibilidade de definir ou alterar o PIN diretamente na interface dos pais, com validação instantânea na API `/api/admin/pin/*`.
-
-### ⚡ 4. Otimizações de CPU & RAM para Netbooks Intel Atom
-- **Cache de RAM de Templates:** O Microdot agora serve as páginas `/` e `/pais` diretamente da memória RAM, gerando **0ms de I/O em disco** no HDD lento do netbook.
-- **Eliminação de Jitter:** Remoção do `gc.collect()` síncrono por requisição, evitando pausas de 15-40ms na CPU de 1 núcleo do Intel Atom.
-
-### 🌙 5. Modo Noturno Circadiano & Atalhos de Teclado
-- **Filtro Noturno Automático:** A partir das 20h00, o sistema ativa uma suave tonalidade âmbar circadiana que reduz a luz azul e prepara os olhos da criança para o sono.
-- **Atalhos no Teclado Físico:** Navegue pelos cômodos com `←` / `→`, interaja com o Jarvis usando `Espaço` e feche qualquer janela instantaneamente com `Esc`.
-
 ---
 
 ## 🌟 Recursos Consolidados da Versão 3.2
@@ -136,7 +142,7 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
 - **Comando de Voz Integrado:** Diga *"Jarvis me mostra uma palavra nova"*, *"Jarvis palavra mágica"* ou *"Jarvis treinar dicção"* e o jogo abre sorteando a palavra na hora!
 
 ### 🎬 2. Gestão de Tempo de Cinema & Orientação Segura
-- **🚫 Botão de Travar / Zerar Cinema nas Ações Rápidas:** Os pais podem interromper ou revogar instantaneamente qualquer tempo residual de vídeo diretamente pelo painel `/pais` via `/api/admin/media/zerar`.
+- **🚫 Botão de Travar / Zerar Cinema nas Ações Rápidas:** Os pais podem interromper ou revogar instantaneamente qualquer tempo residual de vídeo diretamente pelo painel `/admin` via `/api/admin/media/zerar`.
 - **Teto Máximo para Bônus de Mídia:** O bônus concedido pelos pais possui teto protetivo (máximo de 45 minutos), evitando acúmulos infinitos de tela.
 - **Diálogo Interativo por Voz:** Quando o cinema é liberado por horário ou bônus, o Jarvis anuncia por voz e pergunta gentilmente se a criança deseja assistir agora ou continuar brincando.
 
@@ -153,20 +159,6 @@ Sistema operacional educativo, companheiro emocional e assistente gamificado est
   - 🐧 **Linux Standalone (.tar.gz):** Pacote portátil de quiosque para netbooks modestos.
   - 🪟 **Windows Desktop (.zip):** Versão portátil completa com inicializador `.bat` para qualquer PC Windows.
   - 📱 **PWA Móvel dos Pais:** Progressive Web App instalável no smartphone com Service Worker offline e push notifications.
-
----
-
-## 📸 Capturas de Tela do Sistema em Execução
-
-| 🤖 Tela Principal — Sala de Brincar do Robô Jarvis | 🎮 Central de Jogos & Estudos Paginada |
-| :---: | :---: |
-| ![HUD Jarvis](docs/screenshots/jarvis_sala_brincar.jpg) | ![Menu de Jogos e Estudos](docs/screenshots/menu_jogos_estudos.jpg) |
-| *Mascote Jarvis interativo com clima, economia de moedas, cômodos e status de bateria do notebook* | *17 Jogos infantis paginados em Grid 2x2 com botões táteis grandes e ZERO barras de rolagem* |
-
-| 🗣️ Fonoaudiologia & Dicção do Super-Herói | 📚 Biblioteca Mágica de Virtudes & Histórias |
-| :---: | :---: |
-| ![Fonoaudiologia](docs/screenshots/menu_jogos_estudos.jpg) | ![Biblioteca Mágica](docs/screenshots/biblioteca_magica.jpg) |
-| *66 desafios fonoaudiológicos com sílabas neon gigantes, botão de palavra surpresa do Jarvis e fala sílaba por sílaba* | *Livros infantis com virtudes, moral da história e gerador de histórias com IA* |
 
 ---
 
@@ -206,12 +198,12 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.5.0.deb` | `sudo dpkg -i jarvis-kids-os_3.5.0.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.5.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.5.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.5.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.5.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
-| 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/pais` e clicar em *Adicionar à Tela Inicial* |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.6.5.deb` | `sudo dpkg -i jarvis-kids-os_3.6.5.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.6.5-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.6.5-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.6.5-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.6.5-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/admin` e clicar em *Adicionar à Tela Inicial* |
 
 ---
 
@@ -235,7 +227,7 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 - Toda emissão de voz neural (`speak()`), chime sonoro ou música aciona previamente `pararTodosAudiosESpeech()`, cancelando requisições TTS em andamento e silenciando sintetizadores do navegador para garantir que nunca ocorra sobreposição de falas.
 
 ### 4. Zero Scrollbars & Paginação Tátil
-- Todas as interfaces (HUD, Loja, Biblioteca, Prato dos Campeões, Central de 17 Jogos e Academia de Dicção) utilizam containers flexbox com `overflow: hidden; max-height: calc(100vh - 72px)` e navegação anterior/próxima em botões de alta visibilidade, eliminando completamente barras de rolagem.
+- Todas as interfaces (HUD, Loja, Biblioteca, Prato dos Campeões, Central de Jogos e Academia de Dicção) utilizam containers flexbox com `overflow: hidden; max-height: calc(100vh - 72px)` e navegação anterior/próxima em botões de alta visibilidade, eliminando completamente barras de rolagem.
 
 ---
 
@@ -247,7 +239,7 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.5.0.deb
+sudo dpkg -i jarvis-kids-os_3.6.5.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
@@ -267,16 +259,6 @@ sudo dpkg -i jarvis-kids-os_3.5.0.deb
 * **Teclas Desativadas:** Teclas e atalhos de sistema que crianças pequenas costumam apertar sem querer (`Alt + F4`, `Alt + Tab`, teclas Windows/Super) são desativados no `~/.icewm/prefoverride` e no Openbox (`rc.xml`).
 * **Watchdog de Persistência:** Caso o navegador seja fechado acidentalmente, um laço de monitoramento reabre o Jarvis automaticamente em 2 segundos.
 * **Protetor de Tela Desativado:** Comandos `xset s off -dpms` impedem que a tela apague no meio de uma historinha ou jogo.
-
-### 🛠️ Scripts Alternativos de Configuração (Caso instale sem o .deb):
-* **Instalação Manual no antiX:**
-  ```bash
-  bash instalar_antix_kiosk.sh
-  ```
-* **Ativação Completa de Persistência & Auto-Login pelo Root:**
-  ```bash
-  sudo bash configurar_boot_automatico.sh
-  ```
 
 ---
 
@@ -322,23 +304,13 @@ sudo dpkg -i jarvis-kids-os_3.5.0.deb
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.5.0.deb`). O sistema inicia 100% automático no boot.
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_*.deb`). O sistema inicia 100% automático no boot.
 >
 > O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
 
 ### Pré-requisitos (Modo Dev)
 - Python 3.10 ou superior
 - Navegador moderno (Chromium, Chrome, Edge ou Firefox)
-
-### 🚀 Como colocar no Netbook com antiX Linux (Instalação 100% Automática)
-
-Basta baixar o arquivo `.deb` da versão mais recente nas [Releases do GitHub](https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS/releases) (ou passar via pendrive) e executar no terminal do antiX:
-
-```bash
-sudo dpkg -i jarvis-kids-os_*.deb
-```
-
-Pronto! O sistema do Jarvis já configura inicialização automática no boot do antiX Linux. Ao ligar o netbook ou abrir pelo menu/área de trabalho, o robô Jarvis e todos os 24 jogos abrem sozinhos em tela cheia sem que a criança precise abrir terminal ou digitar comandos! Que o pequeno campeão aproveite muito o seu novo computadorzinho!
 
 ### Instalação em Modo de Desenvolvimento
 ```bash
@@ -351,14 +323,16 @@ pip install -r requirements.txt
 ```bash
 python run_server.py 8000
 ```
-- Interface da criança: `http://localhost:8000`
-- Painel dos pais: `http://localhost:8000/pais`
+- Interface da criança (Modo Kiosk): `http://localhost:8000`
+- Painel Administrativo dos Pais: `http://localhost:8000/admin` (ou `/pais`)
+- Quarto de Engenharia (Blockly): `http://localhost:8000/engenharia`
 
 ---
 
-## 📱 Painel dos Pais (`/pais`)
+## 📱 Painel dos Pais (`/admin` ou `/pais`)
 
-Acessível por qualquer smartphone, tablet ou computador na mesma rede Wi-Fi (`http://[IP-DO-NETBOOK]:8000/pais`):
+Acessível por qualquer smartphone, tablet ou computador na mesma rede Wi-Fi (`http://[IP-DO-NETBOOK]:8000/admin`):
+- **📶 Status Wi-Fi em Tempo Real:** Visualização do SSID conectado (`nmcli`) e sinal da rede.
 - **Ações Rápidas com 1 Toque:** Liberar ou travar cinema, pausar para refeição, acionar alarme de escovar dentes ou guardar brinquedos.
 - **Pote do Tesouro:** Gerenciamento do saldo de moedas e aprovação de resgates da vida real.
 - **Mensagens & Recados com Áudio/Vídeo:** Envio de bilhetes carinhosos com confirmação de leitura pela criança.

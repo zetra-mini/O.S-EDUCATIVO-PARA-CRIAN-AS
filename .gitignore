@@ -15,6 +15,9 @@ venv/
 *.db-shm
 .cache/
 temp_check.js
+node_modules/
+package-lock.json
+package.json
 
 
 static/uploads_recados/*
