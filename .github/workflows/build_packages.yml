@@ -24,7 +24,7 @@ jobs:
         run: |
           RAW_VER="${GITHUB_REF_NAME#v}"
           if [ -z "$RAW_VER" ] || [ "$RAW_VER" = "main" ]; then
-            RAW_VER="3.5.0"
+            RAW_VER="3.7.0"
           fi
           echo "VERSION=${RAW_VER}" >> $GITHUB_ENV
           echo "Versao configurada: ${RAW_VER}"
@@ -49,7 +49,7 @@ jobs:
 
       - name: 1. Compilar Pacote Debian Kiosk (.deb)
         run: |
-          VERSION="${VERSION:-3.3.0}"
+          VERSION="${VERSION:-3.7.0}"
           ARCH="all"
           DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
           mkdir -p "${DEB_DIR}/DEBIAN"
@@ -100,7 +100,7 @@ jobs:
 
       - name: 2. Empacotar Versao Desktop Linux (.tar.gz)
         run: |
-          VERSION="${VERSION:-3.3.0}"
+          VERSION="${VERSION:-3.7.0}"
           TAR_DIR="jarvis-kids-os-${VERSION}-linux-desktop"
           mkdir -p "${TAR_DIR}"
           cp -r ./* "${TAR_DIR}/" 2>/dev/null || true
@@ -111,7 +111,7 @@ jobs:
 
       - name: 3. Empacotar Versao Desktop Windows (.zip)
         run: |
-          VERSION="${VERSION:-3.3.0}"
+          VERSION="${VERSION:-3.7.0}"
           ZIP_DIR="jarvis-kids-os-${VERSION}-windows-desktop"
           mkdir -p "${ZIP_DIR}"
           cp -r ./* "${ZIP_DIR}/" 2>/dev/null || true
@@ -122,7 +122,7 @@ jobs:
 
       - name: 4. Compilar Aplicativo Android (.apk)
         run: |
-          VERSION="${VERSION:-3.3.0}"
+          VERSION="${VERSION:-3.7.0}"
           echo "Compilando pacote Android .apk..."
           bash deploy/android_app/build_apk.sh
           echo "Pacote .apk gerado:"
@@ -130,7 +130,7 @@ jobs:
 
       - name: 5. Empacotar Bundle macOS / Desktop (.app e .app.zip)
         run: |
-          VERSION="${VERSION:-3.3.0}"
+          VERSION="${VERSION:-3.7.0}"
           echo "Estruturando bundle macOS .app..."
           APP_DIR="JARVIS-Kids-OS.app"
           mkdir -p "${APP_DIR}/Contents/MacOS"
@@ -166,7 +166,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          name: "JARVIS Kids OS v${{ github.ref_name }}"
+          name: "JARVIS Kids OS ${{ github.ref_name }}"
           generate_release_notes: true
           files: |
             *.deb

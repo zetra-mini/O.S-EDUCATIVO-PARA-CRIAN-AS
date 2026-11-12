@@ -275,11 +275,22 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** (especialmente no Acer Aspire One, Asus Eee PC ou PCs antigos) é a experiência de **Console Educativo Dedicado** (estilo videogame ou eletrodoméstico):
 
 ### 🚀 Instalação com 1 Comando no antiX Linux (100% Automático):
-Basta baixar o arquivo `.deb` da versão mais recente (ou passar pelo pendrive) e executar no terminal do antiX:
+Basta baixar o arquivo `.deb` da versão mais recente nas Releases (ou passar pelo pendrive) e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.7.0.deb
+sudo dpkg -i jarvis-kids-os_3.7.0.deb || sudo apt-get install -f -y
 ```
+
+Ou usando o comando moderno do `apt` (que resolve e baixa todas as dependências do sistema de uma só vez):
+```bash
+sudo apt install ./jarvis-kids-os_3.7.0.deb
+```
+
+> 🛠️ **Como compilar o `.deb` localmente a qualquer momento:**
+> Se você clonou ou extraiu o repositório no Linux, pode gerar o pacote oficial executando:
+> ```bash
+> bash gerar_deb.sh
+> ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
 - **Zero configuração manual:** Você **não precisa** ativar o servidor pelo terminal nem digitar comandos toda vez que ligar o netbook.
@@ -360,7 +371,7 @@ sudo bash instalar_otimizado.sh
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
-> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_*.deb`). O sistema inicia 100% automático no boot.
+> 💡 **Para quem usa o Netbook com antiX Linux:** Você **NÃO** precisa clonar o repositório nem rodar comandos no terminal para iniciar o servidor! Basta instalar o pacote `.deb` oficial (`sudo dpkg -i jarvis-kids-os_3.7.0.deb || sudo apt-get install -f -y`). O sistema inicia 100% automático no boot.
 >
 > O passo a passo abaixo é voltado exclusivamente para desenvolvedores ou para quem deseja testar o código manualmente em outros computadores:
 
