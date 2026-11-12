@@ -276,6 +276,23 @@ sudo dpkg -i jarvis-kids-os_3.6.6.deb
 
 ---
 
+### ⚡ Script de Instalação e Otimização Direta (`instalar_otimizado.sh`)
+Para quem já clonou ou extraiu o repositório diretamente no netbook (Intel Atom N450 com 1 GB a 2 GB de RAM), o script all-in-one aplica todos os ajustes finos de baixo nível no sistema operacional com apenas 1 comando como root:
+
+```bash
+sudo bash instalar_otimizado.sh
+```
+
+**O que o `instalar_otimizado.sh` faz automaticamente:**
+1. **Otimização de Kernel (ZRAM & Swappiness):** Aplica `vm.swappiness=80` e `vm.vfs_cache_pressure=50` em `/etc/sysctl.d/99-jarvis-otimizado.conf` para evitar thrashing de RAM.
+2. **Compressão ZRAM (lz4):** Instala `zram-tools` e aloca 50% da memória com compressão ultrarrápida lz4, além de instalar `unclutter` para ocultar o cursor do mouse após inatividade.
+3. **Aceleração de Disco (noatime, nodiratime):** Modifica `/etc/fstab` para eliminar o overhead de registro de acesso a cada arquivo ou asset lido no HDD/SSD lento do netbook.
+4. **Renderização Web Otimizada:** Injeta flags de baixo consumo no `iniciar_web_kiosk.sh` (`--kiosk --disable-gpu --disable-dev-shm-usage --disable-background-networking --disable-extensions --js-flags="--max_old_space_size=256"`).
+5. **Daemon do Sistema:** Copia e ativa o serviço `/etc/systemd/system/jarvis-kids.service` (ou modo de segundo plano no antiX SysVinit).
+6. **Manutenção Noturna Automática:** Agenda na crontab das 3h da manhã um reinício preventivo do serviço e limpeza dos caches de RAM (`drop_caches`), garantindo que o netbook acorde 100% responsivo para o uso da criança no dia seguinte.
+
+---
+
 ## 🎮 Catálogo dos 24 Jogos & Atividades Educativas (6 Páginas 2x2)
 
 ### 📄 Página 1: Alfabetização, Matemática e Linguagens
