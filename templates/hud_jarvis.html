@@ -3971,14 +3971,22 @@
       } catch (e) {}
     }
 
-    // FANFARRA TRIUNFAL DE VITÓRIA (WEB AUDIO API - 0ms LATÊNCIA, 0 REDE, 0 ENGASGO)
+    // FANFARRA TRIUNFAL DE VITÓRIA (WEB AUDIO API - 0ms LATÊNCIA, NUNCA TOCA AO SAIR DO MODAL)
     function playCelebrationFanfare() {
       try {
+        const mEl = document.getElementById('activity-modal');
+        if (!mEl || !mEl.classList.contains('open')) return;
         destravarAudioNavegador();
         if (!audioCtx) return;
         const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
         notes.forEach((freq, idx) => {
-          setTimeout(() => playTone(freq, 150, 'triangle', 0.22), idx * 80);
+          const tId = setTimeout(() => {
+            const modalCheck = document.getElementById('activity-modal');
+            if (modalCheck && modalCheck.classList.contains('open')) {
+              playTone(freq, 150, 'triangle', 0.22);
+            }
+          }, idx * 80);
+          globalSoundTimeouts.push(tId);
         });
       } catch (e) {}
     }
@@ -3986,6 +3994,8 @@
 
     function dispararChuvaCoracoes(count = 50) {
       try {
+        const mEl = document.getElementById('activity-modal');
+        if (!mEl || !mEl.classList.contains('open')) return;
         if (typeof window.confetti === 'function') {
           window.confetti({ particleCount: count, spread: 70, origin: { y: 0.6 } });
         }
@@ -4080,6 +4090,19 @@
     let currentSpeechId = 0;
     let isJarvisSpeaking = false;
     let globalActiveAudioSource = null;
+
+    function pararTodosJogosAtivos() {
+      if (typeof encerrarCorridaTurbo === 'function') encerrarCorridaTurbo();
+      if (typeof encerrarDefensorGalactico === 'function') encerrarDefensorGalactico();
+      if (typeof encerrarReatorArkanoid === 'function') encerrarReatorArkanoid();
+      if (typeof encerrarJetpackStark === 'function') encerrarJetpackStark();
+      if (typeof encerrarCircuitoNeon === 'function') encerrarCircuitoNeon();
+      if (typeof encerrarEspelhoDasEmocoes === 'function') encerrarEspelhoDasEmocoes();
+      if (typeof stopFingerCameraMode === 'function') stopFingerCameraMode();
+      if (typeof encerrarCameraMatematica === 'function') encerrarCameraMatematica();
+      if (typeof stopCountingSong === 'function') stopCountingSong();
+      if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
+    }
 
     function pararTodosAudiosESpeech() {
       // Invalida instantaneamente qualquer requisição ou callback de áudio anterior!
@@ -6151,6 +6174,7 @@
     }
 
     function voltarTelaModal() {
+      pararTodosJogosAtivos();
       pararTodosAudiosESpeech();
       playTone(523, 80);
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
@@ -6166,6 +6190,9 @@
       // Se a tela atual for a Loja ou se a pilha tiver apenas 1 item, fecha direto para a tela inicial
       const current = modalNavStack.length > 0 ? modalNavStack[modalNavStack.length - 1] : null;
       if (modalNavStack.length <= 1 || (current && current.title && current.title.includes('LOJA DO TESOURO'))) {
+        if (current && typeof current.cleanup === 'function') {
+          try { current.cleanup(); } catch (e) {}
+        }
         modalNavStack = [];
         closeModal();
         return;
@@ -6240,14 +6267,23 @@
     }
 
     function closeModal(restoreVoice = true) {
-      encerrarTodosProcessosEAudiosJogos();
+      modalNavStack.forEach(s => {
+        if (s && typeof s.cleanup === 'function') {
+          try { s.cleanup(); } catch(e) {}
+        }
+      });
       modalNavStack = [];
+      encerrarTodosProcessosEAudiosJogos();
+      pararTodosJogosAtivos();
       const mEl = document.getElementById('activity-modal');
       if (mEl) {
         mEl.classList.remove('open');
         mEl.classList.remove('zero-scroll');
       }
       document.getElementById('modal-body').innerHTML = '';
+      if (typeof window.confetti === 'function' && typeof window.confetti.reset === 'function') {
+        try { window.confetti.reset(); } catch(e) {}
+      }
       if (restoreVoice) loadState(false);
     }
 
@@ -15224,7 +15260,7 @@
         const crianca = appState.config.child_name || 'Kaleo';
         speak(`Motores roncando, piloto ${crianca}! Use as setas ou toque na pista para desviar dos cones, pegar moedas e acelerar com o Nitro Turbo!`);
         renderTurboRacingBody(body);
-      }, true);
+      }, true, () => encerrarCorridaTurbo());
     }
 
     function encerrarCorridaTurbo() {
@@ -15238,6 +15274,8 @@
       }
       if (turboRacingState) {
         turboRacingState.active = false;
+        turboRacingState.items = [];
+        turboRacingState.particles = [];
       }
     }
 
@@ -15252,9 +15290,9 @@
         carY: 236,
         carColor: '#ef4444',
         carModelName: 'Vermelho Stark',
-        speedLevel: 'medio',
-        speed: 7.5,
-        baseSpeed: 7.5,
+        speedLevel: 'facil',
+        speed: 5.0,
+        baseSpeed: 5.0,
         distanceTraveled: 0,
         nextMilestone: 500,
         coins: 0,
@@ -15298,22 +15336,22 @@
               <div style="font-size:1.05rem; font-weight:900; color:#00f0ff;">
                 🏎️ Super Piloto Stark
               </div>
-              <span id="turbo-hud-speed" style="background:#7c2d12; color:#fed7aa; border:1.5px solid #ea580c; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
-                140 km/h
+              <span id="turbo-hud-speed" style="background:#065f46; color:#a7f3d0; border:1.5px solid #059669; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
+                80 km/h
               </span>
             </div>
 
-            <!-- SELETOR DE NÍVEL DE VELOCIDADE (PEDIDO DO USUÁRIO) -->
+            <!-- SELETOR DE NÍVEL DE VELOCIDADE (SEMPRE INICIA NO MODO FÁCIL) -->
             <div>
               <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⚡ Nível de Velocidade do Motor:</div>
               <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" id="btn-speed-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:1.5px solid #059669; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setTurboSpeedLevel('facil')">
+                <button type="button" class="btn" id="btn-speed-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.6);" onclick="setTurboSpeedLevel('facil')">
                   🟢 Fácil (80 km/h)
                 </button>
-                <button type="button" class="btn" id="btn-speed-medio" style="flex:1; background:#0284c7; color:#fff; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.4);" onclick="setTurboSpeedLevel('medio')">
+                <button type="button" class="btn" id="btn-speed-medio" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setTurboSpeedLevel('medio')">
                   🟡 Veloz (140 km/h)
                 </button>
-                <button type="button" class="btn" id="btn-speed-turbo" style="flex:1; background:#991b1b; color:#fecaca; border:1.5px solid #dc2626; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setTurboSpeedLevel('turbo')">
+                <button type="button" class="btn" id="btn-speed-turbo" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setTurboSpeedLevel('turbo')">
                   🔴 Insano (220 km/h)
                 </button>
               </div>
@@ -15379,23 +15417,42 @@
       if (!turboRacingState) return;
       turboRacingState.speedLevel = level;
       const speeds = { facil: 5.0, medio: 7.8, turbo: 11.5 };
-      turboRacingState.baseSpeed = speeds[level] || 7.8;
+      turboRacingState.baseSpeed = speeds[level] || 5.0;
       turboRacingState.speed = turboRacingState.baseSpeed;
       playTone(587, 80);
 
-      const labels = { facil: '80 km/h (Passeio)', medio: '140 km/h (Veloz)', turbo: '220 km/h (Super Turbo!)' };
+      const labels = { facil: '80 km/h (Passeio Fácil)', medio: '140 km/h (Veloz)', turbo: '220 km/h (Super Turbo!)' };
       showToast(`🏎️ Velocidade: ${labels[level]}!`);
       const spdEl = document.getElementById('turbo-hud-speed');
-      if (spdEl) spdEl.textContent = `${Math.round(turboRacingState.speed * 18)} km/h`;
+      if (spdEl) {
+        spdEl.textContent = `${Math.round(turboRacingState.speed * 16)} km/h`;
+        if (level === 'facil') {
+          spdEl.style.background = '#065f46';
+          spdEl.style.color = '#a7f3d0';
+          spdEl.style.borderColor = '#059669';
+        } else if (level === 'medio') {
+          spdEl.style.background = '#075985';
+          spdEl.style.color = '#bae6fd';
+          spdEl.style.borderColor = '#0284c7';
+        } else {
+          spdEl.style.background = '#7c2d12';
+          spdEl.style.color = '#fed7aa';
+          spdEl.style.borderColor = '#ea580c';
+        }
+      }
 
       ['facil', 'medio', 'turbo'].forEach(lvl => {
         const b = document.getElementById(`btn-speed-${lvl}`);
         if (b) {
           if (lvl === level) {
+            b.style.background = lvl === 'facil' ? '#065f46' : (lvl === 'medio' ? '#0284c7' : '#991b1b');
+            b.style.color = '#fff';
             b.style.borderColor = '#00f0ff';
             b.style.boxShadow = '0 0 10px rgba(0,240,255,0.6)';
             b.style.fontWeight = '900';
           } else {
+            b.style.background = '#1e293b';
+            b.style.color = '#94a3b8';
             b.style.borderColor = '#334155';
             b.style.boxShadow = 'none';
             b.style.fontWeight = '700';
@@ -15760,10 +15817,10 @@
     // PÁGINA 8 - JOGO 1: DEFENSOR GALÁCTICO STARK (SHOOT 'EM UP ARCADE)
     // =========================================================================
     let galacticDefenderState = {
-      active: false, paused: false,
+      active: false, paused: false, difficulty: 'facil',
       playerX: 185, playerY: 242, playerW: 38, playerH: 26, playerVx: 0,
       lives: 3, score: 0, coins: 0, wave: 1,
-      turboCharge: 80, isTurbo: false,
+      turboCharge: 85, isTurbo: false,
       lasers: [], enemies: [], particles: [], drops: [], stars: [],
       lastFireTime: 0, autoFireTimer: 0
     };
@@ -15784,14 +15841,55 @@
     function encerrarDefensorGalactico() {
       if (galacticAnimId) { cancelAnimationFrame(galacticAnimId); galacticAnimId = null; }
       if (galacticKeyHandler) { window.removeEventListener('keydown', galacticKeyHandler); galacticKeyHandler = null; }
-      if (galacticDefenderState) galacticDefenderState.active = false;
+      if (galacticDefenderState) {
+        galacticDefenderState.active = false;
+        galacticDefenderState.enemies = [];
+        galacticDefenderState.lasers = [];
+        galacticDefenderState.drops = [];
+        galacticDefenderState.particles = [];
+      }
+    }
+
+    function setGalacticDifficulty(diff) {
+      if (!galacticDefenderState) return;
+      galacticDefenderState.difficulty = diff;
+      playTone(587, 80);
+      const labels = { facil: '🟢 Fácil (Drones Calmos)', medio: '🟡 Médio (Equilibrado)', dificil: '🔴 Difícil (Super Invasão!)' };
+      showToast(`🚀 Dificuldade: ${labels[diff] || diff}!`);
+
+      const vyFactors = { facil: 0.10, medio: 0.18, dificil: 0.28 };
+      const baseVy = vyFactors[diff] || 0.10;
+      if (galacticDefenderState.enemies) {
+        galacticDefenderState.enemies.forEach(e => {
+          e.vy = baseVy + (galacticDefenderState.wave * 0.03);
+        });
+      }
+
+      ['facil', 'medio', 'dificil'].forEach(lvl => {
+        const b = document.getElementById(`btn-galactic-diff-${lvl}`);
+        if (b) {
+          if (lvl === diff) {
+            b.style.background = lvl === 'facil' ? '#065f46' : (lvl === 'medio' ? '#0284c7' : '#991b1b');
+            b.style.color = '#fff';
+            b.style.borderColor = '#00f0ff';
+            b.style.boxShadow = '0 0 10px rgba(0,240,255,0.6)';
+            b.style.fontWeight = '900';
+          } else {
+            b.style.background = '#1e293b';
+            b.style.color = '#94a3b8';
+            b.style.borderColor = '#334155';
+            b.style.boxShadow = 'none';
+            b.style.fontWeight = '700';
+          }
+        }
+      });
     }
 
     function renderGalacticDefenderBody(body) {
       encerrarDefensorGalactico();
 
       galacticDefenderState = {
-        active: true, paused: false,
+        active: true, paused: false, difficulty: 'facil',
         playerX: 185, playerY: 242, playerW: 38, playerH: 26, playerVx: 0,
         lives: 3, score: 0, coins: 0, wave: 1,
         turboCharge: 85, isTurbo: false,
@@ -15841,6 +15939,22 @@
               <span id="galactic-hud-wave" style="background:#7f1d1d; color:#fecaca; border:1.5px solid #ef4444; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
                 ONDA 1
               </span>
+            </div>
+
+            <!-- SELETOR DE DIFICULDADE (SEMPRE INICIA NO MODO FÁCIL) -->
+            <div>
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">🎯 Nível de Dificuldade da Frota:</div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn" id="btn-galactic-diff-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.6);" onclick="setGalacticDifficulty('facil')">
+                  🟢 Fácil
+                </button>
+                <button type="button" class="btn" id="btn-galactic-diff-medio" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setGalacticDifficulty('medio')">
+                  🟡 Médio
+                </button>
+                <button type="button" class="btn" id="btn-galactic-diff-dificil" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setGalacticDifficulty('dificil')">
+                  🔴 Difícil
+                </button>
+              </div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -15918,10 +16032,13 @@
     }
 
     function setupGalacticWave(w) {
+      if (!galacticDefenderState || !galacticDefenderState.active) return;
       galacticDefenderState.wave = w;
       galacticDefenderState.enemies = [];
+      const diff = galacticDefenderState.difficulty || 'facil';
+      const baseVy = diff === 'facil' ? (0.10 + w * 0.03) : (diff === 'medio' ? (0.18 + w * 0.05) : (0.28 + w * 0.08));
       const cols = 6;
-      const rows = Math.min(3, 1 + Math.floor(w / 2));
+      const rows = diff === 'facil' ? Math.min(2, 1 + Math.floor(w / 3)) : Math.min(3, 1 + Math.floor(w / 2));
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const isBoss = (r === 0 && (c === 2 || c === 3));
@@ -15931,12 +16048,12 @@
             baseX: 45 + c * 52,
             w: isBoss ? 38 : 30,
             h: isBoss ? 26 : 22,
-            hp: isBoss ? (2 + Math.floor(w / 2)) : 1,
-            maxHp: isBoss ? (2 + Math.floor(w / 2)) : 1,
+            hp: isBoss ? (diff === 'facil' ? 2 : (2 + Math.floor(w / 2))) : 1,
+            maxHp: isBoss ? (diff === 'facil' ? 2 : (2 + Math.floor(w / 2))) : 1,
             type: isBoss ? 'boss' : 'drone',
             color: isBoss ? '#ef4444' : (r % 2 === 0 ? '#38bdf8' : '#a855f7'),
             emoji: isBoss ? '👾' : '🛸',
-            vy: 0.18 + w * 0.05
+            vy: baseVy
           });
         }
       }
@@ -15982,7 +16099,7 @@
       let tick = 0;
 
       function loop() {
-        if (!galacticDefenderState.active) return;
+        if (!galacticDefenderState || !galacticDefenderState.active) return;
         tick++;
 
         // Auto-recarga de turbo
@@ -16063,7 +16180,7 @@
                   const sEl = document.getElementById('galactic-hud-score');
                   if (sEl) sEl.textContent = `${galacticDefenderState.score} pts`;
 
-                  // Drop de moeda (40% de chance)
+                  // Drop de moeda (45% de chance)
                   if (Math.random() < 0.45) {
                     galacticDefenderState.drops.push({
                       x: e.x, y: e.y, vy: 1.8, type: 'coin'
@@ -16100,8 +16217,8 @@
           }
         }
 
-        // Próxima onda
-        if (todosMortos) {
+        // Próxima onda (Apenas se o jogo estiver ativo e tiver inimigos carregados)
+        if (galacticDefenderState.active && galacticDefenderState.enemies && galacticDefenderState.enemies.length > 0 && todosMortos) {
           playCelebrationFanfare();
           showToast(`🌟 ONDA ${galacticDefenderState.wave} VENCIDA! +2 Moedas!`);
           const pEl = document.getElementById('pote-fichas-val');
@@ -16114,9 +16231,10 @@
           setupGalacticWave(galacticDefenderState.wave + 1);
         }
 
-        // Renderiza tela
         renderGalacticCanvas(ctx, canvas);
-        galacticAnimId = requestAnimationFrame(loop);
+        if (galacticDefenderState && galacticDefenderState.active) {
+          galacticAnimId = requestAnimationFrame(loop);
+        }
       }
 
       galacticAnimId = requestAnimationFrame(loop);
@@ -16140,7 +16258,7 @@
         if (p.life <= 0) galacticDefenderState.particles.splice(i, 1);
       }
 
-      // Drops de Moedas
+      // Drops de Moeda
       galacticDefenderState.drops.forEach(d => {
         ctx.font = '16px sans-serif';
         ctx.textAlign = 'center';
@@ -16150,26 +16268,28 @@
       // Inimigos
       galacticDefenderState.enemies.forEach(e => {
         if (e.hp > 0) {
-          ctx.font = `${e.w - 6}px sans-serif`;
+          ctx.save();
+          ctx.translate(e.x, e.y);
+          ctx.font = `${e.w}px sans-serif`;
           ctx.textAlign = 'center';
-          ctx.fillText(e.emoji, e.x, e.y + 6);
+          ctx.textBaseline = 'middle';
+          ctx.fillText(e.emoji, 0, 0);
 
-          // Barra de HP se for boss
-          if (e.type === 'boss') {
+          // Barra de HP para chefes
+          if (e.type === 'boss' && e.maxHp > 1) {
             ctx.fillStyle = '#1e293b';
-            ctx.fillRect(e.x - 14, e.y - 14, 28, 4);
+            ctx.fillRect(-16, -18, 32, 4);
             ctx.fillStyle = '#ef4444';
-            ctx.fillRect(e.x - 14, e.y - 14, (e.hp / e.maxHp) * 28, 4);
+            ctx.fillRect(-16, -18, (e.hp / e.maxHp) * 32, 4);
           }
+          ctx.restore();
         }
       });
 
-      // Lasers (Otimizado Intel Atom: preenchimento duplo rápido)
+      // Lasers
       galacticDefenderState.lasers.forEach(l => {
-        ctx.fillStyle = l.isTurbo ? 'rgba(239, 68, 68, 0.35)' : 'rgba(0, 240, 255, 0.35)';
-        ctx.fillRect(l.x - 3, l.y - 1, 6, 14);
-        ctx.fillStyle = l.isTurbo ? '#facc15' : '#ffffff';
-        ctx.fillRect(l.x - 1.5, l.y, 3, 12);
+        ctx.fillStyle = l.isTurbo ? '#ef4444' : '#00f0ff';
+        ctx.fillRect(l.x - (l.isTurbo ? 2.5 : 1.5), l.y - 10, l.isTurbo ? 5 : 3, 14);
       });
 
       // Nave do Jogador (Stark Interceptor)
@@ -16179,49 +16299,57 @@
       ctx.save();
       ctx.translate(px, py);
 
-      // Jatos propulsores duplos
-      ctx.fillStyle = '#f97316';
+      // Chamas dos propulsores traseiros
+      ctx.fillStyle = Math.random() < 0.5 ? '#f97316' : '#eab308';
       ctx.beginPath();
-      ctx.moveTo(-10, 10); ctx.lineTo(-6, 20 + Math.random() * 6); ctx.lineTo(-2, 10);
-      ctx.moveTo(2, 10); ctx.lineTo(6, 20 + Math.random() * 6); ctx.lineTo(10, 10);
+      ctx.moveTo(-10, 12);
+      ctx.lineTo(-6, 22 + Math.random() * 6);
+      ctx.lineTo(-2, 12);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(2, 12);
+      ctx.lineTo(6, 22 + Math.random() * 6);
+      ctx.lineTo(10, 12);
       ctx.fill();
 
       // Corpo da nave
-      ctx.fillStyle = '#ef4444';
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(0, -16);
-      ctx.lineTo(16, 12);
-      ctx.lineTo(6, 8);
+      ctx.moveTo(0, -18);
+      ctx.lineTo(19, 12);
+      ctx.lineTo(9, 8);
       ctx.lineTo(0, 12);
-      ctx.lineTo(-6, 8);
-      ctx.lineTo(-16, 12);
+      ctx.lineTo(-9, 8);
+      ctx.lineTo(-19, 12);
       ctx.closePath();
       ctx.fill();
+      ctx.stroke();
 
-      // Asas douradas
-      ctx.fillStyle = '#facc15';
-      ctx.beginPath();
-      ctx.moveTo(0, -10); ctx.lineTo(18, 11); ctx.lineTo(12, 11); ctx.closePath();
-      ctx.moveTo(0, -10); ctx.lineTo(-18, 11); ctx.lineTo(-12, 11); ctx.closePath();
-      ctx.fill();
-
-      // Cabine azul
+      // Cockpit de vidro Stark
       ctx.fillStyle = '#00f0ff';
       ctx.beginPath();
-      ctx.ellipse(0, -2, 4, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -2, 5, 8, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      // Canhões de asa
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(-16, -2, 3, 10);
+      ctx.fillRect(13, -2, 3, 10);
 
       ctx.restore();
     }
 
-
     // =========================================================================
-    // PÁGINA 8 - JOGO 2: REATOR ARKANOID STARK (QUEBRA-BLOCOS TURBO)
+    // PÁGINA 8 - JOGO 2: REATOR ARKANOID STARK (QUEBRA-BLOCOS ARCADE)
     // =========================================================================
     let arkanoidState = {
-      active: false, paused: false,
-      paddleX: 145, paddleY: 256, paddleW: 80, paddleH: 12,
-      balls: [], ballLaunched: false,
+      active: false, paused: false, difficulty: 'facil',
+      paddleX: 140, paddleY: 256, paddleW: 105, paddleH: 12,
+      balls: [{ x: 185, y: 245, vx: 2.8, vy: -3.4, r: 6, isFire: false }],
+      ballLaunched: false,
       bricks: [], powerups: [], particles: [],
       score: 0, coins: 0, lives: 3, level: 1,
       expandTimer: 0, fireTimer: 0
@@ -16243,16 +16371,56 @@
     function encerrarReatorArkanoid() {
       if (arkanoidAnimId) { cancelAnimationFrame(arkanoidAnimId); arkanoidAnimId = null; }
       if (arkanoidKeyHandler) { window.removeEventListener('keydown', arkanoidKeyHandler); arkanoidKeyHandler = null; }
-      if (arkanoidState) arkanoidState.active = false;
+      if (arkanoidState) {
+        arkanoidState.active = false;
+        arkanoidState.bricks = [];
+        arkanoidState.balls = [];
+        arkanoidState.powerups = [];
+        arkanoidState.particles = [];
+      }
+    }
+
+    function setArkanoidDifficulty(diff) {
+      if (!arkanoidState) return;
+      arkanoidState.difficulty = diff;
+      playTone(587, 80);
+      const labels = { facil: '🟢 Fácil (Base Ampla 105px)', medio: '🟡 Médio (Base Padrão 80px)', dificil: '🔴 Difícil (Base Ágil 65px)' };
+      showToast(`⚡ Matriz: ${labels[diff] || diff}!`);
+
+      const paddleWidths = { facil: 105, medio: 80, dificil: 65 };
+      arkanoidState.paddleW = paddleWidths[diff] || 105;
+
+      if (!arkanoidState.ballLaunched && arkanoidState.balls.length > 0) {
+        arkanoidState.balls[0].x = arkanoidState.paddleX + arkanoidState.paddleW / 2;
+      }
+
+      ['facil', 'medio', 'dificil'].forEach(lvl => {
+        const b = document.getElementById(`btn-arkanoid-diff-${lvl}`);
+        if (b) {
+          if (lvl === diff) {
+            b.style.background = lvl === 'facil' ? '#065f46' : (lvl === 'medio' ? '#0284c7' : '#991b1b');
+            b.style.color = '#fff';
+            b.style.borderColor = '#00f0ff';
+            b.style.boxShadow = '0 0 10px rgba(0,240,255,0.6)';
+            b.style.fontWeight = '900';
+          } else {
+            b.style.background = '#1e293b';
+            b.style.color = '#94a3b8';
+            b.style.borderColor = '#334155';
+            b.style.boxShadow = 'none';
+            b.style.fontWeight = '700';
+          }
+        }
+      });
     }
 
     function renderArkanoidBody(body) {
       encerrarReatorArkanoid();
 
       arkanoidState = {
-        active: true, paused: false,
-        paddleX: 145, paddleY: 256, paddleW: 80, paddleH: 12,
-        balls: [{ x: 185, y: 245, vx: 3.2, vy: -4.2, r: 6, isFire: false }],
+        active: true, paused: false, difficulty: 'facil',
+        paddleX: 140, paddleY: 256, paddleW: 105, paddleH: 12,
+        balls: [{ x: 185, y: 245, vx: 2.8, vy: -3.4, r: 6, isFire: false }],
         ballLaunched: false,
         bricks: [], powerups: [], particles: [],
         score: 0, coins: 0, lives: 3, level: 1,
@@ -16291,6 +16459,22 @@
               <span id="arkanoid-hud-level" style="background:#083344; color:#a5f3fc; border:1.5px solid #06b6d4; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
                 MATRIZ 1
               </span>
+            </div>
+
+            <!-- SELETOR DE DIFICULDADE (SEMPRE INICIA NO MODO FÁCIL) -->
+            <div>
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⚡ Nível de Dificuldade da Matriz:</div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn" id="btn-arkanoid-diff-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.6);" onclick="setArkanoidDifficulty('facil')">
+                  🟢 Fácil
+                </button>
+                <button type="button" class="btn" id="btn-arkanoid-diff-medio" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setArkanoidDifficulty('medio')">
+                  🟡 Médio
+                </button>
+                <button type="button" class="btn" id="btn-arkanoid-diff-dificil" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setArkanoidDifficulty('dificil')">
+                  🔴 Difícil
+                </button>
+              </div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -16364,14 +16548,15 @@
     }
 
     function initArkanoidBricks(lvl) {
+      if (!arkanoidState || !arkanoidState.active) return;
       arkanoidState.level = lvl;
       arkanoidState.bricks = [];
-      const cols = 8;
-      const rows = 4;
-      const bW = 41;
-      const bH = 14;
-      const colors = ['#fbbf24', '#ef4444', '#a855f7', '#00f0ff'];
-      const pts = [40, 25, 15, 10];
+      const cols = 7;
+      const rows = Math.min(5, 2 + Math.floor(lvl / 2));
+      const bW = 46;
+      const bH = 15;
+      const colors = ['#ef4444', '#f97316', '#facc15', '#10b981', '#06b6d4', '#8b5cf6'];
+      const pts = [50, 40, 30, 20, 15, 10];
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
@@ -16409,15 +16594,13 @@
       if (!arkanoidState.ballLaunched) {
         arkanoidState.ballLaunched = true;
         if (arkanoidState.balls.length > 0) {
-          arkanoidState.balls[0].vy = -4.5;
-          arkanoidState.balls[0].vx = (Math.random() - 0.5) * 3.5;
+          const vyInit = arkanoidState.difficulty === 'facil' ? -3.4 : (arkanoidState.difficulty === 'medio' ? -4.2 : -5.2);
+          arkanoidState.balls[0].vy = vyInit;
+          arkanoidState.balls[0].vx = (Math.random() - 0.5) * 3.2;
         }
         playTone(659, 80);
       } else {
-        // Modo Turbo momentâneo
-        arkanoidState.balls.forEach(b => {
-          b.vx *= 1.15; b.vy *= 1.15;
-        });
+        // Boost na velocidade atual se já estiver rolando
         playTone(880, 50);
       }
     }
@@ -16429,13 +16612,16 @@
       let tick = 0;
 
       function loop() {
-        if (!arkanoidState.active) return;
+        if (!arkanoidState || !arkanoidState.active) return;
         tick++;
 
         // Timers de powerup
         if (arkanoidState.expandTimer > 0) {
           arkanoidState.expandTimer--;
-          if (arkanoidState.expandTimer <= 0) arkanoidState.paddleW = 80;
+          if (arkanoidState.expandTimer <= 0) {
+            const defaultW = arkanoidState.difficulty === 'facil' ? 105 : (arkanoidState.difficulty === 'medio' ? 80 : 65);
+            arkanoidState.paddleW = defaultW;
+          }
         }
         if (arkanoidState.fireTimer > 0) {
           arkanoidState.fireTimer--;
@@ -16467,7 +16653,7 @@
 
             if (b.y + b.r >= py && b.y - b.r <= py + ph && b.x >= px && b.x <= px + pw && b.vy > 0) {
               const hit = (b.x - (px + pw / 2)) / (pw / 2);
-              b.vx = hit * 4.8;
+              b.vx = hit * 4.6;
               b.vy = -Math.abs(b.vy);
               playTone(550, 40);
             }
@@ -16535,10 +16721,11 @@
               if (lEl) lEl.textContent = '🔵🔵🔵';
             }
             arkanoidState.ballLaunched = false;
+            const vyInit = arkanoidState.difficulty === 'facil' ? -3.4 : (arkanoidState.difficulty === 'medio' ? -4.2 : -5.2);
             arkanoidState.balls.push({
               x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
               y: arkanoidState.paddleY - 10,
-              vx: 3.2, vy: -4.2, r: 6, isFire: false
+              vx: 2.8, vy: vyInit, r: 6, isFire: false
             });
           }
         }
@@ -16555,7 +16742,7 @@
             const statusEl = document.getElementById('arkanoid-powerup-status');
 
             if (pu.type === 'expand') {
-              arkanoidState.paddleW = 115;
+              arkanoidState.paddleW = 125;
               arkanoidState.expandTimer = 480;
               if (statusEl) statusEl.textContent = '🛡️ Super Base Stark (Ampliada!)';
             } else if (pu.type === 'fire') {
@@ -16563,10 +16750,11 @@
               arkanoidState.balls.forEach(b => b.isFire = true);
               if (statusEl) statusEl.textContent = '🔥 Esfera Turbo Perfurante!';
             } else if (pu.type === 'multi') {
+              const vyInit = arkanoidState.difficulty === 'facil' ? -3.4 : -4.2;
               arkanoidState.balls.push({
                 x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
                 y: arkanoidState.paddleY - 10,
-                vx: -3.5, vy: -4.5, r: 6, isFire: arkanoidState.fireTimer > 0
+                vx: -3.2, vy: vyInit, r: 6, isFire: arkanoidState.fireTimer > 0
               });
               if (statusEl) statusEl.textContent = '⚡ Multi-Esferas Ativadas!';
             } else if (pu.type === 'coin') {
@@ -16587,30 +16775,35 @@
           }
         }
 
-        // Verifica vitória de matriz
-        const restamBlocos = arkanoidState.bricks.some(b => b.alive);
-        if (!restamBlocos) {
-          playCelebrationFanfare();
-          showToast(`🌟 MATRIZ ${arkanoidState.level} CONCLUÍDA! +2 Moedas!`);
-          const pEl = document.getElementById('pote-fichas-val');
-          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
-          fetch('/api/fichas/bonificar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantidade: 2, motivo: 'arkanoid_matriz' })
-          }).catch(() => null);
+        // Verifica vitória de matriz (Apenas se o jogo estiver ativo e houver blocos)
+        if (arkanoidState.active && arkanoidState.bricks && arkanoidState.bricks.length > 0) {
+          const restamBlocos = arkanoidState.bricks.some(b => b.alive);
+          if (!restamBlocos) {
+            playCelebrationFanfare();
+            showToast(`🌟 MATRIZ ${arkanoidState.level} CONCLUÍDA! +2 Moedas!`);
+            const pEl = document.getElementById('pote-fichas-val');
+            if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
+            fetch('/api/fichas/bonificar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ quantidade: 2, motivo: 'arkanoid_matriz' })
+            }).catch(() => null);
 
-          arkanoidState.ballLaunched = false;
-          initArkanoidBricks(arkanoidState.level + 1);
-          arkanoidState.balls = [{
-            x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
-            y: arkanoidState.paddleY - 10,
-            vx: 3.5, vy: -4.5, r: 6, isFire: false
-          }];
+            arkanoidState.ballLaunched = false;
+            initArkanoidBricks(arkanoidState.level + 1);
+            const vyInit = arkanoidState.difficulty === 'facil' ? -3.4 : (arkanoidState.difficulty === 'medio' ? -4.2 : -5.2);
+            arkanoidState.balls = [{
+              x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
+              y: arkanoidState.paddleY - 10,
+              vx: 2.8, vy: vyInit, r: 6, isFire: false
+            }];
+          }
         }
 
         renderArkanoidCanvas(ctx, canvas);
-        arkanoidAnimId = requestAnimationFrame(loop);
+        if (arkanoidState && arkanoidState.active) {
+          arkanoidAnimId = requestAnimationFrame(loop);
+        }
       }
 
       arkanoidAnimId = requestAnimationFrame(loop);
@@ -16618,13 +16811,6 @@
 
     function renderArkanoidCanvas(ctx, canvas) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Linhas quânticas de fundo
-      ctx.strokeStyle = 'rgba(6,182,212,0.08)';
-      ctx.lineWidth = 1;
-      for (let y = 20; y < canvas.height; y += 30) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-      }
 
       // Partículas
       for (let i = arkanoidState.particles.length - 1; i >= 0; i--) {
@@ -16635,77 +16821,78 @@
         if (p.life <= 0) arkanoidState.particles.splice(i, 1);
       }
 
-      // Blocos (Otimizado Intel Atom: renderização vetorial nítida sem blur)
-      arkanoidState.bricks.forEach(br => {
-        if (br.alive) {
-          ctx.fillStyle = br.color;
-          ctx.fillRect(br.x, br.y, br.w, br.h);
-
-          // Borda interna brilhante
-          ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      // Blocos de Vibranium
+      arkanoidState.bricks.forEach(b => {
+        if (b.alive) {
+          ctx.fillStyle = b.color;
+          ctx.fillRect(b.x, b.y, b.w, b.h);
+          ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 1;
-          ctx.strokeRect(br.x + 1, br.y + 1, br.w - 2, br.h - 2);
-
-          // Ícone se tiver powerup
-          if (br.powerup) {
+          ctx.strokeRect(b.x, b.y, b.w, b.h);
+          if (b.powerup) {
             ctx.fillStyle = '#ffffff';
-            ctx.font = '8px sans-serif';
+            ctx.font = '10px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('⚡', br.x + br.w / 2, br.y + br.h - 3);
+            ctx.fillText('✨', b.x + b.w / 2, b.y + b.h - 3);
           }
         }
       });
 
-      // Power-ups caindo
+      // Cápsulas Power-up caindo
       arkanoidState.powerups.forEach(pu => {
-        const icons = { expand: '🛡️', fire: '🔥', multi: '⚡', coin: '🪙' };
-        ctx.font = '16px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(icons[pu.type] || '✨', pu.x, pu.y);
+        ctx.save();
+        ctx.translate(pu.x, pu.y);
+        ctx.fillStyle = pu.type === 'fire' ? '#ef4444' : (pu.type === 'expand' ? '#00f0ff' : (pu.type === 'multi' ? '#a855f7' : '#facc15'));
+        ctx.beginPath();
+        ctx.roundRect(-10, -6, 20, 12, 6);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
       });
 
-      // Base Magnética (Paddle)
-      ctx.save();
+      // Base Magnética (Paddle Stark)
       const px = arkanoidState.paddleX;
       const py = arkanoidState.paddleY;
       const pw = arkanoidState.paddleW;
       const ph = arkanoidState.paddleH;
 
-      ctx.fillStyle = '#0284c7';
-      ctx.fillRect(px, py, pw, ph);
-      ctx.strokeStyle = '#00f0ff';
+      ctx.save();
+      ctx.fillStyle = '#0f172a';
+      ctx.strokeStyle = '#06b6d4';
       ctx.lineWidth = 2;
-      ctx.strokeRect(px, py, pw, ph);
+      ctx.beginPath();
+      ctx.roundRect(px, py, pw, ph, 6);
+      ctx.fill();
+      ctx.stroke();
 
-      // Cantos e núcleo
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(px + pw / 2 - 12, py + 2, 24, ph - 4);
+      // Linha de energia central da base
+      ctx.fillStyle = '#06b6d4';
+      ctx.fillRect(px + 4, py + ph / 2 - 1.5, pw - 8, 3);
       ctx.restore();
 
-      // Esferas (Arco com núcleo brilhante sem blur)
+      // Esferas Quânticas
       arkanoidState.balls.forEach(b => {
         ctx.save();
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r + 2, 0, Math.PI * 2);
-        ctx.fillStyle = b.isFire ? 'rgba(249, 115, 22, 0.4)' : 'rgba(0, 240, 255, 0.4)';
-        ctx.fill();
-
+        ctx.fillStyle = b.isFire ? '#ef4444' : '#00f0ff';
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = b.isFire ? '#f97316' : '#ffffff';
         ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
         ctx.restore();
       });
     }
 
-
     // =========================================================================
-    // PÁGINA 8 - JOGO 3: JETPACK REPULSOR STARK (GRAVIDADE & TURBO)
+    // PÁGINA 8 - JOGO 3: JETPACK REPULSOR STARK (VOO GRAVITACIONAL ARCADE)
     // =========================================================================
     let jetpackState = {
-      active: false, paused: false,
+      active: false, paused: false, difficulty: 'facil',
       playerX: 65, playerY: 130, playerVy: 0,
-      gravity: 0.30, thrust: -5.2,
+      gravity: 0.20, thrust: -4.5, baseSpeed: 2.8, gateGap: 115,
       distance: 0, coins: 0, score: 0, shields: 3,
       turboTimer: 0, gates: [], particles: [], stars: [],
       nextMilestone: 200
@@ -16727,16 +16914,64 @@
     function encerrarJetpackStark() {
       if (jetpackAnimId) { cancelAnimationFrame(jetpackAnimId); jetpackAnimId = null; }
       if (jetpackKeyHandler) { window.removeEventListener('keydown', jetpackKeyHandler); jetpackKeyHandler = null; }
-      if (jetpackState) jetpackState.active = false;
+      if (jetpackState) {
+        jetpackState.active = false;
+        jetpackState.gates = [];
+        jetpackState.particles = [];
+      }
+    }
+
+    function setJetpackDifficulty(diff) {
+      if (!jetpackState) return;
+      jetpackState.difficulty = diff;
+      playTone(587, 80);
+      const labels = { facil: '🟢 Fácil (Gravidade Suave)', medio: '🟡 Médio (Equilibrado)', dificil: '🔴 Difícil (Super Desafio!)' };
+      showToast(`🦸‍♂️ Voo: ${labels[diff] || diff}!`);
+
+      if (diff === 'facil') {
+        jetpackState.gravity = 0.20;
+        jetpackState.thrust = -4.5;
+        jetpackState.baseSpeed = 2.8;
+        jetpackState.gateGap = 115;
+      } else if (diff === 'medio') {
+        jetpackState.gravity = 0.30;
+        jetpackState.thrust = -5.2;
+        jetpackState.baseSpeed = 3.8;
+        jetpackState.gateGap = 92;
+      } else {
+        jetpackState.gravity = 0.40;
+        jetpackState.thrust = -6.0;
+        jetpackState.baseSpeed = 4.8;
+        jetpackState.gateGap = 78;
+      }
+
+      ['facil', 'medio', 'dificil'].forEach(lvl => {
+        const b = document.getElementById(`btn-jetpack-diff-${lvl}`);
+        if (b) {
+          if (lvl === diff) {
+            b.style.background = lvl === 'facil' ? '#065f46' : (lvl === 'medio' ? '#0284c7' : '#991b1b');
+            b.style.color = '#fff';
+            b.style.borderColor = '#00f0ff';
+            b.style.boxShadow = '0 0 10px rgba(0,240,255,0.6)';
+            b.style.fontWeight = '900';
+          } else {
+            b.style.background = '#1e293b';
+            b.style.color = '#94a3b8';
+            b.style.borderColor = '#334155';
+            b.style.boxShadow = 'none';
+            b.style.fontWeight = '700';
+          }
+        }
+      });
     }
 
     function renderJetpackBody(body) {
       encerrarJetpackStark();
 
       jetpackState = {
-        active: true, paused: false,
+        active: true, paused: false, difficulty: 'facil',
         playerX: 65, playerY: 130, playerVy: 0,
-        gravity: 0.30, thrust: -5.2,
+        gravity: 0.20, thrust: -4.5, baseSpeed: 2.8, gateGap: 115,
         distance: 0, coins: 0, score: 0, shields: 3,
         turboTimer: 0, gates: [], particles: [], stars: [],
         nextMilestone: 200
@@ -16777,6 +17012,22 @@
               <span id="jetpack-hud-dist" style="background:#3b0764; color:#f3e8ff; border:1.5px solid #8b5cf6; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
                 0 m
               </span>
+            </div>
+
+            <!-- SELETOR DE DIFICULDADE (SEMPRE INICIA NO MODO FÁCIL) -->
+            <div>
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">🚀 Nível de Dificuldade de Voo:</div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn" id="btn-jetpack-diff-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.6);" onclick="setJetpackDifficulty('facil')">
+                  🟢 Fácil
+                </button>
+                <button type="button" class="btn" id="btn-jetpack-diff-medio" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setJetpackDifficulty('medio')">
+                  🟡 Médio
+                </button>
+                <button type="button" class="btn" id="btn-jetpack-diff-dificil" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setJetpackDifficulty('dificil')">
+                  🔴 Difícil
+                </button>
+              </div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -16860,7 +17111,7 @@
       let tick = 0;
 
       function loop() {
-        if (!jetpackState.active) return;
+        if (!jetpackState || !jetpackState.active) return;
         tick++;
 
         // Turbo Timer
@@ -16873,7 +17124,8 @@
         }
 
         const isBoost = jetpackState.turboTimer > 0;
-        const currentSpeed = isBoost ? 6.8 : 3.8;
+        const baseSpeed = jetpackState.baseSpeed || 2.8;
+        const currentSpeed = isBoost ? (baseSpeed + 3.2) : baseSpeed;
 
         // Distância
         jetpackState.distance += currentSpeed * 0.12;
@@ -16884,7 +17136,7 @@
         if (sEl) sEl.textContent = `${jetpackState.score} pts`;
 
         // Bonificação a cada 200m
-        if (jetpackState.distance >= jetpackState.nextMilestone) {
+        if (jetpackState.active && jetpackState.distance >= jetpackState.nextMilestone) {
           jetpackState.nextMilestone += 200;
           jetpackState.coins++;
           playTone(880, 100);
@@ -16920,10 +17172,11 @@
           if (s.x < 0) { s.x = canvas.width; s.y = Math.random() * canvas.height; }
         });
 
-        // Spawna novos portais a cada 90 ticks
-        if (tick % 95 === 0) {
-          const gapY = 55 + Math.random() * (canvas.height - 150);
-          const gapH = 92;
+        // Spawna novos portais
+        const spawnFreq = jetpackState.difficulty === 'facil' ? 105 : (jetpackState.difficulty === 'medio' ? 90 : 75);
+        if (tick % spawnFreq === 0) {
+          const gapH = jetpackState.gateGap || 115;
+          const gapY = 45 + Math.random() * (canvas.height - gapH - 50);
           jetpackState.gates.push({
             x: canvas.width + 10,
             w: 26,
@@ -17005,7 +17258,9 @@
         }
 
         renderJetpackCanvas(ctx, canvas);
-        jetpackAnimId = requestAnimationFrame(loop);
+        if (jetpackState && jetpackState.active) {
+          jetpackAnimId = requestAnimationFrame(loop);
+        }
       }
 
       jetpackAnimId = requestAnimationFrame(loop);
@@ -17031,31 +17286,36 @@
 
       // Portais de Laser
       jetpackState.gates.forEach(g => {
-        ctx.fillStyle = '#4c1d95';
-        ctx.strokeStyle = '#8b5cf6';
-        ctx.lineWidth = 2;
-
         // Pilar superior
+        ctx.fillStyle = '#2e1065';
         ctx.fillRect(g.x, 0, g.w, g.topH);
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 1.5;
         ctx.strokeRect(g.x, 0, g.w, g.topH);
 
         // Pilar inferior
+        ctx.fillStyle = '#2e1065';
         ctx.fillRect(g.x, g.bottomY, g.w, g.bottomH);
         ctx.strokeRect(g.x, g.bottomY, g.w, g.bottomH);
 
-        // Itens
+        // Ponta neon dos pilares
+        ctx.fillStyle = '#c084fc';
+        ctx.fillRect(g.x - 2, g.topH - 5, g.w + 4, 5);
+        ctx.fillRect(g.x - 2, g.bottomY, g.w + 4, 5);
+
+        // Item no centro do portal (Moeda ou Anel Turbo)
         if (g.hasCoin) {
+          ctx.font = '16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('🪙', g.x + g.w / 2, g.itemY + 6);
+        } else if (g.hasTurboRing) {
           ctx.font = '18px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText('🪙', g.x + g.w / 2, g.itemY);
-        } else if (g.hasTurboRing) {
-          ctx.font = '20px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('⚡', g.x + g.w / 2, g.itemY);
+          ctx.fillText('⚡', g.x + g.w / 2, g.itemY + 6);
         }
       });
 
-      // Herói Jetpack (Homem de Ferro Mini)
+      // Jogador com Jetpack
       const px = jetpackState.playerX;
       const py = jetpackState.playerY;
       const isBoost = jetpackState.turboTimer > 0;
@@ -17063,57 +17323,50 @@
       ctx.save();
       ctx.translate(px, py);
 
-      // Aura Turbo
+      // Efeito de escudo de força turbo se boost ativo
       if (isBoost) {
-        ctx.fillStyle = 'rgba(250, 204, 21, 0.25)';
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
-        ctx.arc(0, 0, 24, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.arc(0, 0, 20, 0, Math.PI * 2);
+        ctx.stroke();
       }
 
-      // Chama do Jetpack
+      // Labareda dos propulsores
       ctx.fillStyle = isBoost ? '#00f0ff' : '#f97316';
       ctx.beginPath();
-      ctx.moveTo(-12, 6);
-      ctx.lineTo(-24 - Math.random() * 8, 8);
-      ctx.lineTo(-12, 10);
+      ctx.moveTo(-10, 4);
+      ctx.lineTo(-20 - Math.random() * 8, 8 + Math.random() * 4);
+      ctx.lineTo(-10, 12);
       ctx.fill();
 
-      // Mochila propulsora
-      ctx.fillStyle = '#64748b';
-      ctx.fillRect(-12, -4, 6, 14);
+      // Mochila Jetpack metálica
+      ctx.fillStyle = '#334155';
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 1.5;
+      ctx.fillRect(-12, -8, 8, 18);
+      ctx.strokeRect(-12, -8, 8, 18);
 
-      // Cabeça e capacete
-      ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      ctx.arc(2, -6, 9, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Visor ciano
-      ctx.fillStyle = '#00f0ff';
-      ctx.fillRect(4, -8, 6, 4);
-
-      // Armadura
-      ctx.fillStyle = '#facc15';
-      ctx.fillRect(-4, 0, 10, 10);
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(-2, 10, 6, 8);
+      // Herói Stark (Emoji herói)
+      ctx.font = '24px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🦸‍♂️', 2, 0);
 
       ctx.restore();
     }
 
-
     // =========================================================================
-    // PÁGINA 8 - JOGO 4: CIRCUITO NEON STARK (COBRINHA QUÂNTICA TURBO)
+    // PÁGINA 8 - JOGO 4: CIRCUITO NEON STARK (COBRINHA TURBO ARCADE)
     // =========================================================================
     let neonSnakeState = {
-      active: false, paused: false,
+      active: false, paused: false, difficulty: 'facil',
       cols: 20, rows: 14, cellSize: 18,
       snake: [{x: 10, y: 7}, {x: 9, y: 7}, {x: 8, y: 7}],
       dir: {x: 1, y: 0}, nextDir: {x: 1, y: 0},
       core: {x: 15, y: 7}, bonusCoin: null,
       score: 0, coins: 0, coresEaten: 0,
-      isTurbo: false, tickSpeed: 110,
+      isTurbo: false, tickSpeed: 160,
       particles: [], tickCounter: 0
     };
     let neonSnakeAnimId = null;
@@ -17133,20 +17386,54 @@
     function encerrarCircuitoNeon() {
       if (neonSnakeAnimId) { cancelAnimationFrame(neonSnakeAnimId); neonSnakeAnimId = null; }
       if (neonSnakeKeyHandler) { window.removeEventListener('keydown', neonSnakeKeyHandler); neonSnakeKeyHandler = null; }
-      if (neonSnakeState) neonSnakeState.active = false;
+      if (neonSnakeState) {
+        neonSnakeState.active = false;
+        neonSnakeState.snake = [];
+        neonSnakeState.particles = [];
+      }
+    }
+
+    function setSnakeDifficulty(diff) {
+      if (!neonSnakeState) return;
+      neonSnakeState.difficulty = diff;
+      playTone(587, 80);
+      const labels = { facil: '🟢 Fácil (Ritmo Calmo 160ms)', medio: '🟡 Médio (Dinâmico 110ms)', dificil: '🔴 Difícil (Frenético 70ms)' };
+      showToast(`💠 Circuito: ${labels[diff] || diff}!`);
+
+      const speeds = { facil: 160, medio: 110, dificil: 70 };
+      neonSnakeState.tickSpeed = speeds[diff] || 160;
+
+      ['facil', 'medio', 'dificil'].forEach(lvl => {
+        const b = document.getElementById(`btn-snake-diff-${lvl}`);
+        if (b) {
+          if (lvl === diff) {
+            b.style.background = lvl === 'facil' ? '#065f46' : (lvl === 'medio' ? '#0284c7' : '#991b1b');
+            b.style.color = '#fff';
+            b.style.borderColor = '#00f0ff';
+            b.style.boxShadow = '0 0 10px rgba(0,240,255,0.6)';
+            b.style.fontWeight = '900';
+          } else {
+            b.style.background = '#1e293b';
+            b.style.color = '#94a3b8';
+            b.style.borderColor = '#334155';
+            b.style.boxShadow = 'none';
+            b.style.fontWeight = '700';
+          }
+        }
+      });
     }
 
     function renderNeonSnakeBody(body) {
       encerrarCircuitoNeon();
 
       neonSnakeState = {
-        active: true, paused: false,
+        active: true, paused: false, difficulty: 'facil',
         cols: 20, rows: 14, cellSize: 18,
         snake: [{x: 10, y: 7}, {x: 9, y: 7}, {x: 8, y: 7}],
         dir: {x: 1, y: 0}, nextDir: {x: 1, y: 0},
         core: {x: 15, y: 7}, bonusCoin: null,
         score: 0, coins: 0, coresEaten: 0,
-        isTurbo: false, tickSpeed: 110,
+        isTurbo: false, tickSpeed: 160,
         particles: [], tickCounter: 0
       };
 
@@ -17188,6 +17475,22 @@
               <span id="snake-hud-length" style="background:#064e3b; color:#a7f3d0; border:1.5px solid #10b981; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
                 3 ELOS
               </span>
+            </div>
+
+            <!-- SELETOR DE DIFICULDADE (SEMPRE INICIA NO MODO FÁCIL) -->
+            <div>
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⏱️ Nível de Dificuldade do Pulso:</div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn" id="btn-snake-diff-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.6);" onclick="setSnakeDifficulty('facil')">
+                  🟢 Fácil
+                </button>
+                <button type="button" class="btn" id="btn-snake-diff-medio" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setSnakeDifficulty('medio')">
+                  🟡 Médio
+                </button>
+                <button type="button" class="btn" id="btn-snake-diff-dificil" style="flex:1; background:#1e293b; color:#94a3b8; border:1.5px solid #334155; padding:5px 0; font-size:0.75rem; font-weight:700; border-radius:8px;" onclick="setSnakeDifficulty('dificil')">
+                  🔴 Difícil
+                </button>
+              </div>
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -17240,7 +17543,6 @@
 
     function mudarDirecaoSnake(dx, dy) {
       if (!neonSnakeState.active) return;
-      // Não permite virar 180 graus na direção oposta imediata
       if (dx !== 0 && neonSnakeState.dir.x === -dx) return;
       if (dy !== 0 && neonSnakeState.dir.y === -dy) return;
       neonSnakeState.nextDir = { x: dx, y: dy };
@@ -17276,9 +17578,10 @@
       }
 
       function loop(now) {
-        if (!neonSnakeState.active) return;
+        if (!neonSnakeState || !neonSnakeState.active) return;
 
-        const interval = neonSnakeState.isTurbo ? 55 : 110;
+        const baseInterval = neonSnakeState.tickSpeed || 160;
+        const interval = neonSnakeState.isTurbo ? Math.round(baseInterval * 0.5) : baseInterval;
         if (now - lastTickTime >= interval) {
           lastTickTime = now;
           neonSnakeState.dir = neonSnakeState.nextDir;
@@ -17289,7 +17592,7 @@
             y: (neonSnakeState.snake[0].y + neonSnakeState.dir.y + neonSnakeState.rows) % neonSnakeState.rows
           };
 
-          // Colisão com o próprio corpo (Kids friendly: apenas encurta, sem morte frustrante!)
+          // Colisão com o próprio corpo (Kids friendly: encurta sem fim brusco)
           const bateuNoCorpo = neonSnakeState.snake.some(seg => seg.x === head.x && seg.y === head.y);
           if (bateuNoCorpo && neonSnakeState.snake.length > 4) {
             neonSnakeState.snake = neonSnakeState.snake.slice(0, 3);
@@ -17324,7 +17627,7 @@
             if (lEl) lEl.textContent = `${neonSnakeState.snake.length} ELOS`;
 
             // Bonificação a cada 10 núcleos (+2 moedas)
-            if (neonSnakeState.coresEaten % 10 === 0) {
+            if (neonSnakeState.active && neonSnakeState.coresEaten > 0 && neonSnakeState.coresEaten % 10 === 0) {
               playCelebrationFanfare();
               showToast(`🌟 ${neonSnakeState.coresEaten} NÚCLEOS COLETADOS! +2 Moedas!`);
               const pEl = document.getElementById('pote-fichas-val');
@@ -17336,12 +17639,12 @@
               }).catch(() => null);
             }
 
-            // Chance de spawnar moeda bônus
-            if (Math.random() < 0.40 && !neonSnakeState.bonusCoin) {
+            // 35% de chance de spawnar moeda bônus
+            if (Math.random() < 0.35 && !neonSnakeState.bonusCoin) {
               neonSnakeState.bonusCoin = {
                 x: Math.floor(Math.random() * neonSnakeState.cols),
                 y: Math.floor(Math.random() * neonSnakeState.rows),
-                timer: 90
+                timer: 160
               };
             }
 
@@ -17350,14 +17653,15 @@
             neonSnakeState.snake.pop();
           }
 
-          // Moeda bônus
+          // Moeda Bônus
           if (neonSnakeState.bonusCoin) {
             neonSnakeState.bonusCoin.timer--;
             if (head.x === neonSnakeState.bonusCoin.x && head.y === neonSnakeState.bonusCoin.y) {
               neonSnakeState.coins++;
-              playTone(880, 100);
-              const mEl = document.getElementById('snake-hud-coins');
-              if (mEl) mEl.textContent = `🪙 ${neonSnakeState.coins}`;
+              neonSnakeState.score += 80;
+              playTone(880, 80);
+              const cEl = document.getElementById('snake-hud-coins');
+              if (cEl) cEl.textContent = `🪙 ${neonSnakeState.coins}`;
               const pEl = document.getElementById('pote-fichas-val');
               if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
               fetch('/api/fichas/bonificar', {
@@ -17373,7 +17677,9 @@
         }
 
         renderNeonSnakeCanvas(ctx, canvas);
-        neonSnakeAnimId = requestAnimationFrame(loop);
+        if (neonSnakeState && neonSnakeState.active) {
+          neonSnakeAnimId = requestAnimationFrame(loop);
+        }
       }
 
       neonSnakeAnimId = requestAnimationFrame(loop);
@@ -17382,18 +17688,15 @@
     function renderNeonSnakeCanvas(ctx, canvas) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const cs = neonSnakeState.cellSize;
-      const offX = 5;
-      const offY = 14;
-
-      // Grade sutil
-      ctx.strokeStyle = 'rgba(16,185,129,0.06)';
+      // Grade sutil do circuito (estilo Tron)
+      ctx.strokeStyle = 'rgba(6, 78, 59, 0.28)';
       ctx.lineWidth = 1;
-      for (let c = 0; c <= neonSnakeState.cols; c++) {
-        ctx.beginPath(); ctx.moveTo(offX + c * cs, offY); ctx.lineTo(offX + c * cs, offY + neonSnakeState.rows * cs); ctx.stroke();
+      const cs = neonSnakeState.cellSize;
+      for (let x = 0; x < canvas.width; x += cs) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
       }
-      for (let r = 0; r <= neonSnakeState.rows; r++) {
-        ctx.beginPath(); ctx.moveTo(offX, offY + r * cs); ctx.lineTo(offX + neonSnakeState.cols * cs, offY + r * cs); ctx.stroke();
+      for (let y = 0; y < canvas.height; y += cs) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
       }
 
       // Partículas
@@ -17405,50 +17708,42 @@
         if (p.life <= 0) neonSnakeState.particles.splice(i, 1);
       }
 
-      // Núcleo Arc (Comida - halo com preenchimento duplo)
-      const cx = offX + neonSnakeState.core.x * cs + cs / 2;
-      const cy = offY + neonSnakeState.core.y * cs + cs / 2;
+      // Núcleo Arc (Alvo)
+      const cx = neonSnakeState.core.x * cs;
+      const cy = neonSnakeState.core.y * cs;
       ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, 9, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(52, 211, 153, 0.3)';
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
       ctx.fillStyle = '#10b981';
-      ctx.fill();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(cx + 2, cy + 2, cs - 4, cs - 4);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(cx + 2, cy + 2, cs - 4, cs - 4);
       ctx.restore();
 
       // Moeda Bônus
       if (neonSnakeState.bonusCoin) {
-        const mx = offX + neonSnakeState.bonusCoin.x * cs + cs / 2;
-        const my = offY + neonSnakeState.bonusCoin.y * cs + cs / 2;
+        const bx = neonSnakeState.bonusCoin.x * cs;
+        const by = neonSnakeState.bonusCoin.y * cs;
         ctx.font = '14px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('🪙', mx, my + 5);
+        ctx.fillText('🪙', bx + cs / 2, by + cs - 3);
       }
 
-      // Rastro / Corpo da Cobrinha (Otimizado Intel Atom)
+      // Corpo da Cobrinha Stark
       neonSnakeState.snake.forEach((seg, idx) => {
-        const sx = offX + seg.x * cs + 1;
-        const sy = offY + seg.y * cs + 1;
+        const sx = seg.x * cs;
+        const sy = seg.y * cs;
+
         ctx.save();
         if (idx === 0) {
           // Cabeça
-          ctx.fillStyle = '#34d399';
-          ctx.fillRect(sx, sy, cs - 2, cs - 2);
-          ctx.strokeStyle = '#00f0ff';
+          ctx.fillStyle = neonSnakeState.isTurbo ? '#facc15' : '#34d399';
+          ctx.fillRect(sx, sy, cs, cs);
+          ctx.strokeStyle = '#ffffff';
           ctx.lineWidth = 1.5;
-          ctx.strokeRect(sx, sy, cs - 2, cs - 2);
+          ctx.strokeRect(sx, sy, cs, cs);
 
-          // Olhos cibernéticos
-          ctx.fillStyle = '#ffffff';
+          // Olhos neon
+          ctx.fillStyle = '#0f172a';
           ctx.fillRect(sx + 3, sy + 3, 3, 3);
           ctx.fillRect(sx + cs - 8, sy + 3, 3, 3);
         } else {
