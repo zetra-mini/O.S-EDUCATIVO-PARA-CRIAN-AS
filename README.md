@@ -54,12 +54,12 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 - **Pista Infinita Contínua:** O piloto não é interrompido aos 1000m; o odômetro registra a distância total percorrida e a cada 500 metros ultrapassados premia a criança com +1 moeda de bônus, fanfarra e elogio especial do Jarvis.
 - **Finalização e Troféu:** Botão `🏆 Finalizar Recorde` para registrar o recorde e receber o grande troféu dourado.
 
-### 🕹️ 4. Página 8 com 4 Novos Super Jogos Arcade Stark (Canvas 2D a 60 FPS)
-Criada a **Página 8** na Central de Jogos (totalizando 8 páginas e 21+ jogos e aventuras), trazendo 4 novos jogos com a mesma mecânica arcade da Corrida Turbo:
-1. 🚀 **Voo Espacial do Homem de Ferro (Iron Flight):** Pilote a armadura Stark no espaço, desvie de asteroides e satélites, colete tesseracts e ative os propulsores repulsores;
-2. 🌊 **Submarino Abissal Stark (Missão Aquática):** Explore as profundezas do oceano com o mini-submarino, desvie de recifes e águas-vivas e dispare o super sonar que puxa pérolas;
-3. 🛹 **Hoverboard Futurista Stark (Skate Voador):** Manobras radicais na rodovia aérea suspensa da cidade futurista, pulando sobre drones e ativando o salto 360° no ar;
-4. 🚁 **Helicóptero Resgate Stark (Copter Defender):** Pilote o mini-helicóptero entre nuvens e arranha-céus, resgate robozinhos flutuantes e acione o escudo de força contra raios.
+### 🕹️ 4. Página 8 com 4 Novos Super Jogos Arcade Stark (Lógicas Totalmente Diferentes!)
+A **Página 8** na Central de Jogos traz 4 jogos de ação rápida e arcade com jogabilidades e mecânicas 100% distintas entre si e da Corrida Turbo:
+1. 🚀 **Defensor Galáctico Stark (Shoot 'Em Up Arcade):** Batalha espacial clássica com nave interceptora Stark, ondas de drones que descem em formação ondulada, lasers duplos e rajada fulminante com o botão Turbo Laser!
+2. ⚡ **Reator Arkanoid Stark (Brick Breaker / Quebra-Blocos):** Desafio quântico de rebatida na base magnética, física de ricochete angular, 32 blocos de vibranium e power-ups (Esfera Turbo Perfurante, Super Base Stark, Multi-esferas e Moedas de Ouro)!
+3. 🦸‍♂️ **Jetpack Repulsor Stark (Voo Gravitacional & Flappy):** Impulso vertical com os jatos do Homem de Ferro lutando contra a gravidade, desviando de portais de laser, recolhendo moedas e atravessando anéis turbo em velocidade supersônica invencível!
+4. 💠 **Circuito Neon Stark (Cobrinha Quântica Turbo / Tron):** Arcade em grade 2D com D-Pad tátil e suporte a teclado, coleta de núcleos energéticos, auto-wrap suave nas paredes e botão Turbo Sprint com o dobro de velocidade e pontuação!
 
 ---
 
@@ -252,7 +252,17 @@ sudo apt install ./jarvis-kids-os_3.9.0.deb
 21. **🕵️ Detetive Stark: Jogo dos 7 Erros:** Olhos de águia para encontrar detalhes secretos em cenas de alta visibilidade com incentivos do Jarvis.
 22. **🔬 Laboratório de Misturas & Ciências:** Misturador de cores primárias, termômetro dos 3 estados da água (gelo, líquido, vapor) e o super ímã magnético.
 23. **♟️ Academia de Xadrez do Pequeno Mestre:** Aprenda o movimento do Peão, Cavalo em L, Torre e grandes jogadas com mini-tabuleiro interativo e dicas do Jarvis.
-24. **🏎️ Corrida Turbo Stark:** Pista interestelar neon de alta velocidade com desvio de cones, coleta de moedas e estrelas, turbo nitro e Grande Troféu dos Campeões com +3 moedas!
+24. **🏎️ Corrida Turbo Stark:** Pista interestelar neon com desvio de obstáculos, 3 níveis de velocidade, pista infinita e cofre de moedas!
+
+### 📄 Página 7: Super Velocidade, Aventura & Sustentabilidade
+25. **🏎️ Corrida Turbo Stark (Endless Highway):** Pista interestelar neon com odômetro infinito e marcos de 500m.
+26. **🌍 Reciclagem do Planeta Stark:** Classificação ecológica e missões de coleta seletiva para salvar o meio ambiente.
+
+### 📄 Página 8: Super Jogos de Ação & Arcade Stark (Lógicas Únicas!)
+27. **🚀 Defensor Galáctico Stark:** Tiro espacial estilo invasores com ondas de drones, lasers e modo Turbo Laser.
+28. **⚡ Reator Arkanoid Stark:** Quebra-blocos quântico com física de ricochete, base magnética e power-ups.
+29. **🦸‍♂️ Jetpack Repulsor Stark:** Voo gravitacional com propulsores do Homem de Ferro, portais e anéis de aceleração turbo.
+30. **💠 Circuito Neon Stark:** Cobrinha quântica em grade 2D com D-Pad tátil, auto-wrap e Turbo Sprint!
 
 ---
 

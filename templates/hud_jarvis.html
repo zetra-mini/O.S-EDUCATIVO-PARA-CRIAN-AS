@@ -3679,42 +3679,42 @@
         acao: () => openTurboRacingGame()
       },
 
-      // PÁGINA 8: OS 4 NOVOS SUPER JOGOS ARCADE STARK (LÓGICA DA CORRIDA TURBO)
+      // PÁGINA 8: 4 SUPER JOGOS ARCADE TURBO (LÓGICAS TOTALMENTE DIFERENTES)
       {
-        id: 'voo_espacial',
+        id: 'defensor_galactico',
         pagina: 8,
-        nome: 'Voo Espacial do Homem de Ferro',
-        desc: 'Decole no espaço sideral, desvie de asteroides e ative os repulsores de plasma',
+        nome: 'Defensor Galáctico Stark',
+        desc: 'Nave de combate espacial com disparos de plasma, ondas de drones alienígenas e Turbo Laser',
         icone: '🚀',
         cor: '#ef4444',
-        acao: () => openSpaceFlightGame()
+        acao: () => openGalacticDefenderGame()
       },
       {
-        id: 'submarino_stark',
+        id: 'reator_arkanoid',
         pagina: 8,
-        nome: 'Submarino Abissal Stark',
-        desc: 'Mergulhe no oceano profundo, colete pérolas preciosas e dispare o super sonar',
-        icone: '🌊',
+        nome: 'Reator Arkanoid Stark',
+        desc: 'Rebata a esfera quântica na base magnética, destrua os blocos de energia e pegue power-ups',
+        icone: '⚡',
         cor: '#06b6d4',
-        acao: () => openSubmarineGame()
+        acao: () => openArkanoidStarkGame()
       },
       {
-        id: 'hoverboard_stark',
+        id: 'jetpack_repulsor',
         pagina: 8,
-        nome: 'Hoverboard Futurista Stark',
-        desc: 'Skate voador na rodovia aérea com manobras radicais e super salto 360°',
-        icone: '🛹',
+        nome: 'Jetpack Repulsor Stark',
+        desc: 'Voe contra a gravidade com os jatos do Homem de Ferro, atravesse portais e ative o turbo',
+        icone: '🦸‍♂️',
         cor: '#8b5cf6',
-        acao: () => openHoverboardGame()
+        acao: () => openJetpackStarkGame()
       },
       {
-        id: 'helicoptero_resgate',
+        id: 'circuito_neon',
         pagina: 8,
-        nome: 'Helicóptero Resgate Stark',
-        desc: 'Pilote o mini-resgate aéreo, salve robozinhos e ligue o escudo de força',
-        icone: '🚁',
-        cor: '#f59e0b',
-        acao: () => openCopterRescueGame()
+        nome: 'Circuito Neon Stark',
+        desc: 'Cobrinha cibernética em alta velocidade na grade de luz com turbo sprint e bônus',
+        icone: '💠',
+        cor: '#10b981',
+        acao: () => openNeonSnakeStarkGame()
       }
     ];
 
@@ -5084,29 +5084,29 @@
         replyLocal = 'Motores roncando! Abrindo a Corrida Turbo Stark! Pilote com velocidade!';
         acaoLocal = () => { closeModal(false); openTurboRacingGame(); };
       }
-      // 27. VOO ESPACIAL DO HOMEM DE FERRO
-      else if (/voo espacial|homem de ferro|iron flight|voar no espaco|voar no espaço|espacial/i.test(spokenNorm)) {
+      // 27. DEFENSOR GALÁCTICO STARK
+      else if (/defensor|tiro espacial|nave|invasores|batalha espacial|galactico|galáctico|voo espacial/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Sistemas de propulsão repulsora ativados! Abrindo o Voo Espacial do Homem de Ferro!';
-        acaoLocal = () => { closeModal(false); openSpaceFlightGame(); };
+        replyLocal = 'Sistemas de tiro de plasma armados! Abrindo o Defensor Galáctico Stark!';
+        acaoLocal = () => { closeModal(false); openGalacticDefenderGame(); };
       }
-      // 28. SUBMARINO ABISSAL STARK
-      else if (/submarino|fundo do mar|oceano|aquatico|aquatica|abissal/i.test(spokenNorm)) {
+      // 28. REATOR ARKANOID STARK
+      else if (/arkanoid|quebra blocos|quebra-blocos|destruir blocos|bola turbo|reator arkanoid|submarino/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Escotilhas travadas e sonar ligado! Abrindo o Submarino Abissal Stark!';
-        acaoLocal = () => { closeModal(false); openSubmarineGame(); };
+        replyLocal = 'Base magnética energizada! Abrindo o Reator Arkanoid Stark!';
+        acaoLocal = () => { closeModal(false); openArkanoidStarkGame(); };
       }
-      // 29. HOVERBOARD FUTURISTA STARK
-      else if (/hoverboard|skate|skate voador|pista aerea|pista aérea/i.test(spokenNorm)) {
+      // 29. JETPACK REPULSOR STARK
+      else if (/jetpack|propulsor|voar com homem de ferro|flappy|gravidade|hoverboard/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Prancha antigravitacional pronta! Abrindo o Hoverboard Futurista Stark!';
-        acaoLocal = () => { closeModal(false); openHoverboardGame(); };
+        replyLocal = 'Propulsores repulsores acionados! Abrindo o Jetpack Repulsor Stark!';
+        acaoLocal = () => { closeModal(false); openJetpackStarkGame(); };
       }
-      // 30. HELICÓPTERO RESGATE STARK
-      else if (/helicoptero|helicóptero|copter|resgate stark|salvar robo/i.test(spokenNorm)) {
+      // 30. CIRCUITO NEON STARK
+      else if (/cobrinha|snake|circuito neon|jogo da cobrinha|tron|helicoptero|helicóptero/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Hélices em rotação máxima! Abrindo o Helicóptero Resgate Stark!';
-        acaoLocal = () => { closeModal(false); openCopterRescueGame(); };
+        replyLocal = 'Circuito de alta velocidade conectado! Abrindo o Circuito Neon Stark!';
+        acaoLocal = () => { closeModal(false); openNeonSnakeStarkGame(); };
       }
       // 24. CORTESIA
       else if (/boa noite/i.test(spokenNorm)) {
@@ -5217,10 +5217,10 @@
         else if (acao === 'abrir_matematica') openMathMasterGame();
         else if (acao === 'abrir_reciclagem') openPlanetRecyclingGame();
         else if (acao === 'abrir_corrida_turbo') openTurboRacingGame();
-        else if (acao === 'abrir_voo_espacial') openSpaceFlightGame();
-        else if (acao === 'abrir_submarino_stark') openSubmarineGame();
-        else if (acao === 'abrir_hoverboard_stark') openHoverboardGame();
-        else if (acao === 'abrir_helicoptero_stark') openCopterRescueGame();
+        else if (acao === 'abrir_defensor_galactico' || acao === 'abrir_voo_espacial') openGalacticDefenderGame();
+        else if (acao === 'abrir_reator_arkanoid' || acao === 'abrir_submarino_stark') openArkanoidStarkGame();
+        else if (acao === 'abrir_jetpack_repulsor' || acao === 'abrir_hoverboard_stark') openJetpackStarkGame();
+        else if (acao === 'abrir_circuito_neon' || acao === 'abrir_helicoptero_stark') openNeonSnakeStarkGame();
       } catch (err) {
         console.warn('Erro ao executar acao frontend:', err);
       }
@@ -6268,6 +6268,10 @@
       if (typeof encerrarCorridaTurbo === 'function') encerrarCorridaTurbo();
       if (typeof encerrarEspelhoDasEmocoes === 'function') encerrarEspelhoDasEmocoes();
       if (typeof encerrarCameraMatematica === 'function') encerrarCameraMatematica();
+      if (typeof encerrarDefensorGalactico === 'function') encerrarDefensorGalactico();
+      if (typeof encerrarReatorArkanoid === 'function') encerrarReatorArkanoid();
+      if (typeof encerrarJetpackStark === 'function') encerrarJetpackStark();
+      if (typeof encerrarCircuitoNeon === 'function') encerrarCircuitoNeon();
       if (typeof encerrarVooEspacial === 'function') encerrarVooEspacial();
       if (typeof encerrarSubmarino === 'function') encerrarSubmarino();
       if (typeof encerrarHoverboard === 'function') encerrarHoverboard();
@@ -15745,50 +15749,51 @@
     }
 
     // =========================================================================
-    // JOGO PÁGINA 8 - NÚMERO 1: VOO ESPACIAL DO HOMEM DE FERRO (IRON FLIGHT)
+    // PÁGINA 8 - JOGO 1: DEFENSOR GALÁCTICO STARK (SHOOT 'EM UP ARCADE)
     // =========================================================================
-    let spaceFlightState = {
-      active: false, paused: false, lane: 1, x: 190, y: 230,
-      suitColor: '#ef4444', suitName: 'Mark 85 Stark',
-      speedLevel: 'medio', speed: 7.5, baseSpeed: 7.5,
-      distanceTraveled: 0, nextMilestone: 500, coins: 0, score: 0,
-      boost: 85, isBoost: false, offset: 0, items: [], stars: [],
-      finished: false, wobble: 0
+    let galacticDefenderState = {
+      active: false, paused: false,
+      playerX: 185, playerY: 242, playerW: 38, playerH: 26, playerVx: 0,
+      lives: 3, score: 0, coins: 0, wave: 1,
+      turboCharge: 80, isTurbo: false,
+      lasers: [], enemies: [], particles: [], drops: [], stars: [],
+      lastFireTime: 0, autoFireTimer: 0
     };
-    let spaceFlightAnimId = null;
-    let spaceFlightKeyHandler = null;
+    let galacticAnimId = null;
+    let galacticKeyHandler = null;
 
-    function openSpaceFlightGame() {
-      pushModalScreen('🚀 VOO ESPACIAL DO HOMEM DE FERRO', (body) => {
+    function openGalacticDefenderGame() {
+      pushModalScreen('🚀 DEFENSOR GALÁCTICO STARK (TIRO ESPACIAL)', (body) => {
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
         const crianca = appState.config.child_name || 'Kaleo';
-        speak(`Sistemas repulsores ligados, herói ${crianca}! Desvie dos asteroides, colete cubos cósmicos e ative os jatos repulsores!`);
-        renderSpaceFlightBody(body);
-      }, true);
+        speak(`Sistemas de tiro armados, comandante ${crianca}! Mova a nave com as setas ou deslize na tela, destrua os drones alienígenas e dispare o Turbo Laser!`);
+        renderGalacticDefenderBody(body);
+      }, true, () => encerrarDefensorGalactico());
     }
 
-    function encerrarVooEspacial() {
-      if (spaceFlightAnimId) { cancelAnimationFrame(spaceFlightAnimId); spaceFlightAnimId = null; }
-      if (spaceFlightKeyHandler) { window.removeEventListener('keydown', spaceFlightKeyHandler); spaceFlightKeyHandler = null; }
-      if (spaceFlightState) spaceFlightState.active = false;
+    function encerrarDefensorGalactico() {
+      if (galacticAnimId) { cancelAnimationFrame(galacticAnimId); galacticAnimId = null; }
+      if (galacticKeyHandler) { window.removeEventListener('keydown', galacticKeyHandler); galacticKeyHandler = null; }
+      if (galacticDefenderState) galacticDefenderState.active = false;
     }
 
-    function renderSpaceFlightBody(body) {
-      encerrarVooEspacial();
-      spaceFlightState = {
-        active: true, paused: false, lane: 1, x: 190, y: 230,
-        suitColor: '#ef4444', suitName: 'Mark 85 Stark',
-        speedLevel: 'medio', speed: 7.5, baseSpeed: 7.5,
-        distanceTraveled: 0, nextMilestone: 500, coins: 0, score: 0,
-        boost: 85, isBoost: false, offset: 0, items: [], stars: [],
-        finished: false, wobble: 0
+    function renderGalacticDefenderBody(body) {
+      encerrarDefensorGalactico();
+
+      galacticDefenderState = {
+        active: true, paused: false,
+        playerX: 185, playerY: 242, playerW: 38, playerH: 26, playerVx: 0,
+        lives: 3, score: 0, coins: 0, wave: 1,
+        turboCharge: 85, isTurbo: false,
+        lasers: [], enemies: [], particles: [], drops: [], stars: [],
+        lastFireTime: 0, autoFireTimer: 0
       };
 
-      // Gera estrelas de fundo
-      for (let i = 0; i < 40; i++) {
-        spaceFlightState.stars.push({
+      // Fundo estelar dinâmico
+      for (let i = 0; i < 45; i++) {
+        galacticDefenderState.stars.push({
           x: Math.random() * 370,
           y: Math.random() * 280,
           size: Math.random() * 2 + 1,
@@ -15798,1524 +15803,1664 @@
 
       body.innerHTML = `
         <div style="display:grid; grid-template-columns: minmax(360px, 390px) 1.2fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
-          <div style="background:#020914; border:2.5px solid #ef4444; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(239,68,68,0.3); position:relative;">
-            <canvas id="space-flight-canvas" width="370" height="280" style="background:#050713; border-radius:10px; border:2px solid #374151; cursor:pointer; width:100%; max-width:370px;"></canvas>
+          
+          <!-- COLUNA ESQUERDA: CANVAS DE COMBATE ESPACIAL -->
+          <div style="background:#020914; border:2.5px solid #ef4444; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(239,68,68,0.25); position:relative;">
+            
+            <canvas id="galactic-canvas" width="370" height="280" style="background:#050b18; border-radius:10px; border:2px solid #334155; cursor:crosshair; width:100%; max-width:370px;"></canvas>
+
+            <!-- CONTROLES TÁTEIS RÁPIDOS INFERIORES -->
             <div style="display:flex; width:100%; gap:8px; margin-top:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverVooEspacial(-1)">◀ ESQUERDA</button>
-              <button type="button" class="big-btn" id="btn-space-boost" style="flex:1.2; background:linear-gradient(135deg, #f97316 0%, #ef4444 100%); padding:8px 0; font-size:1rem; font-weight:900; box-shadow:0 0 12px rgba(239,68,68,0.5);" onclick="ativarPropulsorRepulsor()">🔥 REPULSORES!</button>
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverVooEspacial(1)">DIREITA ▶</button>
+              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.1rem; font-weight:900;" onclick="moverNaveGalactica(-1)">
+                ◀ ESQ
+              </button>
+              <button type="button" class="big-btn" id="btn-galactic-turbo" style="flex:1.4; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding:8px 0; font-size:1.02rem; font-weight:900; box-shadow:0 0 12px rgba(239,68,68,0.5);" onclick="dispararLaserGalactico(true)">
+                🔥 TURBO LASER!
+              </button>
+              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.1rem; font-weight:900;" onclick="moverNaveGalactica(1)">
+                DIR ▶
+              </button>
             </div>
           </div>
+
+          <!-- COLUNA DIREITA: PAINEL DE COMANDO TÁTICO STARK -->
           <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; gap:8px; overflow-y:auto;">
+            
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:1.05rem; font-weight:900; color:#f87171;">🚀 Iron Flight Stark</div>
-              <span id="space-hud-speed" style="background:#450a0a; color:#fca5a5; border:1.5px solid #b91c1c; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">180 km/h</span>
-            </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⚡ Velocidade do Voo:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" id="btn-space-speed-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:1.5px solid #059669; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setSpaceSpeedLevel('facil')">🟢 Suave (100)</button>
-                <button type="button" class="btn" id="btn-space-speed-medio" style="flex:1; background:#0284c7; color:#fff; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.4);" onclick="setSpaceSpeedLevel('medio')">🟡 Rápido (180)</button>
-                <button type="button" class="btn" id="btn-space-speed-turbo" style="flex:1; background:#991b1b; color:#fecaca; border:1.5px solid #dc2626; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setSpaceSpeedLevel('turbo')">🔴 Hiper (300)</button>
+              <div style="font-size:1.05rem; font-weight:900; color:#f87171;">
+                🚀 Defensor Galáctico Stark
               </div>
+              <span id="galactic-hud-wave" style="background:#7f1d1d; color:#fecaca; border:1.5px solid #ef4444; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
+                ONDA 1
+              </span>
             </div>
+
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🌌 Espaço Voado:</div>
-                <div id="space-hud-dist" style="font-size:1.25rem; font-weight:900; color:#facc15;">0m</div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">VIDAS STARK:</div>
+                <div id="galactic-hud-lives" style="font-size:1.15rem; font-weight:900; color:#ef4444;">❤️❤️❤️</div>
               </div>
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🪙 Moedas Cósmicas:</div>
-                <div id="space-hud-coins" style="font-size:1.25rem; font-weight:900; color:#4ade80;">0</div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:800; color:#cbd5e1; margin-bottom:2px;">
-                <span>⚡ Bateria Repulsora:</span>
-                <span id="space-hud-boost-val">85%</span>
-              </div>
-              <div style="width:100%; height:12px; background:#041426; border-radius:8px; border:1px solid #1e3a63; overflow:hidden;">
-                <div id="space-hud-boost-bar" style="width:85%; height:100%; background:linear-gradient(90deg, #38bdf8, #ef4444); border-radius:8px;"></div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">MOEDAS COLETADAS:</div>
+                <div id="galactic-hud-coins" style="font-size:1.15rem; font-weight:900; color:#facc15;">🪙 0</div>
               </div>
             </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:3px;">🛡️ Armadura Stark:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" style="flex:1; background:#ef4444; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900; border:2px solid #fff;" onclick="trocarArmaduraEspacial('#ef4444', 'Mark 85', this)">🔴</button>
-                <button type="button" class="btn" style="flex:1; background:#cbd5e1; color:#000; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarArmaduraEspacial('#94a3b8', 'Silver Centurion', this)">⚪</button>
-                <button type="button" class="btn" style="flex:1; background:#1e293b; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarArmaduraEspacial('#334155', 'War Machine', this)">⚫</button>
-                <button type="button" class="btn" style="flex:1; background:#0284c7; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarArmaduraEspacial('#0284c7', 'Stealth Neon', this)">🔵</button>
+
+            <!-- BARRA DE RECARGA DO TURBO LASER -->
+            <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:8px 10px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">
+                <span>⚡ Carga dos Canhões de Plasma:</span>
+                <span id="galactic-turbo-pct" style="color:#ef4444; font-weight:900;">100%</span>
+              </div>
+              <div style="height:10px; background:#0f172a; border-radius:6px; overflow:hidden; border:1px solid #334155;">
+                <div id="galactic-turbo-bar" style="width:100%; height:100%; background:linear-gradient(90deg, #f97316, #ef4444); border-radius:6px; transition:width 0.15s ease;"></div>
               </div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#334155; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="dispararLaserRepulsor()">✨ Repulsor</button>
-              <button type="button" class="big-btn" id="btn-space-pause" style="flex:1; background:#0f766e; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="togglePausarEspaco()">⏸️ Pausar</button>
-              <button type="button" class="big-btn" style="flex:1.2; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="concluirVooEspacial()">🏆 Finalizar</button>
+
+            <!-- PONTUAÇÃO & RECORDES -->
+            <div style="background:#040f20; border:1.5px solid #334155; border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.78rem; color:#94a3b8; font-weight:800;">PONTOS DE BATALHA:</span>
+                <div id="galactic-hud-score" style="font-size:1.35rem; font-weight:900; color:#38bdf8;">0 pts</div>
+              </div>
+              <button type="button" class="btn" style="background:#1e293b; color:#94a3b8; font-size:0.8rem; font-weight:800; border:1px solid #475569;" onclick="renderGalacticDefenderBody(document.getElementById('modal-body'))">
+                🔄 Reiniciar Batalha
+              </button>
+            </div>
+
+            <!-- INSTRUÇÕES RÁPIDAS -->
+            <div style="background:#030c1b; border:1px dashed #334155; border-radius:10px; padding:6px 10px; font-size:0.76rem; color:#94a3b8; line-height:1.3;">
+              💡 <strong>Como Jogar:</strong> Use as setas ⬅️ ➡️ ou deslize o dedo na tela para mover a nave. Pressione <strong>ESPAÇO</strong> ou o botão vermelho para disparar o <strong>Turbo Laser</strong>! Elimine todos os drones para passar de onda e faturar moedas!
             </div>
           </div>
         </div>
       `;
 
-      iniciarLoopCanvasSpaceFlight();
+      setupGalacticWave(1);
+
+      // Suporte a mouse e toque direto no canvas
+      const cvs = document.getElementById('galactic-canvas');
+      if (cvs) {
+        const updatePos = (clientX) => {
+          const rect = cvs.getBoundingClientRect();
+          const scale = cvs.width / rect.width;
+          const x = (clientX - rect.left) * scale;
+          galacticDefenderState.playerX = Math.max(20, Math.min(350, x));
+        };
+        cvs.addEventListener('mousemove', (e) => { if (galacticDefenderState.active) updatePos(e.clientX); });
+        cvs.addEventListener('touchmove', (e) => {
+          if (galacticDefenderState.active && e.touches.length > 0) {
+            updatePos(e.touches[0].clientX);
+            e.preventDefault();
+          }
+        }, { passive: false });
+        cvs.addEventListener('click', () => dispararLaserGalactico(false));
+      }
+
+      // Teclado
+      galacticKeyHandler = (e) => {
+        if (!galacticDefenderState.active) return;
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverNaveGalactica(-1);
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverNaveGalactica(1);
+        else if (e.key === ' ' || e.key === 'Enter') { dispararLaserGalactico(true); e.preventDefault(); }
+      };
+      window.addEventListener('keydown', galacticKeyHandler);
+
+      iniciarLoopGalactico();
     }
 
-    function setSpaceSpeedLevel(lvl) {
-      if (!spaceFlightState) return;
-      spaceFlightState.speedLevel = lvl;
-      const spds = { facil: 5.0, medio: 7.8, turbo: 11.5 };
-      spaceFlightState.baseSpeed = spds[lvl] || 7.8;
-      spaceFlightState.speed = spaceFlightState.baseSpeed;
-      playTone(587, 80);
-      const spdEl = document.getElementById('space-hud-speed');
-      if (spdEl) spdEl.textContent = `${Math.round(spaceFlightState.speed * 22)} km/h`;
-      ['facil', 'medio', 'turbo'].forEach(l => {
-        const b = document.getElementById(`btn-space-speed-${l}`);
-        if (b) {
-          b.style.borderColor = (l === lvl) ? '#00f0ff' : '#334155';
-          b.style.boxShadow = (l === lvl) ? '0 0 10px rgba(0,240,255,0.5)' : 'none';
+    function setupGalacticWave(w) {
+      galacticDefenderState.wave = w;
+      galacticDefenderState.enemies = [];
+      const cols = 6;
+      const rows = Math.min(3, 1 + Math.floor(w / 2));
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const isBoss = (r === 0 && (c === 2 || c === 3));
+          galacticDefenderState.enemies.push({
+            x: 45 + c * 52,
+            y: 35 + r * 38,
+            baseX: 45 + c * 52,
+            w: isBoss ? 38 : 30,
+            h: isBoss ? 26 : 22,
+            hp: isBoss ? (2 + Math.floor(w / 2)) : 1,
+            maxHp: isBoss ? (2 + Math.floor(w / 2)) : 1,
+            type: isBoss ? 'boss' : 'drone',
+            color: isBoss ? '#ef4444' : (r % 2 === 0 ? '#38bdf8' : '#a855f7'),
+            emoji: isBoss ? '👾' : '🛸',
+            vy: 0.18 + w * 0.05
+          });
         }
-      });
-    }
-
-    function moverVooEspacial(delta) {
-      if (!spaceFlightState || spaceFlightState.finished) return;
-      playTone(460, 60, 'triangle');
-      spaceFlightState.lane = Math.max(0, Math.min(2, spaceFlightState.lane + delta));
-    }
-
-    function ativarPropulsorRepulsor() {
-      if (!spaceFlightState || spaceFlightState.finished) return;
-      if (spaceFlightState.boost < 15) { showToast('⚡ Bateria de plasma baixa!'); return; }
-      spaceFlightState.isBoost = true;
-      playTone(400, 100);
-      setTimeout(() => playTone(800, 200), 100);
-      showToast('🚀 HIPER-VOO REPULSOR ATIVADO!');
-      setTimeout(() => { if (spaceFlightState) spaceFlightState.isBoost = false; }, 3500);
-    }
-
-    function dispararLaserRepulsor() {
-      playTone(880, 80, 'sawtooth');
-      setTimeout(() => playTone(1200, 100, 'sawtooth'), 80);
-      showToast('✨ ZZZZZT! Raio Repulsor disparado!');
-    }
-
-    function trocarArmaduraEspacial(cor, nome, btn) {
-      if (!spaceFlightState) return;
-      spaceFlightState.suitColor = cor;
-      spaceFlightState.suitName = nome;
+      }
+      const wEl = document.getElementById('galactic-hud-wave');
+      if (wEl) wEl.textContent = `ONDA ${w}`;
       playTone(587, 80);
-      showToast(`🛡️ Armadura: ${nome}!`);
-      if (btn && btn.parentElement) {
-        btn.parentElement.querySelectorAll('button').forEach(b => b.style.border = 'none');
-        btn.style.border = '2px solid #fff';
+    }
+
+    function moverNaveGalactica(dir) {
+      if (!galacticDefenderState.active) return;
+      galacticDefenderState.playerX = Math.max(22, Math.min(348, galacticDefenderState.playerX + dir * 26));
+      playTone(330, 25);
+    }
+
+    function dispararLaserGalactico(isTurbo = false) {
+      if (!galacticDefenderState.active) return;
+      const agora = Date.now();
+      if (agora - galacticDefenderState.lastFireTime < 140) return;
+      galacticDefenderState.lastFireTime = agora;
+
+      const px = galacticDefenderState.playerX;
+      const py = galacticDefenderState.playerY;
+
+      if (isTurbo && galacticDefenderState.turboCharge >= 20) {
+        galacticDefenderState.turboCharge = Math.max(0, galacticDefenderState.turboCharge - 25);
+        // Rajada Tripla Turbo
+        galacticDefenderState.lasers.push({ x: px, y: py - 12, vx: 0, vy: -10, isTurbo: true });
+        galacticDefenderState.lasers.push({ x: px - 12, y: py - 8, vx: -2.2, vy: -9.5, isTurbo: true });
+        galacticDefenderState.lasers.push({ x: px + 12, y: py - 8, vx: 2.2, vy: -9.5, isTurbo: true });
+        playTone(988, 70);
+      } else {
+        // Tiro Duplo Normal
+        galacticDefenderState.lasers.push({ x: px - 9, y: py - 10, vx: 0, vy: -9, isTurbo: false });
+        galacticDefenderState.lasers.push({ x: px + 9, y: py - 10, vx: 0, vy: -9, isTurbo: false });
+        playTone(740, 35);
       }
     }
 
-    function togglePausarEspaco() {
-      if (!spaceFlightState) return;
-      spaceFlightState.paused = !spaceFlightState.paused;
-      playTone(440, 80);
-      const b = document.getElementById('btn-space-pause');
-      if (b) b.textContent = spaceFlightState.paused ? '▶️ Continuar' : '⏸️ Pausar';
-    }
-
-    function iniciarLoopCanvasSpaceFlight() {
-      const canvas = document.getElementById('space-flight-canvas');
+    function iniciarLoopGalactico() {
+      const canvas = document.getElementById('galactic-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const laneX = [65, 185, 305];
-      let spawnCounter = 0;
-
-      canvas.onpointerdown = (ev) => {
-        const rect = canvas.getBoundingClientRect();
-        const clickX = (ev.clientX - rect.left) * (canvas.width / rect.width);
-        if (clickX < 125) spaceFlightState.lane = 0;
-        else if (clickX < 245) spaceFlightState.lane = 1;
-        else spaceFlightState.lane = 2;
-        playTone(520, 50);
-      };
-
-      spaceFlightKeyHandler = (e) => {
-        if (!spaceFlightState || !spaceFlightState.active) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverVooEspacial(-1);
-        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverVooEspacial(1);
-        else if (e.key === ' ' || e.key === 'ArrowUp') ativarPropulsorRepulsor();
-        else if (e.key === 'b') dispararLaserRepulsor();
-      };
-      window.addEventListener('keydown', spaceFlightKeyHandler);
+      let tick = 0;
 
       function loop() {
-        if (!spaceFlightState || !spaceFlightState.active) return;
-        const s = spaceFlightState;
-        const curSpd = s.isBoost ? 14 : s.speed;
+        if (!galacticDefenderState.active) return;
+        tick++;
 
-        if (s.isBoost) {
-          s.boost = Math.max(0, s.boost - 0.45);
-          if (s.boost <= 0) s.isBoost = false;
+        // Auto-recarga de turbo
+        if (tick % 6 === 0 && galacticDefenderState.turboCharge < 100) {
+          galacticDefenderState.turboCharge = Math.min(100, galacticDefenderState.turboCharge + 1.2);
+          const tBar = document.getElementById('galactic-turbo-bar');
+          const tPct = document.getElementById('galactic-turbo-pct');
+          if (tBar) tBar.style.width = `${Math.round(galacticDefenderState.turboCharge)}%`;
+          if (tPct) tPct.textContent = `${Math.round(galacticDefenderState.turboCharge)}%`;
         }
 
-        if (!s.finished && !s.paused) {
-          s.distanceTraveled += curSpd * 0.35;
-          const dEl = document.getElementById('space-hud-dist');
-          if (dEl) dEl.textContent = `${Math.round(s.distanceTraveled)}m`;
+        // Auto-disparo suave para crianças
+        if (tick % 24 === 0) {
+          dispararLaserGalactico(false);
+        }
 
-          const bVal = document.getElementById('space-hud-boost-val');
-          const bBar = document.getElementById('space-hud-boost-bar');
-          if (bVal) bVal.textContent = `${Math.round(s.boost)}%`;
-          if (bBar) bBar.style.width = `${Math.round(s.boost)}%`;
+        // Atualiza estrelas
+        galacticDefenderState.stars.forEach(s => {
+          s.y += s.speed;
+          if (s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
+        });
 
-          if (s.distanceTraveled >= s.nextMilestone) {
-            const m = s.nextMilestone;
-            s.nextMilestone += 500;
-            playCelebrationFanfare();
-            dispararChuvaCoracoes(25);
-            showToast(`🌌 MARCO DE ${m}m NO ESPAÇO! +1 MOEDA! 🪙`);
-            const p = document.getElementById('pote-fichas-val');
-            if (p) p.textContent = parseInt(p.textContent || '0') + 1;
+        // Atualiza lasers
+        for (let i = galacticDefenderState.lasers.length - 1; i >= 0; i--) {
+          const l = galacticDefenderState.lasers[i];
+          l.x += l.vx;
+          l.y += l.vy;
+          if (l.y < -10 || l.x < 0 || l.x > canvas.width) {
+            galacticDefenderState.lasers.splice(i, 1);
+          }
+        }
+
+        // Atualiza inimigos
+        const osc = Math.sin(tick * 0.05) * 22;
+        let todosMortos = true;
+        for (let i = galacticDefenderState.enemies.length - 1; i >= 0; i--) {
+          const e = galacticDefenderState.enemies[i];
+          if (e.hp > 0) {
+            todosMortos = false;
+            e.x = e.baseX + osc;
+            e.y += e.vy;
+
+            // Colisão Inimigo vs Nave
+            const distNave = Math.hypot(e.x - galacticDefenderState.playerX, e.y - galacticDefenderState.playerY);
+            if (distNave < 26 || e.y > canvas.height - 15) {
+              e.hp = 0;
+              galacticDefenderState.lives--;
+              playTone(180, 150);
+              const lEl = document.getElementById('galactic-hud-lives');
+              if (lEl) lEl.textContent = '❤️'.repeat(Math.max(0, galacticDefenderState.lives)) || '💀';
+              if (galacticDefenderState.lives <= 0) {
+                galacticDefenderState.lives = 3;
+                showToast('🛡️ Escudo Stark Reativado!');
+                if (lEl) lEl.textContent = '❤️❤️❤️';
+              }
+            }
+
+            // Colisão Laser vs Inimigo
+            for (let j = galacticDefenderState.lasers.length - 1; j >= 0; j--) {
+              const l = galacticDefenderState.lasers[j];
+              if (Math.abs(l.x - e.x) < e.w / 2 && Math.abs(l.y - e.y) < e.h / 2) {
+                galacticDefenderState.lasers.splice(j, 1);
+                e.hp--;
+                playTone(e.hp <= 0 ? 300 : 850, 40);
+
+                // Partículas
+                for (let p = 0; p < (e.hp <= 0 ? 10 : 4); p++) {
+                  galacticDefenderState.particles.push({
+                    x: e.x, y: e.y,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    color: e.color, life: 18
+                  });
+                }
+
+                if (e.hp <= 0) {
+                  galacticDefenderState.score += (e.type === 'boss' ? 80 : 30);
+                  const sEl = document.getElementById('galactic-hud-score');
+                  if (sEl) sEl.textContent = `${galacticDefenderState.score} pts`;
+
+                  // Drop de moeda (40% de chance)
+                  if (Math.random() < 0.45) {
+                    galacticDefenderState.drops.push({
+                      x: e.x, y: e.y, vy: 1.8, type: 'coin'
+                    });
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
+
+        // Atualiza drops de moedas
+        for (let i = galacticDefenderState.drops.length - 1; i >= 0; i--) {
+          const d = galacticDefenderState.drops[i];
+          d.y += d.vy;
+          // Coletou com a nave
+          if (Math.hypot(d.x - galacticDefenderState.playerX, d.y - galacticDefenderState.playerY) < 26) {
+            galacticDefenderState.coins++;
+            galacticDefenderState.score += 50;
+            playTone(880, 80);
+            const cEl = document.getElementById('galactic-hud-coins');
+            if (cEl) cEl.textContent = `🪙 ${galacticDefenderState.coins}`;
+            const pEl = document.getElementById('pote-fichas-val');
+            if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
             fetch('/api/fichas/bonificar', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ quantidade: 1, motivo: 'marco_voo_espacial' })
+              body: JSON.stringify({ quantidade: 1, motivo: 'defensor_galactico_moeda' })
             }).catch(() => null);
-            speak(`Incrível, herói! Você ultrapassou ${m} metros no espaço cósmico! Mais uma moeda no seu cofre!`);
+            galacticDefenderState.drops.splice(i, 1);
+          } else if (d.y > canvas.height) {
+            galacticDefenderState.drops.splice(i, 1);
           }
         }
 
-        s.x += (laneX[s.lane] - s.x) * 0.22;
-
-        // Gera itens
-        spawnCounter++;
-        if (spawnCounter > (s.isBoost ? 20 : 36) && !s.finished && !s.paused) {
-          spawnCounter = 0;
-          const sortLane = Math.floor(Math.random() * 3);
-          const r = Math.random();
-          let tipo = 'coin';
-          if (r < 0.55) tipo = 'coin';
-          else if (r < 0.75) tipo = 'star';
-          else if (r < 0.88) tipo = 'battery';
-          else tipo = 'asteroid';
-          s.items.push({ x: laneX[sortLane], y: -30, tipo: tipo });
+        // Próxima onda
+        if (todosMortos) {
+          playCelebrationFanfare();
+          showToast(`🌟 ONDA ${galacticDefenderState.wave} VENCIDA! +2 Moedas!`);
+          const pEl = document.getElementById('pote-fichas-val');
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
+          fetch('/api/fichas/bonificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantidade: 2, motivo: 'defensor_galactico_onda' })
+          }).catch(() => null);
+          setupGalacticWave(galacticDefenderState.wave + 1);
         }
 
-        // Fundo espacial
-        ctx.fillStyle = '#030511';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Renderiza tela
+        renderGalacticCanvas(ctx, canvas);
+        galacticAnimId = requestAnimationFrame(loop);
+      }
 
-        // Renderiza estrelas animadas descendo
-        ctx.fillStyle = '#ffffff';
-        for (const st of s.stars) {
-          if (!s.paused) st.y = (st.y + st.speed * (curSpd * 0.3)) % canvas.height;
-          ctx.beginPath();
-          ctx.arc(st.x, st.y, st.size, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      galacticAnimId = requestAnimationFrame(loop);
+    }
 
-        // Faixas sutis de energia no espaço
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([15, 15]);
-        ctx.beginPath();
-        ctx.moveTo(125, 0); ctx.lineTo(125, canvas.height);
-        ctx.moveTo(245, 0); ctx.lineTo(245, canvas.height);
-        ctx.stroke();
-        ctx.setLineDash([]);
+    function renderGalacticCanvas(ctx, canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Itens
-        for (let i = s.items.length - 1; i >= 0; i--) {
-          const it = s.items[i];
-          if (!s.paused) it.y += curSpd;
+      // Estrelas
+      ctx.fillStyle = '#ffffff';
+      galacticDefenderState.stars.forEach(s => {
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+      });
 
-          if (s.isBoost && Math.hypot(it.x - s.x, it.y - s.y) < 130) {
-            it.x += (s.x - it.x) * 0.18;
-          }
+      // Partículas
+      for (let i = galacticDefenderState.particles.length - 1; i >= 0; i--) {
+        const p = galacticDefenderState.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life--;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+        if (p.life <= 0) galacticDefenderState.particles.splice(i, 1);
+      }
 
-          ctx.font = '24px sans-serif';
+      // Drops de Moedas
+      galacticDefenderState.drops.forEach(d => {
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🪙', d.x, d.y);
+      });
+
+      // Inimigos
+      galacticDefenderState.enemies.forEach(e => {
+        if (e.hp > 0) {
+          ctx.font = `${e.w - 6}px sans-serif`;
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          if (it.tipo === 'coin') ctx.fillText('🪙', it.x, it.y);
-          else if (it.tipo === 'star') ctx.fillText('⭐', it.x, it.y);
-          else if (it.tipo === 'battery') ctx.fillText('🔋', it.x, it.y);
-          else if (it.tipo === 'asteroid') ctx.fillText('🪨', it.x, it.y);
+          ctx.fillText(e.emoji, e.x, e.y + 6);
 
-          // Colisao
-          if (Math.hypot(it.x - s.x, it.y - s.y) < 36 && !s.finished) {
-            if (it.tipo === 'coin') {
-              playTone(880, 70); s.coins++; s.score += 10;
-              const c = document.getElementById('space-hud-coins');
-              if (c) c.textContent = s.coins;
-            } else if (it.tipo === 'star') {
-              playTone(1046, 100); s.score += 50;
-              showToast('⭐ Estrela Cósmica! +50 Pts!');
-            } else if (it.tipo === 'battery') {
-              playTone(659, 100); s.boost = Math.min(100, s.boost + 35);
-              showToast('🔋 Bateria Repulsora Recarregada!');
-            } else if (it.tipo === 'asteroid') {
-              if (s.isBoost) {
-                playTone(500, 80); s.score += 30;
-                showToast('💥 Asteroide Destruído pelos Repulsores!');
-              } else {
-                playTone(220, 100); s.wobble = 12; s.speed = 3;
-                setTimeout(() => { if (s) s.speed = s.baseSpeed; }, 1000);
-              }
-            }
-            s.items.splice(i, 1);
-            continue;
+          // Barra de HP se for boss
+          if (e.type === 'boss') {
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(e.x - 14, e.y - 14, 28, 4);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(e.x - 14, e.y - 14, (e.hp / e.maxHp) * 28, 4);
           }
-
-          if (it.y > canvas.height + 40) s.items.splice(i, 1);
         }
+      });
 
-        // Desenha Homem de Ferro voando para cima
-        ctx.save();
-        ctx.translate(s.x + (s.wobble ? (Math.random() * 4 - 2) : 0), s.y);
-        if (s.wobble > 0) s.wobble--;
-
-        // Chamas repulsoras nos pés
-        ctx.fillStyle = s.isBoost ? '#00f0ff' : '#f97316';
-        ctx.beginPath();
-        ctx.arc(-8, 26, 5 + Math.random() * 5, 0, Math.PI * 2);
-        ctx.arc(8, 26, 5 + Math.random() * 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Corpo da armadura
-        ctx.fillStyle = s.suitColor;
-        ctx.beginPath();
-        ctx.roundRect(-16, -20, 32, 44, [8, 8, 4, 4]);
-        ctx.fill();
-
-        // Capacete
-        ctx.fillStyle = '#facc15';
-        ctx.beginPath();
-        ctx.roundRect(-10, -32, 20, 16, 6);
-        ctx.fill();
-
-        // Olhos brilhantes do visor
-        ctx.fillStyle = '#00f0ff';
-        ctx.fillRect(-7, -26, 5, 2);
-        ctx.fillRect(2, -26, 5, 2);
-
-        // Reator Arc no peito
-        ctx.fillStyle = '#00f0ff';
-        ctx.shadowColor = '#00f0ff';
-        ctx.shadowBlur = 12;
-        ctx.beginPath();
-        ctx.arc(0, -6, 5, 0, Math.PI * 2);
-        ctx.fill();
+      // Lasers
+      galacticDefenderState.lasers.forEach(l => {
+        ctx.fillStyle = l.isTurbo ? '#facc15' : '#00f0ff';
+        ctx.shadowColor = l.isTurbo ? '#ef4444' : '#00f0ff';
+        ctx.shadowBlur = 8;
+        ctx.fillRect(l.x - 2, l.y, 4, 12);
         ctx.shadowBlur = 0;
+      });
 
-        ctx.restore();
+      // Nave do Jogador (Stark Interceptor)
+      const px = galacticDefenderState.playerX;
+      const py = galacticDefenderState.playerY;
 
-        spaceFlightAnimId = requestAnimationFrame(loop);
-      }
-      spaceFlightAnimId = requestAnimationFrame(loop);
-    }
+      ctx.save();
+      ctx.translate(px, py);
 
-    async function concluirVooEspacial() {
-      if (!spaceFlightState || spaceFlightState.finished) return;
-      spaceFlightState.finished = true;
-      playCelebrationFanfare();
-      dispararChuvaCoracoes(50);
-      const crianca = appState.config.child_name || 'Kaleo';
-      speak(`Sensacional voo espacial, herói ${crianca}! Você completou a missão cósmica com maestria! Ganhou 3 moedas de ouro!`);
-      showToast('🏆 MISSÃO CÓSMICA CUMPRIDA! +3 MOEDAS!');
+      // Jatos propulsores duplos
+      ctx.fillStyle = '#f97316';
+      ctx.beginPath();
+      ctx.moveTo(-10, 10); ctx.lineTo(-6, 20 + Math.random() * 6); ctx.lineTo(-2, 10);
+      ctx.moveTo(2, 10); ctx.lineTo(6, 20 + Math.random() * 6); ctx.lineTo(10, 10);
+      ctx.fill();
 
-      await fetch('/api/fichas/bonificar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 3, motivo: 'voo_espacial_stark' })
-      }).catch(() => null);
+      // Corpo da nave
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.moveTo(0, -16);
+      ctx.lineTo(16, 12);
+      ctx.lineTo(6, 8);
+      ctx.lineTo(0, 12);
+      ctx.lineTo(-6, 8);
+      ctx.lineTo(-16, 12);
+      ctx.closePath();
+      ctx.fill();
 
-      const p = document.getElementById('pote-fichas-val');
-      if (p) p.textContent = parseInt(p.textContent || '0') + 3;
+      // Asas douradas
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.moveTo(0, -10); ctx.lineTo(18, 11); ctx.lineTo(12, 11); ctx.closePath();
+      ctx.moveTo(0, -10); ctx.lineTo(-18, 11); ctx.lineTo(-12, 11); ctx.closePath();
+      ctx.fill();
 
-      const canvas = document.getElementById('space-flight-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(3, 5, 17, 0.88)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = '64px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('🚀', canvas.width / 2, 100);
-        ctx.font = '900 20px sans-serif'; ctx.fillStyle = '#facc15';
-        ctx.fillText('HERÓI CÓSMICO STARK!', canvas.width / 2, 150);
-        ctx.font = '800 15px sans-serif'; ctx.fillStyle = '#ffffff';
-        ctx.fillText(`Distância: ${Math.round(spaceFlightState.distanceTraveled)}m 🌌`, canvas.width / 2, 190);
-        ctx.fillText(`Moedas Cósmicas: ${spaceFlightState.coins} 🪙`, canvas.width / 2, 220);
-      }
+      // Cabine azul
+      ctx.fillStyle = '#00f0ff';
+      ctx.beginPath();
+      ctx.ellipse(0, -2, 4, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
     }
 
 
     // =========================================================================
-    // JOGO PÁGINA 8 - NÚMERO 2: SUBMARINO ABISSAL STARK (MISSÃO AQUÁTICA)
+    // PÁGINA 8 - JOGO 2: REATOR ARKANOID STARK (QUEBRA-BLOCOS TURBO)
     // =========================================================================
-    let submarineState = {
-      active: false, paused: false, lane: 1, x: 190, y: 230,
-      subColor: '#eab308', subName: 'Amarelo Netuno',
-      speedLevel: 'medio', speed: 7.2, baseSpeed: 7.2,
-      distanceTraveled: 0, nextMilestone: 500, coins: 0, score: 0,
-      sonar: 85, isSonar: false, offset: 0, items: [], bubbles: [],
-      finished: false, wobble: 0
+    let arkanoidState = {
+      active: false, paused: false,
+      paddleX: 145, paddleY: 256, paddleW: 80, paddleH: 12,
+      balls: [], ballLaunched: false,
+      bricks: [], powerups: [], particles: [],
+      score: 0, coins: 0, lives: 3, level: 1,
+      expandTimer: 0, fireTimer: 0
     };
-    let submarineAnimId = null;
-    let submarineKeyHandler = null;
+    let arkanoidAnimId = null;
+    let arkanoidKeyHandler = null;
 
-    function openSubmarineGame() {
-      pushModalScreen('🌊 SUBMARINO ABISSAL STARK', (body) => {
-        playTone(440, 100);
-        setTimeout(() => playTone(554, 100), 100);
-        setTimeout(() => playTone(659, 150), 200);
+    function openArkanoidStarkGame() {
+      pushModalScreen('⚡ REATOR ARKANOID STARK (QUEBRA-BLOCOS)', (body) => {
+        playTone(523, 100);
+        setTimeout(() => playTone(659, 100), 100);
+        setTimeout(() => playTone(784, 150), 200);
         const crianca = appState.config.child_name || 'Kaleo';
-        speak(`Mergulhando no oceano profundo, capitão ${crianca}! Desvie dos recifes e águas-vivas, colete pérolas e acione o super sonar!`);
-        renderSubmarineBody(body);
-      }, true);
+        speak(`Reator quântico energizado, ${crianca}! Rebata a esfera na base magnética, destrua os blocos de vibranium e colete power-ups turbo!`);
+        renderArkanoidBody(body);
+      }, true, () => encerrarReatorArkanoid());
     }
 
-    function encerrarSubmarino() {
-      if (submarineAnimId) { cancelAnimationFrame(submarineAnimId); submarineAnimId = null; }
-      if (submarineKeyHandler) { window.removeEventListener('keydown', submarineKeyHandler); submarineKeyHandler = null; }
-      if (submarineState) submarineState.active = false;
+    function encerrarReatorArkanoid() {
+      if (arkanoidAnimId) { cancelAnimationFrame(arkanoidAnimId); arkanoidAnimId = null; }
+      if (arkanoidKeyHandler) { window.removeEventListener('keydown', arkanoidKeyHandler); arkanoidKeyHandler = null; }
+      if (arkanoidState) arkanoidState.active = false;
     }
 
-    function renderSubmarineBody(body) {
-      encerrarSubmarino();
-      submarineState = {
-        active: true, paused: false, lane: 1, x: 190, y: 230,
-        subColor: '#eab308', subName: 'Amarelo Netuno',
-        speedLevel: 'medio', speed: 7.2, baseSpeed: 7.2,
-        distanceTraveled: 0, nextMilestone: 500, coins: 0, score: 0,
-        sonar: 85, isSonar: false, offset: 0, items: [], bubbles: [],
-        finished: false, wobble: 0
+    function renderArkanoidBody(body) {
+      encerrarReatorArkanoid();
+
+      arkanoidState = {
+        active: true, paused: false,
+        paddleX: 145, paddleY: 256, paddleW: 80, paddleH: 12,
+        balls: [{ x: 185, y: 245, vx: 3.2, vy: -4.2, r: 6, isFire: false }],
+        ballLaunched: false,
+        bricks: [], powerups: [], particles: [],
+        score: 0, coins: 0, lives: 3, level: 1,
+        expandTimer: 0, fireTimer: 0
       };
 
-      for (let i = 0; i < 30; i++) {
-        submarineState.bubbles.push({
+      body.innerHTML = `
+        <div style="display:grid; grid-template-columns: minmax(360px, 390px) 1.2fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
+          
+          <!-- COLUNA ESQUERDA: CANVAS QUEBRA-BLOCOS -->
+          <div style="background:#020914; border:2.5px solid #06b6d4; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(6,182,212,0.25); position:relative;">
+            
+            <canvas id="arkanoid-canvas" width="370" height="280" style="background:#060d1e; border-radius:10px; border:2px solid #1e3a5f; cursor:pointer; width:100%; max-width:370px;"></canvas>
+
+            <!-- CONTROLES TÁTEIS RÁPIDOS INFERIORES -->
+            <div style="display:flex; width:100%; gap:8px; margin-top:6px;">
+              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.1rem; font-weight:900;" onclick="moverRaqueteArkanoid(-1)">
+                ◀ ESQ
+              </button>
+              <button type="button" class="big-btn" id="btn-arkanoid-launch" style="flex:1.4; background:linear-gradient(135deg, #06b6d4 0%, #0284c7 100%); padding:8px 0; font-size:1.02rem; font-weight:900; box-shadow:0 0 12px rgba(6,182,212,0.5);" onclick="lancarEsferaArkanoid()">
+                ⚡ LANÇAR / TURBO!
+              </button>
+              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.1rem; font-weight:900;" onclick="moverRaqueteArkanoid(1)">
+                DIR ▶
+              </button>
+            </div>
+          </div>
+
+          <!-- COLUNA DIREITA: PAINEL DO REATOR QUÂNTICO -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; gap:8px; overflow-y:auto;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:1.05rem; font-weight:900; color:#38bdf8;">
+                ⚡ Reator Arkanoid Stark
+              </div>
+              <span id="arkanoid-hud-level" style="background:#083344; color:#a5f3fc; border:1.5px solid #06b6d4; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
+                MATRIZ 1
+              </span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">ESFERAS / VIDAS:</div>
+                <div id="arkanoid-hud-lives" style="font-size:1.15rem; font-weight:900; color:#06b6d4;">🔵🔵🔵</div>
+              </div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">MOEDAS COLETADAS:</div>
+                <div id="arkanoid-hud-coins" style="font-size:1.15rem; font-weight:900; color:#facc15;">🪙 0</div>
+              </div>
+            </div>
+
+            <!-- STATUS DE POWER-UPS ATIVOS -->
+            <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:8px 10px;">
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">Cápsulas Coletadas:</div>
+              <div id="arkanoid-powerup-status" style="font-size:0.85rem; font-weight:800; color:#38bdf8;">
+                ✨ Base Magnética Pronta
+              </div>
+            </div>
+
+            <div style="background:#040f20; border:1.5px solid #334155; border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.78rem; color:#94a3b8; font-weight:800;">ENERGIA LIBERADA:</span>
+                <div id="arkanoid-hud-score" style="font-size:1.35rem; font-weight:900; color:#facc15;">0 pts</div>
+              </div>
+              <button type="button" class="btn" style="background:#1e293b; color:#94a3b8; font-size:0.8rem; font-weight:800; border:1px solid #475569;" onclick="renderArkanoidBody(document.getElementById('modal-body'))">
+                🔄 Recarregar Matriz
+              </button>
+            </div>
+
+            <div style="background:#030c1b; border:1px dashed #334155; border-radius:10px; padding:6px 10px; font-size:0.76rem; color:#94a3b8; line-height:1.3;">
+              💡 <strong>Como Jogar:</strong> Arraste o dedo ou use as setas ⬅️ ➡️ para mover a base. Aperte <strong>LANÇAR</strong> para soltar a esfera quântica. Destrua os blocos, pegue as cápsulas flutuantes e vença a matriz!
+            </div>
+          </div>
+        </div>
+      `;
+
+      initArkanoidBricks(1);
+
+      const cvs = document.getElementById('arkanoid-canvas');
+      if (cvs) {
+        const updatePaddle = (clientX) => {
+          const rect = cvs.getBoundingClientRect();
+          const scale = cvs.width / rect.width;
+          const x = (clientX - rect.left) * scale;
+          arkanoidState.paddleX = Math.max(0, Math.min(cvs.width - arkanoidState.paddleW, x - arkanoidState.paddleW / 2));
+          if (!arkanoidState.ballLaunched && arkanoidState.balls.length > 0) {
+            arkanoidState.balls[0].x = arkanoidState.paddleX + arkanoidState.paddleW / 2;
+          }
+        };
+        cvs.addEventListener('mousemove', (e) => { if (arkanoidState.active) updatePaddle(e.clientX); });
+        cvs.addEventListener('touchmove', (e) => {
+          if (arkanoidState.active && e.touches.length > 0) {
+            updatePaddle(e.touches[0].clientX);
+            e.preventDefault();
+          }
+        }, { passive: false });
+        cvs.addEventListener('click', () => lancarEsferaArkanoid());
+      }
+
+      arkanoidKeyHandler = (e) => {
+        if (!arkanoidState.active) return;
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverRaqueteArkanoid(-1);
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverRaqueteArkanoid(1);
+        else if (e.key === ' ' || e.key === 'Enter') { lancarEsferaArkanoid(); e.preventDefault(); }
+      };
+      window.addEventListener('keydown', arkanoidKeyHandler);
+
+      iniciarLoopArkanoid();
+    }
+
+    function initArkanoidBricks(lvl) {
+      arkanoidState.level = lvl;
+      arkanoidState.bricks = [];
+      const cols = 8;
+      const rows = 4;
+      const bW = 41;
+      const bH = 14;
+      const colors = ['#fbbf24', '#ef4444', '#a855f7', '#00f0ff'];
+      const pts = [40, 25, 15, 10];
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const hasPower = Math.random() < 0.22;
+          const pType = ['fire', 'expand', 'coin', 'multi'][Math.floor(Math.random() * 4)];
+          arkanoidState.bricks.push({
+            x: 10 + c * (bW + 4),
+            y: 35 + r * (bH + 6),
+            w: bW, h: bH,
+            color: colors[r % colors.length],
+            points: pts[r % pts.length],
+            hp: (r === 0 && lvl > 1) ? 2 : 1,
+            powerup: hasPower ? pType : null,
+            alive: true
+          });
+        }
+      }
+      const lEl = document.getElementById('arkanoid-hud-level');
+      if (lEl) lEl.textContent = `MATRIZ ${lvl}`;
+    }
+
+    function moverRaqueteArkanoid(dir) {
+      if (!arkanoidState.active) return;
+      const cvs = document.getElementById('arkanoid-canvas');
+      const maxW = cvs ? cvs.width : 370;
+      arkanoidState.paddleX = Math.max(0, Math.min(maxW - arkanoidState.paddleW, arkanoidState.paddleX + dir * 28));
+      if (!arkanoidState.ballLaunched && arkanoidState.balls.length > 0) {
+        arkanoidState.balls[0].x = arkanoidState.paddleX + arkanoidState.paddleW / 2;
+      }
+      playTone(380, 25);
+    }
+
+    function lancarEsferaArkanoid() {
+      if (!arkanoidState.active) return;
+      if (!arkanoidState.ballLaunched) {
+        arkanoidState.ballLaunched = true;
+        if (arkanoidState.balls.length > 0) {
+          arkanoidState.balls[0].vy = -4.5;
+          arkanoidState.balls[0].vx = (Math.random() - 0.5) * 3.5;
+        }
+        playTone(659, 80);
+      } else {
+        // Modo Turbo momentâneo
+        arkanoidState.balls.forEach(b => {
+          b.vx *= 1.15; b.vy *= 1.15;
+        });
+        playTone(880, 50);
+      }
+    }
+
+    function iniciarLoopArkanoid() {
+      const canvas = document.getElementById('arkanoid-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let tick = 0;
+
+      function loop() {
+        if (!arkanoidState.active) return;
+        tick++;
+
+        // Timers de powerup
+        if (arkanoidState.expandTimer > 0) {
+          arkanoidState.expandTimer--;
+          if (arkanoidState.expandTimer <= 0) arkanoidState.paddleW = 80;
+        }
+        if (arkanoidState.fireTimer > 0) {
+          arkanoidState.fireTimer--;
+          if (arkanoidState.fireTimer <= 0) {
+            arkanoidState.balls.forEach(b => b.isFire = false);
+            const pEl = document.getElementById('arkanoid-powerup-status');
+            if (pEl) pEl.textContent = '✨ Base Magnética Pronta';
+          }
+        }
+
+        // Atualiza bolas
+        if (arkanoidState.ballLaunched) {
+          for (let i = arkanoidState.balls.length - 1; i >= 0; i--) {
+            const b = arkanoidState.balls[i];
+            b.x += b.vx;
+            b.y += b.vy;
+
+            // Paredes laterais
+            if (b.x - b.r < 0) { b.x = b.r; b.vx = Math.abs(b.vx); playTone(440, 25); }
+            if (b.x + b.r > canvas.width) { b.x = canvas.width - b.r; b.vx = -Math.abs(b.vx); playTone(440, 25); }
+            // Teto
+            if (b.y - b.r < 0) { b.y = b.r; b.vy = Math.abs(b.vy); playTone(440, 25); }
+
+            // Base Magnética (Paddle)
+            const px = arkanoidState.paddleX;
+            const py = arkanoidState.paddleY;
+            const pw = arkanoidState.paddleW;
+            const ph = arkanoidState.paddleH;
+
+            if (b.y + b.r >= py && b.y - b.r <= py + ph && b.x >= px && b.x <= px + pw && b.vy > 0) {
+              const hit = (b.x - (px + pw / 2)) / (pw / 2);
+              b.vx = hit * 4.8;
+              b.vy = -Math.abs(b.vy);
+              playTone(550, 40);
+            }
+
+            // Colisão com Blocos
+            let acertouBloco = false;
+            for (let k = 0; k < arkanoidState.bricks.length; k++) {
+              const br = arkanoidState.bricks[k];
+              if (br.alive) {
+                if (b.x + b.r >= br.x && b.x - b.r <= br.x + br.w &&
+                    b.y + b.r >= br.y && b.y - b.r <= br.y + br.h) {
+                  br.hp--;
+                  acertouBloco = true;
+                  playTone(600 + br.points * 6, 35);
+
+                  // Partículas
+                  for (let p = 0; p < 6; p++) {
+                    arkanoidState.particles.push({
+                      x: br.x + br.w / 2, y: br.y + br.h / 2,
+                      vx: (Math.random() - 0.5) * 4,
+                      vy: (Math.random() - 0.5) * 4,
+                      color: br.color, life: 16
+                    });
+                  }
+
+                  if (br.hp <= 0) {
+                    br.alive = false;
+                    arkanoidState.score += br.points;
+                    const sEl = document.getElementById('arkanoid-hud-score');
+                    if (sEl) sEl.textContent = `${arkanoidState.score} pts`;
+
+                    // Dropa powerup
+                    if (br.powerup) {
+                      arkanoidState.powerups.push({
+                        x: br.x + br.w / 2, y: br.y + br.h / 2,
+                        vy: 2.2, type: br.powerup
+                      });
+                    }
+                  }
+
+                  if (!b.isFire) {
+                    b.vy = -b.vy;
+                    break;
+                  }
+                }
+              }
+            }
+
+            // Caiu no chão
+            if (b.y - b.r > canvas.height) {
+              arkanoidState.balls.splice(i, 1);
+            }
+          }
+
+          // Se perdeu todas as esferas
+          if (arkanoidState.balls.length === 0) {
+            arkanoidState.lives--;
+            playTone(180, 150);
+            const lEl = document.getElementById('arkanoid-hud-lives');
+            if (lEl) lEl.textContent = '🔵'.repeat(Math.max(0, arkanoidState.lives)) || '💀';
+
+            if (arkanoidState.lives <= 0) {
+              arkanoidState.lives = 3;
+              showToast('🛡️ Reator Quântico Recarregado!');
+              if (lEl) lEl.textContent = '🔵🔵🔵';
+            }
+            arkanoidState.ballLaunched = false;
+            arkanoidState.balls.push({
+              x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
+              y: arkanoidState.paddleY - 10,
+              vx: 3.2, vy: -4.2, r: 6, isFire: false
+            });
+          }
+        }
+
+        // Atualiza powerups
+        for (let i = arkanoidState.powerups.length - 1; i >= 0; i--) {
+          const pu = arkanoidState.powerups[i];
+          pu.y += pu.vy;
+
+          // Coleta com o paddle
+          if (pu.y >= arkanoidState.paddleY && pu.y <= arkanoidState.paddleY + arkanoidState.paddleH &&
+              pu.x >= arkanoidState.paddleX && pu.x <= arkanoidState.paddleX + arkanoidState.paddleW) {
+            playTone(988, 100);
+            const statusEl = document.getElementById('arkanoid-powerup-status');
+
+            if (pu.type === 'expand') {
+              arkanoidState.paddleW = 115;
+              arkanoidState.expandTimer = 480;
+              if (statusEl) statusEl.textContent = '🛡️ Super Base Stark (Ampliada!)';
+            } else if (pu.type === 'fire') {
+              arkanoidState.fireTimer = 360;
+              arkanoidState.balls.forEach(b => b.isFire = true);
+              if (statusEl) statusEl.textContent = '🔥 Esfera Turbo Perfurante!';
+            } else if (pu.type === 'multi') {
+              arkanoidState.balls.push({
+                x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
+                y: arkanoidState.paddleY - 10,
+                vx: -3.5, vy: -4.5, r: 6, isFire: arkanoidState.fireTimer > 0
+              });
+              if (statusEl) statusEl.textContent = '⚡ Multi-Esferas Ativadas!';
+            } else if (pu.type === 'coin') {
+              arkanoidState.coins++;
+              const cEl = document.getElementById('arkanoid-hud-coins');
+              if (cEl) cEl.textContent = `🪙 ${arkanoidState.coins}`;
+              const pEl = document.getElementById('pote-fichas-val');
+              if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
+              fetch('/api/fichas/bonificar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: 1, motivo: 'arkanoid_moeda' })
+              }).catch(() => null);
+            }
+            arkanoidState.powerups.splice(i, 1);
+          } else if (pu.y > canvas.height) {
+            arkanoidState.powerups.splice(i, 1);
+          }
+        }
+
+        // Verifica vitória de matriz
+        const restamBlocos = arkanoidState.bricks.some(b => b.alive);
+        if (!restamBlocos) {
+          playCelebrationFanfare();
+          showToast(`🌟 MATRIZ ${arkanoidState.level} CONCLUÍDA! +2 Moedas!`);
+          const pEl = document.getElementById('pote-fichas-val');
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
+          fetch('/api/fichas/bonificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantidade: 2, motivo: 'arkanoid_matriz' })
+          }).catch(() => null);
+
+          arkanoidState.ballLaunched = false;
+          initArkanoidBricks(arkanoidState.level + 1);
+          arkanoidState.balls = [{
+            x: arkanoidState.paddleX + arkanoidState.paddleW / 2,
+            y: arkanoidState.paddleY - 10,
+            vx: 3.5, vy: -4.5, r: 6, isFire: false
+          }];
+        }
+
+        renderArkanoidCanvas(ctx, canvas);
+        arkanoidAnimId = requestAnimationFrame(loop);
+      }
+
+      arkanoidAnimId = requestAnimationFrame(loop);
+    }
+
+    function renderArkanoidCanvas(ctx, canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Linhas quânticas de fundo
+      ctx.strokeStyle = 'rgba(6,182,212,0.08)';
+      ctx.lineWidth = 1;
+      for (let y = 20; y < canvas.height; y += 30) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Partículas
+      for (let i = arkanoidState.particles.length - 1; i >= 0; i--) {
+        const p = arkanoidState.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life--;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+        if (p.life <= 0) arkanoidState.particles.splice(i, 1);
+      }
+
+      // Blocos
+      arkanoidState.bricks.forEach(br => {
+        if (br.alive) {
+          ctx.fillStyle = br.color;
+          ctx.shadowColor = br.color;
+          ctx.shadowBlur = 6;
+          ctx.fillRect(br.x, br.y, br.w, br.h);
+          ctx.shadowBlur = 0;
+
+          // Borda interna brilhante
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(br.x + 1, br.y + 1, br.w - 2, br.h - 2);
+
+          // Ícone se tiver powerup
+          if (br.powerup) {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '8px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚡', br.x + br.w / 2, br.y + br.h - 3);
+          }
+        }
+      });
+
+      // Power-ups caindo
+      arkanoidState.powerups.forEach(pu => {
+        const icons = { expand: '🛡️', fire: '🔥', multi: '⚡', coin: '🪙' };
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(icons[pu.type] || '✨', pu.x, pu.y);
+      });
+
+      // Base Magnética (Paddle)
+      ctx.save();
+      const px = arkanoidState.paddleX;
+      const py = arkanoidState.paddleY;
+      const pw = arkanoidState.paddleW;
+      const ph = arkanoidState.paddleH;
+
+      ctx.fillStyle = 'linear-gradient(90deg, #0284c7, #00f0ff)';
+      ctx.shadowColor = '#00f0ff';
+      ctx.shadowBlur = 10;
+      ctx.fillRect(px, py, pw, ph);
+
+      // Cantos e núcleo
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(px + pw / 2 - 12, py + 2, 24, ph - 4);
+      ctx.restore();
+
+      // Esferas
+      arkanoidState.balls.forEach(b => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = b.isFire ? '#f97316' : '#00f0ff';
+        ctx.shadowColor = b.isFire ? '#ef4444' : '#38bdf8';
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+
+    // =========================================================================
+    // PÁGINA 8 - JOGO 3: JETPACK REPULSOR STARK (GRAVIDADE & TURBO)
+    // =========================================================================
+    let jetpackState = {
+      active: false, paused: false,
+      playerX: 65, playerY: 130, playerVy: 0,
+      gravity: 0.30, thrust: -5.2,
+      distance: 0, coins: 0, score: 0, shields: 3,
+      turboTimer: 0, gates: [], particles: [], stars: [],
+      nextMilestone: 200
+    };
+    let jetpackAnimId = null;
+    let jetpackKeyHandler = null;
+
+    function openJetpackStarkGame() {
+      pushModalScreen('🦸‍♂️ JETPACK REPULSOR STARK (VOO GRAVITACIONAL)', (body) => {
+        playTone(523, 100);
+        setTimeout(() => playTone(659, 100), 100);
+        setTimeout(() => playTone(784, 150), 200);
+        const crianca = appState.config.child_name || 'Kaleo';
+        speak(`Propulsores ativados, ${crianca}! Toque na tela para voar contra a gravidade, passe pelos portais e pegue os anéis turbo!`);
+        renderJetpackBody(body);
+      }, true, () => encerrarJetpackStark());
+    }
+
+    function encerrarJetpackStark() {
+      if (jetpackAnimId) { cancelAnimationFrame(jetpackAnimId); jetpackAnimId = null; }
+      if (jetpackKeyHandler) { window.removeEventListener('keydown', jetpackKeyHandler); jetpackKeyHandler = null; }
+      if (jetpackState) jetpackState.active = false;
+    }
+
+    function renderJetpackBody(body) {
+      encerrarJetpackStark();
+
+      jetpackState = {
+        active: true, paused: false,
+        playerX: 65, playerY: 130, playerVy: 0,
+        gravity: 0.30, thrust: -5.2,
+        distance: 0, coins: 0, score: 0, shields: 3,
+        turboTimer: 0, gates: [], particles: [], stars: [],
+        nextMilestone: 200
+      };
+
+      for (let i = 0; i < 40; i++) {
+        jetpackState.stars.push({
           x: Math.random() * 370,
           y: Math.random() * 280,
-          r: Math.random() * 4 + 2,
-          speed: Math.random() * 2 + 1
+          speed: Math.random() * 2.5 + 1,
+          size: Math.random() * 2 + 1
         });
       }
 
       body.innerHTML = `
         <div style="display:grid; grid-template-columns: minmax(360px, 390px) 1.2fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
-          <div style="background:#020914; border:2.5px solid #06b6d4; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(6,182,212,0.3); position:relative;">
-            <canvas id="submarine-canvas" width="370" height="280" style="background:#031c33; border-radius:10px; border:2px solid #083358; cursor:pointer; width:100%; max-width:370px;"></canvas>
-            <div style="display:flex; width:100%; gap:8px; margin-top:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverSubmarino(-1)">◀ SUBIR / ESQ</button>
-              <button type="button" class="big-btn" id="btn-sub-sonar" style="flex:1.2; background:linear-gradient(135deg, #06b6d4 0%, #0284c7 100%); padding:8px 0; font-size:1rem; font-weight:900; box-shadow:0 0 12px rgba(6,182,212,0.5);" onclick="ativarSonarAbissal()">⚡ SUPER SONAR!</button>
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverSubmarino(1)">DESCER / DIR ▶</button>
+          
+          <!-- COLUNA ESQUERDA: CANVAS DE VOO -->
+          <div style="background:#020914; border:2.5px solid #8b5cf6; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(139,92,246,0.25); position:relative;">
+            
+            <canvas id="jetpack-canvas" width="370" height="280" style="background:#080718; border-radius:10px; border:2px solid #2e1065; cursor:pointer; width:100%; max-width:370px;"></canvas>
+
+            <!-- BOTÃO TÁTIL GIGANTE DE PROPULSÃO -->
+            <div style="display:flex; width:100%; margin-top:6px;">
+              <button type="button" class="big-btn" id="btn-jetpack-thrust" style="flex:1; background:linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); padding:12px 0; font-size:1.15rem; font-weight:900; box-shadow:0 0 16px rgba(139,92,246,0.5);" onclick="acionarPropulsorJetpack()">
+                🔥 ACIONAR PROPULSOR A JATO!
+              </button>
             </div>
           </div>
+
+          <!-- COLUNA DIREITA: PAINEL DE ALTITUDE E TURBO -->
           <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; gap:8px; overflow-y:auto;">
+            
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:1.05rem; font-weight:900; color:#38bdf8;">🌊 Submarino Abissal</div>
-              <span id="sub-hud-speed" style="background:#082f49; color:#7dd3fc; border:1.5px solid #0284c7; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">120 nós</span>
-            </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⚡ Velocidade do Mergulho:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" id="btn-sub-speed-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:1.5px solid #059669; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setSubmarineSpeedLevel('facil')">🟢 Calmo (60)</button>
-                <button type="button" class="btn" id="btn-sub-speed-medio" style="flex:1; background:#0284c7; color:#fff; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.4);" onclick="setSubmarineSpeedLevel('medio')">🟡 Rápido (120)</button>
-                <button type="button" class="btn" id="btn-sub-speed-turbo" style="flex:1; background:#991b1b; color:#fecaca; border:1.5px solid #dc2626; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setSubmarineSpeedLevel('turbo')">🔴 Turbo (200)</button>
+              <div style="font-size:1.05rem; font-weight:900; color:#c084fc;">
+                🦸‍♂️ Jetpack Repulsor Stark
               </div>
+              <span id="jetpack-hud-dist" style="background:#3b0764; color:#f3e8ff; border:1.5px solid #8b5cf6; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
+                0 m
+              </span>
             </div>
+
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🤿 Profundidade:</div>
-                <div id="sub-hud-dist" style="font-size:1.25rem; font-weight:900; color:#facc15;">0m</div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">ESCUDOS DE FORÇA:</div>
+                <div id="jetpack-hud-shields" style="font-size:1.15rem; font-weight:900; color:#8b5cf6;">🛡️🛡️🛡️</div>
               </div>
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🪙 Pérolas & Moedas:</div>
-                <div id="sub-hud-coins" style="font-size:1.25rem; font-weight:900; color:#4ade80;">0</div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:800; color:#cbd5e1; margin-bottom:2px;">
-                <span>🫧 Energia do Sonar:</span>
-                <span id="sub-hud-sonar-val">85%</span>
-              </div>
-              <div style="width:100%; height:12px; background:#041426; border-radius:8px; border:1px solid #1e3a63; overflow:hidden;">
-                <div id="sub-hud-sonar-bar" style="width:85%; height:100%; background:linear-gradient(90deg, #38bdf8, #06b6d4); border-radius:8px;"></div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">MOEDAS COLETADAS:</div>
+                <div id="jetpack-hud-coins" style="font-size:1.15rem; font-weight:900; color:#facc15;">🪙 0</div>
               </div>
             </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:3px;">🎨 Cor do Submarino:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" style="flex:1; background:#eab308; color:#000; padding:5px 0; font-size:0.8rem; font-weight:900; border:2px solid #fff;" onclick="trocarCascoSubmarino('#eab308', 'Amarelo Netuno', this)">🟡</button>
-                <button type="button" class="btn" style="flex:1; background:#0284c7; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarCascoSubmarino('#0284c7', 'Azul Marinho', this)">🔵</button>
-                <button type="button" class="btn" style="flex:1; background:#ef4444; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarCascoSubmarino('#ef4444', 'Rubro Abissal', this)">🔴</button>
-                <button type="button" class="btn" style="flex:1; background:#10b981; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarCascoSubmarino('#10b981', 'Esmeralda', this)">🟢</button>
+
+            <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:8px 10px;">
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">Status dos Repulsores:</div>
+              <div id="jetpack-hud-mode" style="font-size:0.88rem; font-weight:900; color:#a855f7;">
+                🚀 Voo Estável Ativado
               </div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#334155; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="tocarBuzinaSonar()">📢 Sonar Ping!</button>
-              <button type="button" class="big-btn" id="btn-sub-pause" style="flex:1; background:#0f766e; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="togglePausarSubmarino()">⏸️ Pausar</button>
-              <button type="button" class="big-btn" style="flex:1.2; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="concluirSubmarino()">🏆 Finalizar</button>
+
+            <div style="background:#040f20; border:1.5px solid #334155; border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.78rem; color:#94a3b8; font-weight:800;">PONTOS DE VOO:</span>
+                <div id="jetpack-hud-score" style="font-size:1.35rem; font-weight:900; color:#38bdf8;">0 pts</div>
+              </div>
+              <button type="button" class="btn" style="background:#1e293b; color:#94a3b8; font-size:0.8rem; font-weight:800; border:1px solid #475569;" onclick="renderJetpackBody(document.getElementById('modal-body'))">
+                🔄 Reiniciar Voo
+              </button>
+            </div>
+
+            <div style="background:#030c1b; border:1px dashed #334155; border-radius:10px; padding:6px 10px; font-size:0.76rem; color:#94a3b8; line-height:1.3;">
+              💡 <strong>Como Jogar:</strong> Toque no botão roxo grande ou aperte <strong>ESPAÇO</strong> para dar impulsos com o jetpack. Desvie dos portais de laser, pegue os anéis turbo para atravessar barreiras e colete moedas!
             </div>
           </div>
         </div>
       `;
 
-      iniciarLoopCanvasSubmarine();
-    }
+      const cvs = document.getElementById('jetpack-canvas');
+      if (cvs) {
+        cvs.addEventListener('mousedown', () => acionarPropulsorJetpack());
+        cvs.addEventListener('touchstart', (e) => {
+          acionarPropulsorJetpack();
+          e.preventDefault();
+        }, { passive: false });
+      }
 
-    function setSubmarineSpeedLevel(lvl) {
-      if (!submarineState) return;
-      submarineState.speedLevel = lvl;
-      const spds = { facil: 4.8, medio: 7.2, turbo: 11.0 };
-      submarineState.baseSpeed = spds[lvl] || 7.2;
-      submarineState.speed = submarineState.baseSpeed;
-      playTone(480, 80);
-      const spdEl = document.getElementById('sub-hud-speed');
-      if (spdEl) spdEl.textContent = `${Math.round(submarineState.speed * 16)} nós`;
-      ['facil', 'medio', 'turbo'].forEach(l => {
-        const b = document.getElementById(`btn-sub-speed-${l}`);
-        if (b) {
-          b.style.borderColor = (l === lvl) ? '#00f0ff' : '#334155';
-          b.style.boxShadow = (l === lvl) ? '0 0 10px rgba(0,240,255,0.5)' : 'none';
+      jetpackKeyHandler = (e) => {
+        if (!jetpackState.active) return;
+        if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+          acionarPropulsorJetpack();
+          e.preventDefault();
         }
-      });
+      };
+      window.addEventListener('keydown', jetpackKeyHandler);
+
+      iniciarLoopJetpack();
     }
 
-    function moverSubmarino(delta) {
-      if (!submarineState || submarineState.finished) return;
-      playTone(400, 60);
-      submarineState.lane = Math.max(0, Math.min(2, submarineState.lane + delta));
-    }
+    function acionarPropulsorJetpack() {
+      if (!jetpackState.active) return;
+      jetpackState.playerVy = jetpackState.thrust;
+      playTone(587, 50);
 
-    function ativarSonarAbissal() {
-      if (!submarineState || submarineState.finished) return;
-      if (submarineState.sonar < 15) { showToast('🫧 Energia de sonar baixa!'); return; }
-      submarineState.isSonar = true;
-      playTone(600, 150);
-      setTimeout(() => playTone(900, 200), 120);
-      showToast('⚡ ONDA DE SONAR DISPARADA!');
-      setTimeout(() => { if (submarineState) submarineState.isSonar = false; }, 3500);
-    }
-
-    function tocarBuzinaSonar() {
-      playTone(520, 200, 'sine');
-      setTimeout(() => playTone(780, 300, 'sine'), 150);
-      showToast('📢 *PING!* Sonar ecoando pelo oceano!');
-    }
-
-    function trocarCascoSubmarino(cor, nome, btn) {
-      if (!submarineState) return;
-      submarineState.subColor = cor;
-      submarineState.subName = nome;
-      playTone(587, 80);
-      showToast(`🌊 Submarino: ${nome}!`);
-      if (btn && btn.parentElement) {
-        btn.parentElement.querySelectorAll('button').forEach(b => b.style.border = 'none');
-        btn.style.border = '2px solid #fff';
+      // Partículas de labareda do jato
+      for (let p = 0; p < 5; p++) {
+        jetpackState.particles.push({
+          x: jetpackState.playerX - 6,
+          y: jetpackState.playerY + 14,
+          vx: -3 - Math.random() * 3,
+          vy: (Math.random() - 0.5) * 3,
+          color: Math.random() < 0.5 ? '#f97316' : '#00f0ff',
+          life: 14
+        });
       }
     }
 
-    function togglePausarSubmarino() {
-      if (!submarineState) return;
-      submarineState.paused = !submarineState.paused;
-      playTone(440, 80);
-      const b = document.getElementById('btn-sub-pause');
-      if (b) b.textContent = submarineState.paused ? '▶️ Continuar' : '⏸️ Pausar';
-    }
-
-    function iniciarLoopCanvasSubmarine() {
-      const canvas = document.getElementById('submarine-canvas');
+    function iniciarLoopJetpack() {
+      const canvas = document.getElementById('jetpack-canvas');
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
-      const laneX = [65, 185, 305];
-      let spawnCounter = 0;
-
-      canvas.onpointerdown = (ev) => {
-        const rect = canvas.getBoundingClientRect();
-        const clickX = (ev.clientX - rect.left) * (canvas.width / rect.width);
-        if (clickX < 125) submarineState.lane = 0;
-        else if (clickX < 245) submarineState.lane = 1;
-        else submarineState.lane = 2;
-        playTone(460, 50);
-      };
-
-      submarineKeyHandler = (e) => {
-        if (!submarineState || !submarineState.active) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverSubmarino(-1);
-        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverSubmarino(1);
-        else if (e.key === ' ' || e.key === 'ArrowUp') ativarSonarAbissal();
-        else if (e.key === 'b') tocarBuzinaSonar();
-      };
-      window.addEventListener('keydown', submarineKeyHandler);
+      let tick = 0;
 
       function loop() {
-        if (!submarineState || !submarineState.active) return;
-        const s = submarineState;
-        const curSpd = s.isSonar ? 13 : s.speed;
+        if (!jetpackState.active) return;
+        tick++;
 
-        if (s.isSonar) {
-          s.sonar = Math.max(0, s.sonar - 0.45);
-          if (s.sonar <= 0) s.isSonar = false;
-        }
-
-        if (!s.finished && !s.paused) {
-          s.distanceTraveled += curSpd * 0.35;
-          const dEl = document.getElementById('sub-hud-dist');
-          if (dEl) dEl.textContent = `${Math.round(s.distanceTraveled)}m`;
-
-          const sVal = document.getElementById('sub-hud-sonar-val');
-          const sBar = document.getElementById('sub-hud-sonar-bar');
-          if (sVal) sVal.textContent = `${Math.round(s.sonar)}%`;
-          if (sBar) sBar.style.width = `${Math.round(s.sonar)}%`;
-
-          if (s.distanceTraveled >= s.nextMilestone) {
-            const m = s.nextMilestone;
-            s.nextMilestone += 500;
-            playCelebrationFanfare();
-            dispararChuvaCoracoes(25);
-            showToast(`🌊 MARCO DE ${m}m DE PROFUNDIDADE! +1 MOEDA! 🪙`);
-            const p = document.getElementById('pote-fichas-val');
-            if (p) p.textContent = parseInt(p.textContent || '0') + 1;
-            fetch('/api/fichas/bonificar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ quantidade: 1, motivo: 'marco_submarino' })
-            }).catch(() => null);
-            speak(`Bravo, capitão! Você atingiu ${m} metros nas profundezas do oceano! Mais uma moeda no seu pote!`);
+        // Turbo Timer
+        if (jetpackState.turboTimer > 0) {
+          jetpackState.turboTimer--;
+          if (jetpackState.turboTimer <= 0) {
+            const mEl = document.getElementById('jetpack-hud-mode');
+            if (mEl) mEl.textContent = '🚀 Voo Estável Ativado';
           }
         }
 
-        s.x += (laneX[s.lane] - s.x) * 0.22;
+        const isBoost = jetpackState.turboTimer > 0;
+        const currentSpeed = isBoost ? 6.8 : 3.8;
 
-        spawnCounter++;
-        if (spawnCounter > (s.isSonar ? 20 : 36) && !s.finished && !s.paused) {
-          spawnCounter = 0;
-          const sortLane = Math.floor(Math.random() * 3);
-          const r = Math.random();
-          let tipo = 'coin';
-          if (r < 0.55) tipo = 'coin';
-          else if (r < 0.75) tipo = 'pearl';
-          else if (r < 0.88) tipo = 'bubble';
-          else tipo = 'jellyfish';
-          s.items.push({ x: laneX[sortLane], y: -30, tipo: tipo });
+        // Distância
+        jetpackState.distance += currentSpeed * 0.12;
+        jetpackState.score += Math.round(currentSpeed);
+        const dEl = document.getElementById('jetpack-hud-dist');
+        const sEl = document.getElementById('jetpack-hud-score');
+        if (dEl) dEl.textContent = `${Math.round(jetpackState.distance)} m`;
+        if (sEl) sEl.textContent = `${jetpackState.score} pts`;
+
+        // Bonificação a cada 200m
+        if (jetpackState.distance >= jetpackState.nextMilestone) {
+          jetpackState.nextMilestone += 200;
+          jetpackState.coins++;
+          playTone(880, 100);
+          showToast(`🚩 ${Math.round(jetpackState.distance)}m Percorridos! +1 Moeda!`);
+          const cEl = document.getElementById('jetpack-hud-coins');
+          if (cEl) cEl.textContent = `🪙 ${jetpackState.coins}`;
+          const pEl = document.getElementById('pote-fichas-val');
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
+          fetch('/api/fichas/bonificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantidade: 1, motivo: 'jetpack_distancia' })
+          }).catch(() => null);
         }
 
-        // Fundo oceânico azul profundo
-        ctx.fillStyle = '#02182b';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Física da gravidade
+        jetpackState.playerVy += jetpackState.gravity;
+        jetpackState.playerY += jetpackState.playerVy;
 
-        // Bolhas subindo
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-        for (const b of s.bubbles) {
-          if (!s.paused) b.y = (b.y - b.speed + canvas.height) % canvas.height;
-          ctx.beginPath();
-          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-          ctx.fill();
+        // Limites de teto e chão
+        if (jetpackState.playerY < 18) {
+          jetpackState.playerY = 18;
+          jetpackState.playerVy = 0;
+        }
+        if (jetpackState.playerY > canvas.height - 22) {
+          jetpackState.playerY = canvas.height - 22;
+          jetpackState.playerVy = -2;
         }
 
-        // Faixas de correnteza marítima
-        ctx.strokeStyle = 'rgba(6, 182, 212, 0.25)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([20, 20]);
-        ctx.beginPath();
-        ctx.moveTo(125, 0); ctx.lineTo(125, canvas.height);
-        ctx.moveTo(245, 0); ctx.lineTo(245, canvas.height);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        // Estrelas de fundo
+        jetpackState.stars.forEach(s => {
+          s.x -= s.speed * (isBoost ? 2 : 1);
+          if (s.x < 0) { s.x = canvas.width; s.y = Math.random() * canvas.height; }
+        });
 
-        // Itens aquáticos
-        for (let i = s.items.length - 1; i >= 0; i--) {
-          const it = s.items[i];
-          if (!s.paused) it.y += curSpd;
+        // Spawna novos portais a cada 90 ticks
+        if (tick % 95 === 0) {
+          const gapY = 55 + Math.random() * (canvas.height - 150);
+          const gapH = 92;
+          jetpackState.gates.push({
+            x: canvas.width + 10,
+            w: 26,
+            topH: gapY,
+            bottomY: gapY + gapH,
+            bottomH: canvas.height - (gapY + gapH),
+            passed: false,
+            hasCoin: Math.random() < 0.6,
+            hasTurboRing: Math.random() < 0.28,
+            itemY: gapY + gapH / 2
+          });
+        }
 
-          if (s.isSonar && Math.hypot(it.x - s.x, it.y - s.y) < 130) {
-            it.x += (s.x - it.x) * 0.18;
+        // Atualiza portais
+        for (let i = jetpackState.gates.length - 1; i >= 0; i--) {
+          const g = jetpackState.gates[i];
+          g.x -= currentSpeed;
+
+          // Colisão com Moeda / Anel Turbo
+          if (Math.abs(g.x - jetpackState.playerX) < 22 && Math.abs(g.itemY - jetpackState.playerY) < 30) {
+            if (g.hasCoin) {
+              g.hasCoin = false;
+              jetpackState.coins++;
+              playTone(880, 70);
+              const cEl = document.getElementById('jetpack-hud-coins');
+              if (cEl) cEl.textContent = `🪙 ${jetpackState.coins}`;
+              const pEl = document.getElementById('pote-fichas-val');
+              if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
+              fetch('/api/fichas/bonificar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: 1, motivo: 'jetpack_moeda' })
+              }).catch(() => null);
+            }
+            if (g.hasTurboRing) {
+              g.hasTurboRing = false;
+              jetpackState.turboTimer = 220;
+              playTone(1050, 150);
+              const mEl = document.getElementById('jetpack-hud-mode');
+              if (mEl) mEl.textContent = '⚡ SUPER VOO TURBO! (Invencível)';
+            }
           }
 
-          ctx.font = '24px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          if (it.tipo === 'coin') ctx.fillText('🪙', it.x, it.y);
-          else if (it.tipo === 'pearl') ctx.fillText('🦪', it.x, it.y);
-          else if (it.tipo === 'bubble') ctx.fillText('🫧', it.x, it.y);
-          else if (it.tipo === 'jellyfish') ctx.fillText('🪼', it.x, it.y);
+          // Colisão com os pilares
+          const colidiuPilar = (jetpackState.playerX + 14 >= g.x && jetpackState.playerX - 14 <= g.x + g.w) &&
+                               (jetpackState.playerY - 14 <= g.topH || jetpackState.playerY + 14 >= g.bottomY);
 
-          if (Math.hypot(it.x - s.x, it.y - s.y) < 36 && !s.finished) {
-            if (it.tipo === 'coin') {
-              playTone(880, 70); s.coins++; s.score += 10;
-              const c = document.getElementById('sub-hud-coins');
-              if (c) c.textContent = s.coins;
-            } else if (it.tipo === 'pearl') {
-              playTone(1046, 100); s.score += 50;
-              showToast('🦪 Pérola Gigante do Oceano! +50 Pts!');
-            } else if (it.tipo === 'bubble') {
-              playTone(659, 100); s.sonar = Math.min(100, s.sonar + 35);
-              showToast('🫧 Oxigênio e Sonar Recarregados!');
-            } else if (it.tipo === 'jellyfish') {
-              if (s.isSonar) {
-                playTone(500, 80); s.score += 30;
-                showToast('⚡ Água-viva afastada pelo sonar!');
-              } else {
-                playTone(240, 100); s.wobble = 12; s.speed = 3;
-                setTimeout(() => { if (s) s.speed = s.baseSpeed; }, 1000);
+          if (colidiuPilar) {
+            if (isBoost) {
+              // No modo turbo quebra o portal com explosão
+              for (let p = 0; p < 8; p++) {
+                jetpackState.particles.push({
+                  x: g.x, y: jetpackState.playerY,
+                  vx: (Math.random() - 0.5) * 6,
+                  vy: (Math.random() - 0.5) * 6,
+                  color: '#8b5cf6', life: 16
+                });
+              }
+              playTone(280, 80);
+              jetpackState.gates.splice(i, 1);
+              continue;
+            } else if (!g.passed) {
+              g.passed = true;
+              jetpackState.shields--;
+              playTone(180, 150);
+              const shEl = document.getElementById('jetpack-hud-shields');
+              if (shEl) shEl.textContent = '🛡️'.repeat(Math.max(0, jetpackState.shields)) || '💥';
+              if (jetpackState.shields <= 0) {
+                jetpackState.shields = 3;
+                showToast('🛡️ Escudo do Jetpack Recarregado!');
+                if (shEl) shEl.textContent = '🛡️🛡️🛡️';
               }
             }
-            s.items.splice(i, 1);
-            continue;
           }
 
-          if (it.y > canvas.height + 40) s.items.splice(i, 1);
+          if (g.x < -35) {
+            jetpackState.gates.splice(i, 1);
+          }
         }
 
-        // Desenha Submarino Stark
-        ctx.save();
-        ctx.translate(s.x + (s.wobble ? (Math.random() * 4 - 2) : 0), s.y);
-        if (s.wobble > 0) s.wobble--;
-
-        // Luz dos faróis penetrando a água
-        const gradLuz = ctx.createLinearGradient(0, -25, 0, -90);
-        gradLuz.addColorStop(0, 'rgba(6, 182, 212, 0.45)');
-        gradLuz.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
-        ctx.fillStyle = gradLuz;
-        ctx.beginPath();
-        ctx.moveTo(-14, -20); ctx.lineTo(-30, -90); ctx.lineTo(30, -90); ctx.lineTo(14, -20);
-        ctx.fill();
-
-        // Casco arredondado do submarino
-        ctx.fillStyle = s.subColor;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 20, 32, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Janela / Escotilha redonda
-        ctx.fillStyle = '#0284c7';
-        ctx.beginPath();
-        ctx.arc(0, -6, 9, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#e0f2fe'; ctx.lineWidth = 2; ctx.stroke();
-
-        // Periscópio
-        ctx.fillStyle = '#475569';
-        ctx.fillRect(-2, -36, 4, 10);
-        ctx.fillRect(-2, -36, 8, 4);
-
-        // Hélice traseira giratória
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(-10, 30, 20, 4);
-
-        ctx.restore();
-
-        submarineAnimId = requestAnimationFrame(loop);
+        renderJetpackCanvas(ctx, canvas);
+        jetpackAnimId = requestAnimationFrame(loop);
       }
-      submarineAnimId = requestAnimationFrame(loop);
+
+      jetpackAnimId = requestAnimationFrame(loop);
     }
 
-    async function concluirSubmarino() {
-      if (!submarineState || submarineState.finished) return;
-      submarineState.finished = true;
-      playCelebrationFanfare();
-      dispararChuvaCoracoes(50);
-      const crianca = appState.config.child_name || 'Kaleo';
-      speak(`Sensacional expedição aquática, capitão ${crianca}! Você explorou o oceano abissal e conquistou o Troféu Netuno! Ganhou 3 moedas de ouro!`);
-      showToast('🏆 EXPEDIÇÃO CONCLUÍDA! +3 MOEDAS!');
+    function renderJetpackCanvas(ctx, canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      await fetch('/api/fichas/bonificar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 3, motivo: 'submarino_stark' })
-      }).catch(() => null);
+      // Estrelas
+      ctx.fillStyle = '#ffffff';
+      jetpackState.stars.forEach(s => {
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+      });
 
-      const p = document.getElementById('pote-fichas-val');
-      if (p) p.textContent = parseInt(p.textContent || '0') + 3;
-
-      const canvas = document.getElementById('submarine-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(2, 24, 43, 0.9)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = '64px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('🌊', canvas.width / 2, 100);
-        ctx.font = '900 20px sans-serif'; ctx.fillStyle = '#38bdf8';
-        ctx.fillText('CAPITÃO DOS MARES STARK!', canvas.width / 2, 150);
-        ctx.font = '800 15px sans-serif'; ctx.fillStyle = '#ffffff';
-        ctx.fillText(`Profundidade: ${Math.round(submarineState.distanceTraveled)}m 🤿`, canvas.width / 2, 190);
-        ctx.fillText(`Pérolas Coletadas: ${submarineState.coins} 🪙`, canvas.width / 2, 220);
+      // Partículas
+      for (let i = jetpackState.particles.length - 1; i >= 0; i--) {
+        const p = jetpackState.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life--;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+        if (p.life <= 0) jetpackState.particles.splice(i, 1);
       }
+
+      // Portais de Laser
+      jetpackState.gates.forEach(g => {
+        ctx.fillStyle = '#4c1d95';
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 2;
+
+        // Pilar superior
+        ctx.fillRect(g.x, 0, g.w, g.topH);
+        ctx.strokeRect(g.x, 0, g.w, g.topH);
+
+        // Pilar inferior
+        ctx.fillRect(g.x, g.bottomY, g.w, g.bottomH);
+        ctx.strokeRect(g.x, g.bottomY, g.w, g.bottomH);
+
+        // Itens
+        if (g.hasCoin) {
+          ctx.font = '18px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('🪙', g.x + g.w / 2, g.itemY);
+        } else if (g.hasTurboRing) {
+          ctx.font = '20px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('⚡', g.x + g.w / 2, g.itemY);
+        }
+      });
+
+      // Herói Jetpack (Homem de Ferro Mini)
+      const px = jetpackState.playerX;
+      const py = jetpackState.playerY;
+      const isBoost = jetpackState.turboTimer > 0;
+
+      ctx.save();
+      ctx.translate(px, py);
+
+      // Aura Turbo
+      if (isBoost) {
+        ctx.fillStyle = 'rgba(250, 204, 21, 0.25)';
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Chama do Jetpack
+      ctx.fillStyle = isBoost ? '#00f0ff' : '#f97316';
+      ctx.beginPath();
+      ctx.moveTo(-12, 6);
+      ctx.lineTo(-24 - Math.random() * 8, 8);
+      ctx.lineTo(-12, 10);
+      ctx.fill();
+
+      // Mochila propulsora
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(-12, -4, 6, 14);
+
+      // Cabeça e capacete
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.arc(2, -6, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Visor ciano
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillRect(4, -8, 6, 4);
+
+      // Armadura
+      ctx.fillStyle = '#facc15';
+      ctx.fillRect(-4, 0, 10, 10);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(-2, 10, 6, 8);
+
+      ctx.restore();
     }
 
 
     // =========================================================================
-    // JOGO PÁGINA 8 - NÚMERO 3: HOVERBOARD FUTURISTA STARK (SKATE VOADOR)
+    // PÁGINA 8 - JOGO 4: CIRCUITO NEON STARK (COBRINHA QUÂNTICA TURBO)
     // =========================================================================
-    let hoverboardState = {
-      active: false, paused: false, lane: 1, x: 190, y: 236,
-      boardColor: '#8b5cf6', boardName: 'Galáctico Violeta',
-      speedLevel: 'medio', speed: 7.5, baseSpeed: 7.5,
-      distanceTraveled: 0, nextMilestone: 500, coins: 0, score: 0,
-      jumpEnergy: 85, isJump: false, offset: 0, items: [],
-      finished: false, wobble: 0
+    let neonSnakeState = {
+      active: false, paused: false,
+      cols: 20, rows: 14, cellSize: 18,
+      snake: [{x: 10, y: 7}, {x: 9, y: 7}, {x: 8, y: 7}],
+      dir: {x: 1, y: 0}, nextDir: {x: 1, y: 0},
+      core: {x: 15, y: 7}, bonusCoin: null,
+      score: 0, coins: 0, coresEaten: 0,
+      isTurbo: false, tickSpeed: 110,
+      particles: [], tickCounter: 0
     };
-    let hoverboardAnimId = null;
-    let hoverboardKeyHandler = null;
+    let neonSnakeAnimId = null;
+    let neonSnakeKeyHandler = null;
 
-    function openHoverboardGame() {
-      pushModalScreen('🛹 HOVERBOARD FUTURISTA STARK', (body) => {
+    function openNeonSnakeStarkGame() {
+      pushModalScreen('💠 CIRCUITO NEON STARK (COBRINHA TURBO)', (body) => {
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
         const crianca = appState.config.child_name || 'Kaleo';
-        speak(`Skate voador ativado, piloto radical ${crianca}! Desvie dos drones e barreiras na rodovia aérea e faça saltos 360 no ar!`);
-        renderHoverboardBody(body);
-      }, true);
+        speak(`Circuito quântico conectado, piloto ${crianca}! Use as setas para guiar a corrente de luz, absorva os núcleos e ative o Turbo Sprint!`);
+        renderNeonSnakeBody(body);
+      }, true, () => encerrarCircuitoNeon());
     }
 
-    function encerrarHoverboard() {
-      if (hoverboardAnimId) { cancelAnimationFrame(hoverboardAnimId); hoverboardAnimId = null; }
-      if (hoverboardKeyHandler) { window.removeEventListener('keydown', hoverboardKeyHandler); hoverboardKeyHandler = null; }
-      if (hoverboardState) hoverboardState.active = false;
+    function encerrarCircuitoNeon() {
+      if (neonSnakeAnimId) { cancelAnimationFrame(neonSnakeAnimId); neonSnakeAnimId = null; }
+      if (neonSnakeKeyHandler) { window.removeEventListener('keydown', neonSnakeKeyHandler); neonSnakeKeyHandler = null; }
+      if (neonSnakeState) neonSnakeState.active = false;
     }
 
-    function renderHoverboardBody(body) {
-      encerrarHoverboard();
-      hoverboardState = {
-        active: true, paused: false, lane: 1, x: 190, y: 236,
-        boardColor: '#8b5cf6', boardName: 'Galáctico Violeta',
-        speedLevel: 'medio', speed: 7.5, baseSpeed: 7.5,
-        distanceTraveled: 0, nextMilestone: 500, coins: 0, score: 0,
-        jumpEnergy: 85, isJump: false, offset: 0, items: [],
-        finished: false, wobble: 0
+    function renderNeonSnakeBody(body) {
+      encerrarCircuitoNeon();
+
+      neonSnakeState = {
+        active: true, paused: false,
+        cols: 20, rows: 14, cellSize: 18,
+        snake: [{x: 10, y: 7}, {x: 9, y: 7}, {x: 8, y: 7}],
+        dir: {x: 1, y: 0}, nextDir: {x: 1, y: 0},
+        core: {x: 15, y: 7}, bonusCoin: null,
+        score: 0, coins: 0, coresEaten: 0,
+        isTurbo: false, tickSpeed: 110,
+        particles: [], tickCounter: 0
       };
 
       body.innerHTML = `
         <div style="display:grid; grid-template-columns: minmax(360px, 390px) 1.2fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
-          <div style="background:#020914; border:2.5px solid #8b5cf6; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(139,92,246,0.3); position:relative;">
-            <canvas id="hoverboard-canvas" width="370" height="280" style="background:#0d0b1a; border-radius:10px; border:2px solid #2e1065; cursor:pointer; width:100%; max-width:370px;"></canvas>
-            <div style="display:flex; width:100%; gap:8px; margin-top:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverHoverboard(-1)">◀ ESQUERDA</button>
-              <button type="button" class="big-btn" id="btn-hover-jump" style="flex:1.2; background:linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); padding:8px 0; font-size:1rem; font-weight:900; box-shadow:0 0 12px rgba(139,92,246,0.5);" onclick="ativarSaltoHoverboard()">🛹 SALTO 360°!</button>
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverHoverboard(1)">DIREITA ▶</button>
+          
+          <!-- COLUNA ESQUERDA: CANVAS CIRCUITO E D-PAD -->
+          <div style="background:#020914; border:2.5px solid #10b981; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(16,185,129,0.25); position:relative;">
+            
+            <canvas id="neon-snake-canvas" width="370" height="280" style="background:#040e1b; border-radius:10px; border:2px solid #064e3b; width:100%; max-width:370px;"></canvas>
+
+            <!-- D-PAD TÁTIL ERGONÔMICO PARA TELAS TOUCH E NETBOOK -->
+            <div style="display:flex; width:100%; gap:6px; margin-top:6px; justify-content:center; align-items:center;">
+              <button type="button" class="btn" style="background:#047857; color:#fff; font-size:1.2rem; font-weight:900; padding:6px 14px; border-radius:8px;" onclick="mudarDirecaoSnake(0, -1)">
+                ⬆️
+              </button>
+              <button type="button" class="btn" style="background:#047857; color:#fff; font-size:1.2rem; font-weight:900; padding:6px 14px; border-radius:8px;" onclick="mudarDirecaoSnake(-1, 0)">
+                ⬅️
+              </button>
+              <button type="button" class="btn" id="btn-snake-turbo" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-size:0.92rem; font-weight:900; padding:8px 12px; border-radius:8px; box-shadow:0 0 10px rgba(16,185,129,0.5);" onclick="toggleTurboSnake()">
+                ⚡ TURBO!
+              </button>
+              <button type="button" class="btn" style="background:#047857; color:#fff; font-size:1.2rem; font-weight:900; padding:6px 14px; border-radius:8px;" onclick="mudarDirecaoSnake(1, 0)">
+                ➡️
+              </button>
+              <button type="button" class="btn" style="background:#047857; color:#fff; font-size:1.2rem; font-weight:900; padding:6px 14px; border-radius:8px;" onclick="mudarDirecaoSnake(0, 1)">
+                ⬇️
+              </button>
             </div>
           </div>
+
+          <!-- COLUNA DIREITA: PAINEL DO CIRCUITO NEON -->
           <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; gap:8px; overflow-y:auto;">
+            
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:1.05rem; font-weight:900; color:#c084fc;">🛹 Hoverboard Stark</div>
-              <span id="hover-hud-speed" style="background:#3b0764; color:#e9d5ff; border:1.5px solid #7e22ce; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">130 km/h</span>
-            </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⚡ Velocidade da Pista Aérea:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" id="btn-hover-speed-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:1.5px solid #059669; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setHoverSpeedLevel('facil')">🟢 Cruzeiro (70)</button>
-                <button type="button" class="btn" id="btn-hover-speed-medio" style="flex:1; background:#0284c7; color:#fff; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.4);" onclick="setHoverSpeedLevel('medio')">🟡 Street (130)</button>
-                <button type="button" class="btn" id="btn-hover-speed-turbo" style="flex:1; background:#991b1b; color:#fecaca; border:1.5px solid #dc2626; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setHoverSpeedLevel('turbo')">🔴 Gravidade 0</button>
+              <div style="font-size:1.05rem; font-weight:900; color:#34d399;">
+                💠 Circuito Neon Stark
               </div>
+              <span id="snake-hud-length" style="background:#064e3b; color:#a7f3d0; border:1.5px solid #10b981; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">
+                3 ELOS
+              </span>
             </div>
+
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🛣️ Pista Aérea:</div>
-                <div id="hover-hud-dist" style="font-size:1.25rem; font-weight:900; color:#facc15;">0m</div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">NÚCLEOS COLETADOS:</div>
+                <div id="snake-hud-cores" style="font-size:1.15rem; font-weight:900; color:#10b981;">💎 0</div>
               </div>
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🪙 Fichas Radicais:</div>
-                <div id="hover-hud-coins" style="font-size:1.25rem; font-weight:900; color:#4ade80;">0</div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:800; color:#cbd5e1; margin-bottom:2px;">
-                <span>🔋 Bateria Anti-Gravidade:</span>
-                <span id="hover-hud-jump-val">85%</span>
-              </div>
-              <div style="width:100%; height:12px; background:#041426; border-radius:8px; border:1px solid #1e3a63; overflow:hidden;">
-                <div id="hover-hud-jump-bar" style="width:85%; height:100%; background:linear-gradient(90deg, #38bdf8, #a855f7); border-radius:8px;"></div>
+              <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:6px 10px;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:700;">MOEDAS COLETADAS:</div>
+                <div id="snake-hud-coins" style="font-size:1.15rem; font-weight:900; color:#facc15;">🪙 0</div>
               </div>
             </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:3px;">🎨 Cor do Hoverboard:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" style="flex:1; background:#8b5cf6; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900; border:2px solid #fff;" onclick="trocarPranchaHoverboard('#8b5cf6', 'Galáctico Violeta', this)">🟣</button>
-                <button type="button" class="btn" style="flex:1; background:#10b981; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarPranchaHoverboard('#10b981', 'Ciber Verde', this)">🟢</button>
-                <button type="button" class="btn" style="flex:1; background:#f97316; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarPranchaHoverboard('#f97316', 'Chama Solar', this)">🟠</button>
-                <button type="button" class="btn" style="flex:1; background:#00f0ff; color:#000; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarPranchaHoverboard('#00f0ff', 'Raio Azul', this)">🔵</button>
+
+            <div style="background:#040f20; border:1px solid #1e3a63; border-radius:10px; padding:8px 10px;">
+              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">Velocidade de Processamento:</div>
+              <div id="snake-hud-speed" style="font-size:0.88rem; font-weight:900; color:#10b981;">
+                🟢 Normal (1x Pontos)
               </div>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#334155; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="tocarBuzinaHoverboard()">📢 Buzina</button>
-              <button type="button" class="big-btn" id="btn-hover-pause" style="flex:1; background:#0f766e; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="togglePausarHoverboard()">⏸️ Pausar</button>
-              <button type="button" class="big-btn" style="flex:1.2; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="concluirHoverboard()">🏆 Finalizar</button>
+
+            <div style="background:#040f20; border:1.5px solid #334155; border-radius:10px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.78rem; color:#94a3b8; font-weight:800;">ENERGIA TOTAL:</span>
+                <div id="snake-hud-score" style="font-size:1.35rem; font-weight:900; color:#facc15;">0 pts</div>
+              </div>
+              <button type="button" class="btn" style="background:#1e293b; color:#94a3b8; font-size:0.8rem; font-weight:800; border:1px solid #475569;" onclick="renderNeonSnakeBody(document.getElementById('modal-body'))">
+                🔄 Reiniciar Circuito
+              </button>
+            </div>
+
+            <div style="background:#030c1b; border:1px dashed #334155; border-radius:10px; padding:6px 10px; font-size:0.76rem; color:#94a3b8; line-height:1.3;">
+              💡 <strong>Como Jogar:</strong> Use os botões direcionais ou as setas do teclado (⬅️ ⬆️ ⬇️ ➡️) para guiar o pulso. Passe pelas bordas sem medo! Aperte <strong>TURBO</strong> para dobrar a velocidade e os pontos!
             </div>
           </div>
         </div>
       `;
 
-      iniciarLoopCanvasHoverboard();
+      neonSnakeKeyHandler = (e) => {
+        if (!neonSnakeState.active) return;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { mudarDirecaoSnake(0, -1); e.preventDefault(); }
+        else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') { mudarDirecaoSnake(0, 1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { mudarDirecaoSnake(-1, 0); e.preventDefault(); }
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { mudarDirecaoSnake(1, 0); e.preventDefault(); }
+        else if (e.key === ' ' || e.key === 'Shift') { toggleTurboSnake(); e.preventDefault(); }
+      };
+      window.addEventListener('keydown', neonSnakeKeyHandler);
+
+      iniciarLoopSnake();
     }
 
-    function setHoverSpeedLevel(lvl) {
-      if (!hoverboardState) return;
-      hoverboardState.speedLevel = lvl;
-      const spds = { facil: 4.8, medio: 7.5, turbo: 11.5 };
-      hoverboardState.baseSpeed = spds[lvl] || 7.5;
-      hoverboardState.speed = hoverboardState.baseSpeed;
-      playTone(587, 80);
-      const spdEl = document.getElementById('hover-hud-speed');
-      if (spdEl) spdEl.textContent = `${Math.round(hoverboardState.speed * 18)} km/h`;
-      ['facil', 'medio', 'turbo'].forEach(l => {
-        const b = document.getElementById(`btn-hover-speed-${l}`);
-        if (b) {
-          b.style.borderColor = (l === lvl) ? '#00f0ff' : '#334155';
-          b.style.boxShadow = (l === lvl) ? '0 0 10px rgba(0,240,255,0.5)' : 'none';
+    function mudarDirecaoSnake(dx, dy) {
+      if (!neonSnakeState.active) return;
+      // Não permite virar 180 graus na direção oposta imediata
+      if (dx !== 0 && neonSnakeState.dir.x === -dx) return;
+      if (dy !== 0 && neonSnakeState.dir.y === -dy) return;
+      neonSnakeState.nextDir = { x: dx, y: dy };
+      playTone(400, 25);
+    }
+
+    function toggleTurboSnake() {
+      if (!neonSnakeState.active) return;
+      neonSnakeState.isTurbo = !neonSnakeState.isTurbo;
+      const spEl = document.getElementById('snake-hud-speed');
+      const btn = document.getElementById('btn-snake-turbo');
+      if (neonSnakeState.isTurbo) {
+        if (spEl) spEl.textContent = '⚡ TURBO SPRINT! (2x Pontos)';
+        if (btn) btn.style.background = 'linear-gradient(135deg, #facc15 0%, #f59e0b 100%)';
+        playTone(784, 80);
+      } else {
+        if (spEl) spEl.textContent = '🟢 Normal (1x Pontos)';
+        if (btn) btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        playTone(523, 60);
+      }
+    }
+
+    function iniciarLoopSnake() {
+      const canvas = document.getElementById('neon-snake-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let lastTickTime = 0;
+
+      function spawnCore() {
+        const x = Math.floor(Math.random() * neonSnakeState.cols);
+        const y = Math.floor(Math.random() * neonSnakeState.rows);
+        neonSnakeState.core = { x, y };
+      }
+
+      function loop(now) {
+        if (!neonSnakeState.active) return;
+
+        const interval = neonSnakeState.isTurbo ? 55 : 110;
+        if (now - lastTickTime >= interval) {
+          lastTickTime = now;
+          neonSnakeState.dir = neonSnakeState.nextDir;
+
+          // Nova posição da cabeça
+          const head = {
+            x: (neonSnakeState.snake[0].x + neonSnakeState.dir.x + neonSnakeState.cols) % neonSnakeState.cols,
+            y: (neonSnakeState.snake[0].y + neonSnakeState.dir.y + neonSnakeState.rows) % neonSnakeState.rows
+          };
+
+          // Colisão com o próprio corpo (Kids friendly: apenas encurta, sem morte frustrante!)
+          const bateuNoCorpo = neonSnakeState.snake.some(seg => seg.x === head.x && seg.y === head.y);
+          if (bateuNoCorpo && neonSnakeState.snake.length > 4) {
+            neonSnakeState.snake = neonSnakeState.snake.slice(0, 3);
+            playTone(220, 100);
+            showToast('⚡ Circuito Descarregado! Reduzindo cauda!');
+          }
+
+          neonSnakeState.snake.unshift(head);
+
+          // Comeu o Núcleo Arc
+          if (head.x === neonSnakeState.core.x && head.y === neonSnakeState.core.y) {
+            neonSnakeState.coresEaten++;
+            neonSnakeState.score += (neonSnakeState.isTurbo ? 40 : 20);
+            playTone(659, 60);
+
+            // Partículas
+            for (let p = 0; p < 8; p++) {
+              neonSnakeState.particles.push({
+                x: head.x * neonSnakeState.cellSize + 15,
+                y: head.y * neonSnakeState.cellSize + 15,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                color: '#10b981', life: 14
+              });
+            }
+
+            const cEl = document.getElementById('snake-hud-cores');
+            const sEl = document.getElementById('snake-hud-score');
+            const lEl = document.getElementById('snake-hud-length');
+            if (cEl) cEl.textContent = `💎 ${neonSnakeState.coresEaten}`;
+            if (sEl) sEl.textContent = `${neonSnakeState.score} pts`;
+            if (lEl) lEl.textContent = `${neonSnakeState.snake.length} ELOS`;
+
+            // Bonificação a cada 10 núcleos (+2 moedas)
+            if (neonSnakeState.coresEaten % 10 === 0) {
+              playCelebrationFanfare();
+              showToast(`🌟 ${neonSnakeState.coresEaten} NÚCLEOS COLETADOS! +2 Moedas!`);
+              const pEl = document.getElementById('pote-fichas-val');
+              if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
+              fetch('/api/fichas/bonificar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: 2, motivo: 'circuito_neon_fase' })
+              }).catch(() => null);
+            }
+
+            // Chance de spawnar moeda bônus
+            if (Math.random() < 0.40 && !neonSnakeState.bonusCoin) {
+              neonSnakeState.bonusCoin = {
+                x: Math.floor(Math.random() * neonSnakeState.cols),
+                y: Math.floor(Math.random() * neonSnakeState.rows),
+                timer: 90
+              };
+            }
+
+            spawnCore();
+          } else {
+            neonSnakeState.snake.pop();
+          }
+
+          // Moeda bônus
+          if (neonSnakeState.bonusCoin) {
+            neonSnakeState.bonusCoin.timer--;
+            if (head.x === neonSnakeState.bonusCoin.x && head.y === neonSnakeState.bonusCoin.y) {
+              neonSnakeState.coins++;
+              playTone(880, 100);
+              const mEl = document.getElementById('snake-hud-coins');
+              if (mEl) mEl.textContent = `🪙 ${neonSnakeState.coins}`;
+              const pEl = document.getElementById('pote-fichas-val');
+              if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
+              fetch('/api/fichas/bonificar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ quantidade: 1, motivo: 'circuito_neon_moeda' })
+              }).catch(() => null);
+              neonSnakeState.bonusCoin = null;
+            } else if (neonSnakeState.bonusCoin.timer <= 0) {
+              neonSnakeState.bonusCoin = null;
+            }
+          }
         }
+
+        renderNeonSnakeCanvas(ctx, canvas);
+        neonSnakeAnimId = requestAnimationFrame(loop);
+      }
+
+      neonSnakeAnimId = requestAnimationFrame(loop);
+    }
+
+    function renderNeonSnakeCanvas(ctx, canvas) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const cs = neonSnakeState.cellSize;
+      const offX = 5;
+      const offY = 14;
+
+      // Grade sutil
+      ctx.strokeStyle = 'rgba(16,185,129,0.06)';
+      ctx.lineWidth = 1;
+      for (let c = 0; c <= neonSnakeState.cols; c++) {
+        ctx.beginPath(); ctx.moveTo(offX + c * cs, offY); ctx.lineTo(offX + c * cs, offY + neonSnakeState.rows * cs); ctx.stroke();
+      }
+      for (let r = 0; r <= neonSnakeState.rows; r++) {
+        ctx.beginPath(); ctx.moveTo(offX, offY + r * cs); ctx.lineTo(offX + neonSnakeState.cols * cs, offY + r * cs); ctx.stroke();
+      }
+
+      // Partículas
+      for (let i = neonSnakeState.particles.length - 1; i >= 0; i--) {
+        const p = neonSnakeState.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life--;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 3, 3);
+        if (p.life <= 0) neonSnakeState.particles.splice(i, 1);
+      }
+
+      // Núcleo Arc (Comida)
+      const cx = offX + neonSnakeState.core.x * cs + cs / 2;
+      const cy = offY + neonSnakeState.core.y * cs + cs / 2;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#10b981';
+      ctx.shadowColor = '#34d399';
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Moeda Bônus
+      if (neonSnakeState.bonusCoin) {
+        const mx = offX + neonSnakeState.bonusCoin.x * cs + cs / 2;
+        const my = offY + neonSnakeState.bonusCoin.y * cs + cs / 2;
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🪙', mx, my + 5);
+      }
+
+      // Rastro / Corpo da Cobrinha
+      neonSnakeState.snake.forEach((seg, idx) => {
+        const sx = offX + seg.x * cs + 1;
+        const sy = offY + seg.y * cs + 1;
+        ctx.save();
+        if (idx === 0) {
+          // Cabeça
+          ctx.fillStyle = '#34d399';
+          ctx.shadowColor = '#00f0ff';
+          ctx.shadowBlur = 8;
+          ctx.fillRect(sx, sy, cs - 2, cs - 2);
+
+          // Olhos cibernéticos
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(sx + 3, sy + 3, 3, 3);
+          ctx.fillRect(sx + cs - 8, sy + 3, 3, 3);
+        } else {
+          // Corpo
+          const pct = idx / neonSnakeState.snake.length;
+          ctx.fillStyle = neonSnakeState.isTurbo ? '#facc15' : `rgba(16, 185, 129, ${1 - pct * 0.6})`;
+          ctx.fillRect(sx, sy, cs - 2, cs - 2);
+        }
+        ctx.restore();
       });
     }
 
-    function moverHoverboard(delta) {
-      if (!hoverboardState || hoverboardState.finished) return;
-      playTone(480, 50);
-      hoverboardState.lane = Math.max(0, Math.min(2, hoverboardState.lane + delta));
-    }
-
-    function ativarSaltoHoverboard() {
-      if (!hoverboardState || hoverboardState.finished) return;
-      if (hoverboardState.jumpEnergy < 15) { showToast('🔋 Bateria baixa para o salto!'); return; }
-      hoverboardState.isJump = true;
-      playTone(550, 100);
-      setTimeout(() => playTone(880, 180), 100);
-      showToast('🛹 SALTO 360° ANTI-GRAVIDADE!');
-      setTimeout(() => { if (hoverboardState) hoverboardState.isJump = false; }, 3200);
-    }
-
-    function tocarBuzinaHoverboard() {
-      playTone(660, 100);
-      setTimeout(() => playTone(990, 150), 100);
-      showToast('📢 Fiiiu! Skate supersônico passando!');
-    }
-
-    function trocarPranchaHoverboard(cor, nome, btn) {
-      if (!hoverboardState) return;
-      hoverboardState.boardColor = cor;
-      hoverboardState.boardName = nome;
-      playTone(587, 80);
-      showToast(`🛹 Prancha: ${nome}!`);
-      if (btn && btn.parentElement) {
-        btn.parentElement.querySelectorAll('button').forEach(b => b.style.border = 'none');
-        btn.style.border = '2px solid #fff';
-      }
-    }
-
-    function togglePausarHoverboard() {
-      if (!hoverboardState) return;
-      hoverboardState.paused = !hoverboardState.paused;
-      playTone(440, 80);
-      const b = document.getElementById('btn-hover-pause');
-      if (b) b.textContent = hoverboardState.paused ? '▶️ Continuar' : '⏸️ Pausar';
-    }
-
-    function iniciarLoopCanvasHoverboard() {
-      const canvas = document.getElementById('hoverboard-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const laneX = [65, 185, 305];
-      let spawnCounter = 0;
-
-      canvas.onpointerdown = (ev) => {
-        const rect = canvas.getBoundingClientRect();
-        const clickX = (ev.clientX - rect.left) * (canvas.width / rect.width);
-        if (clickX < 125) hoverboardState.lane = 0;
-        else if (clickX < 245) hoverboardState.lane = 1;
-        else hoverboardState.lane = 2;
-        playTone(500, 50);
-      };
-
-      hoverboardKeyHandler = (e) => {
-        if (!hoverboardState || !hoverboardState.active) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverHoverboard(-1);
-        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverHoverboard(1);
-        else if (e.key === ' ' || e.key === 'ArrowUp') ativarSaltoHoverboard();
-        else if (e.key === 'b') tocarBuzinaHoverboard();
-      };
-      window.addEventListener('keydown', hoverboardKeyHandler);
-
-      function loop() {
-        if (!hoverboardState || !hoverboardState.active) return;
-        const s = hoverboardState;
-        const curSpd = s.isJump ? 13 : s.speed;
-        s.offset = (s.offset + curSpd) % 40;
-
-        if (s.isJump) {
-          s.jumpEnergy = Math.max(0, s.jumpEnergy - 0.45);
-          if (s.jumpEnergy <= 0) s.isJump = false;
-        }
-
-        if (!s.finished && !s.paused) {
-          s.distanceTraveled += curSpd * 0.35;
-          const dEl = document.getElementById('hover-hud-dist');
-          if (dEl) dEl.textContent = `${Math.round(s.distanceTraveled)}m`;
-
-          const jVal = document.getElementById('hover-hud-jump-val');
-          const jBar = document.getElementById('hover-hud-jump-bar');
-          if (jVal) jVal.textContent = `${Math.round(s.jumpEnergy)}%`;
-          if (jBar) jBar.style.width = `${Math.round(s.jumpEnergy)}%`;
-
-          if (s.distanceTraveled >= s.nextMilestone) {
-            const m = s.nextMilestone;
-            s.nextMilestone += 500;
-            playCelebrationFanfare();
-            dispararChuvaCoracoes(25);
-            showToast(`🛹 MARCO DE ${m}m NA PISTA AÉREA! +1 MOEDA! 🪙`);
-            const p = document.getElementById('pote-fichas-val');
-            if (p) p.textContent = parseInt(p.textContent || '0') + 1;
-            fetch('/api/fichas/bonificar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ quantidade: 1, motivo: 'marco_hoverboard' })
-            }).catch(() => null);
-            speak(`Radical demais, piloto! Você conquistou a marca de ${m} metros na rodovia aérea! Mais uma moeda no seu cofre!`);
-          }
-        }
-
-        s.x += (laneX[s.lane] - s.x) * 0.22;
-
-        spawnCounter++;
-        if (spawnCounter > (s.isJump ? 20 : 36) && !s.finished && !s.paused) {
-          spawnCounter = 0;
-          const sortLane = Math.floor(Math.random() * 3);
-          const r = Math.random();
-          let tipo = 'coin';
-          if (r < 0.55) tipo = 'coin';
-          else if (r < 0.75) tipo = 'star';
-          else if (r < 0.88) tipo = 'battery';
-          else tipo = 'drone';
-          s.items.push({ x: laneX[sortLane], y: -30, tipo: tipo });
-        }
-
-        // Fundo pista aérea futurista
-        ctx.fillStyle = '#0b0817';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Pista neon roxa
-        ctx.fillStyle = '#170f2f';
-        ctx.fillRect(15, 0, 340, canvas.height);
-
-        ctx.strokeStyle = '#a855f7';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(15, -2, 340, canvas.height + 4);
-
-        ctx.strokeStyle = '#f472b6';
-        ctx.lineWidth = 2.5;
-        ctx.setLineDash([20, 20]);
-        ctx.lineDashOffset = -s.offset;
-        ctx.beginPath();
-        ctx.moveTo(125, 0); ctx.lineTo(125, canvas.height);
-        ctx.moveTo(245, 0); ctx.lineTo(245, canvas.height);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Itens
-        for (let i = s.items.length - 1; i >= 0; i--) {
-          const it = s.items[i];
-          if (!s.paused) it.y += curSpd;
-
-          if (s.isJump && Math.hypot(it.x - s.x, it.y - s.y) < 130) {
-            it.x += (s.x - it.x) * 0.18;
-          }
-
-          ctx.font = '24px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          if (it.tipo === 'coin') ctx.fillText('🪙', it.x, it.y);
-          else if (it.tipo === 'star') ctx.fillText('⭐', it.x, it.y);
-          else if (it.tipo === 'battery') ctx.fillText('🔋', it.x, it.y);
-          else if (it.tipo === 'drone') ctx.fillText('🛸', it.x, it.y);
-
-          if (Math.hypot(it.x - s.x, it.y - s.y) < 36 && !s.finished) {
-            if (it.tipo === 'coin') {
-              playTone(880, 70); s.coins++; s.score += 10;
-              const c = document.getElementById('hover-hud-coins');
-              if (c) c.textContent = s.coins;
-            } else if (it.tipo === 'star') {
-              playTone(1046, 100); s.score += 50;
-              showToast('⭐ Manobra Perfeita! +50 Pts!');
-            } else if (it.tipo === 'battery') {
-              playTone(659, 100); s.jumpEnergy = Math.min(100, s.jumpEnergy + 35);
-              showToast('🔋 Bateria Anti-Gravidade Cheia!');
-            } else if (it.tipo === 'drone') {
-              if (s.isJump) {
-                playTone(520, 80); s.score += 30;
-                showToast('🛹 Passou por cima do drone no ar!');
-              } else {
-                playTone(220, 100); s.wobble = 12; s.speed = 3;
-                setTimeout(() => { if (s) s.speed = s.baseSpeed; }, 1000);
-              }
-            }
-            s.items.splice(i, 1);
-            continue;
-          }
-
-          if (it.y > canvas.height + 40) s.items.splice(i, 1);
-        }
-
-        // Desenha Hoverboard com o Heroi
-        ctx.save();
-        const jumpY = s.isJump ? -14 : 0;
-        ctx.translate(s.x + (s.wobble ? (Math.random() * 4 - 2) : 0), s.y + jumpY);
-        if (s.wobble > 0) s.wobble--;
-
-        // Efeito de levitação magnética
-        ctx.fillStyle = s.isJump ? '#a855f7' : '#00f0ff';
-        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 12;
-        ctx.beginPath();
-        ctx.ellipse(0, 18, 18, 5, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Prancha de skate futurista
-        ctx.fillStyle = s.boardColor;
-        ctx.beginPath();
-        ctx.roundRect(-22, 6, 44, 12, 6);
-        ctx.fill();
-
-        // Corpo do herói sobre a prancha
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(-8, -14, 16, 20);
-
-        // Capacete
-        ctx.fillStyle = '#facc15';
-        ctx.beginPath();
-        ctx.arc(0, -22, 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-
-        hoverboardAnimId = requestAnimationFrame(loop);
-      }
-      hoverboardAnimId = requestAnimationFrame(loop);
-    }
-
-    async function concluirHoverboard() {
-      if (!hoverboardState || hoverboardState.finished) return;
-      hoverboardState.finished = true;
-      playCelebrationFanfare();
-      dispararChuvaCoracoes(50);
-      const crianca = appState.config.child_name || 'Kaleo';
-      speak(`Manobra radical lendária, ${crianca}! Você completou a rodovia aérea e conquistou o Troféu Radical Stark! Ganhou 3 moedas de ouro!`);
-      showToast('🏆 MANOBRA LENDÁRIA! +3 MOEDAS!');
-
-      await fetch('/api/fichas/bonificar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 3, motivo: 'hoverboard_stark' })
-      }).catch(() => null);
-
-      const p = document.getElementById('pote-fichas-val');
-      if (p) p.textContent = parseInt(p.textContent || '0') + 3;
-
-      const canvas = document.getElementById('hoverboard-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(13, 11, 26, 0.9)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = '64px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('🛹', canvas.width / 2, 100);
-        ctx.font = '900 20px sans-serif'; ctx.fillStyle = '#c084fc';
-        ctx.fillText('MESTRE DO HOVERBOARD!', canvas.width / 2, 150);
-        ctx.font = '800 15px sans-serif'; ctx.fillStyle = '#ffffff';
-        ctx.fillText(`Distância: ${Math.round(hoverboardState.distanceTraveled)}m ⚡`, canvas.width / 2, 190);
-        ctx.fillText(`Fichas Radicais: ${hoverboardState.coins} 🪙`, canvas.width / 2, 220);
-      }
-    }
-
-
     // =========================================================================
-    // JOGO PÁGINA 8 - NÚMERO 4: HELICÓPTERO RESGATE STARK (COPTER DEFENDER)
+    // ALIASES DE COMPATIBILIDADE REVERSA COM JOGOS ANTERIORES
     // =========================================================================
-    let copterRescueState = {
-      active: false, paused: false, lane: 1, x: 190, y: 230,
-      copterColor: '#ef4444', copterName: 'Falcão Vermelho',
-      speedLevel: 'medio', speed: 7.5, baseSpeed: 7.5,
-      distanceTraveled: 0, nextMilestone: 500, coins: 0, rescues: 0, score: 0,
-      shield: 85, isShield: false, rotorAngle: 0, items: [],
-      finished: false, wobble: 0
-    };
-    let copterAnimId = null;
-    let copterKeyHandler = null;
+    function openSpaceFlightGame() { openGalacticDefenderGame(); }
+    function openSubmarineGame() { openArkanoidStarkGame(); }
+    function openHoverboardGame() { openJetpackStarkGame(); }
+    function openCopterRescueGame() { openNeonSnakeStarkGame(); }
+    function encerrarVooEspacial() { encerrarDefensorGalactico(); }
+    function encerrarSubmarino() { encerrarReatorArkanoid(); }
+    function encerrarHoverboard() { encerrarJetpackStark(); }
+    function encerrarHelicoptero() { encerrarCircuitoNeon(); }
+    function encerrarHelicopteroResgate() { encerrarCircuitoNeon(); }
 
-    function openCopterRescueGame() {
-      pushModalScreen('🚁 HELICÓPTERO RESGATE STARK', (body) => {
-        playTone(523, 100);
-        setTimeout(() => playTone(659, 100), 100);
-        setTimeout(() => playTone(784, 150), 200);
-        const crianca = appState.config.child_name || 'Kaleo';
-        speak(`Hélices girando a mil, comandante ${crianca}! Sobrevoe a cidade, resgate robozinhos e ative o escudo protetor!`);
-        renderCopterRescueBody(body);
-      }, true);
-    }
-
-    function encerrarHelicoptero() {
-      if (copterAnimId) { cancelAnimationFrame(copterAnimId); copterAnimId = null; }
-      if (copterKeyHandler) { window.removeEventListener('keydown', copterKeyHandler); copterKeyHandler = null; }
-      if (copterRescueState) copterRescueState.active = false;
-    }
-
-    function renderCopterRescueBody(body) {
-      encerrarHelicoptero();
-      copterRescueState = {
-        active: true, paused: false, lane: 1, x: 190, y: 230,
-        copterColor: '#ef4444', copterName: 'Falcão Vermelho',
-        speedLevel: 'medio', speed: 7.5, baseSpeed: 7.5,
-        distanceTraveled: 0, nextMilestone: 500, coins: 0, rescues: 0, score: 0,
-        shield: 85, isShield: false, rotorAngle: 0, items: [],
-        finished: false, wobble: 0
-      };
-
-      body.innerHTML = `
-        <div style="display:grid; grid-template-columns: minmax(360px, 390px) 1.2fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
-          <div style="background:#020914; border:2.5px solid #f59e0b; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(245,158,11,0.3); position:relative;">
-            <canvas id="copter-rescue-canvas" width="370" height="280" style="background:#0c1d33; border-radius:10px; border:2px solid #1e3a5f; cursor:pointer; width:100%; max-width:370px;"></canvas>
-            <div style="display:flex; width:100%; gap:8px; margin-top:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverHelicoptero(-1)">◀ SUBIR / ESQ</button>
-              <button type="button" class="big-btn" id="btn-copter-shield" style="flex:1.2; background:linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); padding:8px 0; font-size:1rem; font-weight:900; box-shadow:0 0 12px rgba(245,158,11,0.5);" onclick="ativarEscudoHelicoptero()">🛡️ ESCUDO FORÇA!</button>
-              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.05rem; font-weight:900;" onclick="moverHelicoptero(1)">DESCER / DIR ▶</button>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; gap:8px; overflow-y:auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-size:1.05rem; font-weight:900; color:#fbbf24;">🚁 Resgate Aéreo Stark</div>
-              <span id="copter-hud-speed" style="background:#78350f; color:#fde68a; border:1.5px solid #d97706; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.92rem;">150 km/h</span>
-            </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">⚡ Velocidade do Voo:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" id="btn-copter-speed-facil" style="flex:1; background:#065f46; color:#a7f3d0; border:1.5px solid #059669; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setCopterSpeedLevel('facil')">🟢 Seguro (80)</button>
-                <button type="button" class="btn" id="btn-copter-speed-medio" style="flex:1; background:#0284c7; color:#fff; border:2px solid #00f0ff; padding:5px 0; font-size:0.75rem; font-weight:900; border-radius:8px; box-shadow:0 0 10px rgba(0,240,255,0.4);" onclick="setCopterSpeedLevel('medio')">🟡 Rápido (150)</button>
-                <button type="button" class="btn" id="btn-copter-speed-turbo" style="flex:1; background:#991b1b; color:#fecaca; border:1.5px solid #dc2626; padding:5px 0; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="setCopterSpeedLevel('turbo')">🔴 Emergência</button>
-              </div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🚁 Voo de Resgate:</div>
-                <div id="copter-hud-dist" style="font-size:1.25rem; font-weight:900; color:#facc15;">0m</div>
-              </div>
-              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
-                <div style="font-size:0.72rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🤖 Robôs Salvos:</div>
-                <div id="copter-hud-rescues" style="font-size:1.25rem; font-weight:900; color:#38bdf8;">0</div>
-              </div>
-            </div>
-            <div>
-              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:800; color:#cbd5e1; margin-bottom:2px;">
-                <span>🛡️ Escudo de Força:</span>
-                <span id="copter-hud-shield-val">85%</span>
-              </div>
-              <div style="width:100%; height:12px; background:#041426; border-radius:8px; border:1px solid #1e3a63; overflow:hidden;">
-                <div id="copter-hud-shield-bar" style="width:85%; height:100%; background:linear-gradient(90deg, #38bdf8, #f59e0b); border-radius:8px;"></div>
-              </div>
-            </div>
-            <div>
-              <div style="font-size:0.78rem; font-weight:800; color:#94a3b8; margin-bottom:3px;">🎨 Pintura do Helicóptero:</div>
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="btn" style="flex:1; background:#ef4444; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900; border:2px solid #fff;" onclick="trocarPinturaHelicoptero('#ef4444', 'Falcão Vermelho', this)">🔴</button>
-                <button type="button" class="btn" style="flex:1; background:#eab308; color:#000; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarPinturaHelicoptero('#eab308', 'Águia Dourada', this)">🟡</button>
-                <button type="button" class="btn" style="flex:1; background:#94a3b8; color:#000; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarPinturaHelicoptero('#cbd5e1', 'Guardião Prata', this)">⚪</button>
-                <button type="button" class="btn" style="flex:1; background:#10b981; color:#fff; padding:5px 0; font-size:0.8rem; font-weight:900;" onclick="trocarPinturaHelicoptero('#10b981', 'Resgate Verde', this)">🟢</button>
-              </div>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="big-btn" style="flex:1; background:#334155; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="tocarSireneHelicoptero()">🚨 Sirene</button>
-              <button type="button" class="big-btn" id="btn-copter-pause" style="flex:1; background:#0f766e; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="togglePausarHelicoptero()">⏸️ Pausar</button>
-              <button type="button" class="big-btn" style="flex:1.2; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:#000; font-size:0.82rem; font-weight:900; padding:7px 0;" onclick="concluirHelicoptero()">🏆 Finalizar</button>
-            </div>
-          </div>
-        </div>
-      `;
-
-      iniciarLoopCanvasCopter();
-    }
-
-    function setCopterSpeedLevel(lvl) {
-      if (!copterRescueState) return;
-      copterRescueState.speedLevel = lvl;
-      const spds = { facil: 4.8, medio: 7.5, turbo: 11.5 };
-      copterRescueState.baseSpeed = spds[lvl] || 7.5;
-      copterRescueState.speed = copterRescueState.baseSpeed;
-      playTone(520, 80);
-      const spdEl = document.getElementById('copter-hud-speed');
-      if (spdEl) spdEl.textContent = `${Math.round(copterRescueState.speed * 20)} km/h`;
-      ['facil', 'medio', 'turbo'].forEach(l => {
-        const b = document.getElementById(`btn-copter-speed-${l}`);
-        if (b) {
-          b.style.borderColor = (l === lvl) ? '#00f0ff' : '#334155';
-          b.style.boxShadow = (l === lvl) ? '0 0 10px rgba(0,240,255,0.5)' : 'none';
-        }
-      });
-    }
-
-    function moverHelicoptero(delta) {
-      if (!copterRescueState || copterRescueState.finished) return;
-      playTone(420, 50);
-      copterRescueState.lane = Math.max(0, Math.min(2, copterRescueState.lane + delta));
-    }
-
-    function ativarEscudoHelicoptero() {
-      if (!copterRescueState || copterRescueState.finished) return;
-      if (copterRescueState.shield < 15) { showToast('⚡ Bateria de escudo baixa!'); return; }
-      copterRescueState.isShield = true;
-      playTone(600, 100);
-      setTimeout(() => playTone(900, 200), 100);
-      showToast('🛡️ ESCUDO PROTETOR ATIVADO!');
-      setTimeout(() => { if (copterRescueState) copterRescueState.isShield = false; }, 3500);
-    }
-
-    function tocarSireneHelicoptero() {
-      playTone(700, 120, 'square');
-      setTimeout(() => playTone(950, 150, 'square'), 120);
-      setTimeout(() => playTone(700, 120, 'square'), 270);
-      showToast('🚨 Uiiii-óóó! Helicóptero de resgate em ação!');
-    }
-
-    function trocarPinturaHelicoptero(cor, nome, btn) {
-      if (!copterRescueState) return;
-      copterRescueState.copterColor = cor;
-      copterRescueState.copterName = nome;
-      playTone(587, 80);
-      showToast(`🚁 Helicóptero: ${nome}!`);
-      if (btn && btn.parentElement) {
-        btn.parentElement.querySelectorAll('button').forEach(b => b.style.border = 'none');
-        btn.style.border = '2px solid #fff';
-      }
-    }
-
-    function togglePausarHelicoptero() {
-      if (!copterRescueState) return;
-      copterRescueState.paused = !copterRescueState.paused;
-      playTone(440, 80);
-      const b = document.getElementById('btn-copter-pause');
-      if (b) b.textContent = copterRescueState.paused ? '▶️ Continuar' : '⏸️ Pausar';
-    }
-
-    function iniciarLoopCanvasCopter() {
-      const canvas = document.getElementById('copter-rescue-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const laneX = [65, 185, 305];
-      let spawnCounter = 0;
-
-      canvas.onpointerdown = (ev) => {
-        const rect = canvas.getBoundingClientRect();
-        const clickX = (ev.clientX - rect.left) * (canvas.width / rect.width);
-        if (clickX < 125) copterRescueState.lane = 0;
-        else if (clickX < 245) copterRescueState.lane = 1;
-        else copterRescueState.lane = 2;
-        playTone(460, 50);
-      };
-
-      copterKeyHandler = (e) => {
-        if (!copterRescueState || !copterRescueState.active) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverHelicoptero(-1);
-        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverHelicoptero(1);
-        else if (e.key === ' ' || e.key === 'ArrowUp') ativarEscudoHelicoptero();
-        else if (e.key === 'b') tocarSireneHelicoptero();
-      };
-      window.addEventListener('keydown', copterKeyHandler);
-
-      function loop() {
-        if (!copterRescueState || !copterRescueState.active) return;
-        const s = copterRescueState;
-        const curSpd = s.isShield ? 13 : s.speed;
-
-        if (s.isShield) {
-          s.shield = Math.max(0, s.shield - 0.45);
-          if (s.shield <= 0) s.isShield = false;
-        }
-
-        if (!s.finished && !s.paused) {
-          s.distanceTraveled += curSpd * 0.35;
-          s.rotorAngle += 0.4;
-          const dEl = document.getElementById('copter-hud-dist');
-          if (dEl) dEl.textContent = `${Math.round(s.distanceTraveled)}m`;
-
-          const sVal = document.getElementById('copter-hud-shield-val');
-          const sBar = document.getElementById('copter-hud-shield-bar');
-          if (sVal) sVal.textContent = `${Math.round(s.shield)}%`;
-          if (sBar) sBar.style.width = `${Math.round(s.shield)}%`;
-
-          if (s.distanceTraveled >= s.nextMilestone) {
-            const m = s.nextMilestone;
-            s.nextMilestone += 500;
-            playCelebrationFanfare();
-            dispararChuvaCoracoes(25);
-            showToast(`🚁 MARCO DE ${m}m DE PATRULHA! +1 MOEDA! 🪙`);
-            const p = document.getElementById('pote-fichas-val');
-            if (p) p.textContent = parseInt(p.textContent || '0') + 1;
-            fetch('/api/fichas/bonificar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ quantidade: 1, motivo: 'marco_helicoptero' })
-            }).catch(() => null);
-            speak(`Excelente voo, piloto! Você protegeu a cidade por ${m} metros de altitude! Mais uma moeda no seu cofre!`);
-          }
-        }
-
-        s.x += (laneX[s.lane] - s.x) * 0.22;
-
-        spawnCounter++;
-        if (spawnCounter > (s.isShield ? 20 : 36) && !s.finished && !s.paused) {
-          spawnCounter = 0;
-          const sortLane = Math.floor(Math.random() * 3);
-          const r = Math.random();
-          let tipo = 'coin';
-          if (r < 0.50) tipo = 'coin';
-          else if (r < 0.75) tipo = 'rescue_bot';
-          else if (r < 0.88) tipo = 'battery';
-          else tipo = 'storm_cloud';
-          s.items.push({ x: laneX[sortLane], y: -30, tipo: tipo });
-        }
-
-        // Fundo céu de metrópole
-        ctx.fillStyle = '#0a192f';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        // Nuvens estilizadas ao fundo
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-        ctx.beginPath();
-        ctx.arc(80, 80, 40, 0, Math.PI * 2);
-        ctx.arc(120, 70, 50, 0, Math.PI * 2);
-        ctx.arc(160, 80, 40, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(260, 200, 35, 0, Math.PI * 2);
-        ctx.arc(300, 190, 45, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Linhas de voo aéreo
-        ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([18, 18]);
-        ctx.beginPath();
-        ctx.moveTo(125, 0); ctx.lineTo(125, canvas.height);
-        ctx.moveTo(245, 0); ctx.lineTo(245, canvas.height);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // Itens
-        for (let i = s.items.length - 1; i >= 0; i--) {
-          const it = s.items[i];
-          if (!s.paused) it.y += curSpd;
-
-          if (s.isShield && Math.hypot(it.x - s.x, it.y - s.y) < 130) {
-            it.x += (s.x - it.x) * 0.18;
-          }
-
-          ctx.font = '24px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          if (it.tipo === 'coin') ctx.fillText('🪙', it.x, it.y);
-          else if (it.tipo === 'rescue_bot') ctx.fillText('🤖', it.x, it.y);
-          else if (it.tipo === 'battery') ctx.fillText('🔋', it.x, it.y);
-          else if (it.tipo === 'storm_cloud') ctx.fillText('⚡', it.x, it.y);
-
-          if (Math.hypot(it.x - s.x, it.y - s.y) < 36 && !s.finished) {
-            if (it.tipo === 'coin') {
-              playTone(880, 70); s.coins++; s.score += 10;
-            } else if (it.tipo === 'rescue_bot') {
-              playTone(1046, 120); s.rescues++; s.score += 60;
-              const rEl = document.getElementById('copter-hud-rescues');
-              if (rEl) rEl.textContent = s.rescues;
-              showToast('🤖 Robozinho Resgatado com Sucesso! +60 Pts!');
-            } else if (it.tipo === 'battery') {
-              playTone(659, 100); s.shield = Math.min(100, s.shield + 35);
-              showToast('🔋 Combustível e Escudo Recarregados!');
-            } else if (it.tipo === 'storm_cloud') {
-              if (s.isShield) {
-                playTone(550, 80); s.score += 30;
-                showToast('🛡️ Raio repelido pelo escudo de força!');
-              } else {
-                playTone(220, 100); s.wobble = 12; s.speed = 3;
-                setTimeout(() => { if (s) s.speed = s.baseSpeed; }, 1000);
-              }
-            }
-            s.items.splice(i, 1);
-            continue;
-          }
-
-          if (it.y > canvas.height + 40) s.items.splice(i, 1);
-        }
-
-        // Desenha Helicóptero Stark
-        ctx.save();
-        ctx.translate(s.x + (s.wobble ? (Math.random() * 4 - 2) : 0), s.y);
-        if (s.wobble > 0) s.wobble--;
-
-        // Cúpula do escudo
-        if (s.isShield) {
-          ctx.strokeStyle = '#00f0ff';
-          ctx.shadowColor = '#00f0ff'; ctx.shadowBlur = 15;
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.arc(0, 0, 36, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.shadowBlur = 0;
-        }
-
-        // Cabine do Helicóptero
-        ctx.fillStyle = s.copterColor;
-        ctx.beginPath();
-        ctx.roundRect(-16, -14, 32, 34, 10);
-        ctx.fill();
-
-        // Vidro frontal
-        ctx.fillStyle = '#38bdf8';
-        ctx.beginPath();
-        ctx.roundRect(-12, -10, 24, 14, 5);
-        ctx.fill();
-
-        // Cauda traseira
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(-3, 20, 6, 22);
-        ctx.fillRect(-10, 38, 20, 4);
-
-        // Hélice giratória animada no topo
-        ctx.strokeStyle = '#f8fafc';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        const rCos = Math.cos(s.rotorAngle) * 32;
-        const rSin = Math.sin(s.rotorAngle) * 32;
-        ctx.moveTo(-rCos, -18 - rSin * 0.2);
-        ctx.lineTo(rCos, -18 + rSin * 0.2);
-        ctx.stroke();
-
-        ctx.restore();
-
-        copterAnimId = requestAnimationFrame(loop);
-      }
-      copterAnimId = requestAnimationFrame(loop);
-    }
-
-    async function concluirHelicoptero() {
-      if (!copterRescueState || copterRescueState.finished) return;
-      copterRescueState.finished = true;
-      playCelebrationFanfare();
-      dispararChuvaCoracoes(50);
-      const crianca = appState.config.child_name || 'Kaleo';
-      speak(`Missão de resgate espetacular, comandante ${crianca}! Você salvou todos os robozinhos e conquistou o Troféu Guardião do Ar! Ganhou 3 moedas de ouro!`);
-      showToast('🏆 MISSÃO DE RESGATE CUMPRIDA! +3 MOEDAS!');
-
-      await fetch('/api/fichas/bonificar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 3, motivo: 'helicoptero_resgate' })
-      }).catch(() => null);
-
-      const p = document.getElementById('pote-fichas-val');
-      if (p) p.textContent = parseInt(p.textContent || '0') + 3;
-
-      const canvas = document.getElementById('copter-rescue-canvas');
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(10, 25, 47, 0.9)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.font = '64px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText('🚁', canvas.width / 2, 100);
-        ctx.font = '900 20px sans-serif'; ctx.fillStyle = '#f59e0b';
-        ctx.fillText('HERÓI DO RESGATE AÉREO!', canvas.width / 2, 150);
-        ctx.font = '800 15px sans-serif'; ctx.fillStyle = '#ffffff';
-        ctx.fillText(`Distância: ${Math.round(copterRescueState.distanceTraveled)}m 🚁`, canvas.width / 2, 190);
-        ctx.fillText(`Robôs Salvos: ${copterRescueState.rescues} 🤖`, canvas.width / 2, 220);
-      }
-    }
 
         // =========================================================================
     // BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS)

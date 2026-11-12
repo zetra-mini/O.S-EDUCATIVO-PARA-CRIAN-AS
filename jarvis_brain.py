@@ -738,43 +738,43 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["voo espacial", "homem de ferro", "iron flight", "voar no espaco", "voar no espaço", "espacial"]):
-            reply = f"Sistemas de propulsão repulsora ativados, herói {self.name}! Abrindo o Voo Espacial do Homem de Ferro! Decolar rumo às estrelas!"
+        if any(w in text_lower for w in ["defensor galáctico", "defensor galactico", "tiro espacial", "batalha espacial", "invasores", "jogo de nave", "voo espacial", "homem de ferro"]):
+            reply = f"Sistemas de tiro de plasma armados, piloto {self.name}! Abrindo o Defensor Galáctico Stark! Defenda a galáxia com tiros turbo!"
             return {
                 "ok": True,
-                "intencao": "voo_espacial",
+                "intencao": "defensor_galactico",
                 "resposta_voz": reply,
-                "acao_frontend": "abrir_voo_espacial",
+                "acao_frontend": "abrir_defensor_galactico",
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["submarino", "fundo do mar", "oceano", "aquático", "aquatico", "missão abissal", "missao abissal"]):
-            reply = f"Escotilhas travadas e sonar ligado, capitão {self.name}! Abrindo o Submarino Abissal Stark! Vamos explorar as profundezas!"
+        if any(w in text_lower for w in ["arkanoid", "quebra blocos", "quebra-blocos", "destruir blocos", "bola turbo", "reator arkanoid", "submarino"]):
+            reply = f"Base magnética energizada, mestre {self.name}! Abrindo o Reator Arkanoid Stark! Rebata a esfera quântica e quebre todos os blocos!"
             return {
                 "ok": True,
-                "intencao": "submarino_stark",
+                "intencao": "reator_arkanoid",
                 "resposta_voz": reply,
-                "acao_frontend": "abrir_submarino_stark",
+                "acao_frontend": "abrir_reator_arkanoid",
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["hoverboard", "skate", "skate voador", "pista aérea", "pista aerea", "manobra"]):
-            reply = f"Prancha magnética antigravidade calibrada, super {self.name}! Abrindo o Hoverboard Futurista Stark! Prepare as manobras 360!"
+        if any(w in text_lower for w in ["jetpack", "propulsor", "voar com homem de ferro", "flappy", "gravidade", "voo gravitacional", "hoverboard"]):
+            reply = f"Propulsores repulsores acionados, herói {self.name}! Abrindo o Jetpack Repulsor Stark! Voe contra a gravidade e passe pelos portais!"
             return {
                 "ok": True,
-                "intencao": "hoverboard_stark",
+                "intencao": "jetpack_repulsor",
                 "resposta_voz": reply,
-                "acao_frontend": "abrir_hoverboard_stark",
+                "acao_frontend": "abrir_jetpack_repulsor",
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["helicóptero", "helicoptero", "resgate", "copter", "defender"]):
-            reply = f"Hélices em rotação máxima e sirene de resgate pronta, piloto {self.name}! Abrindo o Helicóptero Resgate Stark! Missão de salvar robozinhos!"
+        if any(w in text_lower for w in ["cobrinha", "snake", "circuito neon", "jogo da cobrinha", "tron", "helicóptero", "helicoptero"]):
+            reply = f"Circuito de alta velocidade conectado, campeão {self.name}! Abrindo o Circuito Neon Stark! Colete os núcleos e acelere no turbo!"
             return {
                 "ok": True,
-                "intencao": "helicoptero_resgate",
+                "intencao": "circuito_neon",
                 "resposta_voz": reply,
-                "acao_frontend": "abrir_helicoptero_stark",
+                "acao_frontend": "abrir_circuito_neon",
                 "dados": {},
             }
 
