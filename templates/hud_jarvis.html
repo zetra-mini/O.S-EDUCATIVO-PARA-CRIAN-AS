@@ -3700,22 +3700,12 @@
       }, true);
     }
 
-        function abrirQuartoEngenhariaModal() {
+    function abrirQuartoEngenhariaModal() {
       const engUrl = window.location.protocol === 'file:' ? 'quarto_engenharia.html' : '/engenharia';
       pushModalScreen('⚙️ QUARTO DE ENGENHARIA (BLOCKLY)', (body) => {
         body.innerHTML = `
-          <div style="display:flex; flex-direction:column; height:calc(100vh - 110px); width:100%; gap:8px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#0b192e; border:1.5px solid #1e3a63; padding:8px 14px; border-radius:12px; flex-shrink:0;">
-              <span style="font-size:0.92rem; color:#38bdf8; font-weight:800;">
-                🧩 Bancada de Programação Visual Stark
-              </span>
-              <div style="display:flex; gap:8px;">
-                <button type="button" class="big-btn" style="background:#1e293b; color:#38bdf8; border:1.5px solid #0284c7; font-size:0.88rem; padding:6px 18px; font-weight:900;" onclick="closeModal()">
-                  ✖ Voltar ao Robô
-                </button>
-              </div>
-            </div>
-            <iframe src="${engUrl}" id="iframe-quarto-engenharia" style="flex:1; width:100%; border:2px solid #1e3a5f; border-radius:14px; background:#030712;" allow="camera; microphone; autoplay"></iframe>
+          <div style="height:100%; max-height:calc(100vh - 72px); width:100%; box-sizing:border-box;">
+            <iframe src="${engUrl}" id="iframe-quarto-engenharia" style="width:100%; height:100%; border:2px solid #1e3a5f; border-radius:12px; background:#030712;" allow="camera; microphone; autoplay"></iframe>
           </div>
         `;
       }, true);
@@ -13802,16 +13792,31 @@
     let mathOpAtual = 'soma';
     let mathContaAtual = null;
     let mathAcertosContador = 0;
+    let mathVisualMode = 'dedinhos'; // 'dedinhos' ou 'frutas'
+    let mathCameraStream = null;
+    let mathCameraAtiva = false;
+    let mathCamInterval = null;
 
     function openMathMasterGame() {
-      pushModalScreen('🧮 MESTRE DA MATEMÁTICA (+, -, ×, ÷)', (body) => {
+      pushModalScreen('🧮 MESTRE DA MATEMÁTICA COM DEDINHOS (+, -, ×, ÷)', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo ao Laboratório de Matemática Stark, super campeão ${appState.config.child_name || 'Kaleo'}! Vamos aprender a somar, diminuir, multiplicar e dividir com frutas e heróis!`);
+        speak(`Bem-vindo ao Laboratório de Matemática Stark, super herói ${appState.config.child_name || 'Kaleo'}! Vamos aprender a somar, diminuir e contar nos dedinhos das mãos!`);
         mathOpAtual = 'soma';
         mathAcertosContador = 0;
+        mathVisualMode = 'dedinhos';
+        mathCameraAtiva = false;
         gerarNovaContaMatematica('soma');
         renderMathMasterBody(body);
-      }, true);
+      }, true, () => {
+        encerrarCameraMatematica();
+      });
+    }
+
+    function alternarVisualMatematica(modo) {
+      mathVisualMode = modo;
+      playTone(587, 80);
+      const b = document.getElementById('modal-body');
+      if (b) renderMathMasterBody(b);
     }
 
     function selecionarOperacaoMatematica(op) {
@@ -13821,11 +13826,62 @@
       const b = document.getElementById('modal-body');
       if (b) renderMathMasterBody(b);
       const nomes = { soma: 'adição e juntar', subtracao: 'diminuir e tirar', multiplicacao: 'grupos e multiplicação', divisao: 'repartir e divisão' };
-      speak(`Modo ${nomes[op]} ativado!`);
+      speak(`Modo ${nomes[op]} ativado! Conte nos dedinhos!`);
+    }
+
+    function tocarContagemDedoMatematica(num, el) {
+      destravarAudioNavegador();
+      playTone(280 + num * 55, 110, 'triangle');
+      if (el) {
+        el.style.transform = 'scale(1.15)';
+        el.style.filter = 'drop-shadow(0 0 10px #fde047)';
+        setTimeout(() => {
+          el.style.transform = '';
+          el.style.filter = '';
+        }, 300);
+      }
+      speak(String(num));
+    }
+
+    function renderDedinhosMaozinhaHtml(totalDedos, dedosLevantados, cor = '#38bdf8', inicioContagem = 1, rotulo = 'Mão') {
+      const alturas = [44, 62, 72, 60, 42]; // Polegar, Indicador, Médio, Anelar, Mínimo
+      const nomesDedos = ['Polegar', 'Indicador', 'Médio', 'Anelar', 'Mínimo'];
+      
+      let dedosHtml = '';
+      for (let i = 0; i < totalDedos; i++) {
+        const isUp = i < dedosLevantados;
+        const numContagem = inicioContagem + i;
+        const h = isUp ? alturas[i % 5] : 20;
+        const bg = isUp ? `linear-gradient(180deg, ${cor} 0%, #0369a1 100%)` : '#1e293b';
+        const borda = isUp ? '#fde047' : '#334155';
+        const opacity = isUp ? '1' : '0.35';
+
+        dedosHtml += `
+          <div onclick="tocarContagemDedoMatematica(${numContagem}, this)" title="${nomesDedos[i % 5]} ${isUp ? '(' + numContagem + ')' : '(Abaixado)'}" style="display:flex; flex-direction:column; align-items:center; justify-content:flex-end; cursor:pointer; position:relative; width:16px; height:80px; transition:all 0.2s;">
+            ${isUp ? `
+              <span style="position:absolute; top:calc(80px - ${h}px - 14px); font-size:0.68rem; font-weight:900; background:#fde047; color:#0f172a; border-radius:999px; width:15px; height:15px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 6px rgba(253,224,71,0.8); z-index:2;">
+                ${numContagem}
+              </span>
+            ` : ''}
+            <div style="width:14px; height:${h}px; background:${bg}; border:1.5px solid ${borda}; border-radius:7px 7px 4px 4px; opacity:${opacity};"></div>
+          </div>
+        `;
+      }
+
+      return `
+        <div style="display:flex; flex-direction:column; align-items:center; background:#07162b; border:1.5px solid ${cor}; border-radius:12px; padding:4px 8px; box-shadow:0 0 14px ${cor}22;">
+          <div style="font-size:0.75rem; font-weight:900; color:${cor}; margin-bottom:2px;">
+            ✋ ${rotulo}: ${dedosLevantados} dedo${dedosLevantados > 1 ? 's' : ''}
+          </div>
+          <div style="display:flex; align-items:flex-end; justify-content:center; gap:5px; height:82px; padding:2px 6px; background:#020914; border-radius:8px; border:1px solid #1e3a63;">
+            ${dedosHtml}
+          </div>
+        </div>
+      `;
     }
 
     function gerarNovaContaMatematica(op) {
-      let a = 1, b = 1, ans = 2, simbolo = '+', icone = '🍎', nome = 'maçãs', narrativa = '', visualHtml = '';
+      let a = 1, b = 1, ans = 2, simbolo = '+', icone = '🍎', nome = 'maçãs', narrativa = '', visualHtml = '', dedinhosHtml = '';
 
       if (op === 'soma') {
         a = Math.floor(Math.random() * 5) + 1;
@@ -13834,20 +13890,32 @@
         simbolo = '+';
         icone = '🍎';
         nome = 'maçãs';
-        narrativa = `Você tem ${a} maçã${a > 1 ? 's' : ''} e ganhou mais ${b} maçã${b > 1 ? 's' : ''}. Juntando tudo, quantas maçãs você tem agora?`;
+        narrativa = `Levante ${a} dedinho${a > 1 ? 's' : ''} em uma mão e mais ${b} dedinho${b > 1 ? 's' : ''} na outra mão! Juntando todos os dedinhos, quantos você tem?`;
+        
         visualHtml = `
-          <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; font-size:1.8rem;">
-            <div style="background:#031326; border:2px solid #38bdf8; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
-              ${'🍎'.repeat(a)} <span style="font-size:1rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${a})</span>
+          <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; font-size:1.8rem;">
+            <div style="background:#031326; border:2px solid #38bdf8; border-radius:12px; padding:4px 10px; display:flex; gap:3px;">
+              ${'🍎'.repeat(a)} <span style="font-size:0.95rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${a})</span>
             </div>
             <span style="font-size:2rem; font-weight:900; color:#38bdf8;">+</span>
-            <div style="background:#031326; border:2px solid #38bdf8; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
-              ${'🍎'.repeat(b)} <span style="font-size:1rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${b})</span>
+            <div style="background:#031326; border:2px solid #38bdf8; border-radius:12px; padding:4px 10px; display:flex; gap:3px;">
+              ${'🍎'.repeat(b)} <span style="font-size:0.95rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${b})</span>
             </div>
             <span style="font-size:2rem; font-weight:900; color:#fde047;">=</span>
-            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:6px 16px; font-weight:900; color:#fde047;">❓</div>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:4px 14px; font-weight:900; color:#fde047;">❓</div>
           </div>
         `;
+
+        dedinhosHtml = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+            ${renderDedinhosMaozinhaHtml(5, a, '#38bdf8', 1, 'Mão 1')}
+            <span style="font-size:2.2rem; font-weight:900; color:#38bdf8; line-height:1;">+</span>
+            ${renderDedinhosMaozinhaHtml(5, b, '#f97316', a + 1, 'Mão 2')}
+            <span style="font-size:2.2rem; font-weight:900; color:#fde047; line-height:1;">=</span>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:10px 18px; font-size:2rem; font-weight:900; color:#fde047; display:flex; align-items:center; justify-content:center;">❓</div>
+          </div>
+        `;
+
       } else if (op === 'subtracao') {
         a = Math.floor(Math.random() * 4) + 4; // 4 a 7
         b = Math.floor(Math.random() * (a - 1)) + 1;
@@ -13855,23 +13923,38 @@
         simbolo = '−';
         icone = '⭐';
         nome = 'estrelas';
-        narrativa = `Você tinha ${a} estrelas brilhantes e o robozinho usou ${b} para acender o foguete. Quantas estrelas sobraram?`;
+        narrativa = `Você levantou ${a} dedinhos no total e abaixou ${b} dedinho${b > 1 ? 's' : ''}! Quantos dedinhos continuam levantados?`;
+
         visualHtml = `
-          <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; font-size:1.8rem;">
-            <div style="background:#031326; border:2px solid #f97316; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; font-size:1.8rem;">
+            <div style="background:#031326; border:2px solid #f97316; border-radius:12px; padding:4px 10px; display:flex; gap:3px;">
               ${'⭐'.repeat(ans)}${'<span style="opacity:0.25; filter:grayscale(1);">⭐</span>'.repeat(b)}
-              <span style="font-size:1rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${a} no total)</span>
+              <span style="font-size:0.95rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${a} total)</span>
             </div>
             <span style="font-size:2rem; font-weight:900; color:#ef4444;">−</span>
-            <div style="background:#031326; border:2px solid #ef4444; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
-              ${'⭐'.repeat(b)} <span style="font-size:1rem; color:#ef4444; font-weight:900; align-self:center; margin-left:4px;">(tirou ${b})</span>
+            <div style="background:#031326; border:2px solid #ef4444; border-radius:12px; padding:4px 10px; display:flex; gap:3px;">
+              ${'⭐'.repeat(b)} <span style="font-size:0.95rem; color:#ef4444; font-weight:900; align-self:center; margin-left:4px;">(tirou ${b})</span>
             </div>
             <span style="font-size:2rem; font-weight:900; color:#fde047;">=</span>
-            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:6px 16px; font-weight:900; color:#fde047;">❓</div>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:4px 14px; font-weight:900; color:#fde047;">❓</div>
           </div>
         `;
+
+        dedinhosHtml = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+            ${renderDedinhosMaozinhaHtml(5, Math.min(5, a), '#38bdf8', 1, 'Dedos Totais')}
+            <span style="font-size:2.2rem; font-weight:900; color:#ef4444; line-height:1;">−</span>
+            <div style="background:#260606; border:1.5px solid #ef4444; border-radius:12px; padding:6px 12px; text-align:center;">
+              <span style="font-size:0.75rem; color:#fca5a5; font-weight:900;">Abaixar:</span>
+              <div style="font-size:1.3rem; font-weight:900; color:#f87171;">${b} dedinho${b > 1 ? 's' : ''}</div>
+            </div>
+            <span style="font-size:2.2rem; font-weight:900; color:#fde047; line-height:1;">=</span>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:10px 18px; font-size:2rem; font-weight:900; color:#fde047;">❓</div>
+          </div>
+        `;
+
       } else if (op === 'multiplicacao') {
-        const grupos = Math.floor(Math.random() * 3) + 2; // 2 a 4
+        const grupos = Math.floor(Math.random() * 2) + 2; // 2 ou 3
         const porG = Math.floor(Math.random() * 2) + 2;   // 2 ou 3
         a = grupos;
         b = porG;
@@ -13879,7 +13962,8 @@
         simbolo = '×';
         icone = '🤖';
         nome = 'robôs';
-        narrativa = `Temos ${a} caixas mágicas, e dentro de cada caixa moram ${b} robozinhos! É ${b} repetido ${a} vezes. Quantos robôs no total?`;
+        narrativa = `Temos ${a} mãozinhas mágicas, e cada mãozinha está levantando ${b} dedinhos! Quantos dedinhos no total?`;
+        
         const caixasArr = [];
         for (let k = 0; k < a; k++) {
           caixasArr.push(`
@@ -13889,20 +13973,33 @@
           `);
         }
         visualHtml = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; font-size:1.5rem;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; font-size:1.4rem;">
               ${caixasArr.join('')}
               <span style="font-size:1.8rem; font-weight:900; color:#fde047;">=</span>
               <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:4px 12px; font-weight:900; color:#fde047;">❓</div>
             </div>
-            <div style="font-size:0.85rem; color:#a78bfa; font-weight:800;">
+            <div style="font-size:0.8rem; color:#a78bfa; font-weight:800;">
               💡 Dica Stark: ${Array(a).fill(b).join(' + ')} = ?
             </div>
           </div>
         `;
+
+        const maozinhasArr = [];
+        for (let k = 0; k < a; k++) {
+          maozinhasArr.push(renderDedinhosMaozinhaHtml(5, b, '#8b5cf6', k * b + 1, `Mão ${k+1}`));
+        }
+        dedinhosHtml = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
+            ${maozinhasArr.join('<span style="font-size:1.5rem; font-weight:900; color:#a78bfa;">+</span>')}
+            <span style="font-size:1.8rem; font-weight:900; color:#fde047;">=</span>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:6px 14px; font-size:1.8rem; font-weight:900; color:#fde047;">❓</div>
+          </div>
+        `;
+
       } else { // divisao
         const amigos = 2;
-        const porA = Math.floor(Math.random() * 4) + 2; // 2 a 5
+        const porA = Math.floor(Math.random() * 3) + 2; // 2 a 4
         const total = amigos * porA;
         a = total;
         b = amigos;
@@ -13910,17 +14007,29 @@
         simbolo = '÷';
         icone = '🧁';
         nome = 'docinhos';
-        narrativa = `Temos ${a} docinhos deliciosos para repartir igualmente entre ${b} amiguinhos! Quantos docinhos cada um vai receber?`;
+        narrativa = `Temos ${a} dedinhos para repartir igualmente em ${b} mãozinhas amigas! Quantos dedinhos cada mãozinha ganha?`;
+
         visualHtml = `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-            <div style="background:#02152b; border:2px solid #eab308; border-radius:12px; padding:4px 14px; font-size:1.6rem; display:flex; gap:4px; align-items:center;">
-              🧁 Total: ${'🧁'.repeat(a)} <span style="font-size:0.95rem; color:#fde047; font-weight:900; margin-left:6px;">(${a})</span>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <div style="background:#02152b; border:2px solid #eab308; border-radius:12px; padding:4px 12px; font-size:1.4rem; display:flex; gap:4px; align-items:center;">
+              🧁 Total: ${'🧁'.repeat(a)} <span style="font-size:0.9rem; color:#fde047; font-weight:900; margin-left:6px;">(${a})</span>
             </div>
-            <div style="display:flex; align-items:center; gap:12px; font-size:1.2rem;">
-              <div style="background:#0f2744; border:1.5px solid #38bdf8; border-radius:10px; padding:4px 10px;">🧒 Amiguinho 1: ❓</div>
+            <div style="display:flex; align-items:center; gap:10px; font-size:1.1rem;">
+              <div style="background:#0f2744; border:1.5px solid #38bdf8; border-radius:10px; padding:3px 8px;">🧒 Amiguinho 1: ❓</div>
               <span style="color:#fde047; font-weight:900;">e</span>
-              <div style="background:#0f2744; border:1.5px solid #ec4899; border-radius:10px; padding:4px 10px;">👧 Amiguinha 2: ❓</div>
+              <div style="background:#0f2744; border:1.5px solid #ec4899; border-radius:10px; padding:3px 8px;">👧 Amiguinha 2: ❓</div>
             </div>
+          </div>
+        `;
+
+        dedinhosHtml = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <div style="background:#1e1b4b; border:2px solid #eab308; border-radius:12px; padding:4px 12px; text-align:center;">
+              <span style="font-size:0.75rem; color:#fef08a; font-weight:900;">Total de Dedos:</span>
+              <div style="font-size:1.4rem; font-weight:900; color:#facc15;">${a} dedinhos</div>
+            </div>
+            <span style="font-size:1.8rem; font-weight:900; color:#fbbf24;">÷ 2 =</span>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:6px 14px; font-size:1.8rem; font-weight:900; color:#fde047;">❓ cada</div>
           </div>
         `;
       }
@@ -13936,7 +14045,7 @@
       const shuffled = Array.from(opts).sort(() => Math.random() - 0.5);
 
       mathContaAtual = {
-        a, b, ans, simbolo, icone, nome, narrativa, visualHtml, options: shuffled
+        a, b, ans, simbolo, icone, nome, narrativa, visualHtml, dedinhosHtml, options: shuffled
       };
     }
 
@@ -13947,72 +14056,99 @@
       body.innerHTML = `
         <div style="display:grid; grid-template-columns: 210px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- BARRA LATERAL ESQUERDA: AS 4 OPERAÇÕES & PLACAR -->
+          <!-- BARRA LATERAL ESQUERDA: AS 4 OPERAÇÕES, DEDINHOS E PLACAR -->
           <div style="display:flex; flex-direction:column; gap:6px; background:#071324; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between;">
             <div>
-              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:5px; text-align:center;">
                 🧮 Operações
               </div>
-              <div style="display:flex; flex-direction:column; gap:5px;">
-                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'soma' ? 'background:#059669; border:2px solid #34d399;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('soma')">
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                <button type="button" class="big-btn" style="padding:6px; font-size:0.8rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'soma' ? 'background:#059669; border:2px solid #34d399;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('soma')">
                   <span>➕</span> <span>Somar (Juntar)</span>
                 </button>
-                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'subtracao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('subtracao')">
+                <button type="button" class="big-btn" style="padding:6px; font-size:0.8rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'subtracao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('subtracao')">
                   <span>➖</span> <span>Diminuir (Tirar)</span>
                 </button>
-                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'multiplicacao' ? 'background:#7c3aed; border:2px solid #a78bfa;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('multiplicacao')">
-                  <span>✖️</span> <span>Multiplicar (Grupos)</span>
+                <button type="button" class="big-btn" style="padding:6px; font-size:0.8rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'multiplicacao' ? 'background:#7c3aed; border:2px solid #a78bfa;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('multiplicacao')">
+                  <span>✖️</span> <span>Multiplicar</span>
                 </button>
-                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'divisao' ? 'background:#d97706; border:2px solid #fbbf24;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('divisao')">
-                  <span>➗</span> <span>Dividir (Repartir)</span>
+                <button type="button" class="big-btn" style="padding:6px; font-size:0.8rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'divisao' ? 'background:#d97706; border:2px solid #fbbf24;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('divisao')">
+                  <span>➗</span> <span>Dividir</span>
                 </button>
+              </div>
+
+              <!-- SELETOR DE MODO VISUAL (DEDINHOS / OBJETOS) -->
+              <div style="margin-top:6px; background:#040d1a; border:1px solid #1e3a63; border-radius:8px; padding:4px;">
+                <div style="font-size:0.7rem; color:#94a3b8; font-weight:bold; margin-bottom:3px; text-align:center;">MODO VISUAL:</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:3px;">
+                  <button type="button" class="big-btn" style="padding:4px 2px; font-size:0.72rem; font-weight:800; border-radius:6px; ${mathVisualMode === 'dedinhos' ? 'background:#0284c7; border:1.5px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarVisualMatematica('dedinhos')">
+                    🖐️ Dedos
+                  </button>
+                  <button type="button" class="big-btn" style="padding:4px 2px; font-size:0.72rem; font-weight:800; border-radius:6px; ${mathVisualMode === 'frutas' ? 'background:#0284c7; border:1.5px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarVisualMatematica('frutas')">
+                    🍎 Frutas
+                  </button>
+                </div>
               </div>
             </div>
 
+            <!-- BOTÃO DA CÂMERA (RESPONDER COM OS DEDINHOS) -->
+            <button type="button" class="big-btn" style="background:${mathCameraAtiva ? '#dc2626' : 'linear-gradient(135deg, #0284c7, #06b6d4)'}; border:1.5px solid ${mathCameraAtiva ? '#f87171' : '#38bdf8'}; color:#fff; padding:6px; border-radius:8px; font-size:0.78rem; font-weight:900; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="toggleCameraDedinhosMatematica()">
+              <span>📸</span> <span>${mathCameraAtiva ? '✕ Fechar Câmera' : 'Responder com a Mão'}</span>
+            </button>
+
             <!-- PLACAR DE ACERTOS -->
-            <div style="background:#020914; border:1px solid #1e3a63; border-radius:10px; padding:8px; text-align:center;">
-              <div style="font-size:0.75rem; color:#94a3b8; font-weight:bold;">MESTRE MATEMÁTICO</div>
-              <div style="font-size:1.2rem; font-weight:900; color:#fde047; margin:2px 0;">⭐ ${mathAcertosContador} Acertos</div>
-              <div style="font-size:0.68rem; color:#86efac; font-weight:800;">+2 Moedas de Ouro cada!</div>
+            <div style="background:#020914; border:1px solid #1e3a63; border-radius:10px; padding:6px; text-align:center;">
+              <div style="font-size:0.7rem; color:#94a3b8; font-weight:bold;">MESTRE MATEMÁTICO</div>
+              <div style="font-size:1.15rem; font-weight:900; color:#fde047; margin:2px 0;">⭐ ${mathAcertosContador} Acertos</div>
+              <div style="font-size:0.68rem; color:#86efac; font-weight:800;">+2 Moedas cada!</div>
             </div>
 
             <!-- BOTÃO NOVA CONTA -->
-            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:6px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="gerarNovaContaMatematica(mathOpAtual); const b = document.getElementById('modal-body'); if (b) renderMathMasterBody(b);">
-              🔄 Pular / Nova Conta
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:5px; border-radius:8px; font-size:0.75rem; font-weight:800;" onclick="gerarNovaContaMatematica(mathOpAtual); const b = document.getElementById('modal-body'); if (b) renderMathMasterBody(b);">
+              🔄 Nova Conta
             </button>
           </div>
 
           <!-- PALCO PRINCIPAL DIREITO: EQUAÇÃO, VISUAL E BOTÕES DE RESPOSTA -->
-          <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; gap:8px;">
+          <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; gap:6px;">
             
             <!-- QUADRO CENTRAL DA CONTA -->
-            <div style="background:#030c1a; border:2.5px solid #38bdf8; border-radius:14px; padding:8px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; flex:1; box-shadow:0 0 20px rgba(56,189,248,0.2);">
+            <div style="background:#030c1a; border:2.5px solid #38bdf8; border-radius:14px; padding:8px 12px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:4px; flex:1; box-shadow:0 0 20px rgba(56,189,248,0.2);">
               
               <!-- EXPRESSÃO MATEMÁTICA EM DESTAQUE -->
-              <div style="font-size:2.4rem; font-weight:900; color:#fde047; text-shadow:0 0 15px rgba(253,224,71,0.5); letter-spacing:2px; line-height:1.1;">
+              <div style="font-size:2.2rem; font-weight:900; color:#fde047; text-shadow:0 0 15px rgba(253,224,71,0.5); letter-spacing:2px; line-height:1.1;">
                 ${c.a} ${c.simbolo} ${c.b} = ❓
               </div>
 
-              <!-- ÁREA VISUAL CONCRETA -->
-              <div style="width:100%; display:flex; justify-content:center; align-items:center;">
-                ${c.visualHtml}
+              <!-- ÁREA VISUAL CONCRETA (DEDINHOS OU FRUTAS) -->
+              <div style="width:100%; display:flex; justify-content:center; align-items:center; min-height:95px;">
+                ${mathVisualMode === 'dedinhos' ? c.dedinhosHtml : c.visualHtml}
+              </div>
+
+              <!-- MINI PREVIEW DA CÂMERA (SE ATIVA) -->
+              <div id="math-cam-box" style="display:${mathCameraAtiva ? 'flex' : 'none'}; align-items:center; justify-content:center; gap:10px; background:#020617; border:2px solid #38bdf8; border-radius:10px; padding:4px 10px; width:100%; max-width:480px;">
+                <video id="math-cam-video" autoplay playsinline muted style="width:80px; height:60px; border-radius:6px; object-fit:cover; border:1px solid #38bdf8; transform:scaleX(-1);"></video>
+                <div style="display:flex; flex-direction:column; align-items:flex-start; gap:2px;">
+                  <span style="font-size:0.75rem; color:#38bdf8; font-weight:800;">📸 Levante os dedinhos na câmera!</span>
+                  <div style="font-size:0.85rem; font-weight:900; color:#fde047;" id="math-cam-status">Jarvis olhando seus dedinhos...</div>
+                </div>
               </div>
 
               <!-- NARRATIVA E BOTÃO DE OUVIR -->
-              <div style="display:flex; align-items:center; justify-content:space-between; width:100%; background:#08182e; border:1px solid #1e3a63; border-radius:8px; padding:5px 10px; gap:8px;">
-                <span id="math-narrativa-txt" style="font-size:0.82rem; font-weight:700; color:#e2e8f0; flex:1;">
+              <div style="display:flex; align-items:center; justify-content:space-between; width:100%; background:#08182e; border:1px solid #1e3a63; border-radius:8px; padding:4px 10px; gap:8px;">
+                <span id="math-narrativa-txt" style="font-size:0.8rem; font-weight:700; color:#e2e8f0; flex:1;">
                   ${c.narrativa}
                 </span>
-                <button type="button" class="big-btn" style="background:#0284c7; font-size:0.75rem; padding:4px 8px; border-radius:6px; white-space:nowrap;" onclick="speak('${escapeJs(c.narrativa)}')">
+                <button type="button" class="big-btn" style="background:#0284c7; font-size:0.72rem; padding:3px 8px; border-radius:6px; white-space:nowrap;" onclick="speak('${escapeJs(c.narrativa)}')">
                   🔊 Ouvir
                 </button>
               </div>
             </div>
 
             <!-- BOTÕES DE RESPOSTA GIGANTES TÁTEIS (GRID 4 ITENS) -->
-            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;">
               ${c.options.map(opt => `
-                <button type="button" class="big-btn" style="background:#0b213f; border:2.5px solid #38bdf8; color:#ffffff; font-size:1.8rem; font-weight:900; padding:10px 6px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);" onclick="responderContaMatematica(${opt}, this)">
+                <button type="button" class="big-btn" id="btn-math-opt-${opt}" style="background:#0b213f; border:2.5px solid #38bdf8; color:#ffffff; font-size:1.8rem; font-weight:900; padding:8px 4px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);" onclick="responderContaMatematica(${opt}, this)">
                   ${opt}
                 </button>
               `).join('')}
@@ -14022,17 +14158,84 @@
 
         </div>
       `;
+
+      if (mathCameraAtiva) {
+        iniciarStreamCameraMatematica();
+      }
+    }
+
+    async function toggleCameraDedinhosMatematica() {
+      mathCameraAtiva = !mathCameraAtiva;
+      playTone(523, 80);
+      const b = document.getElementById('modal-body');
+      if (b) renderMathMasterBody(b);
+      if (mathCameraAtiva) {
+        speak('Mostre os dedinhos da resposta para a câmera do Jarvis!');
+        showToast('📸 Câmera de Dedinhos Ativada!');
+      } else {
+        encerrarCameraMatematica();
+      }
+    }
+
+    async function iniciarStreamCameraMatematica() {
+      try {
+        if (!mathCameraStream) {
+          mathCameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 320 }, height: { ideal: 240 } },
+            audio: false
+          });
+        }
+        const video = document.getElementById('math-cam-video');
+        if (video) video.srcObject = mathCameraStream;
+
+        // Loop leve de verificação de dedos
+        if (mathCamInterval) clearInterval(mathCamInterval);
+        let dedosDetectadosUltimos = -1;
+        let contagemConfirmadaMs = 0;
+
+        mathCamInterval = setInterval(() => {
+          if (!mathCameraAtiva || !mathContaAtual) return;
+          // Se a visão global tiver detectado dedos recentemente
+          const dedos = (typeof fcUltimoConfirmado === 'number' && fcUltimoConfirmado >= 0) ? fcUltimoConfirmado : -1;
+          const statusEl = document.getElementById('math-cam-status');
+          if (dedos >= 0) {
+            if (statusEl) statusEl.textContent = `Detectado: ${dedos} dedinho${dedos > 1 ? 's' : ''}!`;
+            if (dedos === mathContaAtual.ans) {
+              const btn = document.getElementById(`btn-math-opt-${dedos}`);
+              if (btn) responderContaMatematica(dedos, btn);
+            }
+          }
+        }, 600);
+      } catch(e) {
+        showToast('Câmera indisponível no momento. Use os botões na tela!');
+        mathCameraAtiva = false;
+        const b = document.getElementById('modal-body');
+        if (b) renderMathMasterBody(b);
+      }
+    }
+
+    function encerrarCameraMatematica() {
+      if (mathCamInterval) { clearInterval(mathCamInterval); mathCamInterval = null; }
+      if (mathCameraStream) {
+        try {
+          mathCameraStream.getTracks().forEach(t => t.stop());
+        } catch(e) {}
+        mathCameraStream = null;
+      }
+      mathCameraAtiva = false;
     }
 
     async function responderContaMatematica(escolha, btnEl) {
       if (!mathContaAtual) return;
       if (escolha === mathContaAtual.ans) {
         playCelebrationFanfare();
-        btnEl.style.background = '#059669';
-        btnEl.style.borderColor = '#34d399';
+        if (btnEl) {
+          btnEl.style.background = '#059669';
+          btnEl.style.borderColor = '#34d399';
+        }
         mathAcertosContador++;
         
-        speak(`Sensacional, super herói! ${escolha} é a resposta certa! Você é um mestre da matemática!`);
+        speak(`Sensacional, super herói! ${escolha} é a resposta certa! Você contou direitinho nos dedinhos!`);
         showToast('⭐ Resposta Certa! +2 Moedas de Ouro!');
         
         await fetch('/api/fichas/bonificar', {
@@ -14048,13 +14251,15 @@
         }, 1300);
       } else {
         playTone(320, 150);
-        btnEl.style.background = '#7f1d1d';
-        btnEl.style.borderColor = '#ef4444';
-        speak(`Quase lá! Vamos contar os itens na tela juntos! Tente de novo!`);
-        setTimeout(() => {
-          btnEl.style.background = '#0b213f';
-          btnEl.style.borderColor = '#38bdf8';
-        }, 600);
+        if (btnEl) {
+          btnEl.style.background = '#7f1d1d';
+          btnEl.style.borderColor = '#ef4444';
+          setTimeout(() => {
+            btnEl.style.background = '#0b213f';
+            btnEl.style.borderColor = '#38bdf8';
+          }, 600);
+        }
+        speak(`Quase lá! Vamos contar os dedinhos na tela juntos! Tente de novo!`);
       }
     }
 
@@ -14209,11 +14414,14 @@
     };
 
     let robotConfig = { cabeca: 0, peito: 0, bracos: 0, pernas: 0, nome: 'Titan Stark' };
+    let robotModoVisual = 'oficina'; // 'oficina' ou 'missao'
+    let robotAnimandoAcao = null;
 
     function openRobotFactoryGame() {
       pushModalScreen('🤖 FÁBRICA DE ROBÔS STARK', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo à Bancada de Robótica Stark, engenheiro ${appState.config.child_name || 'Kaleo'}! Escolha a cabeça, peito, braços e pernas para montar seu super robô!`);
+        speak(`Bem-vindo à Bancada de Robótica Stark, engenheiro ${appState.config.child_name || 'Kaleo'}! Monte as peças do seu robô e aperte o botão de ativar para testar os super poderes na arena!`);
+        robotModoVisual = 'oficina';
         renderRobotFactoryBody(body);
       }, true);
     }
@@ -14226,6 +14434,96 @@
       if (b) renderRobotFactoryBody(b);
     }
 
+    function executarAcaoSuperRobo(tipo) {
+      destravarAudioNavegador();
+      const arenaRobo = document.getElementById('robo-arena-visual');
+      const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
+      const t = ROBOT_PARTS.troncos[robotConfig.peito];
+      const b = ROBOT_PARTS.bracos[robotConfig.bracos];
+      const p = ROBOT_PARTS.pernas[robotConfig.pernas];
+
+      if (tipo === 'laser') {
+        // Som Sci-Fi de Laser Sweep
+        try {
+          const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(1400, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.35);
+          gain.gain.setValueAtTime(0.4, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 0.35);
+        } catch(e) {}
+
+        if (arenaRobo) {
+          arenaRobo.style.filter = 'drop-shadow(0 0 25px #ef4444) brightness(1.4)';
+          setTimeout(() => arenaRobo.style.filter = '', 500);
+        }
+        showToast('🔥 Raio Laser Neon Disparado!');
+        speak('Zzap! Laser de plasma ativado com sucesso!');
+
+      } else if (tipo === 'turbo') {
+        // Som de Turbina Propulsora
+        try {
+          const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(80, ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(520, ctx.currentTime + 0.5);
+          osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 1.0);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.0);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 1.0);
+        } catch(e) {}
+
+        if (arenaRobo) {
+          arenaRobo.style.transform = 'translateY(-20px) scale(1.08)';
+          arenaRobo.style.filter = 'drop-shadow(0 15px 25px #00f0ff)';
+          setTimeout(() => {
+            arenaRobo.style.transform = '';
+            arenaRobo.style.filter = '';
+          }, 800);
+        }
+        showToast('🚀 Turbo Jato Ativado! Voando alto!');
+        speak(`Propulsores ${p.nome} na potência máxima! Subindo!`);
+
+      } else if (tipo === 'garra') {
+        playTone(350, 100, 'square');
+        setTimeout(() => playTone(700, 150, 'square'), 120);
+        showToast('🦾 Super Garra Mecânica Acionada! +1 Moeda!');
+        speak(`${b.nome} resgatou uma bateria de energia estelar!`);
+        
+        fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 1, motivo: 'garra_robo_stark' })
+        }).catch(() => null);
+        const pEl = document.getElementById('pote-fichas-val');
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
+
+      } else if (tipo === 'danca') {
+        // Dança Robótica com batida cibernética alegre
+        playTone(440, 90);
+        setTimeout(() => playTone(554, 90), 120);
+        setTimeout(() => playTone(659, 90), 240);
+        setTimeout(() => playTone(880, 150), 360);
+
+        if (arenaRobo) {
+          arenaRobo.style.animation = 'pulseMic 0.3s 4 alternate';
+          setTimeout(() => arenaRobo.style.animation = '', 1200);
+        }
+        showToast('🕺 Dança dos Robôs Stark!');
+        speak('Bip bip bop! Olhe como eu sei dançar no ritmo da música!');
+
+      } else if (tipo === 'fala') {
+        speak(c.fala);
+      }
+    }
+
     function renderRobotFactoryBody(body) {
       const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
       const t = ROBOT_PARTS.troncos[robotConfig.peito];
@@ -14233,84 +14531,137 @@
       const p = ROBOT_PARTS.pernas[robotConfig.pernas];
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:6px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: minmax(240px, 1fr) 1.25fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- GRID EM 2 COLUNAS PROJETADO PARA TELAS 1024x600 NETBOOK -->
-          <div style="display:grid; grid-template-columns: minmax(260px, 1fr) 1.25fr; gap:10px; align-items:stretch; flex:1;">
+          <!-- COLUNA ESQUERDA: O ROBÔ MONTADO EM TEMPO REAL COM EFEITOS NEON -->
+          <div style="background:#020914; border:2.5px solid #00f0ff; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(0,240,255,0.25);">
             
-            <!-- COLUNA ESQUERDA: O ROBÔ MONTADO EM TEMPO REAL -->
-            <div style="background:#020914; border:2.5px solid #00f0ff; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(0,240,255,0.25);">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+              <span style="font-size:0.75rem; font-weight:900; background:#042f2e; color:#5eead4; border:1px solid #14b8a6; padding:2px 8px; border-radius:999px;">
+                ${robotModoVisual === 'oficina' ? '🛠️ BANCADA DE CRIAÇÃO' : '⚡ ARENA DE PODERES'}
+              </span>
               <div style="font-size:0.95rem; font-weight:900; color:#00f0ff; text-transform:uppercase;">
                 🤖 ${robotConfig.nome}
               </div>
-
-              <!-- SILHUETA VISUAL DO ROBÔ -->
-              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:6px; background:#041426; border:1.5px solid #1e3a63; border-radius:12px; width:100%; max-width:200px;">
-                <div style="font-size:2.8rem; line-height:1; filter:drop-shadow(0 0 10px #00f0ff);">${c.icone}</div>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
-                  <span style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 10px #fde047);">${t.icone}</span>
-                  <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
-                </div>
-                <div style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 8px #38bdf8);">${p.icone}</div>
-              </div>
-
-              <!-- BOTÃO DE ATIVAÇÃO DO ROBÔ -->
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.95rem; font-weight:900; padding:8px 14px; width:100%; border-radius:10px;" onclick="darVidaAoRoboStark()">
-                ⚡ ATIVAR MEU ROBÔ!
-              </button>
             </div>
 
-            <!-- COLUNA DIREITA: BANCADA DE PEÇAS CUSTOMIZÁVEIS -->
+            <!-- SILHUETA VISUAL DO ROBÔ COM ANIMAÇÃO -->
+            <div id="robo-arena-visual" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:8px; background:#041426; border:1.5px solid #1e3a63; border-radius:12px; width:100%; max-width:210px; transition:all 0.3s;">
+              <div style="font-size:2.8rem; line-height:1; filter:drop-shadow(0 0 10px #00f0ff); animation:pulse 2s infinite;">${c.icone}</div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
+                <span style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 12px #fde047);">${t.icone}</span>
+                <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
+              </div>
+              <div style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 8px #38bdf8);">${p.icone}</div>
+            </div>
+
+            <!-- BOTÃO PRINCIPAL DE MODO -->
+            ${robotModoVisual === 'oficina' ? `
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.95rem; font-weight:900; padding:8px 14px; width:100%; border-radius:10px; box-shadow:0 0 15px rgba(0,240,255,0.4);" onclick="darVidaAoRoboStark()">
+                ⚡ ATIVAR MEU ROBÔ! (+3 🪙)
+              </button>
+            ` : `
+              <button type="button" class="big-btn" style="background:#1e293b; color:#38bdf8; border:1.5px solid #0284c7; font-size:0.85rem; font-weight:900; padding:6px 14px; width:100%; border-radius:10px;" onclick="robotModoVisual='oficina'; const b = document.getElementById('modal-body'); if (b) renderRobotFactoryBody(b);">
+                🛠️ Voltar à Oficina de Peças
+              </button>
+            `}
+          </div>
+
+          <!-- COLUNA DIREITA: OFICINA DE PEÇAS OU PAINEL DE PODERES DA ARENA -->
+          ${robotModoVisual === 'oficina' ? `
+            <!-- MODO OFICINA: TROCA DE PEÇAS -->
             <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 12px; gap:6px;">
               
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase;">
+                🔧 Escolha os Módulos do Robô:
+              </div>
+
               <!-- 1. CABEÇA -->
               <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🪖 Cabeça:</span>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🪖 Cabeça:</span>
+                <div style="display:flex; align-items:center; gap:6px;">
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('cabecas', -1)">◀</button>
                   <span style="font-size:1.2rem;">${c.icone}</span>
-                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${c.nome}</span>
+                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${c.nome}</span>
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('cabecas', 1)">▶</button>
                 </div>
               </div>
 
               <!-- 2. TRONCO / PEITO -->
               <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🛡️ Peito:</span>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🛡️ Peito:</span>
+                <div style="display:flex; align-items:center; gap:6px;">
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('troncos', -1)">◀</button>
                   <span style="font-size:1.2rem;">${t.icone}</span>
-                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${t.nome}</span>
+                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${t.nome}</span>
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('troncos', 1)">▶</button>
                 </div>
               </div>
 
               <!-- 3. BRAÇOS -->
               <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🦾 Braços:</span>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🦾 Braços:</span>
+                <div style="display:flex; align-items:center; gap:6px;">
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('bracos', -1)">◀</button>
                   <span style="font-size:1.2rem;">${b.icone}</span>
-                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${b.nome}</span>
+                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${b.nome}</span>
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('bracos', 1)">▶</button>
                 </div>
               </div>
 
               <!-- 4. PERNAS -->
               <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🦿 Pernas:</span>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🦿 Pernas:</span>
+                <div style="display:flex; align-items:center; gap:6px;">
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('pernas', -1)">◀</button>
                   <span style="font-size:1.2rem;">${p.icone}</span>
-                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${p.nome}</span>
+                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${p.nome}</span>
                   <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('pernas', 1)">▶</button>
                 </div>
               </div>
 
-            </div>
+              <div style="font-size:0.75rem; color:#94a3b8; text-align:center; background:rgba(0,0,0,0.3); padding:4px; border-radius:8px;">
+                💡 Combine as peças e aperte Ativar para testar os poderes na arena!
+              </div>
 
-          </div>
+            </div>
+          ` : `
+            <!-- MODO MISSÃO: ARENA DE SUPER PODERES DO ROBÔ -->
+            <div style="display:flex; flex-direction:column; justify-content:space-between; background:#031022; border:2px solid #00f0ff; border-radius:14px; padding:10px 14px; gap:8px; box-shadow:0 0 25px rgba(0,240,255,0.2);">
+              
+              <div>
+                <div style="font-size:1.1rem; font-weight:900; color:#00f0ff;">
+                  ⚡ Centro de Controle do ${robotConfig.nome}
+                </div>
+                <div style="font-size:0.8rem; color:#cbd5e1; margin-top:2px;">
+                  Sistemas operacionais ativados! Acione os poderes do seu robô abaixo:
+                </div>
+              </div>
+
+              <!-- GRADE DE 4 SUPER PODERES TÁTEIS -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button type="button" class="big-btn" style="background:#7f1d1d; border:2px solid #ef4444; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('laser')">
+                  <span style="font-size:1.5rem;">🔥</span> <span>Disparar Laser</span>
+                </button>
+                <button type="button" class="big-btn" style="background:#0369a1; border:2px solid #38bdf8; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('turbo')">
+                  <span style="font-size:1.5rem;">🚀</span> <span>Turbo Propulsão</span>
+                </button>
+                <button type="button" class="big-btn" style="background:#15803d; border:2px solid #86efac; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('garra')">
+                  <span style="font-size:1.5rem;">🦾</span> <span>Ação da Garra</span>
+                </button>
+                <button type="button" class="big-btn" style="background:#6b21a8; border:2px solid #c084fc; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('danca')">
+                  <span style="font-size:1.5rem;">🕺</span> <span>Dança Robótica</span>
+                </button>
+              </div>
+
+              <!-- BOTÃO DE FALA ROBÓTICA -->
+              <button type="button" class="big-btn" style="background:#071e3d; border:1.5px solid #38bdf8; color:#fde047; padding:8px 12px; border-radius:10px; font-size:0.85rem; font-weight:900; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="executarAcaoSuperRobo('fala')">
+                <span>💬</span> <span>Falar Frase do Robô: "${c.fala}"</span>
+              </button>
+
+            </div>
+          `}
 
         </div>
       `;
@@ -14323,7 +14674,11 @@
       setTimeout(() => playTone(784, 120), 200);
       setTimeout(() => playTone(1046, 250), 320);
 
-      speak(`Robô ativado com sucesso! ${c.fala} Parabéns, engenheiro Stark! Você ganhou 3 moedas de ouro!`);
+      robotModoVisual = 'missao';
+      const b = document.getElementById('modal-body');
+      if (b) renderRobotFactoryBody(b);
+
+      speak(`Robô ativado com sucesso! ${c.fala} Bem-vindo à arena de testes! Você ganhou 3 moedas de ouro!`);
       showToast('🤖 Robô Stark Online! +3 Moedas!');
 
       await fetch('/api/fichas/bonificar', {
