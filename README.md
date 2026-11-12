@@ -1,4 +1,4 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.9.0 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
+# 🚀 J.A.R.V.I.S. Kids OS v3.9.5 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
@@ -32,6 +32,30 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 | :---: |
 | ![Fábrica de Robôs Stark](docs/screenshots/09_quarto_engenharia.png) |
 | *Pista de corrida arcade interestelar neon: a criança pilota o super carro Stark desviando de obstáculos, coletando moedas de ouro e ativando o Super Nitro até a linha de chegada!* |
+
+---
+
+## 🌟 Novidades da Versão 3.9.5 (4 Novos Jogos Arcade, Níveis de Dificuldade, Utilitário PKG e CI/CD Atualizado)
+
+### 🕹️ 1. 4 Novos Super Jogos Arcade na Página 8
+- **🚀 Defensor Galáctico Stark:** Shoot 'em up vertical espacial com drones invasores, canhões de plasma, disparos duplos e rajada tripla do Turbo Laser.
+- **⚡ Reator Arkanoid Stark:** Quebra-blocos arcade retrô com base magnética ampla, blocos de vibranium e cápsulas flutuantes de power-ups (Multi-esferas, Laser perfurante, Expansão).
+- **🦸‍♂️ Jetpack Repulsor Stark:** Jogo de voo gravitacional por impulsos repulsores: desvie de portais de laser, colete anéis turbo com invencibilidade e junte moedas.
+- **💠 Circuito Neon Stark:** A clássica cobrinha repensada em circuito de alta velocidade no estilo Tron: absorva núcleos quânticos energéticos, ative o Turbo Sprint e passe pelas bordas sem medo.
+
+### 🎯 2. Níveis de Dificuldade Táteis (Iniciando Sempre no Modo Fácil)
+- Todos os jogos arcade contam com botões dedicados de dificuldade (🟢 Fácil, 🟡 Médio, 🔴 Difícil).
+- **Modo Fácil por Padrão:** Todo jogo inicia obrigatoriamente no modo mais acessível (velocidade serena, base mais larga, gravidade dócil) para garantir o sucesso das crianças.
+- **Encerramento Imediato e Seguro:** Ao clicar em voltar ou fechar a janela, todos os loops de animação, listeners e áudios são imediatamente interrompidos, impedindo qualquer celebração ou fanfarra fantasma fora de hora.
+
+### 📦 3. Utilitário Universal ./pkg e Instalação Descomplicada
+- Gerenciador autônomo e unificado para **antiX Linux**, **xlinux**, **Debian**, **Ubuntu**, **Alpine**, **Termux** e **Void Linux**.
+- Instalação, inicialização e diagnóstico automático com um único comando: ./pkg install, ./pkg run e ./pkg status.
+
+### 🚀 4. GitHub Actions CI/CD Totalmente Modernizado
+- Determinação dinâmica de versão através do arquivo VERSION (v3.9.5).
+- Validação contínua de código e testes de sintaxe antes do empacotamento.
+- Publicação automática de releases oficiais com todos os pacotes (.deb, .tar.gz, .zip, .apk, .app.zip, pkg, pkg.sh) tanto para tags * quanto para commits na branch main.
 
 ---
 

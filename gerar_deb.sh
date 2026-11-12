@@ -6,10 +6,15 @@
 
 set -e
 
-VERSION="${1:-3.7.0}"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$ROOT_DIR/VERSION" ]; then
+  DEFAULT_VER="$(cat "$ROOT_DIR/VERSION" | tr -d '[:space:]')"
+else
+  DEFAULT_VER="3.9.5"
+fi
+VERSION="${1:-$DEFAULT_VER}"
 ARCH="all"
 DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "=========================================================="
 echo "📦 Construindo pacote Debian Kiosk: jarvis-kids-os_${VERSION}.deb"

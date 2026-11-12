@@ -1,33 +1,47 @@
 name: Compilar Pacotes e Releases do JARVIS Kids OS
 
-on:
+'on':
   push:
     branches: [ main ]
     tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Versão da Release (opcional, ex: 3.9.5)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
 
 jobs:
   build-packages:
-    name: Compilar Pacotes (.deb, .tar.gz, .zip, .apk, .app)
+    name: Compilar Pacotes (.deb, .tar.gz, .zip, .apk, .app, pkg)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Clonar Repositorio
+      - name: Clonar Repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Determinar Versao da Release
+      - name: Determinar Versão da Release
+        id: get_version
         run: |
-          RAW_VER="${GITHUB_REF_NAME#v}"
-          if [ -z "$RAW_VER" ] || [ "$RAW_VER" = "main" ]; then
-            RAW_VER="3.7.0"
+          if [ -n "${{ github.event.inputs.release_version }}" ]; then
+            RAW_VER="${{ github.event.inputs.release_version }}"
+          elif [ "${GITHUB_REF#refs/tags/v}" != "$GITHUB_REF" ]; then
+            RAW_VER="${GITHUB_REF_NAME#v}"
+          elif [ -f VERSION ]; then
+            RAW_VER=$(cat VERSION | tr -d '[:space:]')
+          else
+            RAW_VER="3.9.5"
           fi
           echo "VERSION=${RAW_VER}" >> $GITHUB_ENV
-          echo "Versao configurada: ${RAW_VER}"
+          echo "TAG_NAME=v${RAW_VER}" >> $GITHUB_ENV
+          echo "Versão configurada: ${RAW_VER} (Tag: v${RAW_VER})"
 
       - name: Configurar Python 3.12
         uses: actions/setup-python@v5
@@ -47,9 +61,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install microdot edge-tts
 
+      - name: Validar Sintaxe dos Scripts Python e Utilitários
+        run: |
+          echo "Testando compilação Python..."
+          python3 -m py_compile run_server.py server.py deploy/desktop_app/jarvis_desktop.py
+          chmod +x pkg pkg.sh gerar_deb.sh deploy/android_app/build_apk.sh
+          echo "Sintaxe validada com sucesso!"
+
       - name: 1. Compilar Pacote Debian Kiosk (.deb)
         run: |
-          VERSION="${VERSION:-3.7.0}"
+          VERSION="${VERSION:-3.9.5}"
           ARCH="all"
           DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
           mkdir -p "${DEB_DIR}/DEBIAN"
@@ -61,18 +82,35 @@ jobs:
           cp -r ./* "${DEB_DIR}/opt/jarvis-kids-os/" 2>/dev/null || true
           rm -rf "${DEB_DIR}/opt/jarvis-kids-os/${DEB_DIR}"
 
-          # Script executavel /usr/bin/jarvis-kids
+          # Assegura permissões do utilitário pkg
+          chmod +x "${DEB_DIR}/opt/jarvis-kids-os/pkg" 2>/dev/null || true
+          chmod +x "${DEB_DIR}/opt/jarvis-kids-os/pkg.sh" 2>/dev/null || true
+
+          # Script executável principal /usr/bin/jarvis-kids
           cat << 'EOF' > "${DEB_DIR}/usr/bin/jarvis-kids"
           #!/bin/sh
-          python3 /opt/jarvis-kids-os/deploy/desktop_app/jarvis_desktop.py "$@"
+          if [ -f /opt/jarvis-kids-os/iniciar_web_kiosk.sh ]; then
+            exec /opt/jarvis-kids-os/iniciar_web_kiosk.sh "$@"
+          elif [ -f /opt/jarvis-kids-os/iniciar_jarvis_linux.sh ]; then
+            exec /opt/jarvis-kids-os/iniciar_jarvis_linux.sh "$@"
+          else
+            exec python3 /opt/jarvis-kids-os/run_server.py 8000 "$@"
+          fi
           EOF
           chmod +x "${DEB_DIR}/usr/bin/jarvis-kids"
+
+          # Script /usr/bin/jarvis-pkg para gerenciar via comando pkg
+          cat << 'EOF' > "${DEB_DIR}/usr/bin/jarvis-pkg"
+          #!/bin/sh
+          exec /opt/jarvis-kids-os/pkg "$@"
+          EOF
+          chmod +x "${DEB_DIR}/usr/bin/jarvis-pkg"
 
           # Arquivo .desktop
           cat << 'EOF' > "${DEB_DIR}/usr/share/applications/jarvis-kids.desktop"
           [Desktop Entry]
           Name=JARVIS Kids OS
-          Comment=Sistema Operacional Educativo Inteligente para Criancas
+          Comment=Sistema Operacional Educativo Inteligente para Crianças
           Exec=/usr/bin/jarvis-kids
           Icon=/opt/jarvis-kids-os/static/icons/icon-192.png
           Terminal=false
@@ -96,33 +134,33 @@ jobs:
 
           dpkg-deb --build "${DEB_DIR}"
           mv "${DEB_DIR}.deb" jarvis-kids-os_${VERSION}.deb
-          echo "Pacote .deb gerado com sucesso!"
+          echo "Pacote .deb gerado com sucesso: jarvis-kids-os_${VERSION}.deb"
 
-      - name: 2. Empacotar Versao Desktop Linux (.tar.gz)
+      - name: 2. Empacotar Versão Desktop Linux (.tar.gz)
         run: |
-          VERSION="${VERSION:-3.7.0}"
+          VERSION="${VERSION:-3.9.5}"
           TAR_DIR="jarvis-kids-os-${VERSION}-linux-desktop"
           mkdir -p "${TAR_DIR}"
           cp -r ./* "${TAR_DIR}/" 2>/dev/null || true
           rm -rf "${TAR_DIR}/${TAR_DIR}"
           rm -f "${TAR_DIR}"/*.deb "${TAR_DIR}"/*.tar.gz "${TAR_DIR}"/*.zip "${TAR_DIR}"/*.apk "${TAR_DIR}"/*.app.zip
           tar -czf "jarvis-kids-os-${VERSION}-linux-desktop.tar.gz" "${TAR_DIR}"
-          echo "Bundle Linux gerado com sucesso!"
+          echo "Bundle Linux gerado com sucesso: jarvis-kids-os-${VERSION}-linux-desktop.tar.gz"
 
-      - name: 3. Empacotar Versao Desktop Windows (.zip)
+      - name: 3. Empacotar Versão Desktop Windows (.zip)
         run: |
-          VERSION="${VERSION:-3.7.0}"
+          VERSION="${VERSION:-3.9.5}"
           ZIP_DIR="jarvis-kids-os-${VERSION}-windows-desktop"
           mkdir -p "${ZIP_DIR}"
           cp -r ./* "${ZIP_DIR}/" 2>/dev/null || true
           rm -rf "${ZIP_DIR}/${ZIP_DIR}"
           rm -f "${ZIP_DIR}"/*.deb "${ZIP_DIR}"/*.tar.gz "${ZIP_DIR}"/*.zip "${ZIP_DIR}"/*.apk "${ZIP_DIR}"/*.app.zip
           zip -r "jarvis-kids-os-${VERSION}-windows-desktop.zip" "${ZIP_DIR}"
-          echo "Bundle Windows gerado com sucesso!"
+          echo "Bundle Windows gerado com sucesso: jarvis-kids-os-${VERSION}-windows-desktop.zip"
 
       - name: 4. Compilar Aplicativo Android (.apk)
         run: |
-          VERSION="${VERSION:-3.7.0}"
+          VERSION="${VERSION:-3.9.5}"
           echo "Compilando pacote Android .apk..."
           bash deploy/android_app/build_apk.sh
           echo "Pacote .apk gerado:"
@@ -130,7 +168,7 @@ jobs:
 
       - name: 5. Empacotar Bundle macOS / Desktop (.app e .app.zip)
         run: |
-          VERSION="${VERSION:-3.7.0}"
+          VERSION="${VERSION:-3.9.5}"
           echo "Estruturando bundle macOS .app..."
           APP_DIR="JARVIS-Kids-OS.app"
           mkdir -p "${APP_DIR}/Contents/MacOS"
@@ -141,17 +179,23 @@ jobs:
           cp deploy/macos_app/JARVIS-Kids-OS.app/Contents/MacOS/jarvis-kids "${APP_DIR}/Contents/MacOS/"
           chmod +x "${APP_DIR}/Contents/MacOS/jarvis-kids"
           
-          # Copia codigo-fonte para dentro do Resources
+          # Copia código-fonte para dentro do Resources
           mkdir -p "${APP_DIR}/Contents/Resources/app"
           cp -r ./* "${APP_DIR}/Contents/Resources/app/" 2>/dev/null || true
           rm -rf "${APP_DIR}/Contents/Resources/app/${APP_DIR}"
           rm -f "${APP_DIR}/Contents/Resources/app"/*.deb "${APP_DIR}/Contents/Resources/app"/*.tar.gz "${APP_DIR}/Contents/Resources/app"/*.zip "${APP_DIR}/Contents/Resources/app"/*.apk "${APP_DIR}/Contents/Resources/app"/*.app.zip
           
-          # Compacta o .app em .zip para distribuicao no GitHub Releases
+          # Compacta o .app em .zip para distribuição no GitHub Releases
           zip -r "jarvis-kids-os-${VERSION}-macos.app.zip" "${APP_DIR}"
           echo "Bundle macOS .app e .app.zip gerados com sucesso!"
 
-      - name: Salvar Artefatos de Compilacao
+      - name: 6. Empacotar Instalador Standalone Universal PKG (.tar.gz)
+        run: |
+          VERSION="${VERSION:-3.9.5}"
+          tar -czf "jarvis-kids-pkg-installer-${VERSION}.tar.gz" pkg pkg.sh
+          echo "Instalador universal PKG gerado com sucesso!"
+
+      - name: Salvar Artefatos de Compilação
         uses: actions/upload-artifact@v4
         with:
           name: jarvis-kids-os-packages
@@ -161,18 +205,24 @@ jobs:
             *.zip
             *.apk
             *.app.zip
+            pkg
+            pkg.sh
 
-      - name: Publicar GitHub Release Oficial (quando tag v*)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Publicar GitHub Release Oficial (Tag v* ou Branch main)
+        if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
-          name: "JARVIS Kids OS ${{ github.ref_name }}"
+          name: "JARVIS Kids OS v${{ env.VERSION }}"
+          tag_name: ${{ env.TAG_NAME }}
           generate_release_notes: true
+          make_latest: true
           files: |
             *.deb
             *.tar.gz
             *.zip
             *.apk
             *.app.zip
+            pkg
+            pkg.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

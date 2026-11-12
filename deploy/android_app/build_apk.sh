@@ -2,11 +2,16 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT_DIR="$( cd "$DIR/../.." && pwd )"
 cd "$DIR"
 
-VERSION="${VERSION:-3.3.0}"
+if [ -f "$ROOT_DIR/VERSION" ]; then
+    DEFAULT_VER="$(cat "$ROOT_DIR/VERSION" | tr -d '[:space:]')"
+else
+    DEFAULT_VER="3.9.5"
+fi
+VERSION="${VERSION:-$DEFAULT_VER}"
 OUTPUT_APK="jarvis-kids-os-${VERSION}-android.apk"
-ROOT_DIR="$( cd "$DIR/../.." && pwd )"
 
 echo "=== Compilador Nativo de APK - JARVIS Kids OS ==="
 
