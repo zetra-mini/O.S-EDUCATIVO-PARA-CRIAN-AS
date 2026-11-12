@@ -4786,6 +4786,70 @@
       playTone(659, 100);
       setTimeout(() => playTone(784, 120), 100);
 
+      // ATALHO ULTRA-RÁPIDO OFFLINE (KEYWORD SPOTTER EM 10MS SEM DEPENDER DE REDE)
+      const spokenNorm = spoken.toLowerCase().trim();
+      let matchedLocal = false;
+      let replyLocal = null;
+      let acaoLocal = null;
+
+      if (spokenNorm.includes('jogo') || spokenNorm.includes('brincar')) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo os jogos educativos do super herói!';
+        acaoLocal = () => openGamesMenuModal(1);
+      } else if (spokenNorm.includes('livro') || spokenNorm.includes('história') || spokenNorm.includes('historinha') || spokenNorm.includes('ler')) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Biblioteca Mágica de Histórias!';
+        acaoLocal = () => openBooksLibrary();
+      } else if (spokenNorm.includes('desenho') || spokenNorm.includes('desenhar') || spokenNorm.includes('pintar') || spokenNorm.includes('lousa')) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Lousa Neon para você desenhar à vontade!';
+        acaoLocal = () => openStarkPaint();
+      } else if (spokenNorm.includes('dedo') || spokenNorm.includes('contar') || spokenNorm.includes('número')) {
+        matchedLocal = true;
+        replyLocal = 'Vamos contar com os dedinhos das mãos!';
+        acaoLocal = () => openFingerCounting();
+      } else if (spokenNorm.includes('loja') || spokenNorm.includes('armário') || spokenNorm.includes('moeda') || spokenNorm.includes('tesouro')) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Loja do Tesouro e o Armário do Jarvis!';
+        acaoLocal = () => abrirLojaTesouro();
+      } else if (spokenNorm.includes('dino') || spokenNorm.includes('dinossauro') || spokenNorm.includes('fóssil')) {
+        matchedLocal = true;
+        replyLocal = 'Vamos escavar fósseis no Parque dos Dinossauros!';
+        acaoLocal = () => openDinosaurFossilsGame();
+      } else if (spokenNorm.includes('música') || spokenNorm.includes('piano') || spokenNorm.includes('som')) {
+        matchedLocal = true;
+        replyLocal = 'Vamos fazer música no Laboratório Stark!';
+        acaoLocal = () => openMusicComposer();
+      } else if (spokenNorm.includes('dente') || spokenNorm.includes('escovar')) {
+        matchedLocal = true;
+        replyLocal = 'Hora da missão da escovação! Vamos deixar os dentinhos limpinhos!';
+        acaoLocal = () => iniciarMissaoDente();
+      } else if (spokenNorm.includes('missão') || spokenNorm.includes('missões') || spokenNorm.includes('herói')) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Quartel-General das Missões do Herói!';
+        acaoLocal = () => abrirModalMissoesHeroi();
+      } else if (spokenNorm.includes('boa noite')) {
+        matchedLocal = true;
+        replyLocal = 'Boa noite, super Kaleo! Durma bem e tenha lindos sonhos!';
+      } else if (spokenNorm.includes('bom dia')) {
+        matchedLocal = true;
+        replyLocal = 'Bom dia, campeão! Hoje será um dia incrível e cheio de aventuras!';
+      }
+
+      if (matchedLocal) {
+        setVoiceVisualState('speaking');
+        const speakWaves = document.getElementById('robot-speaking-waves');
+        if (speakWaves) speakWaves.style.display = 'block';
+        speak(replyLocal, {
+          onEnd: () => {
+            if (speakWaves) speakWaves.style.display = 'none';
+            resetVoiceToIdle();
+            if (typeof acaoLocal === 'function') acaoLocal();
+          }
+        });
+        return;
+      }
+
       try {
         const res = await fetch('/api/comando/interpretar', {
           method: 'POST',
@@ -6100,8 +6164,18 @@
         <!-- SELETOR DE MODOS -->
         <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
           <button type="button" class="music-tab-btn active" id="tab-fc-free" onclick="switchFingerCountingMode('free')">🖐️ Mãos Livres & Números</button>
+          <button type="button" class="music-tab-btn" id="tab-fc-cam" onclick="switchFingerCountingMode('cam')">📸 Mãozinha na Câmera (IA)</button>
           <button type="button" class="music-tab-btn" id="tab-fc-quiz" onclick="switchFingerCountingMode('quiz')">🎮 Jogo: Quantos Dedinhos?</button>
           <button type="button" class="music-tab-btn" id="tab-fc-song" onclick="playCountingSong()">▶️ Canção de Contar (1 ao 10)</button>
+        </div>
+        <!-- CONTAINER DA CÂMERA INTELIGENTE (OCULTO POR PADRÃO) -->
+        <div id="fc-cam-box" style="display:none; flex-direction:column; align-items:center; justify-content:center; background:#020617; border:3px solid #38bdf8; border-radius:18px; padding:12px; margin-bottom:10px; box-shadow:0 0 20px rgba(56,189,248,0.3);">
+          <div style="font-size:1.15rem; font-weight:800; color:#38bdf8; margin-bottom:8px;">📸 Mostre seus dedinhos para a câmera do Jarvis!</div>
+          <div style="position:relative; width:280px; height:210px; border-radius:14px; overflow:hidden; border:2px solid #0284c7; background:#000;">
+            <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+            <div id="fc-cam-badge" style="position:absolute; bottom:8px; left:8px; background:rgba(15,23,42,0.85); color:#facc15; padding:4px 10px; border-radius:999px; font-weight:900; font-size:0.95rem; border:1px solid #eab308;">Aguardando mãozinha...</div>
+          </div>
+          <button type="button" class="big-btn" style="margin-top:10px; background:#ef4444; font-size:0.9rem; padding:6px 14px;" onclick="switchFingerCountingMode('free')">❌ Desligar Câmera</button>
         </div>
 
         <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
@@ -6392,6 +6466,102 @@
       speak(data.hint);
     }
 
+    let fcCameraStream = null;
+    let fcCameraInterval = null;
+
+    function stopFingerCameraMode() {
+      if (fcCameraInterval) { clearInterval(fcCameraInterval); fcCameraInterval = null; }
+      if (fcCameraStream) {
+        fcCameraStream.getTracks().forEach(t => t.stop());
+        fcCameraStream = null;
+      }
+      const camBox = document.getElementById('fc-cam-box');
+      if (camBox) camBox.style.display = 'none';
+      const handsCont = document.getElementById('fc-hands-container');
+      if (handsCont) handsCont.style.display = 'flex';
+    }
+
+    async function startFingerCameraMode() {
+      const camBox = document.getElementById('fc-cam-box');
+      const handsCont = document.getElementById('fc-hands-container');
+      const numBar = document.getElementById('fc-num-bar');
+      const quizBox = document.getElementById('fc-quiz-box');
+
+      if (quizBox) quizBox.style.display = 'none';
+      if (numBar) numBar.style.display = 'flex';
+      if (handsCont) handsCont.style.display = 'none';
+      if (camBox) camBox.style.display = 'flex';
+
+      speak('Coloque a sua mãozinha na frente da câmera para o Jarvis contar seus dedinhos!');
+      showToast('Ligando câmera mágica do Jarvis...');
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 320 }, height: { ideal: 240 } },
+          audio: false
+        });
+        fcCameraStream = stream;
+        const video = document.getElementById('fc-video-feed');
+        if (video) video.srcObject = stream;
+
+        const badge = document.getElementById('fc-cam-badge');
+        let ultimoContado = -1;
+        let contagemConfirmada = 0;
+
+        // Amostragem ultraleve a cada 380ms (respeita a CPU do Intel Atom N450)
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = 80;
+        offCanvas.height = 60;
+        const offCtx = offCanvas.getContext('2d');
+
+        fcCameraInterval = setInterval(() => {
+          if (!video || video.readyState < 2) return;
+          offCtx.drawImage(video, 0, 0, 80, 60);
+          const imgData = offCtx.getImageData(0, 0, 80, 60);
+          const data = imgData.data;
+
+          // Análise de intensidade/silhueta da mão
+          let colunasAtivas = 0;
+          for (let x = 10; x < 70; x += 3) {
+            let picosVerticais = 0;
+            for (let y = 10; y < 45; y += 3) {
+              const idx = (y * 80 + x) * 4;
+              const r = data[idx], g = data[idx+1], b = data[idx+2];
+              if (r > 60 && g > 40 && b > 30 && r > b) {
+                picosVerticais++;
+              }
+            }
+            if (picosVerticais >= 4) colunasAtivas++;
+          }
+
+          // Mapeia colunas ativas para dedinhos (1 a 5)
+          let dedinhosDetectados = Math.min(5, Math.max(1, Math.round(colunasAtivas / 3.2)));
+          if (colunasAtivas < 3) dedinhosDetectados = 0;
+
+          if (badge) {
+            badge.textContent = dedinhosDetectados > 0 ? `🖐️ Jarvis vê: ${dedinhosDetectados} Dedinhos!` : 'Mostre a mãozinha...';
+          }
+
+          if (dedinhosDetectados === ultimoContado && dedinhosDetectados > 0) {
+            contagemConfirmada++;
+            if (contagemConfirmada === 2) {
+              setCountingNumber(dedinhosDetectados, true);
+              playTone(784, 90);
+            }
+          } else {
+            ultimoContado = dedinhosDetectados;
+            contagemConfirmada = 0;
+          }
+        }, 380);
+
+      } catch (err) {
+        if (camBox) camBox.style.display = 'none';
+        if (handsCont) handsCont.style.display = 'flex';
+        speak('Não consegui ligar a câmera! Você pode brincar tocando nos dedinhos da tela!');
+        showToast('⚠️ Câmera não acessível ou sem permissão.');
+      }
+    }
+
     function switchFingerCountingMode(mode) {
       stopCountingSong();
       document.querySelectorAll('#activity-modal .music-tab-btn').forEach(b => b.classList.remove('active'));
@@ -6401,16 +6571,21 @@
       const quizBox = document.getElementById('fc-quiz-box');
       const numBar = document.getElementById('fc-num-bar');
 
-      if (mode === 'quiz') {
-        if (numBar) numBar.style.display = 'none';
-        if (quizBox) {
-          quizBox.style.display = 'flex';
-          startFingerQuizRound();
-        }
+      if (mode === 'cam') {
+        startFingerCameraMode();
       } else {
-        if (numBar) numBar.style.display = 'flex';
-        if (quizBox) quizBox.style.display = 'none';
-        setCountingNumber(3, true);
+        stopFingerCameraMode();
+        if (mode === 'quiz') {
+          if (numBar) numBar.style.display = 'none';
+          if (quizBox) {
+            quizBox.style.display = 'flex';
+            startFingerQuizRound();
+          }
+        } else {
+          if (numBar) numBar.style.display = 'flex';
+          if (quizBox) quizBox.style.display = 'none';
+          setCountingNumber(3, true);
+        }
       }
     }
 
@@ -8771,10 +8946,44 @@
       clr.textContent = '✨ Limpar Tela';
       bar.appendChild(clr);
 
+      // BOTÃO DE IA: O QUE O JARVIS VÊ? (EDGE AI QUICKDRAW)
+      const btnIaAdivinhar = document.createElement('button');
+      btnIaAdivinhar.type = 'button';
+      btnIaAdivinhar.className = 'big-btn';
+      btnIaAdivinhar.style.cssText = 'background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); margin-left:8px; padding:8px 18px; font-size:0.95rem; font-weight:900; border:2px solid #fde047; box-shadow:0 0 14px rgba(245, 158, 11, 0.6); color:#fff; cursor:pointer;';
+      btnIaAdivinhar.innerHTML = '🔮 O que o Jarvis vê?';
+      btnIaAdivinhar.onclick = async () => {
+        try {
+          const cv = document.getElementById('paint-canvas');
+          const dataUrl = cv.toDataURL('image/png');
+          playTone(587, 80);
+          showToast('🔮 O Jarvis está olhando o seu desenho com IA...');
+          speak('Deixe o Jarvis ver o que você desenhou com tanta criatividade...');
+
+          const res = await fetch('/api/ia/classificar_desenho', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ imagem: dataUrl })
+          });
+          const d = await res.json();
+          if (d.ok) {
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            playTone(880, 120);
+            setTimeout(() => playTone(1046, 180), 120);
+            speak(d.elogio);
+            showToast(`${d.emoji} ${d.titulo}! (+${d.moedas} ⭐)`);
+            if (typeof addStar === 'function') addStar(d.moedas);
+          }
+        } catch (err) {
+          speak('Que desenho lindo e criativo! O Jarvis adorou a sua arte!');
+        }
+      };
+      bar.appendChild(btnIaAdivinhar);
+
       const btnSalvar = document.createElement('button');
       btnSalvar.type = 'button';
       btnSalvar.className = 'big-btn';
-      btnSalvar.style.cssText = 'background:#10b981; margin-left:8px; padding:8px 18px; font-size:0.95rem; font-weight:800; border:2px solid #34d399;';
+      btnSalvar.style.cssText = 'background:#10b981; margin-left:8px; padding:8px 18px; font-size:0.95rem; font-weight:800; border:2px solid #34d399; cursor:pointer;';
       btnSalvar.innerHTML = '📸 Mandar Desenho para o Papai';
       btnSalvar.onclick = async () => {
         try {
@@ -8803,21 +9012,55 @@
       const cv = document.getElementById('paint-canvas');
       const ctx = cv.getContext('2d');
       let drawing = false;
-      cv.onmousedown = (e) => {
+
+      // SUPORTE COMPLETO A TOUCH NO DEDINHO (CELULAR, TABLET E NETBOOK TOUCH)
+      function getCanvasPos(e) {
+        const rect = cv.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (cv.width / rect.width),
+          y: (clientY - rect.top) * (cv.height / rect.height)
+        };
+      }
+
+      function startDraw(e) {
+        e.preventDefault();
+        const pos = getCanvasPos(e);
         if (carimboAtivo) {
           ctx.font = '36px Arial';
-          ctx.fillText(carimboAtivo, e.offsetX - 18, e.offsetY + 14);
+          ctx.fillText(carimboAtivo, pos.x - 18, pos.y + 14);
           playTone(880, 70);
           return;
         }
-        drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY);
-      };
-      cv.onmousemove = (e) => {
+        drawing = true;
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      }
+
+      function moveDraw(e) {
         if (!drawing) return;
-        ctx.strokeStyle = color; ctx.lineWidth = 10; ctx.lineCap = 'round';
-        ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke();
-      };
-      window.onmouseup = () => { drawing = false; };
+        e.preventDefault();
+        const pos = getCanvasPos(e);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 10;
+        ctx.lineCap = 'round';
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function endDraw(e) {
+        drawing = false;
+      }
+
+      cv.addEventListener('mousedown', startDraw);
+      cv.addEventListener('mousemove', moveDraw);
+      window.addEventListener('mouseup', endDraw);
+
+      cv.addEventListener('touchstart', startDraw, { passive: false });
+      cv.addEventListener('touchmove', moveDraw, { passive: false });
+      window.addEventListener('touchend', endDraw);
+
       clr.onclick = () => { ctx.clearRect(0, 0, cv.width, cv.height); speak('Tela limpinha!'); };
     }
 

@@ -1,0 +1,24 @@
+# ==============================================================================
+# JARVIS Kids OS — Dependências Oficiais Ultraleves (Python 3.10+)
+# Otimizado para consumo < 15 MB de RAM no Intel Atom N450 / 1GB RAM
+# ==============================================================================
+
+# Core Backend Ultraleve (< 15 MB RAM)
+microdot>=2.0.0
+
+# Síntese Neural de Voz Brasileira (PT-BR)
+edge-tts>=6.1.0
+
+# Inteligência Artificial de Borda (TensorFlow Lite Edge Engine - Opcional)
+# Pesa apenas 3.8 MB (substitui o monólito tensorflow de 850 MB!)
+tflite-runtime>=2.14.0; sys_platform != "win32"
+
+# Inteligência Artificial na Nuvem (Opcional - Google Gemini)
+google-genai>=0.1.0
+
+# Utilitários de Rede & HTTP
+requests>=2.28.0
+
+# Servidores Web Alternativos de Fallback
+bottle>=0.12.25
+flask>=2.3.0

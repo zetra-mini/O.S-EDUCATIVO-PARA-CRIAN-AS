@@ -1531,6 +1531,29 @@ def api_arte_salvar(request: Request):
     return json_response(resultado)
 
 
+@app.route("/api/ia/classificar_desenho", methods=["POST"])
+def api_ia_classificar_desenho(request: Request):
+    """Classifica o desenho feito na Lousa Neon pelo Kaleo com IA de borda ultraleve."""
+    try:
+        from ai_edge_engine import edge_engine
+        data = request.json or {}
+        imagem = data.get("imagem") or data.get("imagem_base64")
+        resultado = edge_engine.classificar_desenho_base64(imagem)
+        return json_response(resultado)
+    except Exception as e:
+        return json_response({"ok": False, "erro": str(e)}, status_code=500)
+
+
+@app.route("/api/ia/status", methods=["GET"])
+def api_ia_status(request: Request):
+    """Retorna o status do motor de inteligência artificial de borda (TFLite/Edge)."""
+    try:
+        from ai_edge_engine import edge_engine
+        return json_response(edge_engine.obter_status())
+    except Exception as e:
+        return json_response({"ok": False, "erro": str(e)}, status_code=500)
+
+
 @app.route("/api/admin/arte", methods=["GET"])
 def api_admin_arte_listar(request: Request):
     """Lista as obras da galeria de arte para os pais."""
