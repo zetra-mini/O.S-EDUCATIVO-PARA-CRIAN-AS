@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0284c7" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="stylesheet" href="/static/libs/animate.min.css" />
-  <title>◈ J.A.R.V.I.S. Kids OS v2.2 — Sistema Educativo Infantil Stark</title>
+  <title>J.A.R.V.I.S. Kids OS</title>
   <style>
     @media (max-width: 680px) {
       .reino-animal-grid {
@@ -6966,11 +6966,27 @@
             }
           });
 
-          // Desenha feedback esqueleto leve se disponível
-          if (overlay && human.draw && human.draw.hand) {
-            try { human.draw.hand(overlay, res.hand); } catch(eD) {}
+          if (overlay) {
+            const ctx = overlay.getContext('2d');
+            if (ctx) {
+              ctx.clearRect(0, 0, overlay.width, overlay.height);
+              ctx.fillStyle = '#00f0ff';
+              res.hand.forEach(h => {
+                const lm = h.landmarks || h.keypoints;
+                if (lm) {
+                  lm.forEach(pt => {
+                    ctx.beginPath();
+                    ctx.arc(pt[0], pt[1], 3, 0, Math.PI * 2);
+                    ctx.fill();
+                  });
+                }
+              });
+            }
           }
           return totalDedos;
+        } else if (overlay) {
+          const ctx = overlay.getContext('2d');
+          if (ctx) ctx.clearRect(0, 0, overlay.width, overlay.height);
         }
       } catch(e) {}
       return -1;
@@ -6991,14 +7007,31 @@
               ctx.clearRect(0, 0, overlay.width, overlay.height);
               if (f.box) {
                 const [bx, by, bw, bh] = f.box;
-                ctx.strokeStyle = '#00f0ff';
-                ctx.lineWidth = 3;
-                ctx.strokeRect(bx, by, bw, bh);
-                ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
+                ctx.save();
+                // Fundo holográfico suave no rosto
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.08)';
                 ctx.fillRect(bx, by, bw, bh);
-              }
-              if (human.draw && human.draw.face) {
-                try { human.draw.face(overlay, res.face); } catch(eD) {}
+
+                // Moldura fina tecnológica
+                ctx.strokeStyle = 'rgba(0, 240, 255, 0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(bx, by, bw, bh);
+
+                // Cantoneiras Stark HUD de precisão (sem texto de depuração na face)
+                const cLen = Math.min(bw, bh) * 0.22;
+                ctx.strokeStyle = '#00f0ff';
+                ctx.lineWidth = 3.5;
+                ctx.beginPath();
+                // Superior Esquerdo
+                ctx.moveTo(bx, by + cLen); ctx.lineTo(bx, by); ctx.lineTo(bx + cLen, by);
+                // Superior Direito
+                ctx.moveTo(bx + bw - cLen, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + cLen);
+                // Inferior Esquerdo
+                ctx.moveTo(bx, by + bh - cLen); ctx.lineTo(bx, by + bh); ctx.lineTo(bx + cLen, by + bh);
+                // Inferior Direito
+                ctx.moveTo(bx + bw - cLen, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - cLen);
+                ctx.stroke();
+                ctx.restore();
               }
             }
           }
@@ -7015,6 +7048,9 @@
               surpriseScore: surpriseItem ? surpriseItem.score : 0
             };
           }
+        } else if (overlay) {
+          const ctx = overlay.getContext('2d');
+          if (ctx) ctx.clearRect(0, 0, overlay.width, overlay.height);
         }
       } catch(e) {}
       return null;
