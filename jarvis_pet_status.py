@@ -245,13 +245,33 @@ class JarvisPetManager:
         }
 
     def comprar_acessorio(self, item_id: str) -> Dict[str, Any]:
-        """Compra um item do armário com moedas do pote e equipa no robô."""
+        """Compra um item do armário com moedas do pote e equipa no robô ou alimenta o pet."""
         item = self.db.consultar_um(
-            "SELECT id, nome, custo_fichas, comprado, equipado FROM inventario_acessorios WHERE id = ?;",
+            "SELECT id, nome, custo_fichas, categoria, comprado, equipado FROM inventario_acessorios WHERE id = ?;",
             (item_id,),
         )
         if not item:
-            return {"sucesso": False, "mensagem": "Acessório não encontrado."}
+            return {"sucesso": False, "mensagem": "Item não encontrado."}
+
+        cat = item.get("categoria", "acessorio")
+
+        # Se for comidinha mágica consumível (pode comprar várias vezes para alimentar o Jarvis)
+        if cat == "comida":
+            custo = int(item["custo_fichas"])
+            if not token_mgr.debitar_fichas(custo, f"Lanche do Jarvis: {item['nome']}"):
+                saldo = token_mgr.obter_status_pote()["saldo"]
+                return {
+                    "sucesso": False,
+                    "mensagem": f"Você precisa de {custo} moedas para este lanchinho, mas tem {saldo} moedas!",
+                }
+            self.alimentar(pontos=35, nome_alimento=item["nome"])
+            return {
+                "sucesso": True,
+                "mensagem": f"😋 Humm! O Jarvis adorou comer o '{item['nome']}'! Bateria e energia recarregadas!",
+                "item_id": item_id,
+                "tipo": "comida",
+                "saldo": token_mgr.obter_status_pote()["saldo"],
+            }
 
         if item["comprado"]:
             # Já comprado, apenas equipa
@@ -280,7 +300,7 @@ class JarvisPetManager:
 
         return {
             "sucesso": True,
-            "mensagem": f"🎉 Uau, Kaleu! Você comprou e vestiu o '{item['nome']}' no Jarvis!",
+            "mensagem": f"🎉 Uau, Kaleu! Você comprou e ativou o '{item['nome']}' no Jarvis!",
             "item_id": item_id,
             "acessorio_atual": item_id,
             "saldo": token_mgr.obter_status_pote()["saldo"],

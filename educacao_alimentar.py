@@ -49,18 +49,18 @@ class FoodEducationManager:
 
         # Regras de recompensa
         if len(cores) >= 3 and apenas_verdes:
-            fichas = 15
+            fichas = 1
             token_mgr.creditar_fichas(fichas, "Prato Colorido com 3+ Superpoderes", "ALIMENTO")
             token_mgr.creditar_estrela(1)
-            msg = f"🌈 UAU, KALEU! Seu prato tem {len(cores)} cores diferentes e superpoderes puros! Seus músculos e coração estão blindados! (+15 Moedas e +1 Estrela!)"
+            msg = f"🌈 UAU, KALEU! Seu prato tem {len(cores)} cores diferentes e superpoderes puros! Seus músculos e coração estão blindados! (+3 Moedas e +1 Estrela!)"
             animacao = "fogos_2d"
         elif tem_vermelho_doce:
-            fichas = 3
+            fichas = 1
             token_mgr.creditar_fichas(fichas, "Refeição com doce (moderação)", "ALIMENTO")
             msg = "Doces são gostosos em dias especiais, mas comer muitas frutinhas e legumes deixa o corpo mais forte para correr!"
             animacao = "aviso_suave"
         else:
-            fichas = 8
+            fichas = 2
             token_mgr.creditar_fichas(fichas, "Prato Nutritivo", "ALIMENTO")
             msg = "Muito bem! Seu prato está bem gostoso e nutritivo! Que tal adicionar mais uma cor na próxima vez?"
             animacao = "estrelas"

@@ -2718,7 +2718,7 @@
         Hora de escovar os dentinhos!
       </div>
       <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; font-size:1.2rem; padding:12px 28px; width:100%; font-weight:900; margin-top:6px;" onclick="dispensarAlarmeHeroico()">
-        🌟 CUMPRI A MISSÃO! (+5 Moedas)
+        🌟 CUMPRI A MISSÃO! (+2 Moedas)
       </button>
     </div>
   </div>
@@ -6926,7 +6926,7 @@
           box.innerHTML = `
             <div style="font-size:1.4rem; font-weight:900;">🎉 EXCELENTE, KALEO!</div>
             <div style="font-size:1.05rem; margin-top:4px;">${resp.mensagem}</div>
-            <div style="font-size:1.2rem; font-weight:bold; color:#facc15; margin-top:4px;">🪙 +5 Fichas para o Pote do Tesouro!</div>
+            <div style="font-size:1.2rem; font-weight:bold; color:#facc15; margin-top:4px;">🪙 +2 Moedas para o Pote do Tesouro!</div>
           `;
           speak(resp.mensagem);
           addStar(1);
@@ -8515,7 +8515,7 @@
         // Super Campeão: todos os 4 grupos!
         playSfxSuccess();
         addStarReward(2);
-        const recompensa = 15;
+        const recompensa = 3;
         // Credita moedas
         try {
           await fetch('/api/alimentos/avaliar_prato', {
@@ -8527,17 +8527,17 @@
 
         const msg = `🌈 PARABÉNS, HERÓI ${childName.toUpperCase()}! Seu prato é uma verdadeira obra-prima! Você colocou proteínas, legumes, carboidratos e frutas! Seus músculos, cérebro e coração estão blindados com superpoderes! Você ganhou ${recompensa} moedas de ouro e 2 estrelas!`;
         if (falaBox) {
-          falaBox.innerHTML = `🏆 <span style="color:#fde047; font-weight:900;">PRATO DE SUPER CAMPEÃO!</span> +15 Moedas 🪙 e +2 Estrelas ⭐!`;
+          falaBox.innerHTML = `🏆 <span style="color:#fde047; font-weight:900;">PRATO DE SUPER CAMPEÃO!</span> +3 Moedas 🪙 e +2 Estrelas ⭐!`;
         }
         speak(msg);
-        mostrarFalaPou(`🌈 Uau, Kaleo! Prato perfeito com todos os grupos nutritivos! (+15 Moedas!)`);
+        mostrarFalaPou(`🌈 Uau, Kaleo! Prato perfeito com todos os grupos nutritivos! (+3 Moedas!)`);
       } else if (grupos.size >= 3) {
         playTone(659, 150);
         addStarReward(1);
         if (falaBox) {
-          falaBox.innerHTML = `⭐ <span style="color:#6ee7b7; font-weight:900;">MUITO BOM!</span> Seu prato tem 3 grupos saudáveis! Que tal colocar mais uma cor da próxima vez? (+10 Moedas 🪙)`;
+          falaBox.innerHTML = `⭐ <span style="color:#6ee7b7; font-weight:900;">MUITO BOM!</span> Seu prato tem 3 grupos saudáveis! Que tal colocar mais uma cor da próxima vez? (+2 Moedas 🪙)`;
         }
-        speak(`Muito bem, ${childName}! Seu prato está bem colorido e nutritivo! Na próxima vez, adicione o quarto grupo para se tornar o campeão supremo! Você ganhou 10 moedas!`);
+        speak(`Muito bem, ${childName}! Seu prato está bem colorido e nutritivo! Na próxima vez, adicione o quarto grupo para se tornar o campeão supremo! Você ganhou 2 moedas!`);
       } else {
         playTone(523, 150);
         if (falaBox) {
@@ -8835,7 +8835,7 @@
             } catch (e) {}
 
             speak(`Que delícia de banho, herói ${childName}! Você está limpinho, super cheiroso e com energia renovada! Você ganhou 15 moedas de ouro e 2 estrelas!`);
-            mostrarFalaPou(`🚿 Super banho concluído! (+15 Moedas!)`);
+            mostrarFalaPou(`🚿 Super banho concluído! (+3 Moedas!)`);
           }
         };
       }, true);
@@ -10489,13 +10489,13 @@
       if (eyesHappy) eyesHappy.style.display = 'block';
 
       showToast(`🌟 Sensacional! Pronúncia de "${palavraAlvo}" Nota 10! +5 Moedas!`);
-      speak(`Sensacional, super-herói ${appState.config.child_name || 'Kaleo'}! Sua pronúncia e dicção ficaram perfeitas! Você ganhou cinco moedas de herói!`);
+      speak(`Sensacional, super-herói ${appState.config.child_name || 'Kaleo'}! Sua pronúncia e dicção ficaram perfeitas! Você ganhou duas moedas de herói!`);
 
       try {
         await fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ quantidade: 5, motivo: `Treino de Dicção: ${palavraAlvo}` })
+          body: JSON.stringify({ quantidade: 2, motivo: `Treino de Dicção: ${palavraAlvo}` })
         });
         atualizarPoteVisual();
       } catch (e) {}
@@ -11162,14 +11162,14 @@
         showToast('🌟 Resposta Correta! +5 Moedas do Tesouro!');
         
         const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
         const box = document.getElementById('quiz-astronauta-box');
         if (box) box.style.display = 'none';
 
         fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 5, motivo: 'quiz_sistema_solar' })
+          body: JSON.stringify({ quantidade: 2, motivo: 'quiz_sistema_solar' })
         }).catch(() => null);
       } else {
         playTone(260, 150);
@@ -11331,14 +11331,14 @@
         showToast('🎉 Acertou o Animal! +5 Moedas!');
         
         const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
         const box = document.getElementById('desafio-bicho-box');
         if (box) box.style.display = 'none';
 
         fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 5, motivo: 'desafio_animais' })
+          body: JSON.stringify({ quantidade: 2, motivo: 'desafio_animais' })
         }).catch(() => null);
       } else {
         playTone(260, 140);
@@ -11591,13 +11591,13 @@
           playCelebrationFanfare();
           dispararChuvaCoracoes(60);
           speak(`Tempo esgotado! Missão superada com sucesso! Você é super veloz, super-herói! Ganhou 5 moedas!`);
-          showToast('⚡ Desafio dos 30s Concluído! +5 Moedas!');
+          showToast('⚡ Desafio dos 30s Concluído! +2 Moedas!');
           const pEl = document.getElementById('pote-fichas-val');
-          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
           fetch('/api/fichas/bonificar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantidade: 5, motivo: 'desafio_30s_relogio' })
+            body: JSON.stringify({ quantidade: 2, motivo: 'desafio_30s_relogio' })
           }).catch(() => null);
         }
       }, 1000);
@@ -11632,13 +11632,13 @@
         speak(`Incrível, herói! Você acertou exatamente o horário de ${missaoRelogioCorrente.titulo}! Ganhou 5 moedas do tempo!`);
         showToast('⏰ Missão Cumprida! +5 Moedas do Tesouro!');
         const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
         const box = document.getElementById('missao-relogio-box');
         if (box) box.style.display = 'none';
         fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 5, motivo: 'missao_relogio_tempo' })
+          body: JSON.stringify({ quantidade: 2, motivo: 'missao_relogio_tempo' })
         }).catch(() => null);
       } else {
         playTone(260, 150);
@@ -11760,18 +11760,18 @@
       if (errosDetetiveEncontrados.length >= 7) {
         playCelebrationFanfare();
         dispararChuvaCoracoes(70);
-        speak(`Incrível, super detetive ${appState.config.child_name || 'Kaleo'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
+        speak(`Incrível, super detetive ${appState.config.child_name || 'Kaleo'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 2 moedas de ouro!`);
         showToast('🏆 Missão Cumprida! +10 Moedas de Ouro!');
         
         // Bonificação imediata no pote visual (0ms)
         const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
 
         // Requisição não-bloqueante em segundo plano
         fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 10, motivo: 'jogo_7_erros_detetive' })
+          body: JSON.stringify({ quantidade: 2, motivo: 'jogo_7_erros_detetive' })
         }).catch(() => null);
       } else {
         speak(`Muito bem! Você encontrou o erro número ${errosDetetiveEncontrados.length}! Continue procurando!`);
@@ -12132,7 +12132,7 @@
       fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 5, motivo: 'caldeirao_cores' })
+        body: JSON.stringify({ quantidade: 2, motivo: 'caldeirao_cores' })
       }).then(r => r.json()).then(d => {
         const pEl = document.getElementById('pote-fichas-val');
         if (pEl && d.novo_saldo !== undefined) pEl.textContent = d.novo_saldo;
@@ -12290,15 +12290,15 @@
       playCelebrationFanfare();
       dispararChuvaCoracoes(50);
       speak(`CABUUUM! O vulcão entrou em erupção total! As bolhas de gás do bicarbonato com vinagre fizeram a lava subir e escorrer pela montanha! Experimento fantástico!`);
-      showToast('🌋 Erupção Espetacular! +5 Moedas!');
+      showToast('🌋 Erupção Espetacular! +2 Moedas!');
       
       const pEl = document.getElementById('pote-fichas-val');
-      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
 
       fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 5, motivo: 'experimento_vulcao' })
+        body: JSON.stringify({ quantidade: 2, motivo: 'experimento_vulcao' })
       }).catch(() => null);
 
       const b = document.querySelector('.modal-body');
@@ -12545,13 +12545,13 @@
       playCelebrationFanfare();
       dispararChuvaCoracoes(50);
       speak(`Xeque-mate no tédio, mestre do xadrez ${appState.config.child_name || 'Kaleo'}! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
-      showToast('♟️ Mestre do Xadrez! +5 Moedas!');
+      showToast('♟️ Mestre do Xadrez! +2 Moedas!');
       const pEl = document.getElementById('pote-fichas-val');
-      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
       fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 5, motivo: 'academia_xadrez' })
+        body: JSON.stringify({ quantidade: 2, motivo: 'academia_xadrez' })
       }).catch(() => null);
     }
 
@@ -12800,18 +12800,18 @@
         playCelebrationFanfare();
         dispararChuvaCoracoes(60);
         const d = BANCO_DINOSSAUROS[dinoIdx];
-        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Kaleo'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 10 moedas de ouro!`);
+        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Kaleo'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 2 moedas de ouro!`);
         showToast('🦖 Fóssil 100% Restaurado! +10 Moedas!');
 
         // Bonificação imediata no pote (0ms)
         const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
+        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
 
         // Envio assíncrono em segundo plano
         fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 10, motivo: 'paleontologia_dino' })
+          body: JSON.stringify({ quantidade: 2, motivo: 'paleontologia_dino' })
         }).catch(() => null);
       }
 
@@ -12850,7 +12850,7 @@
       const d = BANCO_DINOSSAUROS[dinoIdx];
       playCelebrationFanfare();
       dispararChuvaCoracoes();
-      speak(`Parabéns, super paleontólogo! Você descobriu o ${d.nome}! ${d.curiosidade} Ganhou 10 moedas de ouro!`);
+      speak(`Parabéns, super paleontólogo! Você descobriu o ${d.nome}! ${d.curiosidade} Ganhou 2 moedas de ouro!`);
       showToast('🦖 Fóssil Descoberto! +10 Moedas!');
       await fetch('/api/fichas/bonificar', {
         method: 'POST',
@@ -13570,11 +13570,27 @@
             <!-- GRID 2x2: 4 ITENS POR TELA (ZERO SCROLL) -->
             <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1;" id="armario-grid">
               ${itensPagina.map(item => {
-                const isEquipado = (item.equipado == 1) || (atual === item.id);
-                const isComprado = (item.comprado == 1);
+                const isComida = (item.categoria === 'comida');
+                const isEquipado = !isComida && ((item.equipado == 1) || (atual === item.id));
+                const isComprado = !isComida && (item.comprado == 1);
+
+                let badgeCategoria = '';
+                if (isComida) {
+                  badgeCategoria = '<span style="position:absolute; top:6px; right:8px; background:#10b981; color:#fff; font-size:0.68rem; font-weight:900; padding:2px 6px; border-radius:999px;">🍎 LANCHE</span>';
+                } else if (item.categoria === 'tema') {
+                  badgeCategoria = '<span style="position:absolute; top:6px; right:8px; background:#8b5cf6; color:#fff; font-size:0.68rem; font-weight:900; padding:2px 6px; border-radius:999px;">🌌 QUARTO</span>';
+                } else if (item.categoria === 'skin') {
+                  badgeCategoria = '<span style="position:absolute; top:6px; right:8px; background:#f59e0b; color:#fff; font-size:0.68rem; font-weight:900; padding:2px 6px; border-radius:999px;">⚡ SKIN</span>';
+                }
 
                 let btnHtml = '';
-                if (!isComprado) {
+                if (isComida) {
+                  btnHtml = `
+                    <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981, #059669); border:1.5px solid #34d399; width:100%; font-size:0.88rem; padding:6px 10px; font-weight:900;" onclick="comprarAcessorioArmario('${item.id}', '${item.nome}')">
+                      😋 Alimentar Jarvis (🪙 ${item.custo_fichas})
+                    </button>
+                  `;
+                } else if (!isComprado) {
                   btnHtml = `
                     <button type="button" class="big-btn" style="background:#10b981; width:100%; font-size:0.88rem; padding:6px 10px;" onclick="comprarAcessorioArmario('${item.id}', '${item.nome}')">
                       🪙 Comprar (${item.custo_fichas} moedas)
@@ -13596,7 +13612,7 @@
 
                 return `
                   <div class="toy-card" style="flex-direction:row; padding:10px 14px; align-items:center; gap:12px; border-color:${isEquipado ? '#facc15' : '#334155'}; position:relative; box-sizing:border-box;">
-                    ${isEquipado ? '<span style="position:absolute; top:6px; right:8px; background:#facc15; color:#0f172a; font-size:0.7rem; font-weight:900; padding:2px 6px; border-radius:999px;">⭐ VESTIDO</span>' : ''}
+                    ${isEquipado ? '<span style="position:absolute; top:6px; right:8px; background:#facc15; color:#0f172a; font-size:0.7rem; font-weight:900; padding:2px 6px; border-radius:999px;">⭐ VESTIDO</span>' : badgeCategoria}
                     <div style="font-size:2.8rem; min-width:50px; text-align:center;">${item.icone}</div>
                     <div style="flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:3px;">
                       <div style="font-size:1.02rem; font-weight:900; color:#fff;">${item.nome}</div>
@@ -13719,7 +13735,11 @@
           showToast(d.mensagem);
           atualizarAcessorioVisual(d.acessorio_atual);
           atualizarPoteVisual();
-          speak(`Uau, Kaleu! Eu adorei o ${nome}! Ficou muito estiloso em mim!`);
+          if (d.comida) {
+            speak(`Hmmmm! Que delícia! Eu adoro comer ${nome}! Minha barriguinha tá cheia de super energia!`);
+          } else {
+            speak(`Uau, ${appState.config.child_name || 'Kaleo'}! Eu adorei o ${nome}! Ficou incrível em mim!`);
+          }
           abrirLojaTesouro('armario');
         } else {
           showToast(d.mensagem, true);
@@ -14141,7 +14161,7 @@
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(880, 240), 200);
         showToast('🌟 Missão de rotina concluída com louvor! +5 Moedas!');
-        speak(`Muito bem, ${appState.config.child_name || 'Kaleo'}! Missão cumprida! Você ganhou cinco moedas de herói!`);
+        speak(`Muito bem, ${appState.config.child_name || 'Kaleo'}! Missão cumprida! Você ganhou duas moedas de herói!`);
         atualizarPoteVisual();
       } catch (e) {}
     }

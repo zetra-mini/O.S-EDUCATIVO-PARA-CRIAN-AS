@@ -47,6 +47,8 @@ from banco_dados import (
     excluir_desenho_arte,
     excluir_missao_rotina,
     limpar_logs,
+    limpar_mensagens_familia,
+    limpar_historico_completo,
     listar_galeria_arte,
     listar_linha_tempo,
     listar_missoes_rotina,
@@ -539,10 +541,18 @@ def api_familia_resgates_entregar(request: Request):
 @app.route("/api/fichas/bonificar", methods=["POST"])
 def api_fichas_bonificar(request: Request):
     data = request.json or {}
-    qtd = int(data.get("quantidade", 5))
+    qtd = int(data.get("quantidade", 1))
     motivo = str(data.get("motivo", "Incentivo dos Pais")).strip()
+
+    # Rebalanceamento pedagógico: mini-jogos e atividades dão 1 a 2 moedas
+    jogos_motivos = ("quiz", "desafio", "paleontologia", "detetive", "caldeirao", "experimento", "xadrez", "formas", "dino", "relogio", "animais", "solar")
+    is_jogo = any(j in motivo.lower() for j in jogos_motivos)
+    if is_jogo:
+        qtd = min(2, max(1, qtd // 3 or 1))
+
     if qtd > 0:
-        sucesso = token_mgr.creditar_fichas(qtd, motivo, "PAIS")
+        categoria = "JOGO" if is_jogo else "PAIS"
+        sucesso = token_mgr.creditar_fichas(qtd, motivo, categoria)
         msg = f"Creditadas {qtd} moedas com sucesso!"
     else:
         sucesso = token_mgr.debitar_fichas(abs(qtd), motivo)
@@ -705,7 +715,7 @@ def api_mensagens_marcar_aberta(request: Request):
     res = messages_mgr.marcar_como_aberta(msg_id)
     try:
         from jarvis_pet_status import pet_mgr
-        pet_mgr.ganhar_moedas(5, "Recado de amor da família assistido")
+        pet_mgr.ganhar_moedas(1, "Recado de amor da família assistido")
     except Exception:
         pass
     import time
@@ -714,7 +724,7 @@ def api_mensagens_marcar_aberta(request: Request):
         "horario": datetime.now().strftime("%H:%M:%S"),
         "timestamp": time.time(),
         "status": "Assistido pelo Kaleo",
-        "recompensa": 5
+        "recompensa": 1
     }
     return json_response(res)
 
@@ -838,6 +848,7 @@ def executar_diagnostico_completo() -> Dict[str, Any]:
     return diag
 
 
+@app.route("/api/logs", methods=["GET"])
 @app.route("/api/admin/logs", methods=["GET"])
 def api_admin_logs(request: Request):
     try:
@@ -854,7 +865,21 @@ def api_admin_logs(request: Request):
 @app.route("/api/admin/logs/limpar", methods=["POST"])
 def api_admin_logs_limpar(request: Request):
     ok = limpar_logs()
-    return json_response({"sucesso": ok})
+    return json_response({"sucesso": ok, "mensagem": "Logs do sistema limpos com sucesso!" if ok else "Falha ao limpar logs."})
+
+
+@app.route("/api/admin/mensagens/limpar", methods=["POST"])
+def api_admin_mensagens_limpar(request: Request):
+    ok = limpar_mensagens_familia()
+    return json_response({"sucesso": ok, "mensagem": "Histórico de recados da família limpo com sucesso!" if ok else "Falha ao limpar recados."})
+
+
+@app.route("/api/admin/historico/limpar_tudo", methods=["POST"])
+def api_admin_historico_limpar_tudo(request: Request):
+    data = request.json or {}
+    resetar_moedas = bool(data.get("resetar_saldo", False))
+    ok = limpar_historico_completo(resetar_saldo_moedas=resetar_moedas)
+    return json_response({"sucesso": ok, "mensagem": "Todos os históricos, logs e recados foram limpos com sucesso!" if ok else "Falha ao limpar histórico."})
 
 
 @app.route("/api/admin/diagnostico", methods=["GET"])
@@ -1118,7 +1143,7 @@ def api_book_finished(request: Request):
     data = request.json or {}
     b_id = data.get("book_id", "livro_geral")
     count = media_mgr.record_book_read(b_id)
-    token_mgr.creditar_fichas(10, f"Leitura de Livro: {b_id}", "MISSAO")
+    token_mgr.creditar_fichas(3, f"Leitura de Livro: {b_id}", "MISSAO")
     token_mgr.creditar_estrela(1)
     pet_mgr.brincar(15, "Leitura de Livro")
     return json_response({"ok": True, "books_read_today": count})
@@ -1135,7 +1160,7 @@ def api_livros_gerar(request: Request):
     tema = data.get("tema", "Resiliência")
     child_name = data.get("child_name") or brain.config.get("child_name", "Kaleo")
     novo = library_mgr.gerar_historia_ia(tema=tema, child_name=child_name)
-    token_mgr.creditar_fichas(5, f"Criação de Nova História: {novo.get('title')}", "EDUCATIVO")
+    token_mgr.creditar_fichas(2, f"Criação de Nova História: {novo.get('title')}", "EDUCATIVO")
     return json_response({"ok": True, "livro": novo})
 
 
@@ -1236,13 +1261,13 @@ def api_remote_alarme_dispensar(request: Request):
         "tipo": tipo_desc,
         "horario": datetime.now().strftime("%H:%M:%S"),
         "timestamp": time.time(),
-        "recompensa": 5
+        "recompensa": 2
     }
     REMOTE_STATE["alarme"] = None
-    token_mgr.creditar_fichas(5, "Alarme de Rotina Cumprido", "ROTINA")
+    token_mgr.creditar_fichas(2, "Alarme de Rotina Cumprido", "ROTINA")
     return json_response({
         "ok": True,
-        "recompensa": 5,
+        "recompensa": 2,
         "saldo": token_mgr.obter_status_pote()["saldo"],
         "ultimo_alarme_concluido": REMOTE_STATE["ultimo_alarme_concluido"]
     })

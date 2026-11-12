@@ -1020,7 +1020,7 @@ def validar_resposta(palavra_id: str, opcao_escolhida: str, idioma: str = "en") 
     if acertou:
         # Credita 5 moedas para o Pote do Tesouro
         pote = token_mgr.creditar_fichas(
-            quantidade=5,
+            quantidade=2,
             motivo=f"Acertou palavra em {idioma.upper()}: {palavra_alvo_texto}",
             categoria="IDIOMAS",
         )

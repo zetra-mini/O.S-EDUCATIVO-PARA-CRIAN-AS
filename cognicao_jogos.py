@@ -83,7 +83,7 @@ class CognitionGamesManager:
     def registrar_resultado_semaforo(self, acertou: bool) -> Dict[str, Any]:
         """Registra pontuação do semáforo de forma construtiva."""
         if acertou:
-            token_mgr.creditar_fichas(3, "Controle Inibitório (Desafio do Semáforo)", "JOGO")
+            token_mgr.creditar_fichas(1, "Controle Inibitório (Desafio do Semáforo)", "JOGO")
             pet_mgr.brincar(10, "Semáforo Stark")
             return {
                 "sucesso": True,
@@ -149,7 +149,7 @@ class CognitionGamesManager:
                 """,
                 (nova_caixa, card_id),
             )
-            token_mgr.creditar_fichas(5, f"Acerto no Baú do Conhecimento (Caixa {nova_caixa})", "JOGO")
+            token_mgr.creditar_fichas(2, f"Acerto no Baú do Conhecimento (Caixa {nova_caixa})", "JOGO")
             token_mgr.creditar_estrela(1)
             pet_mgr.brincar(12, "Baú de Conhecimento")
             return {
@@ -242,7 +242,7 @@ class CognitionGamesManager:
         acertou = (alvo == resp) and bool(alvo)
 
         if acertou:
-            token_mgr.creditar_fichas(5, "Acerto no Descobre o Som", "JOGO")
+            token_mgr.creditar_fichas(2, "Acerto no Descobre o Som", "JOGO")
             token_mgr.creditar_estrela(1)
             pet_mgr.brincar(12, "Descobre o Som")
             return {

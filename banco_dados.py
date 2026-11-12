@@ -501,38 +501,73 @@ class DatabaseManager:
 
         conn.commit()
 
-        # POPULAR ITENS INICIAIS DA LOJA DO TESOURO SE VAZIA
-        cursor.execute("SELECT COUNT(*) FROM recompensas_loja;")
-        if cursor.fetchone()[0] == 0:
-            itens_loja = [
-                ("passeio_parque", "🌳 Passeio Especial no Parque com o Papai", "Uma tarde divertida ao ar livre escolhendo a brincadeira!", 50, "REAL", "🌳"),
-                ("escolher_filme", "🎬 Escolher o Filme do Cinema em Família", "Direito de escolher o desenho animado de sexta à noite!", 35, "REAL", "🎬"),
-                ("brincadeira_extra", "🧩 +30 Minutos de Bloco de Montar / Massinha", "Tempo livre de brincadeira com o pai antes do banho!", 25, "REAL", "🧩"),
-                ("chapeu_astronauta", "👨‍🚀 Capacete de Astronauta para o Jarvis", "Acessório cósmico para o seu robô companheiro!", 20, "VIRTUAL", "👨‍🚀"),
-                ("oculos_estiloso", "🕶️ Óculos Escuros Neon para o Jarvis", "Deixe o robô estiloso para os dias de sol!", 15, "VIRTUAL", "🕶️"),
-                ("luz_dourada", "⭐ Reator Arc Dourado Brilhante", "Aura estelar cintilante para o mascote!", 30, "VIRTUAL", "⭐"),
-            ]
-            cursor.executemany(
-                "INSERT INTO recompensas_loja (id, titulo, descricao, custo_fichas, tipo, icone) VALUES (?, ?, ?, ?, ?, ?);",
-                itens_loja,
-            )
+        # POPULAR ITENS INICIAIS DA LOJA DO TESOURO REAL (INSERT OR IGNORE)
+        itens_loja = [
+            ("passeio_parque", "🌳 Passeio no Parque com o Papai", "Uma tarde divertida ao ar livre escolhendo a brincadeira favorita!", 40, "REAL", "🌳"),
+            ("escolher_filme", "🎬 Escolher o Filme do Cinema em Família", "Direito especial de escolher o desenho animado de sexta à noite!", 30, "REAL", "🎬"),
+            ("brincadeira_extra", "🧩 +30 Minutos de Massinha ou Lego", "Tempo livre de brincadeira com o pai antes do banho da noite!", 20, "REAL", "🧩"),
+            ("andar_bicicleta", "🚲 Passeio de Bicicleta ou Patinete", "Passeio veloz de super piloto na pracinha com o papai!", 35, "REAL", "🚲"),
+            ("noite_cabaninha", "⛺ Noite da Cabaninha de Lençol", "Construir uma cabaninha gigante de almofadas na sala para brincar!", 45, "REAL", "⛺"),
+            ("fazer_panquecas", "🥞 Fazer Panquecas ou Bolo Juntos", "Receita deliciosa na cozinha para misturar a massa e saborear!", 25, "REAL", "🥞"),
+            ("tres_historias", "📖 3 Histórias Especiais antes de Dormir", "O papai ou a mamãe leem três livrinhos mágicos na cama!", 15, "REAL", "📖"),
+            ("passeio_sorvete", "🍦 Passeio na Sorveteria com 2 Sabores", "Escolher dois sabores deliciosos de sorvete na casquinha!", 35, "REAL", "🍦"),
+            ("tarde_pintura", "🎨 Tarde de Pintura com Tinta Guache", "Fazer um quadro artístico de herói com as cores favoritas!", 25, "REAL", "🎨"),
+            ("dia_campeao", "🌟 Dia do Super Campeão (Escolhe o Almoço)", "Direito de escolher o cardápio do almoço especial de domingo!", 50, "REAL", "🌟"),
+            ("banho_espuma", "🛁 Banho Mágico de Espuma e Brinquedos", "Banho quentinho super divertido com montanhas de espuma!", 15, "REAL", "🛁"),
+            ("dormir_tarde", "⏰ +20 Minutos Acordado na Sexta", "Ficar um tempinho a mais acordado para conversar e rir com a família!", 25, "REAL", "⏰"),
+        ]
+        cursor.executemany(
+            "INSERT OR IGNORE INTO recompensas_loja (id, titulo, descricao, custo_fichas, tipo, icone) VALUES (?, ?, ?, ?, ?, ?);",
+            itens_loja,
+        )
 
-        # POPULAR ACESSÓRIOS VESTÍVEIS DO ARMÁRIO DO JARVIS (INSERT OR IGNORE)
+        # POPULAR ACESSÓRIOS VESTÍVEIS, COMIDINHAS & SKINS DO JARVIS (INSERT OR IGNORE)
         acessorios = [
-            ("oculos_stark", "Óculos Stark Neon", "Lentes futuristas espelhadas de alta tecnologia!", 15, "🕶️", "olhos", 0, 0),
-            ("coroa_ouro", "Coroa Real de Ouro", "Coroa brilhante de mestre de missões cumpridas!", 25, "👑", "cabeca", 0, 0),
+            # COMIDINHAS & PETISCOS CONSUMÍVEIS (Re-compráveis para nutrir o Jarvis - 2 a 5 moedas)
+            ("maca_dourada", "Maçã Dourada de Energia", "Maçã fresquinha e mágica que recarrega os circuitos do robô!", 2, "🍎", "comida", 0, 0),
+            ("pizza_espacial", "Mini Pizza Espacial", "Pedacinho quentinho de pizza com queijo cósmico!", 3, "🍕", "comida", 0, 0),
+            ("sorvete_galactico", "Sorvete Galáctico Colorido", "Sorvete cremoso das estrelas com confeitos brilhantes!", 3, "🍦", "comida", 0, 0),
+            ("morango_brilhante", "Morango Mágico Brilhante", "Frutinha super doce colhida nas nebulosas do espaço!", 2, "🍓", "comida", 0, 0),
+            ("biscoito_stark", "Biscoito de Chocolate Stark", "Biscoito crocante com gotas de chocolate de alta voltagem!", 2, "🍪", "comida", 0, 0),
+            ("suco_estelar", "Suco de Frutas Estelar", "Bebida refrescante que dá super velocidade ao mascote!", 2, "🥤", "comida", 0, 0),
+            ("bolo_festa", "Bolo de Aniversário Cósmico", "Fatia de bolo com velinha e glacê de arco-íris!", 5, "🎂", "comida", 0, 0),
+            ("cenoura_crocante", "Cenoura Super Crocante", "Vegetal saudável que deixa a visão do Jarvis super apurada!", 2, "🥕", "comida", 0, 0),
+            ("leite_chocolate", "Leite com Chocolate Quentinho", "Caneca gostosa para relaxar antes da hora de dormir!", 2, "🧃", "comida", 0, 0),
+
+            # ACESSÓRIOS BÁSICOS & DIVERTIDOS (8 a 18 moedas)
+            ("gravata_stark", "Gravata Borboleta Elegante", "Gravata azul e amarela super estilosa para festas!", 8, "🎀", "pescoco", 0, 0),
+            ("cachecol_espacial", "Cachecol Quentinho das Estrelas", "Cachecol macio e quentinho com listras douradas!", 10, "🧣", "pescoco", 0, 0),
+            ("oculos_stark", "Óculos Stark Neon", "Lentes futuristas espelhadas de alta tecnologia!", 12, "🕶️", "olhos", 0, 0),
+            ("oculos_pixel", "Óculos Pixelados Gamer", "Óculos escuros em cubinhos estilo Minecraft!", 14, "🕶️", "olhos", 0, 0),
             ("bone_heroi", "Boné Espacial de Campeão", "Boné estiloso de explorador do universo!", 15, "🧢", "cabeca", 0, 0),
-            ("cachecol_espacial", "Cachecol Quentinho das Estrelas", "Cachecol macio e quentinho com listras douradas!", 12, "🧣", "pescoco", 0, 0),
-            ("headset_gamer", "Headset Gamer Neon Pro", "Fones luminosos com microfone de comunicação galáctica!", 20, "🎧", "cabeca", 0, 0),
-            ("asas_foguete", "Asas de Propulsão Plasma", "Turbinas de voo cósmico para voar super alto!", 30, "🚀", "costas", 0, 0),
-            ("capa_heroi", "Capa de Super-Herói Vermelha", "Capa mágica de super campeão com fecho dourado!", 20, "🦸", "costas", 0, 0),
-            ("capacete_astronauta", "Capacete de Astronauta", "Capacete espacial com visor protetor holográfico!", 25, "👨‍🚀", "cabeca", 0, 0),
-            ("escudo_vibranium", "Escudo Mágico Stark", "Escudo brilhante de proteção contra monstrinhos!", 22, "🛡️", "braco", 0, 0),
-            ("gravata_stark", "Gravata Borboleta Elegante", "Gravata azul e amarela super estilosa para festas!", 10, "🎀", "pescoco", 0, 0),
-            ("mascara_ninja", "Máscara Cibernética Ninja", "Máscara de herói misterioso e veloz!", 18, "🥷", "olhos", 0, 0),
+            ("orelhas_gato", "Orelhinhas de Gatinho Fofas", "Orelhas peludinhas e amigáveis para o Jarvis miar de alegria!", 12, "🐱", "cabeca", 0, 0),
+            ("tiara_dino", "Tiara de Dinossauro Rex", "Chifrinhos verdes de dinossauro corajoso!", 14, "🦖", "cabeca", 0, 0),
+            ("faixa_ninja", "Faixa de Mestre Ninja", "Faixa vermelha de agilidade e concentração!", 12, "🥋", "cabeca", 0, 0),
+            ("chapeu_safari", "Chapéu de Aventureiro Safari", "Chapéu de explorador da selva e das savanas!", 15, "🤠", "cabeca", 0, 0),
+            ("mascara_ninja", "Máscara Cibernética Ninja", "Máscara de herói misterioso e veloz!", 16, "🥷", "olhos", 0, 0),
+            ("oculos_mergulho", "Óculos de Mergulhador Aquático", "Máscara de mergulho para explorar corais e oceanos!", 14, "🥽", "olhos", 0, 0),
+            ("antena_radar", "Antena Holográfica de Radar", "Antena giratória que detecta estrelas cadentes!", 15, "📡", "cabeca", 0, 0),
+
+            # ACESSÓRIOS MÉDIOS & HEROICOS (18 a 35 moedas)
+            ("capa_heroi", "Capa de Super-Herói Vermelha", "Capa mágica de super campeão com fecho dourado!", 18, "🦸", "costas", 0, 0),
             ("chapeu_mago", "Chapéu de Mago Estelar", "Chapéu azul decorado com estrelas cósmicas!", 20, "🧙", "cabeca", 0, 0),
-            ("espada_laser", "Sabre de Luz Laser Neon", "Espada de plasma luminoso para iluminar a escuridão!", 28, "⚔️", "braco", 0, 0),
-            ("oculos_pixel", "Óculos Pixelados Gamer", "Óculos escuros em cubinhos estilo Minecraft!", 16, "🕶️", "olhos", 0, 0),
+            ("headset_gamer", "Headset Gamer Neon Pro", "Fones luminosos com microfone de comunicação galáctica!", 20, "🎧", "cabeca", 0, 0),
+            ("escudo_vibranium", "Escudo Mágico Stark", "Escudo brilhante de proteção contra monstrinhos!", 22, "🛡️", "braco", 0, 0),
+            ("coroa_ouro", "Coroa Real de Ouro", "Coroa brilhante de mestre de missões cumpridas!", 25, "👑", "cabeca", 0, 0),
+            ("capacete_astronauta", "Capacete de Astronauta", "Capacete espacial com visor protetor holográfico!", 25, "👨‍🚀", "cabeca", 0, 0),
+            ("espada_laser", "Sabre de Luz Laser Neon", "Espada de plasma luminoso para iluminar a escuridão!", 25, "⚔️", "braco", 0, 0),
+            ("botas_foguete", "Botas Propulsoras Anti-Gravidade", "Sapatos a jato para dar pulos gigantescos!", 28, "🥾", "pe", 0, 0),
+            ("asas_foguete", "Asas de Propulsão Plasma", "Turbinas de voo cósmico para voar super alto!", 30, "🚀", "costas", 0, 0),
+            ("martelo_trovao", "Martelo do Trovão Mágico", "Martelo lendário que brilha com faíscas elétricas azuis!", 30, "🔨", "braco", 0, 0),
+            ("skate_hoverboard", "Skate Voador Hoverboard", "Prancha magnética que flutua a 1 metro do chão!", 35, "🛹", "pe", 0, 0),
+
+            # ITENS ÉPICOS & TEMAS DE QUARTO (45 a 100 moedas - Metas de Longo Prazo!)
+            ("tema_quarto_espacial", "Quarto Estação Espacial", "Transforma o quarto do Jarvis em uma cabine de nave cósmica!", 45, "🌌", "tema", 0, 0),
+            ("tema_quarto_castelo", "Quarto Castelo dos Cavaleiros", "Paredes de pedra mágica e tochas medievais brilhantes!", 50, "🏰", "tema", 0, 0),
+            ("tema_quarto_dino", "Quarto Floresta dos Dinossauros", "Cenário jurássico com folhagens e pegadas gigantes!", 50, "🌴", "tema", 0, 0),
+            ("tema_quarto_corrida", "Quarto Garagem de Super Carros", "Pista de corrida neon e troféus de velocidade!", 45, "🏎️", "tema", 0, 0),
+            ("skin_jarvis_dourado", "Armadura Dourada Stark Mark 85", "Visual dourado reluzente de tecnologia de ponta!", 75, "⚡", "skin", 0, 0),
+            ("skin_jarvis_diamante", "Skin Diamante Estelar Puro", "O maior troféu do jogo: Jarvis esculpido em diamante cintilante!", 100, "💎", "skin", 0, 0),
         ]
         cursor.executemany(
             "INSERT OR IGNORE INTO inventario_acessorios (id, nome, descricao, custo_fichas, icone, categoria, comprado, equipado) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
@@ -579,11 +614,11 @@ class DatabaseManager:
         cursor.execute("SELECT COUNT(*) FROM agenda_rotina_diaria;")
         if cursor.fetchone()[0] == 0:
             rotinas = [
-                ("dente_manha", "🦷 Missão Dente Brilhante da Manhã", "08:00", 5, "desafio_tempo", "🦷", "Escovar com carinho por 2 minutos!", 5),
-                ("almoço_forte", "🍽️ Almoço dos Superpoderes", "12:00", 10, "escolha_dirigida", "🍽️", "Qual verdura ou legume vamos provar hoje?", 5),
-                ("quarto_limpo", "🧸 Operação Quarto Limpo (Guardar Brinquedos)", "17:30", 5, "escolha_dirigida", "🧸", "Quer guardar os carrinhos ou os blocos primeiro?", 10),
-                ("banho_relax", "🛁 Hora do Banho Quentinho & Limpeza", "19:00", 5, "desafio_tempo", "🛁", "Lavar o corpo para recarregar as energias!", 5),
-                ("dormir_abajur", "🌙 Apagar o Abajur & Hora do Sono", "20:30", 5, "desafio_tempo", "🌙", "Puxar a cordinha do abajur do Jarvis para dormir!", 10),
+                ("dente_manha", "🦷 Missão Dente Brilhante da Manhã", "08:00", 5, "desafio_tempo", "🦷", "Escovar com carinho por 2 minutos!", 2),
+                ("almoço_forte", "🍽️ Almoço dos Superpoderes", "12:00", 10, "escolha_dirigida", "🍽️", "Qual verdura ou legume vamos provar hoje?", 2),
+                ("quarto_limpo", "🧸 Operação Quarto Limpo (Guardar Brinquedos)", "17:30", 5, "escolha_dirigida", "🧸", "Quer guardar os carrinhos ou os blocos primeiro?", 2),
+                ("banho_relax", "🛁 Hora do Banho Quentinho & Limpeza", "19:00", 5, "desafio_tempo", "🛁", "Lavar o corpo para recarregar as energias!", 2),
+                ("dormir_abajur", "🌙 Apagar o Abajur & Hora do Sono", "20:30", 5, "desafio_tempo", "🌙", "Puxar a cordinha do abajur do Jarvis para dormir!", 3),
             ]
             cursor.executemany(
                 "INSERT INTO agenda_rotina_diaria (id, titulo, horario, aviso_previo_minutos, tipo_acao, icone, pergunta_escolha, recompensa_fichas) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
@@ -594,11 +629,11 @@ class DatabaseManager:
         cursor.execute("SELECT COUNT(*) FROM missoes_rotina;")
         if cursor.fetchone()[0] == 0:
             missoes_iniciais = [
-                ("Escovar os Dentes", "Deixar os dentes limpinhos e sorriso brilhante de super-herói!", 5, "🪥", "Higiene"),
-                ("Guardar os Brinquedos", "Deixar o quarto organizado como um quartel-general!", 10, "🧸", "Organização"),
-                ("Beber Água Fresquinha", "Hidratação de super-herói para recarregar as forças!", 5, "💧", "Saúde"),
-                ("Comer Frutas ou Salada", "Alimentação forte com superpoderes e vitaminas!", 10, "🍎", "Saúde"),
-                ("Ler 1 Livro na Biblioteca", "Ler ou ouvir uma história incrível no Jarvis!", 15, "📚", "Estudos"),
+                ("Escovar os Dentes", "Deixar os dentes limpinhos e sorriso brilhante de super-herói!", 2, "🪥", "Higiene"),
+                ("Guardar os Brinquedos", "Deixar o quarto organizado como um quartel-general!", 2, "🧸", "Organização"),
+                ("Beber Água Fresquinha", "Hidratação de super-herói para recarregar as forças!", 1, "💧", "Saúde"),
+                ("Comer Frutas ou Salada", "Alimentação forte com superpoderes e vitaminas!", 2, "🍎", "Saúde"),
+                ("Ler 1 Livro na Biblioteca", "Ler ou ouvir uma história incrível no Jarvis!", 3, "📚", "Estudos"),
             ]
             cursor.executemany(
                 "INSERT INTO missoes_rotina (titulo, descricao, recompensa_moedas, icone, categoria) VALUES (?, ?, ?, ?, ?);",
@@ -681,6 +716,44 @@ def limpar_logs() -> bool:
         return True
     except Exception as e:
         registrar_log("ERRO", "sistema", f"Falha ao limpar logs: {e}")
+        return False
+
+
+def limpar_mensagens_familia() -> bool:
+    """Apaga todas as mensagens da família e remove os arquivos de áudio/vídeo enviados."""
+    try:
+        db.executar_escrita("DELETE FROM mensagens_familia;", timeout=3.0)
+        uploads_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "uploads_recados")
+        if os.path.exists(uploads_dir):
+            for f in os.listdir(uploads_dir):
+                if f != ".gitkeep":
+                    fp = os.path.join(uploads_dir, f)
+                    try:
+                        if os.path.isfile(fp):
+                            os.remove(fp)
+                    except Exception:
+                        pass
+        registrar_log("INFO", "recados", "Histórico de recados da família limpo pelo administrador.")
+        return True
+    except Exception as e:
+        registrar_log("ERRO", "recados", f"Falha ao limpar recados da família: {e}")
+        return False
+
+
+def limpar_historico_completo(resetar_saldo_moedas: bool = False) -> bool:
+    """Limpa logs, recados, histórico de transações de moedas e atividades diárias."""
+    try:
+        limpar_logs()
+        limpar_mensagens_familia()
+        db.executar_escrita("DELETE FROM transacoes_fichas;", timeout=3.0)
+        db.executar_escrita("DELETE FROM resgates_familia;", timeout=3.0)
+        db.executar_escrita("DELETE FROM linha_tempo_atividades;", timeout=3.0)
+        if resetar_saldo_moedas:
+            db.executar_escrita("UPDATE pote_fichas SET saldo = 10, total_acumulado = 10, estrelas = 0 WHERE id = 1;", timeout=3.0)
+        registrar_log("INFO", "sistema", "Limpeza completa de históricos, logs e transações realizada com sucesso.")
+        return True
+    except Exception as e:
+        registrar_log("ERRO", "sistema", f"Falha na limpeza completa: {e}")
         return False
 
 
