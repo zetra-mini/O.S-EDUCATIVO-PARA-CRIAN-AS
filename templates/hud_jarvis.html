@@ -4017,7 +4017,18 @@
       return id;
     }
 
+    // -------------------------------------------------------------------------
+    // SISTEMA DE ÁUDIO ATÔMICO COM SUPERVISOR ANTI-SOBREPOSIÇÃO (ZERO SOBREPOSIÇÃO)
+    // -------------------------------------------------------------------------
+    let currentSpeechId = 0;
+    let isJarvisSpeaking = false;
+    let globalActiveAudioSource = null;
+
     function pararTodosAudiosESpeech() {
+      // Invalida instantaneamente qualquer requisição ou callback de áudio anterior!
+      currentSpeechId++;
+      isJarvisSpeaking = false;
+
       // 1. Cancela todos os timers de sequências sonoras, canções e notas musicais
       globalSoundTimeouts.forEach(id => clearTimeout(id));
       globalSoundTimeouts = [];
@@ -4027,7 +4038,8 @@
         try { ttsAbortCtrl.abort(); } catch (e) {}
         ttsAbortCtrl = null;
       }
-      // 3. Para imediatamente o nó Web Audio ativo
+
+      // 3. Para imediatamente qualquer nó Web Audio ativo
       if (currentBufferSource) {
         try {
           currentBufferSource.stop();
@@ -4035,6 +4047,14 @@
         } catch (e) {}
         currentBufferSource = null;
       }
+      if (globalActiveAudioSource) {
+        try {
+          globalActiveAudioSource.stop();
+          globalActiveAudioSource.disconnect();
+        } catch (e) {}
+        globalActiveAudioSource = null;
+      }
+
       // 4. Pausa qualquer áudio HTML5
       const bgTimerAudio = document.getElementById('audio-timer-young-love');
       if (bgTimerAudio) {
@@ -4043,6 +4063,7 @@
       if (currentAudio) {
         try {
           currentAudio.pause();
+          currentAudio.currentTime = 0;
           if (currentAudio._blobUrl) URL.revokeObjectURL(currentAudio._blobUrl);
         } catch (e) {}
         currentAudio = null;
@@ -4055,15 +4076,21 @@
           player.src = '';
         } catch (e) {}
       }
-      // 5. Cancela qualquer síntese nativa do navegador
+
+      // 5. Cancela qualquer síntese nativa do navegador (dupla chamada contra fila travada)
       if ('speechSynthesis' in window) {
-        try { window.speechSynthesis.cancel(); } catch (e) {}
+        try {
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.cancel();
+        } catch (e) {}
         window._activeUtterance = null;
       }
+
       if (window._leituraTimer) {
         clearTimeout(window._leituraTimer);
         window._leituraTimer = null;
       }
+
       setSpeakingVisual(false);
       const speakWaves = document.getElementById('robot-speaking-waves');
       if (speakWaves) speakWaves.style.display = 'none';
@@ -4076,10 +4103,19 @@
     // CACHE LOCAL EM RAM DE ÁUDIOS DE VOZ DECODIFICADOS (0ms DE LATÊNCIA APÓS 1ª VEZ)
     const clientTtsAudioBufferCache = new Map();
 
-    function tocarAudioBufferDecodificado(decodedData, onEnd) {
+    function tocarAudioBufferDecodificado(decodedData, onEnd, speechId = null) {
+      if (speechId && speechId !== currentSpeechId) return; // DESCARTA ÁUDIO OBSOLETO!
       try {
         destravarAudioNavegador();
-        pararTodosAudiosESpeech();
+
+        if (currentBufferSource) {
+          try { currentBufferSource.stop(); currentBufferSource.disconnect(); } catch (e) {}
+          currentBufferSource = null;
+        }
+        if (globalActiveAudioSource) {
+          try { globalActiveAudioSource.stop(); globalActiveAudioSource.disconnect(); } catch (e) {}
+          globalActiveAudioSource = null;
+        }
 
         const source = audioCtx.createBufferSource();
         source.buffer = decodedData;
@@ -4089,31 +4125,42 @@
         source.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         currentBufferSource = source;
+        globalActiveAudioSource = source;
 
+        isJarvisSpeaking = true;
         setSpeakingVisual(true);
         const speakWaves = document.getElementById('robot-speaking-waves');
         if (speakWaves) speakWaves.style.display = 'block';
 
         source.onended = () => {
-          setSpeakingVisual(false);
-          if (speakWaves) speakWaves.style.display = 'none';
-          currentBufferSource = null;
+          if (!speechId || speechId === currentSpeechId) {
+            isJarvisSpeaking = false;
+            currentBufferSource = null;
+            globalActiveAudioSource = null;
+            setSpeakingVisual(false);
+            if (speakWaves) speakWaves.style.display = 'none';
+          }
           if (onEnd) onEnd();
         };
 
         source.start(0);
       } catch (e) {
-        setSpeakingVisual(false);
+        if (!speechId || speechId === currentSpeechId) {
+          isJarvisSpeaking = false;
+          setSpeakingVisual(false);
+        }
         if (onEnd) onEnd();
       }
     }
 
     // TOCA ÁUDIO DE FORMA AUDÍVEL E IMEDIATA VIA WEB AUDIO API (COM ARMAZENAMENTO NO CACHE)
-    function tocarAudioBufferWebAudio(arrayBuffer, onEnd, cacheKey = null) {
+    function tocarAudioBufferWebAudio(arrayBuffer, onEnd, cacheKey = null, speechId = null) {
+      if (speechId && speechId !== currentSpeechId) return; // DESCARTA IMEDIATAMENTE!
       try {
         destravarAudioNavegador();
         const copyBuf = arrayBuffer.slice(0);
         audioCtx.decodeAudioData(copyBuf, (decodedData) => {
+          if (speechId && speechId !== currentSpeechId) return; // BLOQUEIO CRÍTICO DE SOBREPOSIÇÃO
           if (cacheKey && decodedData) {
             if (clientTtsAudioBufferCache.size > 80) {
               const oldestKey = clientTtsAudioBufferCache.keys().next().value;
@@ -4121,7 +4168,7 @@
             }
             clientTtsAudioBufferCache.set(cacheKey, decodedData);
           }
-          tocarAudioBufferDecodificado(decodedData, onEnd);
+          tocarAudioBufferDecodificado(decodedData, onEnd, speechId);
         }, (err) => {
           console.warn('Fallback de decodeAudioData:', err);
           if (onEnd) onEnd();
@@ -4134,10 +4181,14 @@
 
     async function speak(text, options = {}) {
       pararTodosAudiosESpeech();
+      const thisSpeechId = ++currentSpeechId;
+      isJarvisSpeaking = true;
+
       if (document.getElementById('subtitle-bar')) {
         document.getElementById('subtitle-bar').textContent = text;
       }
       if (!appState.config.voice_enabled || !text) {
+        isJarvisSpeaking = false;
         if (options.onEnd) options.onEnd();
         return;
       }
@@ -4156,27 +4207,22 @@
       if (clientTtsAudioBufferCache.has(cacheKey)) {
         const cachedBuf = clientTtsAudioBufferCache.get(cacheKey);
         tocarAudioBufferDecodificado(cachedBuf, () => {
-          setSpeakingVisual(false);
           if (options.onEnd) options.onEnd();
-        });
+        }, thisSpeechId);
         return;
       }
 
-      stopCurrentSpeech();
-
-      // Ativa ondas de fala na boca do robô e atualiza o estado
       setSpeakingVisual(true);
 
       const ctrl = new AbortController();
       ttsAbortCtrl = ctrl;
 
-      // Timeout de 8.0 segundos: garante entrega da voz neural fluida escolhida no painel sem chaveamento prematuro para voz robótica
       let fallbackTimer = setTimeout(() => {
-        if (ttsAbortCtrl === ctrl) {
+        if (thisSpeechId === currentSpeechId && ttsAbortCtrl === ctrl) {
           try { ctrl.abort(); } catch (e) {}
-          speakBrowserFallback(text, options.onEnd, chosenProfile);
+          speakBrowserFallback(text, options.onEnd, chosenProfile, thisSpeechId);
         }
-      }, 8000);
+      }, 7000);
 
       try {
         const payload = { 
@@ -4193,14 +4239,14 @@
         });
 
         clearTimeout(fallbackTimer);
+        if (thisSpeechId !== currentSpeechId) return; // DESCARTA SE OUTRA FALA JÁ ENTROU!
 
         if (res.status === 200) {
           const arrayBuffer = await res.arrayBuffer();
-          if (arrayBuffer && arrayBuffer.byteLength > 200 && ttsAbortCtrl === ctrl) {
+          if (arrayBuffer && arrayBuffer.byteLength > 200 && thisSpeechId === currentSpeechId) {
             tocarAudioBufferWebAudio(arrayBuffer, () => {
-              setSpeakingVisual(false);
               if (options.onEnd) options.onEnd();
-            }, cacheKey);
+            }, cacheKey, thisSpeechId);
             return;
           }
         }
@@ -4209,15 +4255,18 @@
         if (err && err.name === 'AbortError') return;
       }
 
-      speakBrowserFallback(text, () => {
-        setSpeakingVisual(false);
-        if (options.onEnd) options.onEnd();
-      }, chosenProfile);
+      if (thisSpeechId === currentSpeechId) {
+        speakBrowserFallback(text, () => {
+          if (options.onEnd) options.onEnd();
+        }, chosenProfile, thisSpeechId);
+      }
     }
 
-    function speakBrowserFallback(text, onEnd, chosenProfile = 'jarvis_antonio') {
+    function speakBrowserFallback(text, onEnd, chosenProfile = 'jarvis_antonio', speechId = null) {
+      if (speechId && speechId !== currentSpeechId) return; // BLOQUEIA SE OBSOLETO!
       destravarAudioNavegador();
       if (!('speechSynthesis' in window)) {
+        isJarvisSpeaking = false;
         setSpeakingVisual(false);
         if (onEnd) onEnd();
         return;
@@ -4229,7 +4278,7 @@
       } catch (e) {}
 
       const utter = new SpeechSynthesisUtterance(text);
-      window._activeUtterance = utter; // FIX CRÍTICO: Previne Garbage Collection no Chromium
+      window._activeUtterance = utter; // Previne GC prematuro no Chromium
       utter.lang = 'pt-BR';
       utter.volume = 1.0;
       utter.rate = 1.0;
@@ -4251,16 +4300,27 @@
       if (best) utter.voice = best;
 
       utter.onstart = () => {
+        if (speechId && speechId !== currentSpeechId) {
+          window.speechSynthesis.cancel();
+          return;
+        }
+        isJarvisSpeaking = true;
         setSpeakingVisual(true);
       };
       utter.onend = () => {
         window._activeUtterance = null;
-        setSpeakingVisual(false);
+        if (!speechId || speechId === currentSpeechId) {
+          isJarvisSpeaking = false;
+          setSpeakingVisual(false);
+        }
         if (onEnd) onEnd();
       };
       utter.onerror = () => {
         window._activeUtterance = null;
-        setSpeakingVisual(false);
+        if (!speechId || speechId === currentSpeechId) {
+          isJarvisSpeaking = false;
+          setSpeakingVisual(false);
+        }
         if (onEnd) onEnd();
       };
 
@@ -6168,14 +6228,21 @@
           <button type="button" class="music-tab-btn" id="tab-fc-quiz" onclick="switchFingerCountingMode('quiz')">🎮 Jogo: Quantos Dedinhos?</button>
           <button type="button" class="music-tab-btn" id="tab-fc-song" onclick="playCountingSong()">▶️ Canção de Contar (1 ao 10)</button>
         </div>
-        <!-- CONTAINER DA CÂMERA INTELIGENTE (OCULTO POR PADRÃO) -->
-        <div id="fc-cam-box" style="display:none; flex-direction:column; align-items:center; justify-content:center; background:#020617; border:3px solid #38bdf8; border-radius:18px; padding:12px; margin-bottom:10px; box-shadow:0 0 20px rgba(56,189,248,0.3);">
-          <div style="font-size:1.15rem; font-weight:800; color:#38bdf8; margin-bottom:8px;">📸 Mostre seus dedinhos para a câmera do Jarvis!</div>
-          <div style="position:relative; width:280px; height:210px; border-radius:14px; overflow:hidden; border:2px solid #0284c7; background:#000;">
-            <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
-            <div id="fc-cam-badge" style="position:absolute; bottom:8px; left:8px; background:rgba(15,23,42,0.85); color:#facc15; padding:4px 10px; border-radius:999px; font-weight:900; font-size:0.95rem; border:1px solid #eab308;">Aguardando mãozinha...</div>
+        <!-- CONTAINER DA CÂMERA INTELIGENTE COM IA DE VISÃO E FILTRO ANTI-JITTER -->
+        <div id="fc-cam-box" style="display:none; flex-direction:column; align-items:center; justify-content:center; background:#020617; border:3px solid #38bdf8; border-radius:18px; padding:12px; margin-bottom:10px; box-shadow:0 0 25px rgba(56,189,248,0.35);">
+          <div style="font-size:1.15rem; font-weight:800; color:#38bdf8; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; width:100%; max-width:320px;">
+            <span>📸 Visão IA dos Dedinhos</span>
+            <span id="fc-engine-tag" style="background:#0284c7; color:#fff; font-size:0.72rem; padding:2px 8px; border-radius:999px; font-weight:900;">MediaPipe Hands IA</span>
           </div>
-          <button type="button" class="big-btn" style="margin-top:10px; background:#ef4444; font-size:0.9rem; padding:6px 14px;" onclick="switchFingerCountingMode('free')">❌ Desligar Câmera</button>
+          <div style="position:relative; width:320px; height:240px; border-radius:14px; overflow:hidden; border:2px solid #0284c7; background:#000;">
+            <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+            <canvas id="fc-canvas-overlay" width="320" height="240" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; transform:scaleX(-1);"></canvas>
+            <div id="fc-cam-badge" style="position:absolute; bottom:8px; left:8px; right:8px; background:rgba(15,23,42,0.92); color:#facc15; padding:6px 12px; border-radius:12px; font-weight:900; font-size:0.92rem; border:1.5px solid #eab308; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(6px);">
+              <span id="fc-cam-badge-text">🖐️ Mostre sua mãozinha...</span>
+              <span id="fc-cam-stability-bar" style="font-size:0.75rem; color:#38bdf8; font-weight:700;"></span>
+            </div>
+          </div>
+          <button type="button" class="big-btn" style="margin-top:10px; background:#ef4444; font-size:0.9rem; padding:6px 16px;" onclick="switchFingerCountingMode('free')">❌ Desligar Câmera</button>
         </div>
 
         <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
@@ -6466,19 +6533,84 @@
       speak(data.hint);
     }
 
+    // -------------------------------------------------------------------------
+    // MOTOR DE VISÃO COMPUTACIONAL INTELIGENTE & ESTABILIZADOR ANTI-JITTER
+    // (Inspirado nas arquiteturas MediaPipe Hands / OpenCV com Histerese Temporal)
+    // -------------------------------------------------------------------------
     let fcCameraStream = null;
     let fcCameraInterval = null;
+    let fcMediaPipeHandsInstance = null;
+    let fcMediaPipeCameraInstance = null;
+
+    // Buffer temporal de suavização e histerese (elimina oscilações rápidas)
+    const BUFFER_SMOOTH_SIZE = 7;
+    const TEMPO_ESTABILIDADE_DEDOS_MS = 1100; // Segurar estável por 1.1s para oficializar
+    const COOLDOWN_FALA_CAM_MS = 3000;        // Mínimo de 3.0s entre falas do Jarvis
+
+    let fcHistoricoAmostras = [];
+    let fcCandidatoEstavel = -1;
+    let fcInicioCandidato = 0;
+    let fcUltimoConfirmado = -1;
+    let fcUltimoTimestampFala = 0;
+
+    // Falas curtas, animadas e sem parágrafos longos para o modo câmera
+    const FRASES_CURTAS_DEDINHOS = {
+      0: 'Mãozinhas fechadas!',
+      1: 'Um dedinho levantado!',
+      2: 'Dois dedinhos! Muito bem!',
+      3: 'Três dedinhos levantados! Que legal!',
+      4: 'Quatro dedinhos! Parabéns!',
+      5: 'Cinco dedinhos! Uma mãozinha inteira!',
+      6: 'Seis dedinhos! Cinco mais um!',
+      7: 'Sete dedinhos! Que incrível!',
+      8: 'Oito dedinhos! Muito esperto!',
+      9: 'Nove dedinhos! Quase dez!',
+      10: 'Dez dedinhos! As duas mãozinhas cheias!'
+    };
 
     function stopFingerCameraMode() {
       if (fcCameraInterval) { clearInterval(fcCameraInterval); fcCameraInterval = null; }
+      if (fcMediaPipeCameraInstance) {
+        try { fcMediaPipeCameraInstance.stop(); } catch (e) {}
+        fcMediaPipeCameraInstance = null;
+      }
+      if (fcMediaPipeHandsInstance) {
+        try { fcMediaPipeHandsInstance.close(); } catch (e) {}
+        fcMediaPipeHandsInstance = null;
+      }
       if (fcCameraStream) {
         fcCameraStream.getTracks().forEach(t => t.stop());
         fcCameraStream = null;
       }
+
+      fcHistoricoAmostras = [];
+      fcCandidatoEstavel = -1;
+      fcInicioCandidato = 0;
+      fcUltimoConfirmado = -1;
+
+      const overlay = document.getElementById('fc-canvas-overlay');
+      if (overlay) {
+        const ctx = overlay.getContext('2d');
+        ctx.clearRect(0, 0, overlay.width, overlay.height);
+      }
+
       const camBox = document.getElementById('fc-cam-box');
       if (camBox) camBox.style.display = 'none';
       const handsCont = document.getElementById('fc-hands-container');
       if (handsCont) handsCont.style.display = 'flex';
+    }
+
+    // Carregador assíncrono seguro de scripts externos (MediaPipe Web)
+    function carregarScriptVisionAsync(url) {
+      return new Promise((resolve) => {
+        if (document.querySelector(`script[src="${url}"]`)) return resolve(true);
+        const s = document.createElement('script');
+        s.src = url;
+        s.crossOrigin = 'anonymous';
+        s.onload = () => resolve(true);
+        s.onerror = () => resolve(false);
+        document.head.appendChild(s);
+      });
     }
 
     async function startFingerCameraMode() {
@@ -6486,14 +6618,22 @@
       const handsCont = document.getElementById('fc-hands-container');
       const numBar = document.getElementById('fc-num-bar');
       const quizBox = document.getElementById('fc-quiz-box');
+      const engineTag = document.getElementById('fc-engine-tag');
 
       if (quizBox) quizBox.style.display = 'none';
       if (numBar) numBar.style.display = 'flex';
       if (handsCont) handsCont.style.display = 'none';
       if (camBox) camBox.style.display = 'flex';
 
-      speak('Coloque a sua mãozinha na frente da câmera para o Jarvis contar seus dedinhos!');
-      showToast('Ligando câmera mágica do Jarvis...');
+      speak('Mostre sua mãozinha para a câmera do Jarvis! Segure os dedinhos firmes!');
+      showToast('📸 Ativando Visão IA de Dedinhos...');
+
+      // Reset dos estados temporais
+      fcHistoricoAmostras = [];
+      fcCandidatoEstavel = -1;
+      fcInicioCandidato = 0;
+      fcUltimoConfirmado = -1;
+      fcUltimoTimestampFala = Date.now(); // Cooldown inicial de 3s para a frase de boas-vindas
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -6504,61 +6644,281 @@
         const video = document.getElementById('fc-video-feed');
         if (video) video.srcObject = stream;
 
-        const badge = document.getElementById('fc-cam-badge');
-        let ultimoContado = -1;
-        let contagemConfirmada = 0;
+        // Tenta carregar MediaPipe Hands oficial se disponível
+        let usouMediaPipe = false;
+        try {
+          const ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
+          const ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
 
-        // Amostragem ultraleve a cada 380ms (respeita a CPU do Intel Atom N450)
-        const offCanvas = document.createElement('canvas');
-        offCanvas.width = 80;
-        offCanvas.height = 60;
-        const offCtx = offCanvas.getContext('2d');
+          if (ok1 && ok2 && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
+            const hands = new Hands({
+              locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            });
+            hands.setOptions({
+              maxNumHands: 2,
+              modelComplexity: 0, // Lite (ultraleve para Intel Atom / CPU fraca)
+              minDetectionConfidence: 0.55,
+              minTrackingConfidence: 0.5
+            });
 
-        fcCameraInterval = setInterval(() => {
-          if (!video || video.readyState < 2) return;
-          offCtx.drawImage(video, 0, 0, 80, 60);
-          const imgData = offCtx.getImageData(0, 0, 80, 60);
-          const data = imgData.data;
+            hands.onResults((results) => {
+              processarResultadoMediaPipe(results);
+            });
 
-          // Análise de intensidade/silhueta da mão
-          let colunasAtivas = 0;
-          for (let x = 10; x < 70; x += 3) {
-            let picosVerticais = 0;
-            for (let y = 10; y < 45; y += 3) {
-              const idx = (y * 80 + x) * 4;
-              const r = data[idx], g = data[idx+1], b = data[idx+2];
-              if (r > 60 && g > 40 && b > 30 && r > b) {
-                picosVerticais++;
-              }
-            }
-            if (picosVerticais >= 4) colunasAtivas++;
+            const camera = new Camera(video, {
+              onFrame: async () => {
+                if (fcCameraStream && hands) {
+                  await hands.send({ image: video });
+                }
+              },
+              width: 320,
+              height: 240
+            });
+            camera.start();
+            fcMediaPipeHandsInstance = hands;
+            fcMediaPipeCameraInstance = camera;
+            usouMediaPipe = true;
+            if (engineTag) engineTag.textContent = 'MediaPipe IA (2 Mãos)';
           }
+        } catch (eMp) {
+          console.warn('Fallback para Motor Biométrico em Canvas:', eMp);
+        }
 
-          // Mapeia colunas ativas para dedinhos (1 a 5)
-          let dedinhosDetectados = Math.min(5, Math.max(1, Math.round(colunasAtivas / 3.2)));
-          if (colunasAtivas < 3) dedinhosDetectados = 0;
-
-          if (badge) {
-            badge.textContent = dedinhosDetectados > 0 ? `🖐️ Jarvis vê: ${dedinhosDetectados} Dedinhos!` : 'Mostre a mãozinha...';
-          }
-
-          if (dedinhosDetectados === ultimoContado && dedinhosDetectados > 0) {
-            contagemConfirmada++;
-            if (contagemConfirmada === 2) {
-              setCountingNumber(dedinhosDetectados, true);
-              playTone(784, 90);
-            }
-          } else {
-            ultimoContado = dedinhosDetectados;
-            contagemConfirmada = 0;
-          }
-        }, 380);
+        // Se MediaPipe falhou ou estiver offline, roda o Motor Biométrico em Canvas local
+        if (!usouMediaPipe) {
+          if (engineTag) engineTag.textContent = 'Visão Geométrica Local';
+          iniciarMotorBiometricoCanvas(video);
+        }
 
       } catch (err) {
         if (camBox) camBox.style.display = 'none';
         if (handsCont) handsCont.style.display = 'flex';
         speak('Não consegui ligar a câmera! Você pode brincar tocando nos dedinhos da tela!');
         showToast('⚠️ Câmera não acessível ou sem permissão.');
+      }
+    }
+
+    // Processamento do esqueleto MediaPipe Hands (Inspirado nos 3 repositórios)
+    function processarResultadoMediaPipe(results) {
+      const overlay = document.getElementById('fc-canvas-overlay');
+      if (!overlay) return;
+      const ctx = overlay.getContext('2d');
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+      let totalDedosLevantados = 0;
+
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        for (let h = 0; h < results.multiHandLandmarks.length; h++) {
+          const lm = results.multiHandLandmarks[h];
+          const wrist = lm[0];
+          const pinkyMcp = lm[17];
+
+          // 1. Dedos Normais: Indicador (8), Médio (12), Anelar (16), Mindinho (20)
+          const tips = [8, 12, 16, 20];
+          const pips = [6, 10, 14, 18];
+          const mcps = [5, 9, 13, 17];
+          const estados = [false, false, false, false, false];
+
+          // Desenha conexões dos dedos no canvas
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 2.5;
+
+          for (let i = 0; i < 4; i++) {
+            const tip = lm[tips[i]];
+            const pip = lm[pips[i]];
+            const dTipWrist = Math.hypot(tip.x - wrist.x, tip.y - wrist.y);
+            const dPipWrist = Math.hypot(pip.x - wrist.x, pip.y - wrist.y);
+
+            // Dedo levantado: ponta acima da junta e estendida em relação ao pulso
+            if (tip.y < pip.y && dTipWrist > dPipWrist * 1.08) {
+              estados[i + 1] = true;
+              totalDedosLevantados++;
+            }
+          }
+
+          // 2. Polegar (4): Distância da ponta ao metacarpo do mindinho (17)
+          const thumbTip = lm[4];
+          const thumbIp  = lm[3];
+          const dThumbTipPinky = Math.hypot(thumbTip.x - pinkyMcp.x, thumbTip.y - pinkyMcp.y);
+          const dThumbIpPinky  = Math.hypot(thumbIp.x - pinkyMcp.x, thumbIp.y - pinkyMcp.y);
+          if (dThumbTipPinky > dThumbIpPinky * 1.15) {
+            estados[0] = true;
+            totalDedosLevantados++;
+          }
+
+          // Desenha pontos visuais de feedback na tela
+          const allTips = [4, 8, 12, 16, 20];
+          for (let i = 0; i < 5; i++) {
+            const pt = lm[allTips[i]];
+            const px = pt.x * overlay.width;
+            const py = pt.y * overlay.height;
+            const isUp = estados[i];
+
+            ctx.beginPath();
+            ctx.arc(px, py, isUp ? 8 : 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = isUp ? '#22c55e' : '#f97316';
+            ctx.shadowColor = isUp ? '#22c55e' : '#f97316';
+            ctx.shadowBlur = isUp ? 14 : 4;
+            ctx.fill();
+          }
+        }
+      }
+
+      alimentarFiltroEstabilidade(totalDedosLevantados);
+    }
+
+    // Motor Biométrico em Canvas (Fallback sem internet / 100% autônomo)
+    function iniciarMotorBiometricoCanvas(video) {
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = 160;
+      offCanvas.height = 120;
+      const offCtx = offCanvas.getContext('2d');
+
+      const overlay = document.getElementById('fc-canvas-overlay');
+      const ovCtx = overlay ? overlay.getContext('2d') : null;
+
+      fcCameraInterval = setInterval(() => {
+        if (!video || video.readyState < 2) return;
+        offCtx.drawImage(video, 0, 0, 160, 120);
+        const imgData = offCtx.getImageData(0, 0, 160, 120);
+        const data = imgData.data;
+
+        let totalSkinPixels = 0;
+        let sumX = 0, sumY = 0;
+        const skinMask = new Uint8Array(160 * 120);
+
+        // Segmentação precisa de tom de pele humano
+        for (let y = 10; y < 110; y++) {
+          for (let x = 10; x < 150; x++) {
+            const idx = (y * 160 + x) * 4;
+            const r = data[idx], g = data[idx + 1], b = data[idx + 2];
+            const maxVal = Math.max(r, g, b);
+            const minVal = Math.min(r, g, b);
+
+            // Critério adaptativo de pele
+            if (r > 85 && g > 45 && b > 25 && (maxVal - minVal > 15) && Math.abs(r - g) > 12 && r > g && r > b) {
+              skinMask[y * 160 + x] = 1;
+              totalSkinPixels++;
+              sumX += x;
+              sumY += y;
+            }
+          }
+        }
+
+        if (ovCtx) ovCtx.clearRect(0, 0, overlay.width, overlay.height);
+
+        let dedosDetectados = 0;
+        if (totalSkinPixels > 450) {
+          const cx = Math.round(sumX / totalSkinPixels);
+          const cy = Math.round(sumY / totalSkinPixels);
+
+          // Análise radial superior de picos de contorno dos dedos
+          let picosDedos = 0;
+          let ultimoWasPeak = false;
+
+          for (let x = Math.max(15, cx - 55); x <= Math.min(145, cx + 55); x += 4) {
+            let minY = 120;
+            for (let y = 12; y < cy; y += 3) {
+              if (skinMask[y * 160 + x] === 1) {
+                minY = y;
+                break;
+              }
+            }
+
+            // Distância acima do centro da palma
+            const alturaPonta = cy - minY;
+            const isDedo = (alturaPonta > 24);
+
+            if (isDedo && !ultimoWasPeak) {
+              picosDedos++;
+              ultimoWasPeak = true;
+            } else if (!isDedo) {
+              ultimoWasPeak = false;
+            }
+          }
+
+          dedosDetectados = Math.min(5, Math.max(1, picosDedos));
+          if (picosDedos === 0) dedosDetectados = 0;
+
+          if (ovCtx) {
+            ovCtx.beginPath();
+            ovCtx.arc(cx * 2, cy * 2, 12, 0, Math.PI * 2);
+            ovCtx.fillStyle = '#00f0ff';
+            ovCtx.fill();
+          }
+        }
+
+        alimentarFiltroEstabilidade(dedosDetectados);
+      }, 220);
+    }
+
+    // -------------------------------------------------------------------------
+    // FILTRO DE HISTÉRESE TEMPORAL E EMISSÃO DE ÁUDIO BLINDADA (ZERO JITTER)
+    // -------------------------------------------------------------------------
+    function alimentarFiltroEstabilidade(dedosBrutos) {
+      fcHistoricoAmostras.push(dedosBrutos);
+      if (fcHistoricoAmostras.length > BUFFER_SMOOTH_SIZE) {
+        fcHistoricoAmostras.shift();
+      }
+
+      // 1. Calcula a moda estatística da janela
+      const contagem = {};
+      fcHistoricoAmostras.forEach(v => { contagem[v] = (contagem[v] || 0) + 1; });
+
+      let moda = -1;
+      let maxVotos = 0;
+      for (const k in contagem) {
+        if (contagem[k] > maxVotos) {
+          maxVotos = contagem[k];
+          moda = parseInt(k, 10);
+        }
+      }
+
+      const badgeText = document.getElementById('fc-cam-badge-text');
+      const barStability = document.getElementById('fc-cam-stability-bar');
+
+      // Exige pelo menos 70% de consenso no buffer para considerar o número
+      const proporcao = maxVotos / fcHistoricoAmostras.length;
+      if (proporcao >= 0.70 && moda >= 0) {
+        // Se mudou de candidato dominante, reinicia o timer de estabilidade
+        if (fcCandidatoEstavel !== moda) {
+          fcCandidatoEstavel = moda;
+          fcInicioCandidato = Date.now();
+        }
+
+        const tempoDecorrido = Date.now() - fcInicioCandidato;
+        const pctProgresso = Math.min(100, Math.round((tempoDecorrido / TEMPO_ESTABILIDADE_DEDOS_MS) * 100));
+
+        if (badgeText) {
+          badgeText.textContent = moda > 0 ? `🖐️ Jarvis vê: ${moda} Dedinho(s)` : '🖐️ Mãozinha fechada...';
+        }
+        if (barStability) {
+          barStability.textContent = pctProgresso < 100 ? `Segure firme... ${pctProgresso}%` : '✨ Confirmado!';
+        }
+
+        // OFICIALIZAÇÃO APENAS APÓS 1.1s SUSTENTADOS E SEM OSCILAÇÃO!
+        if (tempoDecorrido >= TEMPO_ESTABILIDADE_DEDOS_MS && moda !== fcUltimoConfirmado) {
+          fcUltimoConfirmado = moda;
+          if (badgeText) badgeText.textContent = `⭐ Confirmado: ${moda} Dedinho(s)!`;
+
+          // Atualiza o display visual e as maçãs sem disparar áudio longo antigo
+          setCountingNumber(moda, false);
+
+          // Toca som harmônico suave
+          const freq = FINGER_TONES[Math.min(9, Math.max(0, moda - 1))] || 440;
+          playTone(freq, 120);
+
+          // DISPARO DE VOZ CONTROLADO: NUNCA SOBREPÕE E RESPEITA COOLDOWN
+          const agora = Date.now();
+          if (!isJarvisSpeaking && (agora - fcUltimoTimestampFala >= COOLDOWN_FALA_CAM_MS)) {
+            fcUltimoTimestampFala = agora;
+            const fraseCurta = FRASES_CURTAS_DEDINHOS[moda] || `${moda} dedinhos!`;
+            speak(fraseCurta);
+          }
+        }
+      } else {
+        // Mão em movimento ou iluminação transitória: NÃO MUDA O NÚMERO
+        if (barStability) barStability.textContent = 'Mão em movimento...';
       }
     }
 
