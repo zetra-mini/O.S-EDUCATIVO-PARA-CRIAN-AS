@@ -523,18 +523,17 @@ class DatabaseManager:
 
         # POPULAR ACESSÓRIOS VESTÍVEIS, COMIDINHAS & SKINS DO JARVIS (INSERT OR IGNORE)
         acessorios = [
-            # COMIDINHAS & PETISCOS CONSUMÍVEIS (Re-compráveis para nutrir o Jarvis - 2 a 5 moedas)
-            ("maca_dourada", "Maçã Dourada de Energia", "Maçã fresquinha e mágica que recarrega os circuitos do robô!", 2, "🍎", "comida", 0, 0),
-            ("pizza_espacial", "Mini Pizza Espacial", "Pedacinho quentinho de pizza com queijo cósmico!", 3, "🍕", "comida", 0, 0),
-            ("sorvete_galactico", "Sorvete Galáctico Colorido", "Sorvete cremoso das estrelas com confeitos brilhantes!", 3, "🍦", "comida", 0, 0),
-            ("morango_brilhante", "Morango Mágico Brilhante", "Frutinha super doce colhida nas nebulosas do espaço!", 2, "🍓", "comida", 0, 0),
-            ("biscoito_stark", "Biscoito de Chocolate Stark", "Biscoito crocante com gotas de chocolate de alta voltagem!", 2, "🍪", "comida", 0, 0),
-            ("suco_estelar", "Suco de Frutas Estelar", "Bebida refrescante que dá super velocidade ao mascote!", 2, "🥤", "comida", 0, 0),
-            ("bolo_festa", "Bolo de Aniversário Cósmico", "Fatia de bolo com velinha e glacê de arco-íris!", 5, "🎂", "comida", 0, 0),
-            ("cenoura_crocante", "Cenoura Super Crocante", "Vegetal saudável que deixa a visão do Jarvis super apurada!", 2, "🥕", "comida", 0, 0),
-            ("leite_chocolate", "Leite com Chocolate Quentinho", "Caneca gostosa para relaxar antes da hora de dormir!", 2, "🧃", "comida", 0, 0),
+            # COMIDINHAS & RECARGA DE ENERGIA DO JARVIS (Consumíveis de alta tecnologia - 2 a 4 moedas)
+            ("bateria_plasma", "Bateria Quântica de Plasma", "Super carga de íons de plasma que recarrega a bateria do Jarvis instantaneamente!", 2, "🔋", "comida", 0, 0),
+            ("reator_arc_mini", "Célula de Energia Arc Stark", "Poder atômico limpo que faz o Reator Arc no peito do Jarvis brilhar intensamente!", 3, "💠", "comida", 0, 0),
+            ("picole_eletrico", "Picolé de Eletricidade Cósmica", "Picolé azul neon com faíscas cósmicas refrescantes para os circuitos!", 2, "⚡", "comida", 0, 0),
+            ("oleo_turbo_stark", "Óleo Super Turbo Stark", "Lubrificante de titânio de alta velocidade para engrenagens rodarem macias!", 3, "🛢️", "comida", 0, 0),
+            ("biscoito_nanobots", "Biscoito Nanotec com Chocolate", "Biscoito crocante com nanobots inteligentes que reparam microchips!", 2, "🍪", "comida", 0, 0),
+            ("pocao_combustivel", "Hiper-Combustível Stark Neon", "Frasco de energia luminosa que dobra a velocidade de raciocínio do robô!", 4, "🧪", "comida", 0, 0),
+            ("maca_dourada", "Maçã Biocibernética Dourada", "Maçã dourada fortificada com vitaminas e microchips de alta voltagem!", 2, "🍏", "comida", 0, 0),
+            ("pizza_espacial", "Micro-Pizza Termonuclear", "Pedacinho quentinho de pizza com queijo cósmico e alta energia!", 3, "🍕", "comida", 0, 0),
+            ("suco_estelar", "Suco de Plasma Estelar", "Bebida refrescante de néon para resfriar os processadores do mascote!", 2, "🥤", "comida", 0, 0),
 
-            # ACESSÓRIOS BÁSICOS & DIVERTIDOS (8 a 18 moedas)
             ("gravata_stark", "Gravata Borboleta Elegante", "Gravata azul e amarela super estilosa para festas!", 8, "🎀", "pescoco", 0, 0),
             ("cachecol_espacial", "Cachecol Quentinho das Estrelas", "Cachecol macio e quentinho com listras douradas!", 10, "🧣", "pescoco", 0, 0),
             ("oculos_stark", "Óculos Stark Neon", "Lentes futuristas espelhadas de alta tecnologia!", 12, "🕶️", "olhos", 0, 0),

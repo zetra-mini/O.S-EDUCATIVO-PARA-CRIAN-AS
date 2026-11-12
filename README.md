@@ -1,4 +1,4 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.8.0 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
+# 🚀 J.A.R.V.I.S. Kids OS v3.9.0 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
@@ -32,6 +32,34 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 | :---: |
 | ![Fábrica de Robôs Stark](docs/screenshots/09_quarto_engenharia.png) |
 | *Pista de corrida arcade interestelar neon: a criança pilota o super carro Stark desviando de obstáculos, coletando moedas de ouro e ativando o Super Nitro até a linha de chegada!* |
+
+---
+
+## 🌟 Novidades da Versão 3.9.0 (Arcade Stark 2D, Pista Infinita & Alimentação Interativa)
+
+### 📸 1. Espelho Mágico com Desligamento Total da Câmera & 10 Carinhas Expressivas
+- **Desligamento Confiável da Câmera:** Ao fechar o modal, voltar à sala do Jarvis ou trocar de aba, todos os tracks de mídia são finalizados (`track.stop()`) e `video.srcObject = null` é executado, apagando a luz física da webcam do netbook de forma instantânea.
+- **Botão Manual de Segurança:** Inclusão do botão `🔴 Desligar Câmera` no topo do espelho para encerramento manual em um clique.
+- **10 Carinhas Expressivas:** O cardápio de desafios faciais foi expandido para 10 opções ricas e divertidas (😄 Alegre/Sorrindo, 😲 Surpreso, 😌 Calmo/Focado, 😠 Valente/Corajoso, 😉 Piscadela de Campeão, 😜 Careta com a Língua, 🦸‍♂️ Pose de Super-Herói Stark, 😍 Carinho/Beijinho, 🥱 Bocejo Gostoso, 🤪 Careta Maluquinha).
+- **Seletor Rápido de Carinhas:** A criança pode tocar diretamente em qualquer emoji da barra para praticar a carinha que quiser sem esperar sorteio.
+
+### 🏪 2. Loja do Tesouro & Animação de Alimentação/Recarga do Jarvis
+- **Comidas Recontextualizadas para Robô:** Substituição de alimentos genéricos por itens tecnológicos de alta energia para o robô: 🔋 Bateria Quântica de Plasma, 💠 Célula Arc Stark, ⚡ Picolé de Eletricidade Cósmica, 🛢️ Óleo Super Turbo Stark, 🍪 Biscoito Nanotec de Chocolate, 🧪 Hiper-Combustível Stark, 🍏 Maçã Biocibernética e 🍕 Micro-Pizza Termonuclear.
+- **Animação Interativa de Alimentação:** Ao comprar qualquer item de energia, uma janela holográfica animada surge sobre a loja: o item voa até a boca/reator do Jarvis, sons crocantes e elétricos Web Audio são disparados, o Reator Arc brilha com feixes azuis, a barra de energia enche para 100% com flash verde e o Jarvis agradece alegremente com fala sintetizada!
+- **Navegação em Abas Sem Bugs:** A troca de abas (`Armário do Jarvis` e `Tesouro Real`) e compra de itens agora atualizam o conteúdo em tempo real sem reempilhar telas na `modalNavStack`.
+- **Botão Duplo no Cabeçalho:** O cabeçalho dos modais conta agora com `⬅ VOLTAR` (volta 1 nível) e `🏠 SALA DO JARVIS` (fecha direto para a tela inicial em 1 clique).
+
+### 🏎️ 3. Corrida Turbo Stark (Pista Infinita & 3 Níveis de Velocidade)
+- **Seletor de Níveis de Velocidade:** Permite alternar a qualquer momento entre 🟢 Fácil (80 km/h), 🟡 Veloz (140 km/h) e 🔴 Super Turbo Insano (220 km/h).
+- **Pista Infinita Contínua:** O piloto não é interrompido aos 1000m; o odômetro registra a distância total percorrida e a cada 500 metros ultrapassados premia a criança com +1 moeda de bônus, fanfarra e elogio especial do Jarvis.
+- **Finalização e Troféu:** Botão `🏆 Finalizar Recorde` para registrar o recorde e receber o grande troféu dourado.
+
+### 🕹️ 4. Página 8 com 4 Novos Super Jogos Arcade Stark (Canvas 2D a 60 FPS)
+Criada a **Página 8** na Central de Jogos (totalizando 8 páginas e 21+ jogos e aventuras), trazendo 4 novos jogos com a mesma mecânica arcade da Corrida Turbo:
+1. 🚀 **Voo Espacial do Homem de Ferro (Iron Flight):** Pilote a armadura Stark no espaço, desvie de asteroides e satélites, colete tesseracts e ative os propulsores repulsores;
+2. 🌊 **Submarino Abissal Stark (Missão Aquática):** Explore as profundezas do oceano com o mini-submarino, desvie de recifes e águas-vivas e dispare o super sonar que puxa pérolas;
+3. 🛹 **Hoverboard Futurista Stark (Skate Voador):** Manobras radicais na rodovia aérea suspensa da cidade futurista, pulando sobre drones e ativando o salto 360° no ar;
+4. 🚁 **Helicóptero Resgate Stark (Copter Defender):** Pilote o mini-helicóptero entre nuvens e arranha-céus, resgate robozinhos flutuantes e acione o escudo de força contra raios.
 
 ---
 
@@ -132,11 +160,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.8.0.deb` | `sudo dpkg -i jarvis-kids-os_3.8.0.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.8.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.8.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.8.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.8.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.9.0.deb` | `sudo dpkg -i jarvis-kids-os_3.9.0.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.9.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.9.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.9.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.9.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/admin` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -173,12 +201,12 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente nas Releases e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.8.0.deb || sudo apt-get install -f -y
+sudo dpkg -i jarvis-kids-os_3.9.0.deb || sudo apt-get install -f -y
 ```
 
 Ou usando o comando do `apt`:
 ```bash
-sudo apt install ./jarvis-kids-os_3.8.0.deb
+sudo apt install ./jarvis-kids-os_3.9.0.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**

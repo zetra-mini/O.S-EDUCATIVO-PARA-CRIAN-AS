@@ -738,6 +738,46 @@ class JarvisBrain:
                 "dados": {},
             }
 
+        if any(w in text_lower for w in ["voo espacial", "homem de ferro", "iron flight", "voar no espaco", "voar no espaço", "espacial"]):
+            reply = f"Sistemas de propulsão repulsora ativados, herói {self.name}! Abrindo o Voo Espacial do Homem de Ferro! Decolar rumo às estrelas!"
+            return {
+                "ok": True,
+                "intencao": "voo_espacial",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_voo_espacial",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["submarino", "fundo do mar", "oceano", "aquático", "aquatico", "missão abissal", "missao abissal"]):
+            reply = f"Escotilhas travadas e sonar ligado, capitão {self.name}! Abrindo o Submarino Abissal Stark! Vamos explorar as profundezas!"
+            return {
+                "ok": True,
+                "intencao": "submarino_stark",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_submarino_stark",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["hoverboard", "skate", "skate voador", "pista aérea", "pista aerea", "manobra"]):
+            reply = f"Prancha magnética antigravidade calibrada, super {self.name}! Abrindo o Hoverboard Futurista Stark! Prepare as manobras 360!"
+            return {
+                "ok": True,
+                "intencao": "hoverboard_stark",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_hoverboard_stark",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["helicóptero", "helicoptero", "resgate", "copter", "defender"]):
+            reply = f"Hélices em rotação máxima e sirene de resgate pronta, piloto {self.name}! Abrindo o Helicóptero Resgate Stark! Missão de salvar robozinhos!"
+            return {
+                "ok": True,
+                "intencao": "helicoptero_resgate",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_helicoptero_stark",
+                "dados": {},
+            }
+
         # 18. Jogar / Brincar geral (Apenas se nenhum jogo específico acima foi detectado)
         termos_gerais = ["jogar", "jogo", "brincar", "brincadeira", "jogos", "todos os jogos", "menu de jogos", "lista de jogos"]
         if any(w in text_lower for w in termos_gerais):
