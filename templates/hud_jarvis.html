@@ -5272,15 +5272,23 @@
         speak('Espelho Mágico das Emoções ativado! Olhe para a câmera e faça a carinha do desafio!');
         showToast('📸 Espelho Mágico Ativado!');
 
-        // Loop de IA com Human local (~5 FPS leve)
+        // Loop de IA com Human local (~5 FPS leve com drop-frame guard)
+        let isHumanEmoProcessing = false;
         emoMirrorInterval = setInterval(async () => {
           if (!emoMirrorStream || !video || video.readyState < 2) return;
-          const overlay = document.getElementById('emo-mirror-overlay');
-          const emo = await processarFrameHumanEmotion(video, overlay);
-          if (emo && emo.emotion) {
-            atualizarFeedbackEmocao(emo.emotion, emo.score);
+          if (isHumanEmoProcessing) return; // Drop-frame preventivo para o Intel Atom
+          isHumanEmoProcessing = true;
+          try {
+            const overlay = document.getElementById('emo-mirror-overlay');
+            const emo = await processarFrameHumanEmotion(video, overlay);
+            if (emo && emo.emotion) {
+              atualizarFeedbackEmocao(emo.emotion, emo.score);
+            }
+          } catch(e) {
+          } finally {
+            isHumanEmoProcessing = false;
           }
-        }, 180);
+        }, 200);
 
       } catch(err) {
         showToast('⚠️ Câmera indisponível no momento.');
@@ -7376,14 +7384,22 @@
     function iniciarLoopHumanHands(video) {
       if (fcCameraInterval) clearInterval(fcCameraInterval);
       const overlay = document.getElementById('fc-canvas-overlay');
+      let isHumanHandProcessing = false;
 
       fcCameraInterval = setInterval(async () => {
         if (!fcCameraStream || !video || video.readyState < 2) return;
-        const total = await processarFrameHumanHands(video, overlay);
-        if (total >= 0) {
-          alimentarFiltroEstabilidade(total);
+        if (isHumanHandProcessing) return; // Drop-frame preventivo: nunca engasga a CPU do Intel Atom
+        isHumanHandProcessing = true;
+        try {
+          const total = await processarFrameHumanHands(video, overlay);
+          if (total >= 0) {
+            alimentarFiltroEstabilidade(total);
+          }
+        } catch(e) {
+        } finally {
+          isHumanHandProcessing = false;
         }
-      }, 160); // ~6 FPS, ultra leve no Intel Atom N450
+      }, 180); // ~5.5 FPS, consumo mínimo de CPU no Acer Aspire One
     }
 
     function processarResultadoMediaPipe(results) {
