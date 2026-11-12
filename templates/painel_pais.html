@@ -667,26 +667,28 @@
   <!-- ========================================================================= -->
   <div class="tab-pane" id="pane-ia">
     <div class="card">
-      <div class="card-title">🤖 Configuração de Inteligência Artificial</div>
-      <div style="font-size:0.9rem; color:var(--text-muted);">
-        O J.A.R.V.I.S. Kids OS suporta processamento prioritário via OpenCode CLI, IA local com Ollama ou APIs em nuvem.
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+        <div class="card-title" style="margin:0;">🤖 Motores de Inteligência Artificial</div>
+        <div id="admin-active-pill" style="background:#065f46; color:#a7f3d0; padding:6px 14px; border-radius:20px; font-weight:800; font-size:0.88rem; border:1px solid #10b981; display:flex; align-items:center; gap:6px;">
+          <span>✅ Ativo no Jarvis:</span>
+          <span id="admin-active-pill-name" style="color:#fff; text-decoration:underline;">IA Local (Ollama)</span>
+        </div>
+      </div>
+      <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">
+        Ao clicar em qualquer opção abaixo, o motor é <strong>ativado e salvo instantaneamente</strong> no Jarvis.
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px;" id="ai-tabs-admin">
-        <button type="button" class="btn btn-purple" id="atab-opencode" onclick="selecionarProvedorAdmin('opencode')">⚡ OpenCode CLI</button>
-        <button type="button" class="btn" style="background:#334155; color:#fff;" id="atab-ollama" onclick="selecionarProvedorAdmin('ollama')">🏠 IA Local (Ollama)</button>
-        <button type="button" class="btn btn-primary" id="atab-gemini" onclick="selecionarProvedorAdmin('gemini')">✨ Google Gemini</button>
-        <button type="button" class="btn btn-success" id="atab-openai" onclick="selecionarProvedorAdmin('openai')">🤖 OpenAI ChatGPT</button>
-        <button type="button" class="btn btn-warning" id="atab-groq" onclick="selecionarProvedorAdmin('groq')">⚡ Groq Cloud</button>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px;" id="ai-tabs-admin">
+        <button type="button" class="btn btn-purple" id="atab-opencode" onclick="selecionarProvedorAdmin('opencode', true)" style="transition:all 0.2s ease;">⚡ OpenCode CLI</button>
+        <button type="button" class="btn" style="background:#334155; color:#fff; transition:all 0.2s ease;" id="atab-ollama" onclick="selecionarProvedorAdmin('ollama', true)">🏠 IA Local (Ollama)</button>
+        <button type="button" class="btn btn-primary" id="atab-gemini" onclick="selecionarProvedorAdmin('gemini', true)" style="transition:all 0.2s ease;">✨ Google Gemini</button>
+        <button type="button" class="btn btn-success" id="atab-openai" onclick="selecionarProvedorAdmin('openai', true)" style="transition:all 0.2s ease;">🤖 OpenAI ChatGPT</button>
+        <button type="button" class="btn btn-warning" id="atab-groq" onclick="selecionarProvedorAdmin('groq', true)" style="transition:all 0.2s ease;">⚡ Groq Cloud</button>
       </div>
 
-      <div id="admin-provider-box" style="background:#071120; border:1px solid #1e293b; border-radius:14px; padding:16px;"></div>
+      <div id="admin-provider-box" style="background:#071120; border:1px solid #1e293b; border-radius:14px; padding:16px; margin-top:14px;"></div>
 
-      <div id="admin-ai-status" style="display:none; padding:12px; border-radius:10px; font-weight:800; font-size:0.95rem;"></div>
-
-      <button type="button" class="btn btn-success" style="margin-top:8px;" onclick="salvarConfiguracoesAdmin()">
-        💾 Salvar Configurações de IA
-      </button>
+      <div id="admin-ai-status" style="display:none; padding:12px; border-radius:10px; font-weight:800; font-size:0.95rem; margin-top:12px;"></div>
     </div>
   </div>
 
@@ -1490,67 +1492,215 @@
         if (chkBook && document.activeElement !== chkBook) chkBook.checked = !!adminConfig.require_book_before_media;
 
         if (!currentAdminProvider) {
-          currentAdminProvider = adminConfig.active_provider || 'opencode';
-          selecionarProvedorAdmin(currentAdminProvider);
+          currentAdminProvider = adminConfig.active_provider || adminConfig.mode || 'ollama';
+          selecionarProvedorAdmin(currentAdminProvider, false);
         }
       } catch (e) {}
     }
 
-    function selecionarProvedorAdmin(prov) {
+    const NOMES_PROVEDORES_AI = {
+      'opencode': 'OpenCode CLI (Motor Autônomo)',
+      'ollama': 'IA Local - Ollama (100% Offline)',
+      'gemini': 'Google Gemini Cloud',
+      'openai': 'OpenAI ChatGPT',
+      'groq': 'Groq Cloud (Llama 3.3 Ultra-Rápido)'
+    };
+
+    async function selecionarProvedorAdmin(prov, autoSave = false) {
       currentAdminProvider = prov;
       const box = document.getElementById('admin-provider-box');
       const c = adminConfig;
 
-      document.querySelectorAll('#ai-tabs-admin button').forEach(b => b.style.opacity = '0.5');
+      // Atualiza botões
+      document.querySelectorAll('#ai-tabs-admin button').forEach(b => {
+        b.style.opacity = '0.55';
+        b.style.border = '2px solid transparent';
+        b.style.boxShadow = 'none';
+        b.style.transform = 'none';
+      });
       const activeTabBtn = document.getElementById(`atab-${prov}`);
-      if (activeTabBtn) activeTabBtn.style.opacity = '1';
+      if (activeTabBtn) {
+        activeTabBtn.style.opacity = '1';
+        activeTabBtn.style.border = '2px solid #38bdf8';
+        activeTabBtn.style.boxShadow = '0 0 16px rgba(56, 189, 248, 0.45)';
+        activeTabBtn.style.transform = 'scale(1.02)';
+      }
 
+      const pillName = document.getElementById('admin-active-pill-name');
+      if (pillName) pillName.textContent = NOMES_PROVEDORES_AI[prov] || prov;
+
+      // Renderiza a caixa com controles e botão individual de salvar
       if (prov === 'opencode') {
         box.innerHTML = `
-          <div style="font-weight:900; color:#c084fc; margin-bottom:6px;">⚡ OpenCode CLI (Recomendado):</div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-            <input id="adm-prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="Modelo (ex: google/gemini-2.0-flash)" style="flex:1;" />
-            <input id="adm-prov-server" value="${c.opencode_server || ''}" placeholder="Servidor LAN (opcional: http://192.168.1.X:4096)" style="flex:1;" />
-            <button type="button" class="btn btn-purple" onclick="testarConexaoIa()">⚡ Testar OpenCode</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="font-weight:900; color:#c084fc; font-size:1.05rem;">⚡ OpenCode CLI (Autonomia de Código):</div>
+            <span style="background:#581c87; color:#f3e8ff; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">ATIVADO</span>
           </div>
-          <div style="font-size:0.84rem; color:#94a3b8;">Executa <code>opencode run</code> diretamente no netbook ou conecta via rede local.</div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-bottom:10px;">
+            <div>
+              <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Modelo OpenCode:</label>
+              <input id="adm-prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="ex: google/gemini-2.0-flash" style="width:100%; margin-top:2px;" />
+            </div>
+            <div>
+              <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Servidor LAN (opcional):</label>
+              <input id="adm-prov-server" value="${c.opencode_server || ''}" placeholder="http://192.168.1.X:4096" style="width:100%; margin-top:2px;" />
+            </div>
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8; margin-bottom:10px;">Executa comandos <code>opencode run</code> diretamente no netbook ou conecta via rede local.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-purple" onclick="testarConexaoIa()">⚡ Testar OpenCode</button>
+            <button type="button" class="btn btn-success" onclick="salvarProvedorAtual()">💾 Salvar Configurações</button>
+          </div>
         `;
       } else if (prov === 'ollama') {
         box.innerHTML = `
-          <div style="font-weight:900; color:#38bdf8; margin-bottom:6px;">🏠 Ollama Localhost (Zero Custos / 100% Offline):</div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
-            <input id="adm-prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" placeholder="http://127.0.0.1:11434" style="flex:1;" />
-            <select id="adm-prov-model" style="flex:1;">
-              <option value="llama3.2:1b" ${(c.ollama_model === 'llama3.2:1b' || !c.ollama_model) ? 'selected' : ''}>🦙 Llama 3.2 (1B - Meta IA Local)</option>
-              <option value="qwen2.5:0.5b" ${c.ollama_model === 'qwen2.5:0.5b' ? 'selected' : ''}>⚡ Qwen 2.5 (0.5B - Ultra-Leve)</option>
-            </select>
-            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">🦙 Testar Ollama</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="font-weight:900; color:#38bdf8; font-size:1.05rem;">🏠 Ollama Localhost (Zero Custos / 100% Offline):</div>
+            <span style="background:#0369a1; color:#e0f2fe; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">ATIVADO NO NETBOOK</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-bottom:10px;">
+            <div>
+              <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">URL do Serviço Ollama:</label>
+              <input id="adm-prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" placeholder="http://127.0.0.1:11434" style="width:100%; margin-top:2px;" />
+            </div>
+            <div>
+              <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Modelo Local Instalado:</label>
+              <select id="adm-prov-model" style="width:100%; margin-top:2px;">
+                <option value="llama3.2:1b" ${(c.ollama_model === 'llama3.2:1b' || !c.ollama_model) ? 'selected' : ''}>🦙 Llama 3.2 (1B - Meta IA Local Recomendado)</option>
+                <option value="qwen2.5:0.5b" ${c.ollama_model === 'qwen2.5:0.5b' ? 'selected' : ''}>⚡ Qwen 2.5 (0.5B - Ultra-Leve para Atom)</option>
+              </select>
+            </div>
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8; margin-bottom:10px;">Processamento 100% na máquina, sem necessidade de internet e sem envio de dados para fora. Ideal para o Acer Aspire One!</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">🦙 Testar Ollama Local</button>
+            <button type="button" class="btn btn-success" onclick="salvarProvedorAtual()">💾 Salvar Modelo Local</button>
           </div>
         `;
       } else if (prov === 'gemini') {
         box.innerHTML = `
-          <div style="font-weight:900; color:#60a5fa; margin-bottom:6px;">✨ Google Gemini Cloud:</div>
-          <div style="display:flex; gap:8px; margin-bottom:8px;">
-            <input id="adm-prov-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave AIzaSy... do Gemini'}" style="flex:1;" />
-            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">✨ Testar Gemini</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="font-weight:900; color:#60a5fa; font-size:1.05rem;">✨ Google Gemini Cloud:</div>
+            <span style="background:#1e40af; color:#dbeafe; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">ATIVADO</span>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Chave de API do Gemini (AI Studio):</label>
+            <input id="adm-prov-key" type="password" placeholder="${c.has_gemini_key ? '•••••••••••••••• (Chave salva — cole outra para trocar)' : 'Cole sua chave AIzaSy... do Gemini'}" style="width:100%; margin-top:2px;" />
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8; margin-bottom:10px;">Obtenha sua chave gratuita em <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#60a5fa; text-decoration:underline;">aistudio.google.com/apikey</a>.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary" onclick="testarConexaoIa()">✨ Testar Conexão Gemini</button>
+            <button type="button" class="btn btn-success" onclick="salvarProvedorAtual()">💾 Salvar Chave Gemini</button>
           </div>
         `;
       } else if (prov === 'openai') {
         box.innerHTML = `
-          <div style="font-weight:900; color:#34d399; margin-bottom:6px;">🤖 OpenAI ChatGPT:</div>
-          <div style="display:flex; gap:8px; margin-bottom:8px;">
-            <input id="adm-prov-key" type="password" placeholder="${c.has_openai_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave sk-... da OpenAI'}" style="flex:1;" />
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="font-weight:900; color:#34d399; font-size:1.05rem;">🤖 OpenAI ChatGPT:</div>
+            <span style="background:#065f46; color:#d1fae5; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">ATIVADO</span>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Chave de API da OpenAI (sk-...):</label>
+            <input id="adm-prov-key" type="password" placeholder="${c.has_openai_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave sk-... da OpenAI'}" style="width:100%; margin-top:2px;" />
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8; margin-bottom:10px;">Chave de API gerada no portal da OpenAI em <a href="https://platform.openai.com/api-keys" target="_blank" style="color:#34d399; text-decoration:underline;">platform.openai.com/api-keys</a>.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" class="btn btn-success" onclick="testarConexaoIa()">🤖 Testar ChatGPT</button>
+            <button type="button" class="btn btn-primary" onclick="salvarProvedorAtual()">💾 Salvar Chave OpenAI</button>
           </div>
         `;
       } else if (prov === 'groq') {
         box.innerHTML = `
-          <div style="font-weight:900; color:#fb923c; margin-bottom:6px;">⚡ Groq Cloud Llama:</div>
-          <div style="display:flex; gap:8px; margin-bottom:8px;">
-            <input id="adm-prov-key" type="password" placeholder="${c.has_groq_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave gsk_... da Groq'}" style="flex:1;" />
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="font-weight:900; color:#fb923c; font-size:1.05rem;">⚡ Groq Cloud Llama:</div>
+            <span style="background:#9a3412; color:#ffedd5; padding:2px 8px; border-radius:6px; font-size:0.8rem; font-weight:800;">ATIVADO</span>
+          </div>
+          <div style="margin-bottom:8px;">
+            <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Chave de API da Groq (gsk_...):</label>
+            <input id="adm-prov-key" type="password" placeholder="${c.has_groq_key ? '•••••••••••••••• (Chave salva)' : 'Cole sua chave gsk_... da Groq'}" style="width:100%; margin-top:2px;" />
+          </div>
+          <div style="font-size:0.84rem; color:#94a3b8; margin-bottom:10px;">A Groq oferece inferência ultra-rápida GRATUITA com Llama 3.3 70B! Obtenha em <a href="https://console.groq.com/keys" target="_blank" style="color:#fb923c; text-decoration:underline;">console.groq.com/keys</a>.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button type="button" class="btn btn-warning" onclick="testarConexaoIa()">⚡ Testar Groq</button>
+            <button type="button" class="btn btn-success" onclick="salvarProvedorAtual()">💾 Salvar Chave Groq</button>
           </div>
         `;
+      }
+
+      // Auto-salva imediatamente se disparado por clique do usuário
+      if (autoSave) {
+        try {
+          const res = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ active_provider: prov, mode: prov })
+          });
+          const d = await res.json();
+          if (d.ok) {
+            adminConfig.active_provider = prov;
+            adminConfig.mode = prov;
+            const sBox = document.getElementById('admin-ai-status');
+            sBox.style.display = 'block';
+            sBox.style.background = '#065f46';
+            sBox.style.color = '#fff';
+            sBox.innerHTML = `✅ <strong>MOTOR ATIVADO COM SUCESSO:</strong> O Jarvis agora responderá perguntas usando <strong>${NOMES_PROVEDORES_AI[prov] || prov}</strong>!`;
+            showToast(`✅ Motor ${NOMES_PROVEDORES_AI[prov] || prov} ativado e salvo!`);
+          }
+        } catch (e) {
+          showToast('⚠️ Erro ao salvar provedor ativo no servidor.');
+        }
+      }
+    }
+
+    async function salvarProvedorAtual() {
+      const payload = {
+        active_provider: currentAdminProvider,
+        mode: currentAdminProvider
+      };
+      const keyInp = document.getElementById('adm-prov-key');
+      const servInp = document.getElementById('adm-prov-server');
+      const urlInp = document.getElementById('adm-prov-url');
+      const modInp = document.getElementById('adm-prov-model');
+
+      if (currentAdminProvider === 'opencode') {
+        if (modInp && modInp.value.trim()) payload.opencode_model = modInp.value.trim();
+        if (servInp) payload.opencode_server = servInp.value.trim();
+      } else if (currentAdminProvider === 'ollama') {
+        if (urlInp && urlInp.value.trim()) payload.ollama_url = urlInp.value.trim();
+        if (modInp && modInp.value.trim()) payload.ollama_model = modInp.value.trim();
+      } else if (currentAdminProvider === 'gemini') {
+        if (keyInp && keyInp.value.trim()) payload.gemini_api_key = keyInp.value.trim();
+      } else if (currentAdminProvider === 'openai') {
+        if (keyInp && keyInp.value.trim()) payload.openai_api_key = keyInp.value.trim();
+      } else if (currentAdminProvider === 'groq') {
+        if (keyInp && keyInp.value.trim()) payload.groq_api_key = keyInp.value.trim();
+      }
+
+      const sBox = document.getElementById('admin-ai-status');
+      sBox.style.display = 'block';
+      sBox.style.background = '#1e293b';
+      sBox.style.color = '#fff';
+      sBox.textContent = '⏳ Salvando configurações...';
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.ok) {
+          adminConfig = data.config || adminConfig;
+          sBox.style.background = '#065f46';
+          sBox.innerHTML = `✅ Configurações de <strong>${NOMES_PROVEDORES_AI[currentAdminProvider] || currentAdminProvider}</strong> salvas e ativadas com sucesso!`;
+          showToast('✅ Configurações salvas e aplicadas com sucesso!');
+        } else {
+          sBox.style.background = '#7f1d1d';
+          sBox.textContent = 'Erro ao salvar configurações no servidor.';
+        }
+      } catch (err) {
+        sBox.style.background = '#7f1d1d';
+        sBox.textContent = 'Falha ao salvar no servidor.';
       }
     }
 
@@ -1582,6 +1732,9 @@
         const data = await res.json();
         sBox.style.background = data.ok ? '#065f46' : '#7f1d1d';
         sBox.textContent = data.ok ? `✅ Sucesso! Resposta: "${data.message}"` : `⚠️ Erro: ${data.message}`;
+        if (data.ok) {
+          await carregarEstadoGeral();
+        }
       } catch (err) {
         sBox.style.background = '#7f1d1d';
         sBox.textContent = 'Falha ao comunicar com o servidor do Jarvis.';
@@ -1590,18 +1743,19 @@
 
     async function salvarConfiguracoesAdmin() {
       const payload = {
-        child_name: document.getElementById('adm-child-name').value.trim() || 'Kaleo Noah',
+        child_name: (document.getElementById('adm-child-name')?.value || '').trim() || 'Kaleo Noah',
         active_provider: currentAdminProvider,
-        voice_profile: document.getElementById('adm-voice-profile').value,
-        geo_cidade: (document.getElementById('adm-geo-cidade') ? document.getElementById('adm-geo-cidade').value.trim() : '') || 'São Paulo',
-        geo_estado: (document.getElementById('adm-geo-estado') ? document.getElementById('adm-geo-estado').value.trim() : '') || 'São Paulo',
-        geo_pais: (document.getElementById('adm-geo-pais') ? document.getElementById('adm-geo-pais').value.trim() : '') || 'Brasil',
-        youtube_url: document.getElementById('adm-yt-url').value.trim(),
-        netflix_url: document.getElementById('adm-nf-url').value.trim(),
-        media_start_time: document.getElementById('adm-start-time').value.trim(),
-        media_end_time: document.getElementById('adm-end-time').value.trim(),
-        media_daily_minutes: parseInt(document.getElementById('adm-daily-mins').value, 10) || 25,
-        require_book_before_media: document.getElementById('adm-req-book').checked
+        mode: currentAdminProvider,
+        voice_profile: document.getElementById('adm-voice-profile')?.value || 'jarvis_antonio',
+        geo_cidade: (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'Campo Largo',
+        geo_estado: (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná',
+        geo_pais: (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil',
+        youtube_url: (document.getElementById('adm-yt-url')?.value || '').trim() || 'https://www.youtubekids.com',
+        netflix_url: (document.getElementById('adm-nf-url')?.value || '').trim() || 'https://www.netflix.com/Kids',
+        media_start_time: (document.getElementById('adm-start-time')?.value || '').trim() || '16:00',
+        media_end_time: (document.getElementById('adm-end-time')?.value || '').trim() || '17:00',
+        media_daily_minutes: parseInt(document.getElementById('adm-daily-mins')?.value, 10) || 25,
+        require_book_before_media: !!document.getElementById('adm-req-book')?.checked
       };
 
       const keyInp = document.getElementById('adm-prov-key');
@@ -1635,7 +1789,7 @@
       }
     }
 
-    async function salvarLocalizacaoGeografica() {
+        async function salvarLocalizacaoGeografica() {
       const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'Campo Largo';
       const estado = (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná';
       const pais = (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil';

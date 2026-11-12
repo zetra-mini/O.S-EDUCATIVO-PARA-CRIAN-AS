@@ -1124,6 +1124,16 @@ def api_config(request: Request):
         if key in data:
             brain.config[key] = data[key]
 
+    # Garante sincronismo total entre active_provider e mode
+    if "active_provider" in data:
+        p_val = str(data["active_provider"]).lower().strip()
+        brain.config["active_provider"] = p_val
+        brain.config["mode"] = p_val
+    elif "mode" in data:
+        p_val = str(data["mode"]).lower().strip()
+        brain.config["active_provider"] = p_val
+        brain.config["mode"] = p_val
+
     # Atualiza localização geográfica no clima
     weather_mgr.definir_localizacao(
         brain.config.get("geo_cidade", "São Paulo"),

@@ -111,15 +111,24 @@ class JarvisBrain:
 
     def _child_system_instruction(self) -> str:
         return (
-            f"Você é o J.A.R.V.I.S., o robozinho super fofo, companheiro, animado e protetor do herói {self.name} (criança de 4 a 10 anos). "
-            f"Você tem olhinhos azuis de neon brilhantes, um reator no peito e muito carinho pelo {self.name}!\n"
-            f"DIRETRIZES FUNDAMENTAIS DE SEGURANÇA INFANTIL (ZERO RISCO):\n"
-            f"1. Fale SEMPRE em Português do Brasil com ternura, bipes alegres (bip bip!), afeto e vocabulário simples e lúdico.\n"
-            f"2. A criança está ouvindo sua voz em voz alta no netbook. NUNCA gere formatações markdown, asteriscos, códigos, links ou listas.\n"
-            f"3. Responda em no máximo 2 ou 3 frases curtas, doces, que façam sentido total para o universo infantil.\n"
-            f"4. NUNCA mencione violência, armas, sangue, morte, terror, pesadelos, bebidas, drogas, conteúdos adultos ou temas complexos.\n"
-            f"5. Se a criança perguntar algo impróprio, confuso ou fora do universo infantil, responda com doçura e redirecione para animais, brinquedos, naves ou dinossauros.\n"
-            f"6. Incentive sempre virtudes heróicas: arrumar os brinquedos, escovar os dentes, obedecer ao papai e à mamãe e respirar fundo com calma!"
+            f"Você é o J.A.R.V.I.S., o robozinho super fofo, companheiro, animado e protetor da criança {self.name} (idade de 4 a 10 anos).\n"
+            f"Você tem olhinhos azuis de neon brilhantes, um reator no peito e muito carinho por {self.name}!\n"
+            f"CONHECIMENTO GERAL E SUPER-HERÓIS:\n"
+            f"Você conhece perfeitamente todos os super-heróis dos quadrinhos e desenhos infantis:\n"
+            f"- Homem-Aranha é o Peter Parker, que escala paredes, solta teias e protege a cidade com bom humor;\n"
+            f"- Homem de Ferro é o Tony Stark, um inventor genial que criou sua armadura tecnológica com reator Arc no peito;\n"
+            f"- Batman é o Bruce Wayne, o Cavaleiro das Trevas que protege Gotham City com o Batmóvel;\n"
+            f"- Hulk é o cientista Bruce Banner que fica gigante, verde e super forte para proteger os amigos;\n"
+            f"- Capitão América é o Steve Rogers com seu escudo indestrutível com estrela;\n"
+            f"- Flash é o Barry Allen, o herói mais veloz do mundo que corre como um raio;\n"
+            f"- Super-Homem é o Clark Kent do planeta Krypton que voa e salva as pessoas.\n"
+            f"Além disso, você adora dinossauros, animais, astronomia, planetas, ciências, livros e matemática divertida!\n"
+            f"DIRETRIZES DE RESPOSTA:\n"
+            f"1. Fale sempre em Português do Brasil com ternura, entusiasmo e alegria (bip bip!).\n"
+            f"2. Responda com exatidão, clareza e doçura em 2 ou 3 frases curtas, ideais para ouvir em voz alta.\n"
+            f"3. NUNCA gere formatações markdown, asteriscos, códigos, links ou listas.\n"
+            f"4. NUNCA mencione violência, armas, sangue, morte ou temas adultos.\n"
+            f"5. Se a criança perguntar sobre qualquer herói ou personagem, responda quem ele é de verdade com empolgação infantil!"
         )
 
     def sanitizar_resposta_infantil(self, raw_text: str) -> str:
@@ -869,7 +878,7 @@ class JarvisBrain:
 
     def _offline_conversational_fallback(self, question: str) -> str:
         q_low = question.lower()
-        if any(w in q_low for w in ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "tudo bem"]):
+        if re.search(r"\b(oi|ol[áa]|bom dia|boa tarde|boa noite|tudo bem)\b", q_low):
             return f"Oi, {self.name}! Eu estou super feliz em conversar com você! Sobre o que você quer brincar agora: dinossauros, foguetes ou histórias?"
         if any(w in q_low for w in ["sol", "lua", "estrela", "planeta", "espaço", "espaco", "foguete"]):
             return self.ask_topic("espaco")
@@ -895,6 +904,23 @@ class JarvisBrain:
             return f"A sua família tem o maior superpoder do mundo: o amor e o carinho por você! Já deu um abraço bem apertado neles hoje?"
         if any(w in q_low for w in ["bravo", "raiva", "triste", "medo", "chorar"]):
             return f"Quando bater uma sensação difícil, {self.name}, lembre-se: respire bem fundo três vezes, cheirando a florzinha e assoprando a velinha! Eu estou aqui com você!"
+        # Super-heróis e personagens infantis famosos
+        if any(w in q_low for w in ["aranha", "spider", "peter parker"]):
+            return "O Homem-Aranha é o Peter Parker! Ele ganhou superpoderes de aranha, escala paredes, solta teias e protege a cidade com muita coragem e alegria!"
+        if any(w in q_low for w in ["homem de ferro", "iron man", "tony stark"]):
+            return "O Homem de Ferro é o Tony Stark! Ele é um inventor genial que criou uma super armadura cheia de tecnologia e um Reator Arc brilhante no peito!"
+        if any(w in q_low for w in ["batman", "homem morcego", "bruce wayne"]):
+            return "O Batman é o Bruce Wayne! Ele é um herói super esperto que usa o Batmóvel, bat-bumerangues e sua capa para proteger a cidade!"
+        if any(w in q_low for w in ["hulk", "gigante verde", "bruce banner"]):
+            return "O Hulk é o cientista Bruce Banner! Quando ele fica bravo, ele vira um gigante verde super forte, mas ele tem um bom coração e protege os amigos!"
+        if any(w in q_low for w in ["capitão américa", "capitao america", "steve rogers"]):
+            return "O Capitão América é o Steve Rogers! Ele usa um escudo de vibranium indestrutível e lidera os heróis com muita coragem e lealdade!"
+        if any(w in q_low for w in ["flash", "barry allen"]):
+            return "O Flash é o herói mais veloz do mundo! Ele corre tão rápido quanto um raio e sempre chega a tempo de salvar todo mundo!"
+        if any(w in q_low for w in ["superman", "super-homem", "super homem", "clark kent"]):
+            return "O Super-Homem veio do planeta Krypton! Ele voa lá no alto das nuvens, tem super força e uma capa vermelha linda!"
+        if any(w in q_low for w in ["vingadores", "liga da justiça", "liga da justica", "super heroi", "super-heroi"]):
+            return "Os super-heróis trabalham sempre em equipe com muito amor e coragem! Qual é o seu herói favorito?"
         if any(w in q_low for w in ["stark", "ferro", "armadura", "jarvis", "robô", "robo"]):
             return self.ask_topic("heroi")
         return f"Que legal o que você falou, {self.name}! Segure o botão para me contar mais ou toque num desenho colorido para brincarmos juntos!"
@@ -1115,10 +1141,10 @@ class JarvisBrain:
                         "model": m,
                         "messages": messages,
                         "stream": False,
-                        "options": {"temperature": 0.55, "num_predict": 110},
+                        "options": {"temperature": 0.45, "num_predict": 110},
                     }).encode("utf-8")
                     req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-                    with urllib.request.urlopen(req, timeout=12) as res:
+                    with urllib.request.urlopen(req, timeout=22) as res:
                         data = json.loads(res.read().decode("utf-8"))
                         ans = self._clean_llm_reply((data.get("message") or {}).get("content", ""))
                         if ans:
