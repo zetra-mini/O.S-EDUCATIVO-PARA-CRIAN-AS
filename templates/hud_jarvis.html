@@ -5068,6 +5068,10 @@
       }
 
       if (matchedLocal) {
+        // EXECUÇÃO ULTRA-RÁPIDA (0ms): ABRE O JOGO INSTANTANEAMENTE!
+        if (typeof acaoLocal === 'function') {
+          try { acaoLocal(); } catch (e) { console.warn('Erro ao acionar jogo local:', e); }
+        }
         setVoiceVisualState('speaking');
         const speakWaves = document.getElementById('robot-speaking-waves');
         if (speakWaves) speakWaves.style.display = 'block';
@@ -5075,7 +5079,6 @@
           onEnd: () => {
             if (speakWaves) speakWaves.style.display = 'none';
             resetVoiceToIdle();
-            if (typeof acaoLocal === 'function') acaoLocal();
           }
         });
         return;
@@ -5091,6 +5094,11 @@
 
         if (voiceState !== 'processing') return;
 
+        // EXECUÇÃO ULTRA-RÁPIDA DA AÇÃO DETECTADA PELO BACKEND (0ms)!
+        if (data.acao_frontend) {
+          executarAcaoFrontendImediata(data.acao_frontend);
+        }
+
         const replyText = data.resposta_voz || data.reply || "Sim, Kaleu!";
 
         // ESTADO: FALANDO!
@@ -5104,51 +5112,55 @@
           onEnd: () => {
             if (speakWaves) speakWaves.style.display = 'none';
             resetVoiceToIdle();
-
-            // Ações secundárias detectadas por comando de voz
-            if (data.acao_frontend === 'abrir_clima') openWeatherSeasonsModal();
-            else if (data.acao_frontend === 'abrir_loja') abrirLojaTesouro();
-            else if (data.acao_frontend === 'missao_dente') iniciarMissaoDente();
-            else if (data.acao_frontend === 'missao_quarto') iniciarMissaoQuarto();
-            else if (data.acao_frontend === 'ir_cozinha') irParaComodo(0);
-            else if (data.acao_frontend === 'abrir_jogos') openGamesMenuModal(1);
-            else if (data.acao_frontend === 'abrir_biblioteca') openBooksLibrary();
-            else if (data.acao_frontend === 'abrir_musica') openMusicComposer();
-            else if (data.acao_frontend === 'abrir_pintura') openStarkPaint();
-            else if (data.acao_frontend === 'abrir_tech') openTechAcademy();
-            else if (data.acao_frontend === 'abrir_datas') openDatasComemorativasModal();
-            else if (data.acao_frontend === 'abrir_comida') openHealthyFoodGame();
-            else if (data.acao_frontend === 'abrir_higiene') openPersonalHygieneGame();
-            else if (data.acao_frontend === 'abrir_cinema') openCinemaStark();
-            else if (data.acao_frontend === 'cinema_bloqueado') openCinemaStark();
-            else if (data.acao_frontend === 'abrir_dedinhos') openFingerCounting();
-            else if (data.acao_frontend === 'abrir_letras') openLiteracyAcademy();
-            else if (data.acao_frontend === 'abrir_idiomas') openLanguagesAcademy();
-            else if (data.acao_frontend === 'abrir_semaforo') abrirModalSemaforo();
-            else if (data.acao_frontend === 'abrir_emocoes') openEmotionsCenter();
-            else if (data.acao_frontend === 'abrir_diccao') openSpeechTrainingGame();
-            else if (data.acao_frontend === 'sortear_palavra_diccao') {
-              openSpeechTrainingGame();
-              setTimeout(() => sortearNovaPalavraMagicaJarvis(), 350);
-            }
-            else if (data.acao_frontend === 'abrir_sistema_solar') openSolarSystemGame();
-            else if (data.acao_frontend === 'abrir_reino_animal') openAnimalSoundsGame();
-            else if (data.acao_frontend === 'abrir_relogio_tempo') openMagicClockGame();
-            else if (data.acao_frontend === 'abrir_detetive_erros') openDetectiveErrorsGame();
-            else if (data.acao_frontend === 'abrir_ciencias_misturas') openScienceLabGame();
-            else if (data.acao_frontend === 'abrir_xadrez_mestre') openChessAcademyGame();
-            else if (data.acao_frontend === 'abrir_dinossauros_fosseis') openDinosaurFossilsGame();
-            else if (data.acao_frontend === 'abrir_engenharia') abrirQuartoEngenhariaModal();
-            else if (data.acao_frontend === 'abrir_matematica') openMathMasterGame();
-            else if (data.acao_frontend === 'abrir_reciclagem') openPlanetRecyclingGame();
-            else if (data.acao_frontend === 'abrir_fabrica_robos') openRobotFactoryGame();
-
-            // O MICROFONE PERMANECE 100% DESLIGADO! ZERO WAKE-WORD. ZERO REINÍCIO OCULTO.
           }
         });
       } catch (err) {
         resetVoiceToIdle();
         speak('Tive uma falha de conexão com meu cérebro agora. Clique para tentar de novo!');
+      }
+    }
+
+    function executarAcaoFrontendImediata(acao) {
+      if (!acao) return;
+      try {
+        closeModal(false);
+        if (acao === 'abrir_clima') openWeatherSeasonsModal();
+        else if (acao === 'abrir_loja') abrirLojaTesouro();
+        else if (acao === 'missao_dente') iniciarMissaoDente();
+        else if (acao === 'missao_quarto') iniciarMissaoQuarto();
+        else if (acao === 'ir_cozinha') irParaComodo(0);
+        else if (acao === 'abrir_jogos') openGamesMenuModal(1);
+        else if (acao === 'abrir_biblioteca') openBooksLibrary();
+        else if (acao === 'abrir_musica') openMusicComposer();
+        else if (acao === 'abrir_pintura') openStarkPaint();
+        else if (acao === 'abrir_tech') openTechAcademy();
+        else if (acao === 'abrir_datas') openDatasComemorativasModal();
+        else if (acao === 'abrir_comida') openHealthyFoodGame();
+        else if (acao === 'abrir_higiene') openPersonalHygieneGame();
+        else if (acao === 'abrir_cinema' || acao === 'cinema_bloqueado') openCinemaStark();
+        else if (acao === 'abrir_dedinhos') openFingerCounting();
+        else if (acao === 'abrir_letras') openLiteracyAcademy();
+        else if (acao === 'abrir_idiomas') openLanguagesAcademy();
+        else if (acao === 'abrir_semaforo') abrirModalSemaforo();
+        else if (acao === 'abrir_emocoes') openEmotionsCenter();
+        else if (acao === 'abrir_diccao') openSpeechTrainingGame();
+        else if (acao === 'sortear_palavra_diccao') {
+          openSpeechTrainingGame();
+          setTimeout(() => sortearNovaPalavraMagicaJarvis(), 200);
+        }
+        else if (acao === 'abrir_sistema_solar') openSolarSystemGame();
+        else if (acao === 'abrir_reino_animal') openAnimalSoundsGame();
+        else if (acao === 'abrir_relogio_tempo') openMagicClockGame();
+        else if (acao === 'abrir_detetive_erros') openDetectiveErrorsGame();
+        else if (acao === 'abrir_ciencias_misturas') openScienceLabGame();
+        else if (acao === 'abrir_xadrez_mestre') openChessAcademyGame();
+        else if (acao === 'abrir_dinossauros_fosseis') openDinosaurFossilsGame();
+        else if (acao === 'abrir_engenharia') abrirQuartoEngenhariaModal();
+        else if (acao === 'abrir_matematica') openMathMasterGame();
+        else if (acao === 'abrir_reciclagem') openPlanetRecyclingGame();
+        else if (acao === 'abrir_fabrica_robos') openRobotFactoryGame();
+      } catch (err) {
+        console.warn('Erro ao executar acao frontend:', err);
       }
     }
 
@@ -5837,11 +5849,7 @@
     }
 
     function closeModal(restoreVoice = true) {
-      pararTodosAudiosESpeech();
-      if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
-      if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
-      if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
-      resetVoiceToIdle();
+      encerrarTodosProcessosEAudiosJogos();
       modalNavStack = [];
       const mEl = document.getElementById('activity-modal');
       if (mEl) {
@@ -5850,6 +5858,53 @@
       }
       document.getElementById('modal-body').innerHTML = '';
       if (restoreVoice) loadState(false);
+    }
+
+    let activeSoundNodes = [];
+    function registrarNodeSonoro(node) {
+      if (node) activeSoundNodes.push(node);
+      return node;
+    }
+    function limparNodesSonorosAtivos() {
+      activeSoundNodes.forEach(n => {
+        try {
+          if (typeof n.stop === 'function') n.stop();
+          if (typeof n.disconnect === 'function') n.disconnect();
+        } catch(e) {}
+      });
+      activeSoundNodes = [];
+    }
+
+    function encerrarTodosProcessosEAudiosJogos() {
+      // 1. Para imediatamente qualquer áudio, TTS e síntese de voz
+      pararTodosAudiosESpeech();
+
+      // 2. Para canções de contagem e timers musicais
+      if (typeof stopCountingSong === 'function') stopCountingSong();
+
+      // 3. Desliga imediatamente câmera e visões computacionais
+      if (typeof stopFingerCameraMode === 'function') stopFingerCameraMode();
+
+      // 4. Para timers de música, metrônomos e batidas
+      if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
+
+      // 5. Para qualquer intervalo global ou listener
+      if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
+      if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
+
+      // 6. Silencia e pausa todos os elementos de mídia HTML5 do documento
+      document.querySelectorAll('audio, video').forEach(el => {
+        try {
+          el.pause();
+          el.currentTime = 0;
+        } catch (e) {}
+      });
+
+      // 7. Interrompe e desconecta nós de áudio procedurais Web Audio ativos (Dinos, etc.)
+      limparNodesSonorosAtivos();
+
+      // 8. Reseta estado visual da voz do robô
+      resetVoiceToIdle();
     }
 
     // =========================================================================
@@ -6396,117 +6451,143 @@
       speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name || 'Kaleo'}! Toque nos dedinhos ou em um número!`);
 
       body.innerHTML = `
-        <!-- SELETOR DE MODOS COMPACTO -->
-        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; justify-content:center;">
-          <button type="button" class="music-tab-btn active" id="tab-fc-free" onclick="switchFingerCountingMode('free')">🖐️ Mãos Livres & Números</button>
-          <button type="button" class="music-tab-btn" id="tab-fc-cam" onclick="switchFingerCountingMode('cam')">📸 Mãozinha na Câmera (IA)</button>
-          <button type="button" class="music-tab-btn" id="tab-fc-quiz" onclick="switchFingerCountingMode('quiz')">🎮 Jogo: Quantos Dedinhos?</button>
-          <button type="button" class="music-tab-btn" id="tab-fc-song" onclick="playCountingSong()">▶️ Canção de Contar (1 ao 10)</button>
-        </div>
-
-        <!-- WRAPPER DO MODO LIVRE & QUIZ -->
-        <div id="fc-free-wrapper" style="display:flex; flex-direction:column; gap:6px; flex:1;">
-          <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
-          <div style="background:#0b192e; border:2px solid #38bdf8; border-radius:14px; padding:6px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div id="fc-big-num" style="font-size:2.8rem; font-weight:900; color:#facc15; text-shadow:0 0 15px rgba(250, 204, 21, 0.6); line-height:1; min-width:50px; text-align:center;">0</div>
-              <div>
-                <div id="fc-word-title" style="font-size:1.25rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
-                <div id="fc-concrete-items" style="font-size:0.95rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
+        <!-- ESTRUTURA LATERAL OTIMIZADA PARA TELAS 1024x600 NETBOOK ACER ONE -->
+        <div style="display:grid; grid-template-columns: 195px 1fr; gap:10px; height:100%; max-height:calc(100vh - 72px); box-sizing:border-box;">
+          
+          <!-- SIDEBAR LATERAL ESQUERDA: SELETOR DE MODOS E FERRAMENTAS -->
+          <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; gap:6px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="font-size:0.92rem; font-weight:900; color:#38bdf8; text-transform:uppercase; text-align:center; padding-bottom:4px; border-bottom:1px solid #1e3a63;">
+                🖐️ Modo de Estudo
               </div>
-            </div>
-            <button type="button" class="big-btn" style="background:#059669; font-size:0.9rem; padding:6px 14px;" onclick="speakCurrentNumberHint()">🔊 Ouvir Járvis</button>
-          </div>
-
-          <!-- PRATELEIRA VISUAL CONCRETA: FRUTINHAS / MAÇÃS GIGANTES PARA CRIANÇAS -->
-          <div id="fc-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; min-height:36px; padding:4px 10px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:12px;">
-            <span style="color:#94a3b8; font-size:0.95rem; font-weight:700;">Toque em um número para ver as frutinhas!</span>
-          </div>
-
-          <!-- CONTAINER DO DIAGRAMA DAS MÃOS CARTOON NITIDAS -->
-          <div style="background:#061224; border:2px solid #1e293b; border-radius:14px; padding:6px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
-            <svg viewBox="0 0 620 205" style="width:100%; max-width:540px; height:150px;" id="fc-hands-svg">
-              <defs>
-                <filter id="hand-glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
-                </filter>
-              </defs>
-
-              <!-- MÃO ESQUERDA -->
-              <g id="fc-hand-left" transform="translate(30, 8)">
-                <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
-                <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
-                <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
-                <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">✋ ESQUERDA</text>
-              </g>
-
-              <!-- MÃO DIREITA -->
-              <g id="fc-hand-right" transform="translate(370, 8)">
-                <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
-                <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
-                <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
-                <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">🤚 DIREITA</text>
-              </g>
-            </svg>
-
-            <!-- DICA FLUTUANTE INFORMATIVA -->
-            <div id="fc-feedback-bar" style="font-size:0.95rem; font-weight:800; color:#fef08a; text-align:center; min-height:22px; margin-top:2px;">
-              Toque nos dedinhos para levantar ou escolha um número abaixo!
-            </div>
-          </div>
-        </div>
-
-        <!-- WRAPPER DO MODO CÂMERA (LAYOUT 2 COLUNAS PROJETADO PARA TELAS 1024x600 NETBOOK INTEL ATOM) -->
-        <div id="fc-cam-box" style="display:none; grid-template-columns: minmax(260px, 1fr) 1.2fr; gap:10px; align-items:stretch; background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:8px 12px; margin-bottom:6px; box-shadow:0 0 20px rgba(56,189,248,0.25);">
-          <!-- COLUNA ESQUERDA: CÂMERA COM ASPECTO NATIVO E ZERO DISTORÇÃO -->
-          <div style="display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px;">
-            <div style="font-size:0.92rem; font-weight:800; color:#38bdf8; display:flex; align-items:center; justify-content:space-between; width:100%;">
-              <span>📸 Visão IA Dedinhos</span>
-              <span id="fc-engine-tag" style="background:#0284c7; color:#fff; font-size:0.7rem; padding:1px 8px; border-radius:999px; font-weight:900;">MediaPipe IA</span>
+              <button type="button" class="music-tab-btn active" id="tab-fc-free" style="padding:8px 6px; font-size:0.82rem; font-weight:800; text-align:left; border-radius:10px;" onclick="switchFingerCountingMode('free')">
+                🖐️ Mãos Livres & Números
+              </button>
+              <button type="button" class="music-tab-btn" id="tab-fc-cam" style="padding:8px 6px; font-size:0.82rem; font-weight:800; text-align:left; border-radius:10px;" onclick="switchFingerCountingMode('cam')">
+                📸 Câmera IA Dedinhos
+              </button>
+              <button type="button" class="music-tab-btn" id="tab-fc-quiz" style="padding:8px 6px; font-size:0.82rem; font-weight:800; text-align:left; border-radius:10px;" onclick="switchFingerCountingMode('quiz')">
+                🎮 Jogo: Quantos Dedinhos?
+              </button>
+              <button type="button" class="music-tab-btn" id="tab-fc-song" style="padding:8px 6px; font-size:0.82rem; font-weight:800; text-align:left; border-radius:10px;" onclick="switchFingerCountingMode('song')">
+                🎵 Canção (1 ao 10)
+              </button>
             </div>
 
-            <div id="fc-video-wrapper" style="position:relative; width:100%; max-width:280px; aspect-ratio:4/3; max-height:190px; border-radius:10px; overflow:hidden; border:2px solid #0284c7; background:#000; display:flex; align-items:center; justify-content:center;">
-              <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:contain; transform:scaleX(-1); background:#000;"></video>
-              <canvas id="fc-canvas-overlay" width="320" height="240" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; transform:scaleX(-1);"></canvas>
-              <div id="fc-cam-badge" style="position:absolute; bottom:4px; left:4px; right:4px; background:rgba(15,23,42,0.92); color:#facc15; padding:3px 8px; border-radius:8px; font-weight:900; font-size:0.78rem; border:1px solid #eab308; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(6px);">
-                <span id="fc-cam-badge-text">🖐️ Mostre sua mãozinha...</span>
-                <span id="fc-cam-stability-bar" style="font-size:0.7rem; color:#38bdf8; font-weight:700;"></span>
+            <!-- DICA DO ROBÔ NA SIDEBAR -->
+            <div style="background:#030b18; border:1px solid #1e293b; border-radius:10px; padding:6px 8px; text-align:center;">
+              <div style="font-size:1.4rem;">🤖</div>
+              <div style="font-size:0.75rem; color:#7dd3fc; font-weight:800; margin-top:2px;">Toque na canção ou nos dedinhos!</div>
+            </div>
+          </div>
+
+          <!-- ÁREA PRINCIPAL DA ATIVIDADE -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; gap:6px; min-width:0;">
+
+            <!-- WRAPPER DO MODO LIVRE, QUIZ & CANÇÃO -->
+            <div id="fc-free-wrapper" style="display:flex; flex-direction:column; gap:6px; flex:1; justify-content:space-between;">
+              <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
+              <div style="background:#0b192e; border:2px solid #38bdf8; border-radius:14px; padding:6px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div id="fc-big-num" style="font-size:2.8rem; font-weight:900; color:#facc15; text-shadow:0 0 15px rgba(250, 204, 21, 0.6); line-height:1; min-width:50px; text-align:center;">0</div>
+                  <div>
+                    <div id="fc-word-title" style="font-size:1.25rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
+                    <div id="fc-concrete-items" style="font-size:0.92rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
+                  </div>
+                </div>
+                <button type="button" class="big-btn" style="background:#059669; font-size:0.85rem; padding:6px 12px;" onclick="speakCurrentNumberHint()">🔊 Ouvir Járvis</button>
               </div>
-            </div>
 
-            <button type="button" class="big-btn" style="background:#ef4444; font-size:0.8rem; padding:4px 12px; width:100%; max-width:280px;" onclick="switchFingerCountingMode('free')">
-              ❌ Desligar Câmera
-            </button>
-          </div>
+              <!-- PRATELEIRA VISUAL CONCRETA: FRUTINHAS GIGANTES -->
+              <div id="fc-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; min-height:36px; padding:4px 10px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:12px;">
+                <span style="color:#94a3b8; font-size:0.92rem; font-weight:700;">Toque em um número para ver as frutinhas!</span>
+              </div>
 
-          <!-- COLUNA DIREITA: FEEDBACK VISUAL EM TEMPO REAL COM NÚMERO E MAÇÃS -->
-          <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:12px; padding:8px 12px; gap:6px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div id="fc-cam-big-num" style="font-size:2.8rem; font-weight:900; color:#facc15; text-shadow:0 0 15px rgba(250, 204, 21, 0.6); line-height:1; min-width:50px; text-align:center;">0</div>
-              <div>
-                <div id="fc-cam-word-title" style="font-size:1.25rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
-                <div id="fc-cam-concrete-items" style="font-size:0.88rem; color:#38bdf8; font-weight:700; margin-top:1px;">Mãozinhas fechadas! Mostre os dedinhos para a câmera!</div>
+              <!-- CONTAINER DO DIAGRAMA DAS MÃOS CARTOON NITIDAS -->
+              <div style="background:#061224; border:2px solid #1e293b; border-radius:14px; padding:6px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
+                <svg viewBox="0 0 620 205" style="width:100%; max-width:520px; height:140px;" id="fc-hands-svg">
+                  <defs>
+                    <filter id="hand-glow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
+                    </filter>
+                  </defs>
+
+                  <!-- MÃO ESQUERDA -->
+                  <g id="fc-hand-left" transform="translate(30, 8)">
+                    <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
+                    <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
+                    <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">✋ ESQUERDA</text>
+                  </g>
+
+                  <!-- MÃO DIREITA -->
+                  <g id="fc-hand-right" transform="translate(370, 8)">
+                    <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
+                    <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
+                    <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">🤚 DIREITA</text>
+                  </g>
+                </svg>
+
+                <div id="fc-feedback-bar" style="font-size:0.92rem; font-weight:800; color:#fef08a; text-align:center; min-height:20px; margin-top:2px;">
+                  Toque nos dedinhos para levantar ou escolha um número abaixo!
+                </div>
               </div>
             </div>
 
-            <div id="fc-cam-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:4px; flex-wrap:wrap; min-height:36px; padding:4px 8px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:10px;">
-              <span style="color:#94a3b8; font-size:0.85rem; font-weight:700;">Levante os dedinhos na câmera!</span>
+            <!-- WRAPPER DO MODO CÂMERA (2 COLUNAS PROPORCIONAIS) -->
+            <div id="fc-cam-box" style="display:none; grid-template-columns: minmax(240px, 1fr) 1.2fr; gap:10px; align-items:stretch; background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:8px 12px; box-shadow:0 0 20px rgba(56,189,248,0.25);">
+              <div style="display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px;">
+                <div style="font-size:0.9rem; font-weight:800; color:#38bdf8; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                  <span>📸 Câmera IA Dedinhos</span>
+                  <span id="fc-engine-tag" style="background:#0284c7; color:#fff; font-size:0.7rem; padding:1px 8px; border-radius:999px; font-weight:900;">MediaPipe IA</span>
+                </div>
+
+                <div id="fc-video-wrapper" style="position:relative; width:100%; max-width:260px; aspect-ratio:4/3; max-height:180px; border-radius:10px; overflow:hidden; border:2px solid #0284c7; background:#000; display:flex; align-items:center; justify-content:center;">
+                  <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:contain; transform:scaleX(-1); background:#000;"></video>
+                  <canvas id="fc-canvas-overlay" width="320" height="240" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; transform:scaleX(-1);"></canvas>
+                  <div id="fc-cam-badge" style="position:absolute; bottom:4px; left:4px; right:4px; background:rgba(15,23,42,0.92); color:#facc15; padding:3px 8px; border-radius:8px; font-weight:900; font-size:0.75rem; border:1px solid #eab308; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(6px);">
+                    <span id="fc-cam-badge-text">🖐️ Mostre sua mãozinha...</span>
+                    <span id="fc-cam-stability-bar" style="font-size:0.68rem; color:#38bdf8; font-weight:700;"></span>
+                  </div>
+                </div>
+
+                <button type="button" class="big-btn" style="background:#ef4444; font-size:0.8rem; padding:4px 12px; width:100%; max-width:260px;" onclick="switchFingerCountingMode('free')">
+                  ❌ Desligar Câmera
+                </button>
+              </div>
+
+              <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:12px; padding:8px 12px; gap:6px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div id="fc-cam-big-num" style="font-size:2.8rem; font-weight:900; color:#facc15; text-shadow:0 0 15px rgba(250, 204, 21, 0.6); line-height:1; min-width:50px; text-align:center;">0</div>
+                  <div>
+                    <div id="fc-cam-word-title" style="font-size:1.25rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
+                    <div id="fc-cam-concrete-items" style="font-size:0.85rem; color:#38bdf8; font-weight:700; margin-top:1px;">Mãozinhas fechadas! Mostre os dedinhos para a câmera!</div>
+                  </div>
+                </div>
+
+                <div id="fc-cam-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:4px; flex-wrap:wrap; min-height:36px; padding:4px 8px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:10px;">
+                  <span style="color:#94a3b8; font-size:0.82rem; font-weight:700;">Levante os dedinhos na câmera!</span>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                  <span style="font-size:0.78rem; color:#fef08a; font-weight:800;">✨ Segure a mãozinha estável!</span>
+                  <button type="button" class="big-btn" style="background:#059669; font-size:0.78rem; padding:4px 10px;" onclick="speakCurrentNumberHint()">🔊 Ouvir</button>
+                </div>
+              </div>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-              <span style="font-size:0.8rem; color:#fef08a; font-weight:800;">✨ Segure a mãozinha estável!</span>
-              <button type="button" class="big-btn" style="background:#059669; font-size:0.8rem; padding:4px 10px;" onclick="speakCurrentNumberHint()">🔊 Ouvir</button>
-            </div>
+            <!-- RÉGUA COLORIDA DOS NÚMEROS DE 0 A 10 (COMPACTA) -->
+            <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin-top:2px;" id="fc-num-bar"></div>
+
+            <!-- ÁREA DO QUIZ (OCULTA INICIALMENTE) -->
+            <div id="fc-quiz-box" style="display:none; margin-top:6px; gap:8px; justify-content:center; flex-wrap:wrap;"></div>
+
           </div>
+
         </div>
-
-        <!-- RÉGUA COLORIDA DOS NÚMEROS DE 0 A 10 (COMPACTA) -->
-        <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin-top:2px;" id="fc-num-bar"></div>
-
-        <!-- ÁREA DO QUIZ (OCULTA INICIALMENTE) -->
-        <div id="fc-quiz-box" style="display:none; margin-top:6px; gap:8px; justify-content:center; flex-wrap:wrap;"></div>
       `;
 
       renderHandsSvgElements();
@@ -7153,24 +7234,35 @@
 
     function switchFingerCountingMode(mode) {
       stopCountingSong();
+      stopCurrentSpeech();
       document.querySelectorAll('#activity-modal .music-tab-btn').forEach(b => b.classList.remove('active'));
       const activeTab = document.getElementById(`tab-fc-${mode}`);
       if (activeTab) activeTab.classList.add('active');
 
       const quizBox = document.getElementById('fc-quiz-box');
       const numBar = document.getElementById('fc-num-bar');
+      const freeWrap = document.getElementById('fc-free-wrapper');
+      const camBox = document.getElementById('fc-cam-box');
 
       if (mode === 'cam') {
         startFingerCameraMode();
       } else {
         stopFingerCameraMode();
+        if (camBox) camBox.style.display = 'none';
+        if (freeWrap) freeWrap.style.display = 'flex';
+
         if (mode === 'quiz') {
           if (numBar) numBar.style.display = 'none';
           if (quizBox) {
             quizBox.style.display = 'flex';
             startFingerQuizRound();
           }
+        } else if (mode === 'song') {
+          if (numBar) numBar.style.display = 'flex';
+          if (quizBox) quizBox.style.display = 'none';
+          playCountingSong();
         } else {
+          // free
           if (numBar) numBar.style.display = 'flex';
           if (quizBox) quizBox.style.display = 'none';
           setCountingNumber(3, true);
@@ -7251,42 +7343,54 @@
 
     function playCountingSong() {
       stopCountingSong();
+      stopCurrentSpeech();
       isCountingSongActive = true;
       document.querySelectorAll('#activity-modal .music-tab-btn').forEach(b => b.classList.remove('active'));
       const songTab = document.getElementById('tab-fc-song');
       if (songTab) songTab.classList.add('active');
 
-      speak(`Vamos cantar e contar de um até dez levantando os dedinhos, ${appState.config.child_name || 'Kaleo'}!`, {
-        onEnd: () => {
-          if (!isCountingSongActive) return;
-          countingSongTimer = setTimeout(() => {
-            runCountingStep(1);
-          }, 700);
-        }
-      });
+      const freeWrap = document.getElementById('fc-free-wrapper');
+      const camBox = document.getElementById('fc-cam-box');
+      const quizBox = document.getElementById('fc-quiz-box');
+      const numBar = document.getElementById('fc-num-bar');
+
+      if (camBox) camBox.style.display = 'none';
+      if (quizBox) quizBox.style.display = 'none';
+      if (freeWrap) freeWrap.style.display = 'flex';
+      if (numBar) numBar.style.display = 'flex';
+
+      // Transição instantânea sem delay: define número 1 imediatamente e toca chime!
+      setCountingNumber(1, false);
+      playTone(523, 100);
+      setTimeout(() => playTone(659, 100), 100);
+
+      const feedback = document.getElementById('fc-feedback-bar');
+      if (feedback) feedback.textContent = '🎵 Canção dos Dedinhos: 1 ao 10! Acompanhe com suas mãozinhas!';
+
+      // Inicia imediatamente no número 1
+      runCountingStep(1);
     }
 
     function runCountingStep(step) {
       if (!isCountingSongActive) return;
       if (step > 10) {
         stopCountingSong();
-        playSfxSuccess();
-        speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você contou de um até dez com todos os dedinhos levantados! Ganhou uma estrela!`);
+        playCelebrationFanfare();
+        speak(`Sensacional, super ${appState.config.child_name || 'Kaleo'}! Você contou de um até dez com todos os dedinhos levantados! Ganhou uma estrela!`);
         addStarReward(1);
         return;
       }
 
       setCountingNumber(step, false); // Atualiza dedinhos, maçãs e chime
       const data = FINGER_COUNT_DATA[step] || FINGER_COUNT_DATA[0];
-      const speechText = `${data.word}! ${data.hint}`;
+      const speechText = `${step}! ${data.word}!`;
 
-      // O próximo passo SÓ roda depois que o Jarvis TERMINA de falar a frase inteira!
       speak(speechText, {
         onEnd: () => {
           if (!isCountingSongActive) return;
           countingSongTimer = setTimeout(() => {
             runCountingStep(step + 1);
-          }, 950);
+          }, 350); // Transição fluida de 350ms sem travamentos
         }
       });
     }
@@ -11611,19 +11715,37 @@
     function renderSolarSystemBody(body) {
       const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: 210px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- SELETOR DE PLANETAS HORIZONTAL TOUCH -->
-          <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; -webkit-overflow-scrolling:touch;">
-            ${BANCO_SISTEMA_SOLAR.map((item, idx) => `
-              <button type="button" class="big-btn" style="padding:6px 12px; font-size:0.85rem; font-weight:800; border-radius:12px; white-space:nowrap; ${idx === corpoSolarIdx ? `background:${item.cor}22; border:2px solid ${item.cor}; color:#fff;` : 'background:#0f172a; border:1px solid #334155; color:#94a3b8;'}" onclick="selecionarCorpoSolar(${idx})">
-                ${item.icon} ${item.nome.split(' ')[0]}
+          <!-- BARRA LATERAL ESQUERDA: LISTA VERTICAL DE PLANETAS -->
+          <div style="display:flex; flex-direction:column; gap:4px; background:#071224; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between; overflow:hidden;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+                🪐 Astres & Planetas
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:270px; scrollbar-width:thin; padding-right:2px;">
+                ${BANCO_SISTEMA_SOLAR.map((item, idx) => `
+                  <button type="button" class="big-btn" style="padding:6px 8px; font-size:0.8rem; font-weight:800; border-radius:8px; display:flex; align-items:center; gap:6px; ${idx === corpoSolarIdx ? `background:${item.cor}25; border:1.5px solid ${item.cor}; color:#fff;` : 'background:#0f172a; border:1px solid #1e293b; color:#94a3b8;'}" onclick="selecionarCorpoSolar(${idx})">
+                    <span style="font-size:1.15rem; line-height:1;">${item.icon}</span>
+                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.nome.split(' ')[0]}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- AÇÕES RÁPIDAS NO PAINEL LATERAL -->
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+              <button type="button" class="big-btn" style="background:#0284c7; border:1.5px solid #38bdf8; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="ouvirCuriosidadeSolar()">
+                🔊 Ouvir Curiosidade
               </button>
-            `).join('')}
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border:1.5px solid #a78bfa; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="iniciarQuizSolar()">
+                🚀 Missão Espacial (+2 🪙)
+              </button>
+            </div>
           </div>
 
-          <!-- CARD PRINCIPAL DO PLANETA -->
-          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:3px solid ${p.cor}; border-radius:20px; padding:16px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; flex:1; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
+          <!-- PALCO PRINCIPAL DIREITO: PLANETA EM DESTAQUE -->
+          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:2.5px solid ${p.cor}; border-radius:14px; padding:12px 18px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
             
             <div style="font-size:4rem; line-height:1; filter:drop-shadow(0 0 20px ${p.cor}); animation:pulse 2s infinite;">${p.icon}</div>
             
@@ -11635,25 +11757,15 @@
               <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-top:4px;">${p.nome}</div>
             </div>
 
-            <div style="font-size:1.02rem; color:#e2e8f0; max-width:620px; line-height:1.4; background:rgba(0,0,0,0.4); padding:10px 16px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+            <div style="font-size:0.95rem; color:#e2e8f0; max-width:620px; line-height:1.35; background:rgba(0,0,0,0.4); padding:8px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
               ${p.desc}
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
-              <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="ouvirCuriosidadeSolar()">
-                🔊 Pousar Nave & Ouvir o Jarvis
-              </button>
-              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="testarGravidadePlaneta()">
-                🦘 Super Pulo da Gravidade!
-              </button>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:2px solid #c084fc; color:#fff; padding:8px 18px; font-size:0.95rem; font-weight:900; border-radius:12px; cursor:pointer;" onclick="iniciarQuizAstronauta()">
-                ⭐ Desafio do Astronauta (+5 🪙)
-              </button>
-            </div>
+            <!-- ÁREA DO QUIZ ESPACIAL (SE ATIVO) -->
+            <div id="quiz-solar-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:8px; text-align:center; width:100%; max-width:620px;"></div>
+
           </div>
 
-          <!-- ÁREA DO QUIZ ASTRONAUTA (SE ATIVO) -->
-          <div id="quiz-astronauta-box" style="display:none; background:#0f172a; border:2px solid #a855f7; border-radius:14px; padding:12px; text-align:center;"></div>
         </div>
       `;
     }
@@ -11802,46 +11914,56 @@
     function renderAnimalSoundsBody(body) {
       const a = BANCO_ANIMAIS_STARK[animalSelecionadoIdx];
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: 210px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- GRADE PROPORCIONAL DE ANIMAIS (2 LINHAS DE 9 EXATAS EM DESKTOP / FLUIDA EM MOBILE) -->
-          <div class="reino-animal-grid" style="display:grid; grid-template-columns:repeat(9, 1fr); gap:4px; max-height:116px; overflow-y:auto; padding:2px; box-sizing:border-box;">
-            ${BANCO_ANIMAIS_STARK.map((item, idx) => `
-              <button type="button" class="big-btn" style="padding:4px 2px; height:52px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; ${idx === animalSelecionadoIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarAnimal(${idx})" title="${item.nome}">
-                <span style="font-size:1.45rem; line-height:1;">${item.icon}</span>
-                <span style="font-size:0.68rem; font-weight:800; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">${item.rotuloCurto}</span>
-              </button>
-            `).join('')}
-          </div>
-
-          <!-- CARD PRINCIPAL DO ANIMAL -->
-          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:3px solid #10b981; border-radius:18px; padding:12px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; flex:1; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
-            <div style="font-size:3.8rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
-            
+          <!-- BARRA LATERAL ESQUERDA: LISTA DE ANIMAIS -->
+          <div style="display:flex; flex-direction:column; gap:4px; background:#071c14; border:1.5px solid #14532d; border-radius:14px; padding:8px; justify-content:space-between; overflow:hidden;">
             <div>
-              <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.78rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
-              <div style="font-size:1.4rem; font-weight:900; color:#ffffff; margin-top:3px;">${a.nome}</div>
+              <div style="font-size:0.85rem; font-weight:900; color:#4ade80; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+                🦁 Bichos da Terra
+              </div>
+              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:270px; scrollbar-width:thin; padding-right:2px;">
+                ${BANCO_ANIMAIS_STARK.map((item, idx) => `
+                  <button type="button" class="big-btn" style="padding:5px 8px; font-size:0.8rem; font-weight:800; border-radius:8px; display:flex; align-items:center; gap:6px; ${idx === animalSelecionadoIdx ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="selecionarAnimal(${idx})">
+                    <span style="font-size:1.2rem; line-height:1;">${item.icon}</span>
+                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.rotuloCurto}</span>
+                  </button>
+                `).join('')}
+              </div>
             </div>
 
-            <div style="font-size:0.9rem; color:#d1fae5; max-width:580px; line-height:1.35; background:rgba(0,0,0,0.35); padding:6px 14px; border-radius:10px;">
-              ${a.curiosidade}
-            </div>
-
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:2px;">
-              <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:7px 16px; font-size:0.92rem; font-weight:900; border-radius:10px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}')">
-                🔊 Ouvir Som Real do ${a.rotuloCurto}
+            <!-- AÇÕES RÁPIDAS NO PAINEL LATERAL -->
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+              <button type="button" class="big-btn" style="background:#059669; border:1.5px solid #34d399; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="tocarSomAnimalStark('${a.id}')">
+                🔊 Som Real
               </button>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:2px solid #fde047; color:#fff; padding:7px 16px; font-size:0.92rem; font-weight:900; border-radius:10px; cursor:pointer;" onclick="iniciarDesafioSomAnimal()">
-                🎧 Adivinhar o Bicho (+5 🪙)
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:1.5px solid #fde047; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="iniciarDesafioSomAnimal()">
+                🎧 Adivinhar o Bicho (+2 🪙)
               </button>
-              <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #475569; color:#94a3b8; padding:7px 12px; font-size:0.85rem; font-weight:800; border-radius:10px; cursor:pointer;" onclick="speak('${escapeJs(a.curiosidade)}')">
+              <button type="button" class="big-btn" style="background:#0f2e22; border:1px solid #10b981; color:#d1fae5; padding:5px 8px; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="speak('${escapeJs(a.curiosidade)}')">
                 💡 Falar Curiosidade
               </button>
             </div>
           </div>
 
-          <!-- ÁREA DO DESAFIO DO OUVIDO -->
-          <div id="desafio-bicho-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:14px; padding:10px; text-align:center;"></div>
+          <!-- PALCO PRINCIPAL DIREITO: ANIMAL EM DESTAQUE -->
+          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:2.5px solid #10b981; border-radius:14px; padding:12px 18px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
+            <div style="font-size:4rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
+            
+            <div>
+              <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
+              <div style="font-size:1.5rem; font-weight:900; color:#ffffff; margin-top:4px;">${a.nome}</div>
+            </div>
+
+            <div style="font-size:0.92rem; color:#d1fae5; max-width:580px; line-height:1.35; background:rgba(0,0,0,0.35); padding:8px 14px; border-radius:10px;">
+              ${a.curiosidade}
+            </div>
+
+            <!-- ÁREA DO DESAFIO DO OUVIDO -->
+            <div id="desafio-bicho-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:8px; text-align:center; width:100%; max-width:580px;"></div>
+
+          </div>
+
         </div>
       `;
     }
@@ -12403,28 +12525,43 @@
 
     function renderScienceLabBody(body) {
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: 200px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- ABAS DE EXPERIMENTOS CIENTÍFICOS -->
-          <div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'cores' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('cores')">
-              🎨 Mistura de Cores
-            </button>
-            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'vulcao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('vulcao')">
-              🌋 O Vulcão de Lava
-            </button>
-            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'agua' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('agua')">
-              🧊 Estados da Água
-            </button>
-            <button type="button" class="big-btn" style="padding:6px 14px; font-size:0.9rem; font-weight:800; ${abaCienciaAtiva === 'ima' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('ima')">
-              🧲 O Super Ímã
-            </button>
+          <!-- BARRA LATERAL ESQUERDA: AS 4 ABAS DE EXPERIMENTOS -->
+          <div style="display:flex; flex-direction:column; gap:6px; background:#071224; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+                🔬 Experimentos
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px;">
+                <button type="button" class="big-btn" style="padding:8px 8px; font-size:0.82rem; font-weight:800; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${abaCienciaAtiva === 'cores' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('cores')">
+                  <span>🎨</span> <span>Mistura Cores</span>
+                </button>
+                <button type="button" class="big-btn" style="padding:8px 8px; font-size:0.82rem; font-weight:800; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${abaCienciaAtiva === 'vulcao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('vulcao')">
+                  <span>🌋</span> <span>Vulcão Lava</span>
+                </button>
+                <button type="button" class="big-btn" style="padding:8px 8px; font-size:0.82rem; font-weight:800; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${abaCienciaAtiva === 'agua' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('agua')">
+                  <span>🧊</span> <span>Estados Água</span>
+                </button>
+                <button type="button" class="big-btn" style="padding:8px 8px; font-size:0.82rem; font-weight:800; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${abaCienciaAtiva === 'ima' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#1e293b;'}" onclick="alternarAbaCiencia('ima')">
+                  <span>🧲</span> <span>O Super Ímã</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- NOTAS DO CIENTISTA STARK -->
+            <div style="background:#020a14; border:1px solid #1e3a63; border-radius:10px; padding:8px; text-align:center;">
+              <div style="font-size:0.72rem; color:#94a3b8; font-weight:bold;">LABORATÓRIO STARK</div>
+              <div style="font-size:0.75rem; color:#86efac; font-weight:800; margin-top:2px;">🧪 100% Interativo</div>
+              <div style="font-size:0.68rem; color:#cbd5e1; margin-top:2px;">Aprenda ciência brincando!</div>
+            </div>
           </div>
 
-          <!-- ÁREA DO EXPERIMENTO ATIVO -->
-          <div style="background:#030712; border:3px solid #38bdf8; border-radius:18px; padding:14px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;">
+          <!-- PALCO PRINCIPAL DIREITO: EXPERIMENTO ATIVO -->
+          <div style="background:#030712; border:2.5px solid #38bdf8; border-radius:14px; padding:10px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; overflow-y:auto;">
             ${abaCienciaAtiva === 'cores' ? renderExperimentoCores() : (abaCienciaAtiva === 'vulcao' ? renderExperimentoVulcao() : (abaCienciaAtiva === 'agua' ? renderExperimentoAgua() : renderExperimentoIma()))}
           </div>
+
         </div>
       `;
     }
@@ -13011,43 +13148,60 @@
     function renderChessAcademyBody(body) {
       const p = PECAS_XADREZ[pecaXadrezIdx];
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: 200px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- SELETOR DE PEÇAS DE XADREZ -->
-          <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:6px;">
-            ${PECAS_XADREZ.map((item, idx) => `
-              <button type="button" class="big-btn" style="padding:6px 2px; border-radius:12px; display:flex; flex-direction:column; align-items:center; ${idx === pecaXadrezIdx ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarPecaXadrez(${idx})">
-                <span style="font-size:1.8rem; line-height:1; color:#fff;">${item.icon}</span>
-                <span style="font-size:0.75rem; font-weight:800; color:#e2e8f0;">${item.nome.split(' ')[0]}</span>
-              </button>
-            `).join('')}
-          </div>
-
-          <!-- MINI-TABULEIRO INTERATIVO DE DESAFIO (5x5) -->
-          <div style="background:#030712; border:3px solid ${p.cor}; border-radius:18px; padding:10px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;">
-            <div style="font-size:1.2rem; font-weight:900; color:#fff;">${p.icon} ${p.nome} — ${p.dica}</div>
-            
-            <div style="font-size:0.9rem; color:#38bdf8; max-width:550px; text-align:center;">
-              ${p.movimento}
+          <!-- BARRA LATERAL ESQUERDA: AS 6 PEÇAS & DICAS -->
+          <div style="display:flex; flex-direction:column; gap:4px; background:#091222; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+                ♟️ Peças do Reino
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px;">
+                ${PECAS_XADREZ.map((item, idx) => `
+                  <button type="button" class="big-btn" style="padding:6px 8px; border-radius:8px; display:flex; align-items:center; gap:8px; ${idx === pecaXadrezIdx ? `background:#0284c7; border:1.5px solid #38bdf8;` : 'background:#0f172a; border:1px solid #1e293b;'}" onclick="selecionarPecaXadrez(${idx})">
+                    <span style="font-size:1.4rem; line-height:1; color:#fff;">${item.icon}</span>
+                    <span style="font-size:0.8rem; font-weight:800; color:#e2e8f0;">${item.nome.split(' ')[0]}</span>
+                  </button>
+                `).join('')}
+              </div>
             </div>
 
-            <!-- TABULEIRO 5x5 ESTILIZADO -->
-            <div style="display:grid; grid-template-columns:repeat(5, 44px); grid-template-rows:repeat(5, 44px); gap:2px; background:#0f172a; padding:4px; border:2px solid #38bdf8; border-radius:10px; user-select:none;">
+            <!-- BOTÕES DE CONTROLE NO PAINEL LATERAL -->
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+              <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #64748b; color:#fff; padding:6px 8px; border-radius:8px; font-size:0.78rem; font-weight:800;" onclick="reiniciarPosicaoXadrez()">
+                🔄 Voltar ao Centro
+              </button>
+              <button type="button" class="big-btn" style="background:#0284c7; border:1.5px solid #38bdf8; color:#fff; padding:6px 8px; border-radius:8px; font-size:0.78rem; font-weight:900;" onclick="ouvirDicaXadrez()">
+                🔊 Dica da Peça
+              </button>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:1.5px solid #86efac; color:#fff; padding:6px 8px; border-radius:8px; font-size:0.8rem; font-weight:900;" onclick="concluirDesafioXadrez()">
+                ⭐ Concluir (+2 🪙)
+              </button>
+            </div>
+          </div>
+
+          <!-- PALCO PRINCIPAL DIREITO: MINI-TABULEIRO 5x5 ESTILIZADO -->
+          <div style="background:#030712; border:2.5px solid ${p.cor}; border-radius:14px; padding:10px 14px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px; box-shadow:0 0 25px ${p.cor}22;">
+            
+            <div>
+              <div style="font-size:1.25rem; font-weight:900; color:#fff; text-align:center;">
+                ${p.icon} ${p.nome} — <span style="color:#fde047;">${p.dica}</span>
+              </div>
+              <div style="font-size:0.85rem; color:#38bdf8; text-align:center; margin-top:2px;">
+                ${p.movimento}
+              </div>
+            </div>
+
+            <!-- TABULEIRO 5x5 ESTILIZADO (52px cada casa para toque fácil) -->
+            <div style="display:grid; grid-template-columns:repeat(5, 52px); grid-template-rows:repeat(5, 52px); gap:2px; background:#0f172a; padding:4px; border:2px solid #38bdf8; border-radius:10px; user-select:none;">
               ${gerarCasasTabuleiroXadrez(p)}
             </div>
 
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:2px;">
-              <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #64748b; color:#fff; padding:5px 12px; border-radius:10px; font-size:0.85rem; font-weight:800;" onclick="reiniciarPosicaoXadrez()">
-                🔄 Voltar ao Centro
-              </button>
-              <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:5px 14px; border-radius:10px; font-size:0.85rem; font-weight:900;" onclick="ouvirDicaXadrez()">
-                🔊 Dica da Peça
-              </button>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #86efac; color:#fff; padding:5px 14px; border-radius:10px; font-size:0.85rem; font-weight:900;" onclick="concluirDesafioXadrez()">
-                ⭐ Desafio Concluído! (+5 🪙)
-              </button>
+            <div style="font-size:0.75rem; color:#94a3b8; text-align:center;">
+              💡 Dica: Clique nas estrelinhas verdes ⭐ para mover sua peça pelo reino!
             </div>
           </div>
+
         </div>
       `;
     }
@@ -13209,145 +13363,179 @@
       const completo = blocosDinoEscavadosSet.size >= 6;
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: 220px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- SELETOR DE MODO & SELETOR DE DINOSSAUROS -->
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
-              <div style="display:flex; gap:6px;">
-                <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:10px; ${modoDinoAtivo === 'escavacao' ? 'background:#b91c1c; border:2px solid #f87171;' : 'background:#1e293b; border:1px solid #334155;'}" onclick="alternarModoDino('escavacao')">
-                  ⛏️ Sítio de Escavação
-                </button>
-                <button type="button" class="big-btn" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:10px; ${modoDinoAtivo === 'museu' ? 'background:#d97706; border:2px solid #fde047;' : 'background:#1e293b; border:1px solid #334155;'}" onclick="alternarModoDino('museu')">
-                  🏛️ Galeria do Museu (${BANCO_DINOSSAUROS.length})
-                </button>
-              </div>
-
-              ${modoDinoAtivo === 'escavacao' ? `
-                <!-- FERRAMENTAS DE PALEONTOLOGIA -->
-                <div style="display:flex; gap:4px; align-items:center;">
-                  <span style="font-size:0.75rem; color:#94a3b8; font-weight:bold; margin-right:2px;">Ferramenta:</span>
-                  <button type="button" class="big-btn" style="padding:4px 8px; font-size:0.8rem; border-radius:8px; ${ferramentaDinoAtiva === 'martelo' ? 'background:#b45309; border:2px solid #fde047;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('martelo')" title="Martelinho Fóssil">
-                    🔨
-                  </button>
-                  <button type="button" class="big-btn" style="padding:4px 8px; font-size:0.8rem; border-radius:8px; ${ferramentaDinoAtiva === 'pincel' ? 'background:#0284c7; border:2px solid #38bdf8;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('pincel')" title="Pincel Suave">
-                    🖌️
-                  </button>
-                  <button type="button" class="big-btn" style="padding:4px 8px; font-size:0.8rem; border-radius:8px; ${ferramentaDinoAtiva === 'lupa' ? 'background:#15803d; border:2px solid #86efac;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('lupa')" title="Super Lupa">
-                    🔍
-                  </button>
-                </div>
-              ` : ''}
+          <!-- BARRA LATERAL ESQUERDA: MODOS, FERRAMENTAS & LISTA DOS 8 DINOSSAUROS -->
+          <div style="display:flex; flex-direction:column; gap:6px; background:#0b1322; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between; overflow:hidden;">
+            
+            <!-- SELETOR DE MODO (ESCAVAÇÃO / MUSEU) -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+              <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.78rem; font-weight:900; border-radius:8px; ${modoDinoAtivo === 'escavacao' ? 'background:#b91c1c; border:1.5px solid #f87171;' : 'background:#1e293b; border:1px solid #334155;'}" onclick="alternarModoDino('escavacao')">
+                ⛏️ Escavar
+              </button>
+              <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.78rem; font-weight:900; border-radius:8px; ${modoDinoAtivo === 'museu' ? 'background:#d97706; border:1.5px solid #fde047;' : 'background:#1e293b; border:1px solid #334155;'}" onclick="alternarModoDino('museu')">
+                🏛️ Museu
+              </button>
             </div>
 
-            <!-- CHIPS PROPORCIONAIS DOS 8 DINOSSAUROS -->
-            <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin;">
-              ${BANCO_DINOSSAUROS.map((item, idx) => `
-                <button type="button" class="big-btn" style="padding:5px 10px; border-radius:10px; white-space:nowrap; flex:0 0 auto; display:flex; align-items:center; gap:4px; ${idx === dinoIdx ? 'background:#7f1d1d; border:2px solid #ef4444;' : 'background:#0f172a; border:1px solid #334155;'}" onclick="selecionarDino(${idx})">
-                  <span style="font-size:1.1rem; line-height:1;">${item.icon}</span>
-                  <span style="font-size:0.75rem; font-weight:800; color:#fff;">${item.rotulo}</span>
-                </button>
-              `).join('')}
+            ${modoDinoAtivo === 'escavacao' ? `
+              <!-- FERRAMENTAS DE PALEONTOLOGIA -->
+              <div style="background:#07101f; border:1px solid #1e293b; border-radius:8px; padding:4px 6px; display:flex; align-items:center; justify-content:space-between;">
+                <span style="font-size:0.7rem; color:#94a3b8; font-weight:bold;">Ferramenta:</span>
+                <div style="display:flex; gap:3px;">
+                  <button type="button" class="big-btn" style="padding:3px 6px; font-size:0.8rem; border-radius:6px; ${ferramentaDinoAtiva === 'martelo' ? 'background:#b45309; border:1.5px solid #fde047;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('martelo')" title="Martelo">🔨</button>
+                  <button type="button" class="big-btn" style="padding:3px 6px; font-size:0.8rem; border-radius:6px; ${ferramentaDinoAtiva === 'pincel' ? 'background:#0284c7; border:1.5px solid #38bdf8;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('pincel')" title="Pincel">🖌️</button>
+                  <button type="button" class="big-btn" style="padding:3px 6px; font-size:0.8rem; border-radius:6px; ${ferramentaDinoAtiva === 'lupa' ? 'background:#15803d; border:1.5px solid #86efac;' : 'background:#0f172a;'}" onclick="alternarFerramentaDino('lupa')" title="Lupa">🔍</button>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- LISTA DOS 8 DINOSSAUROS EM CARDS VERTICAIS -->
+            <div style="display:flex; flex-direction:column; gap:4px; overflow-y:auto; flex:1; padding-right:2px; scrollbar-width:thin;">
+              ${BANCO_DINOSSAUROS.map((item, idx) => {
+                const isSel = idx === dinoIdx;
+                return `
+                  <button type="button" class="big-btn" style="padding:5px 8px; border-radius:8px; display:flex; align-items:center; justify-content:space-between; ${isSel ? 'background:linear-gradient(135deg, #7f1d1d, #991b1b); border:1.5px solid #ef4444;' : 'background:#0f172a; border:1px solid #1e293b;'}" onclick="selecionarDino(${idx})">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <span style="font-size:1.15rem; line-height:1;">${item.icon}</span>
+                      <span style="font-size:0.75rem; font-weight:800; color:#fff;">${item.rotulo}</span>
+                    </div>
+                    <span style="font-size:0.68rem; color:${isSel ? '#fde047' : '#94a3b8'}; font-weight:bold;">
+                      ${(idx === dinoIdx && completo) ? '✓ Museu' : (idx === dinoIdx ? blocosDinoEscavadosSet.size + '/6' : '')}
+                    </span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- AÇÕES RÁPIDAS NO PAINEL LATERAL -->
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
+              <button type="button" class="big-btn" style="background:#b91c1c; border:1.5px solid #f87171; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="tocarRugidoDinoStark('${d.id}')">
+                🔊 Rugido Selvagem
+              </button>
+              <button type="button" class="big-btn" style="background:#0284c7; border:1.5px solid #38bdf8; color:#fff; padding:5px 8px; font-size:0.75rem; font-weight:800; border-radius:8px;" onclick="speak('${escapeJs(d.curiosidade)}')">
+                📖 Narrar Curiosidade
+              </button>
             </div>
           </div>
 
-          <!-- ÁREA PRINCIPAL: ESCAVAÇÃO OU MUSEU -->
-          ${modoDinoAtivo === 'escavacao' ? `
-            <!-- MODO ESCAVAÇÃO -->
-            <div style="background:radial-gradient(circle at center, #451a03 0%, #1c0a00 100%); border:3px solid #f59e0b; border-radius:18px; padding:12px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px; text-align:center;">
-              
-              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:center;">
-                <span style="background:#78350f; color:#fde047; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:900;">⏳ ${d.periodo}</span>
-                <span style="background:#1e293b; color:#cbd5e1; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">🥩 ${d.dieta}</span>
-                <span style="background:#0f172a; color:#38bdf8; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:800;">📏 ${d.tamanho}</span>
-              </div>
+          <!-- PALCO PRINCIPAL DIREITO: ESCAVAÇÃO OU MUSEU -->
+          <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; gap:6px; overflow:hidden;">
+            ${modoDinoAtivo === 'escavacao' ? `
+              <!-- MODO ESCAVAÇÃO -->
+              <div style="background:radial-gradient(circle at center, #3b1403 0%, #150600 100%); border:2.5px solid #f59e0b; border-radius:14px; padding:10px 14px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 25px rgba(245,158,11,0.25);">
+                
+                <!-- CABEÇALHO COM TAGS DO DINO -->
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                  <div style="font-size:1.3rem; font-weight:900; color:#fff; text-shadow:0 0 10px rgba(245,158,11,0.5);">
+                    ${d.icon} ${d.nome}
+                  </div>
+                  <div style="display:flex; gap:4px;">
+                    <span style="background:#78350f; color:#fde047; padding:2px 8px; border-radius:999px; font-size:0.7rem; font-weight:900;">⏳ ${d.periodo}</span>
+                    <span style="background:#1e293b; color:#cbd5e1; padding:2px 8px; border-radius:999px; font-size:0.7rem; font-weight:800;">🥩 ${d.dieta}</span>
+                  </div>
+                </div>
 
-              <div style="font-size:1.35rem; font-weight:900; color:#fff; letter-spacing:0.3px;">${d.nome}</div>
+                <!-- ÁREA CENTRAL DE ESCAVAÇÃO COM O QUADRADO DO FÓSSIL -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:center; width:100%; flex:1;">
+                  
+                  <!-- LADO ESQUERDO DO PALCO: FÓSSIL / IMAGEM DO DINO -->
+                  <div id="dino-fossil-center" onclick="escavarProximoBlocoDino()" title="Clique para escavar os ossos!" style="background:#0a0502; border:2px dashed #f59e0b; border-radius:12px; height:100%; max-height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; padding:8px; box-shadow:inset 0 0 15px rgba(0,0,0,0.8);">
+                    ${completo ? `
+                      <img src="${getDinoImgSrc(d.img)}" style="max-height:140px; width:auto; max-width:90%; border-radius:10px; object-fit:contain; border:2px solid #f59e0b; box-shadow:0 0 20px rgba(245,158,11,0.5); animation:pulse 2s infinite;" alt="${d.nome}">
+                      <div style="font-size:0.75rem; font-weight:900; color:#86efac; margin-top:4px;">✨ 100% DESENTERRADO!</div>
+                    ` : `
+                      <div style="font-size:3.8rem; line-height:1; animation:pulse 2s infinite;">🦴</div>
+                      <div style="font-size:0.8rem; font-weight:900; color:#fde68a; margin-top:4px;">Clique aqui ou nos blocos ao lado!</div>
+                    `}
+                  </div>
 
-              <!-- CENTRO: ESQUELETO OU FOTO REAL DO MUSEU -->
-              <div id="dino-fossil-center" onclick="escavarProximoBlocoDino()" title="Clique para desenterrar!" style="display:flex; align-items:center; justify-content:center; cursor:pointer; min-height:120px; max-height:160px; width:100%;">
-                ${completo ? `
-                  <img src="${getDinoImgSrc(d.img)}" style="max-height:140px; width:auto; max-width:85%; border-radius:14px; object-fit:contain; border:2px solid #f59e0b; box-shadow:0 0 25px rgba(245,158,11,0.4); animation:pulse 2s infinite;" alt="${d.nome}">
-                ` : `
-                  <div style="font-size:4.2rem; line-height:1; animation:pulse 2s infinite;">🦴</div>
-                `}
-              </div>
+                  <!-- LADO DIREITO DO PALCO: OS 6 BLOCOS DE TERRA (2 LINHAS x 3 COLUNAS) -->
+                  <div style="display:flex; flex-direction:column; gap:6px;">
+                    <div style="font-size:0.75rem; font-weight:800; color:#fde68a;">
+                      Camadas de Rocha Fóssil (${blocosDinoEscavadosSet.size}/6 desenterrados):
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px;">
+                      ${PARTES_FOSSIL_DINO.map((p, i) => {
+                        const escavado = blocosDinoEscavadosSet.has(i);
+                        return `
+                          <button type="button" class="big-btn" style="min-height:48px; border-radius:8px; padding:3px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
+                            <span style="font-size:1.2rem; line-height:1;">${escavado ? p.icone : (ferramentaDinoAtiva === 'martelo' ? '🔨' : (ferramentaDinoAtiva === 'pincel' ? '🖌️' : '🔍'))}</span>
+                            <span style="font-size:0.68rem; font-weight:800; margin-top:2px;">${escavado ? '✓ ' + p.nome : 'Bloco ' + (i+1)}</span>
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                    <div style="font-size:0.72rem; color:#cbd5e1; background:rgba(0,0,0,0.4); padding:4px 8px; border-radius:6px;">
+                      ${completo ? '🏆 Fóssil completo! Ganhou +2 Moedas de Ouro!' : '💡 Dica: Use o martelinho, pincel ou lupa para revelar todos os ossos!'}
+                    </div>
+                  </div>
+                </div>
 
-              <div style="font-size:0.85rem; color:#fde68a; max-width:540px; line-height:1.3; background:rgba(0,0,0,0.4); padding:5px 12px; border-radius:10px;">
-                ${completo ? d.curiosidade : `Ossos Desenterrados: ${blocosDinoEscavadosSet.size} de 6. Use sua ferramenta (${ferramentaDinoAtiva === 'martelo' ? '🔨 Martelinho' : (ferramentaDinoAtiva === 'pincel' ? '🖌️ Pincel' : '🔍 Lupa')}) para limpar os blocos abaixo!`}
-              </div>
-
-              <!-- 6 SÍTIOS DE ESCAVAÇÃO EM GRADE 2x3 PROPORCIONAL -->
-              <div style="display:grid; grid-template-columns:repeat(3, 1fr); max-width:320px; width:100%; gap:6px; margin:2px auto;">
-                ${PARTES_FOSSIL_DINO.map((p, i) => {
-                  const escavado = blocosDinoEscavadosSet.has(i);
-                  return `
-                    <button type="button" class="big-btn" style="min-height:50px; border-radius:10px; padding:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; ${escavado ? 'background:#15803d; border:2px solid #86efac; color:#fff;' : 'background:#78350f; border:2px solid #d97706; color:#fef3c7;'} cursor:pointer;" onclick="escavarBlocoDino(${i})">
-                      <span style="font-size:1.25rem; line-height:1;">${escavado ? p.icone : (ferramentaDinoAtiva === 'martelo' ? '🔨' : (ferramentaDinoAtiva === 'pincel' ? '🖌️' : '🔍'))}</span>
-                      <span style="font-size:0.68rem; font-weight:800; margin-top:2px;">${escavado ? '✓ ' + p.nome : 'Bloco ' + (i+1)}</span>
-                    </button>
-                  `;
-                }).join('')}
-              </div>
-
-              ${completo ? `
-                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:2px; animation:bounceIn 0.5s ease;">
-                  <button type="button" class="big-btn" style="background:#15803d; border:2px solid #86efac; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900; font-size:0.92rem;" onclick="proximoDinoEscavacao()">
-                    🦖 Próximo Dinossauro! ➔
+                <!-- RODAPÉ DE AÇÕES DA ESCAVAÇÃO -->
+                <div style="display:flex; gap:8px; justify-content:center; width:100%; flex-wrap:wrap;">
+                  <button type="button" class="big-btn" style="background:#15803d; border:1.5px solid #86efac; color:#fff; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.85rem;" onclick="proximoDinoEscavacao()">
+                    🦖 Próximo Sítio Fóssil ➔
                   </button>
-                  <button type="button" class="big-btn" style="background:#d97706; border:2px solid #fde047; color:#fff; padding:6px 16px; border-radius:10px; font-weight:900; font-size:0.92rem;" onclick="alternarModoDino('museu')">
+                  <button type="button" class="big-btn" style="background:#d97706; border:1.5px solid #fde047; color:#fff; padding:6px 14px; border-radius:8px; font-weight:900; font-size:0.85rem;" onclick="alternarModoDino('museu')">
                     🏛️ Ver na Galeria do Museu
                   </button>
-                  <button type="button" class="big-btn" style="background:#334155; border:1px solid #64748b; color:#e2e8f0; padding:6px 12px; border-radius:10px; font-weight:800; font-size:0.85rem;" onclick="blocosDinoEscavadosSet.clear(); const b = document.querySelector('.modal-body'); if (b) renderDinosaurFossilsBody(b);">
-                    🔄 Escavar de Novo
+                  <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:6px 10px; border-radius:8px; font-weight:800; font-size:0.8rem;" onclick="blocosDinoEscavadosSet.clear(); const b = document.querySelector('.modal-body'); if (b) renderDinosaurFossilsBody(b);">
+                    🔄 Re-escavar
                   </button>
                 </div>
-              ` : ''}
-            </div>
-          ` : `
-            <!-- MODO GALERIA DO MUSEU (IMAGENS REAIS EM ALTA DEFINIÇÃO) -->
-            <div style="background:radial-gradient(circle at center, #0f172a 0%, #020617 100%); border:3px solid #38bdf8; border-radius:18px; padding:12px 18px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 30px rgba(56,189,248,0.25);">
-              
-              <div>
-                <span style="background:#0284c7; color:#fff; font-size:0.75rem; font-weight:900; padding:2px 10px; border-radius:999px;">🏛️ EXPOSIÇÃO CIENTÍFICA OFICIAL</span>
-                <div style="font-size:1.6rem; font-weight:900; color:#fff; margin-top:4px;">${d.nome}</div>
-              </div>
 
-              <!-- IMAGEM REAL EM ALTA DEFINIÇÃO -->
-              <div style="display:flex; justify-content:center; align-items:center; max-height:170px; width:100%; margin:4px 0;">
-                <img src="${getDinoImgSrc(d.img)}" style="max-height:165px; width:auto; max-width:90%; border-radius:14px; object-fit:contain; border:2px solid #38bdf8; box-shadow:0 0 25px rgba(56,189,248,0.3);" alt="${d.nome}">
               </div>
-
-              <!-- DADOS CIENTÍFICOS DO MUSEU -->
-              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; width:100%; max-width:540px;">
-                <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:6px 4px;">
-                  <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">PERÍODO</div>
-                  <div style="font-size:0.78rem; font-weight:900; color:#38bdf8;">${d.periodo}</div>
+            ` : `
+              <!-- MODO GALERIA DO MUSEU STARK -->
+              <div style="background:radial-gradient(circle at center, #0f172a 0%, #020617 100%); border:2.5px solid #38bdf8; border-radius:14px; padding:10px 16px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 25px rgba(56,189,248,0.25);">
+                
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                  <span style="background:#0284c7; color:#fff; font-size:0.72rem; font-weight:900; padding:2px 10px; border-radius:999px;">🏛️ EXPOSIÇÃO PALEONTOLÓGICA OFICIAL</span>
+                  <div style="font-size:1.4rem; font-weight:900; color:#fff;">${d.icon} ${d.nome}</div>
                 </div>
-                <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:6px 4px;">
-                  <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">ALIMENTAÇÃO</div>
-                  <div style="font-size:0.78rem; font-weight:900; color:#22c55e;">${d.dieta}</div>
-                </div>
-                <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:6px 4px;">
-                  <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">PORTE</div>
-                  <div style="font-size:0.78rem; font-weight:900; color:#facc15;">${d.tamanho}</div>
-                </div>
-              </div>
 
-              <div style="font-size:0.88rem; color:#e2e8f0; line-height:1.35; max-width:560px; background:rgba(0,0,0,0.4); padding:6px 14px; border-radius:10px;">
-                ${d.curiosidade}
-              </div>
+                <!-- IMAGEM HD DO MUSEU -->
+                <div style="display:flex; justify-content:center; align-items:center; max-height:160px; width:100%; margin:2px 0;">
+                  <img src="${getDinoImgSrc(d.img)}" style="max-height:155px; width:auto; max-width:90%; border-radius:12px; object-fit:contain; border:2px solid #38bdf8; box-shadow:0 0 25px rgba(56,189,248,0.3);" alt="${d.nome}">
+                </div>
 
-              <div style="display:flex; gap:8px; justify-content:center; margin-top:2px;">
-                <button type="button" class="big-btn" style="background:#b91c1c; border:2px solid #f87171; color:#fff; padding:6px 16px; font-size:0.88rem; font-weight:900; border-radius:10px;" onclick="tocarRugidoDinoStark()">
-                  🔊 Ouvir Rugido Pré-Histórico
-                </button>
-                <button type="button" class="big-btn" style="background:#0284c7; border:2px solid #38bdf8; color:#fff; padding:6px 16px; font-size:0.88rem; font-weight:900; border-radius:10px;" onclick="speak('${escapeJs(d.curiosidade)}')">
-                  📖 Narrar Curiosidade
-                </button>
+                <!-- DADOS CIENTÍFICOS DO MUSEU EM 3 CARDS -->
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; width:100%; max-width:580px;">
+                  <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:4px 6px;">
+                    <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">PERÍODO</div>
+                    <div style="font-size:0.75rem; font-weight:900; color:#38bdf8;">${d.periodo}</div>
+                  </div>
+                  <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:4px 6px;">
+                    <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">ALIMENTAÇÃO</div>
+                    <div style="font-size:0.75rem; font-weight:900; color:#22c55e;">${d.dieta}</div>
+                  </div>
+                  <div style="background:#071224; border:1px solid #1e3a8a; border-radius:8px; padding:4px 6px;">
+                    <div style="font-size:0.65rem; color:#94a3b8; font-weight:bold;">PORTE</div>
+                    <div style="font-size:0.75rem; font-weight:900; color:#facc15;">${d.tamanho}</div>
+                  </div>
+                </div>
+
+                <div style="font-size:0.85rem; color:#e2e8f0; line-height:1.3; max-width:580px; background:rgba(0,0,0,0.4); padding:6px 12px; border-radius:8px;">
+                  ${d.curiosidade}
+                </div>
+
+                <div style="display:flex; gap:8px; justify-content:center; width:100%;">
+                  <button type="button" class="big-btn" style="background:#b91c1c; border:1.5px solid #f87171; color:#fff; padding:6px 16px; font-size:0.85rem; font-weight:900; border-radius:8px;" onclick="tocarRugidoDinoStark('${d.id}')">
+                    🔊 Ouvir Rugido Selvagem
+                  </button>
+                  <button type="button" class="big-btn" style="background:#0284c7; border:1.5px solid #38bdf8; color:#fff; padding:6px 16px; font-size:0.85rem; font-weight:900; border-radius:8px;" onclick="speak('${escapeJs(d.curiosidade)}')">
+                    📖 Narrar Curiosidade
+                  </button>
+                  <button type="button" class="big-btn" style="background:#d97706; border:1.5px solid #fde047; color:#fff; padding:6px 14px; font-size:0.85rem; font-weight:900; border-radius:8px;" onclick="alternarModoDino('escavacao')">
+                    ⛏️ Escavar Fóssil
+                  </button>
+                </div>
+
               </div>
-            </div>
-          `}
+            `}
+          </div>
+
         </div>
       `;
     }
@@ -13415,21 +13603,181 @@
       speak(`Novo sítio de escavação: ${d.nome}! Limpe os 6 blocos de terra!`);
     }
 
-    function tocarRugidoDinoStark() {
+    function tocarRugidoDinoStark(dinoId = null) {
       try {
         destravarAudioNavegador();
         const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (!ctx) return;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const d = BANCO_DINOSSAUROS[dinoIdx];
+        const id = dinoId || (d ? d.id : 'trex');
         const now = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(130, now);
-        osc.frequency.exponentialRampToValueAtTime(32, now + 1.4);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 1.4);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(now); osc.stop(now + 1.4);
-      } catch(e) {}
+
+        // Buffer de Ruído Turbulento (Brownian noise / ar massivo dos pulmões)
+        const bufferSize = Math.floor(ctx.sampleRate * 2.2);
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = output[i];
+          output[i] *= 3.5;
+        }
+
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = noiseBuffer;
+        registrarNodeSonoro(noiseSource);
+
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        const noiseGain = ctx.createGain();
+
+        // Osciladores de garganta e peito (Sub-bass e formantes)
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+
+        registrarNodeSonoro(osc1);
+        registrarNodeSonoro(osc2);
+        registrarNodeSonoro(lfo);
+
+        const throatFilter = ctx.createBiquadFilter();
+        throatFilter.type = 'bandpass';
+        throatFilter.Q.value = 6;
+
+        const mainGain = ctx.createGain();
+
+        // Customização tímbrica e física por Espécie (inspirado em xr-dinosaurs e bioacústica)
+        let baseFreq = 120;
+        let endFreq = 30;
+        let duration = 2.0;
+        let lfoRate = 12;
+        let throatCenter = 350;
+        let noiseMaxGain = 0.35;
+
+        if (id === 'trex') {
+          baseFreq = 135;
+          endFreq = 26;
+          duration = 2.3;
+          lfoRate = 14;
+          throatCenter = 320;
+          noiseMaxGain = 0.45;
+        } else if (id === 'spinosaurus') {
+          baseFreq = 160;
+          endFreq = 38;
+          duration = 2.4;
+          lfoRate = 16;
+          throatCenter = 480;
+          noiseMaxGain = 0.5;
+        } else if (id === 'triceratops') {
+          baseFreq = 95;
+          endFreq = 36;
+          duration = 1.9;
+          lfoRate = 9;
+          throatCenter = 260;
+          noiseMaxGain = 0.25;
+        } else if (id === 'pteranodon') {
+          baseFreq = 780;
+          endFreq = 280;
+          duration = 1.6;
+          lfoRate = 22;
+          throatCenter = 850;
+          noiseMaxGain = 0.35;
+        } else if (id === 'apatosaurus') {
+          baseFreq = 70;
+          endFreq = 22;
+          duration = 2.6;
+          lfoRate = 7;
+          throatCenter = 190;
+          noiseMaxGain = 0.2;
+        } else if (id === 'ankylosaurus') {
+          baseFreq = 105;
+          endFreq = 34;
+          duration = 1.7;
+          lfoRate = 11;
+          throatCenter = 310;
+          noiseMaxGain = 0.3;
+        } else if (id === 'carnotaurus') {
+          baseFreq = 150;
+          endFreq = 42;
+          duration = 1.7;
+          lfoRate = 18;
+          throatCenter = 420;
+          noiseMaxGain = 0.4;
+        } else if (id === 'stegosaurus') {
+          baseFreq = 88;
+          endFreq = 30;
+          duration = 2.1;
+          lfoRate = 8;
+          throatCenter = 240;
+          noiseMaxGain = 0.25;
+        }
+
+        // Configuração dos Osciladores
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(baseFreq, now);
+        osc1.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(baseFreq * 0.5, now);
+        osc2.frequency.exponentialRampToValueAtTime(endFreq * 0.5, now + duration);
+
+        // Filtro ressonante da garganta
+        throatFilter.frequency.setValueAtTime(throatCenter, now);
+        throatFilter.frequency.exponentialRampToValueAtTime(throatCenter * 0.6, now + duration);
+
+        // LFO para trepidação gutural
+        lfo.type = 'sine';
+        lfo.frequency.setValueAtTime(lfoRate, now);
+        lfo.frequency.linearRampToValueAtTime(lfoRate * 0.7, now + duration);
+        lfoGain.gain.setValueAtTime(0.25, now);
+        lfo.connect(lfoGain);
+
+        // Ruído filtrado
+        noiseFilter.frequency.setValueAtTime(throatCenter * 1.5, now);
+        noiseFilter.frequency.exponentialRampToValueAtTime(120, now + duration);
+        noiseGain.gain.setValueAtTime(0.01, now);
+        noiseGain.gain.linearRampToValueAtTime(noiseMaxGain, now + 0.15);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        noiseSource.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(mainGain);
+
+        // Conectar osciladores ao filtro de garganta
+        osc1.connect(throatFilter);
+        osc2.connect(throatFilter);
+        throatFilter.connect(mainGain);
+
+        // Tremolo LFO modulando o ganho principal
+        const tremoloGain = ctx.createGain();
+        tremoloGain.gain.setValueAtTime(0.8, now);
+        lfoGain.connect(tremoloGain.gain);
+
+        mainGain.connect(tremoloGain);
+        tremoloGain.connect(ctx.destination);
+
+        // Envelope de Volume geral (Ataque rápido, sustentação, decaimento suave)
+        mainGain.gain.setValueAtTime(0.01, now);
+        mainGain.gain.linearRampToValueAtTime(0.65, now + 0.12);
+        mainGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+        // Disparar tudo simultaneamente
+        noiseSource.start(now);
+        noiseSource.stop(now + duration);
+        osc1.start(now);
+        osc1.stop(now + duration);
+        osc2.start(now);
+        osc2.stop(now + duration);
+        lfo.start(now);
+        lfo.stop(now + duration);
+
+      } catch(e) {
+        console.warn('Erro ao sintetizar rugido de dinossauro:', e);
+      }
     }
 
     async function comemorarDinoCompleto() {
@@ -13597,55 +13945,79 @@
       const c = mathContaAtual;
 
       body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:6px; box-sizing:border-box;">
+        <div style="display:grid; grid-template-columns: 210px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- SELETOR DAS 4 OPERAÇÕES -->
-          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;">
-            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'soma' ? 'background:#059669; border:2px solid #34d399;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('soma')">
-              ➕ Somar (Juntar)
-            </button>
-            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'subtracao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('subtracao')">
-              ➖ Diminuir (Tirar)
-            </button>
-            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'multiplicacao' ? 'background:#7c3aed; border:2px solid #a78bfa;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('multiplicacao')">
-              ✖️ Multiplicar (Grupos)
-            </button>
-            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'divisao' ? 'background:#d97706; border:2px solid #fbbf24;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('divisao')">
-              ➗ Dividir (Repartir)
+          <!-- BARRA LATERAL ESQUERDA: AS 4 OPERAÇÕES & PLACAR -->
+          <div style="display:flex; flex-direction:column; gap:6px; background:#071324; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
+                🧮 Operações
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px;">
+                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'soma' ? 'background:#059669; border:2px solid #34d399;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('soma')">
+                  <span>➕</span> <span>Somar (Juntar)</span>
+                </button>
+                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'subtracao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('subtracao')">
+                  <span>➖</span> <span>Diminuir (Tirar)</span>
+                </button>
+                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'multiplicacao' ? 'background:#7c3aed; border:2px solid #a78bfa;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('multiplicacao')">
+                  <span>✖️</span> <span>Multiplicar (Grupos)</span>
+                </button>
+                <button type="button" class="big-btn" style="padding:8px 6px; font-size:0.82rem; font-weight:900; border-radius:8px; text-align:left; display:flex; align-items:center; gap:6px; ${mathOpAtual === 'divisao' ? 'background:#d97706; border:2px solid #fbbf24;' : 'background:#1e293b; opacity:0.85;'}" onclick="selecionarOperacaoMatematica('divisao')">
+                  <span>➗</span> <span>Dividir (Repartir)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PLACAR DE ACERTOS -->
+            <div style="background:#020914; border:1px solid #1e3a63; border-radius:10px; padding:8px; text-align:center;">
+              <div style="font-size:0.75rem; color:#94a3b8; font-weight:bold;">MESTRE MATEMÁTICO</div>
+              <div style="font-size:1.2rem; font-weight:900; color:#fde047; margin:2px 0;">⭐ ${mathAcertosContador} Acertos</div>
+              <div style="font-size:0.68rem; color:#86efac; font-weight:800;">+2 Moedas de Ouro cada!</div>
+            </div>
+
+            <!-- BOTÃO NOVA CONTA -->
+            <button type="button" class="big-btn" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:6px; border-radius:8px; font-size:0.8rem; font-weight:800;" onclick="gerarNovaContaMatematica(mathOpAtual); const b = document.getElementById('modal-body'); if (b) renderMathMasterBody(b);">
+              🔄 Pular / Nova Conta
             </button>
           </div>
 
-          <!-- QUADRO CENTRAL DA CONTA COM FEEDBACK VISUAL CONCRETO -->
-          <div style="background:#030c1a; border:2.5px solid #38bdf8; border-radius:14px; padding:10px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; box-shadow:0 0 20px rgba(56,189,248,0.2);">
+          <!-- PALCO PRINCIPAL DIREITO: EQUAÇÃO, VISUAL E BOTÕES DE RESPOSTA -->
+          <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; gap:8px;">
             
-            <!-- EXPRESSÃO MATEMÁTICA EM DESTAQUE -->
-            <div style="font-size:2.2rem; font-weight:900; color:#fde047; text-shadow:0 0 15px rgba(253,224,71,0.5); letter-spacing:2px;">
-              ${c.a} ${c.simbolo} ${c.b} = ❓
+            <!-- QUADRO CENTRAL DA CONTA -->
+            <div style="background:#030c1a; border:2.5px solid #38bdf8; border-radius:14px; padding:8px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; flex:1; box-shadow:0 0 20px rgba(56,189,248,0.2);">
+              
+              <!-- EXPRESSÃO MATEMÁTICA EM DESTAQUE -->
+              <div style="font-size:2.4rem; font-weight:900; color:#fde047; text-shadow:0 0 15px rgba(253,224,71,0.5); letter-spacing:2px; line-height:1.1;">
+                ${c.a} ${c.simbolo} ${c.b} = ❓
+              </div>
+
+              <!-- ÁREA VISUAL CONCRETA -->
+              <div style="width:100%; display:flex; justify-content:center; align-items:center;">
+                ${c.visualHtml}
+              </div>
+
+              <!-- NARRATIVA E BOTÃO DE OUVIR -->
+              <div style="display:flex; align-items:center; justify-content:space-between; width:100%; background:#08182e; border:1px solid #1e3a63; border-radius:8px; padding:5px 10px; gap:8px;">
+                <span id="math-narrativa-txt" style="font-size:0.82rem; font-weight:700; color:#e2e8f0; flex:1;">
+                  ${c.narrativa}
+                </span>
+                <button type="button" class="big-btn" style="background:#0284c7; font-size:0.75rem; padding:4px 8px; border-radius:6px; white-space:nowrap;" onclick="speak('${escapeJs(c.narrativa)}')">
+                  🔊 Ouvir
+                </button>
+              </div>
             </div>
 
-            <!-- ÁREA VISUAL CONCRETA -->
-            <div style="width:100%; display:flex; justify-content:center; align-items:center;">
-              ${c.visualHtml}
+            <!-- BOTÕES DE RESPOSTA GIGANTES TÁTEIS (GRID 4 ITENS) -->
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+              ${c.options.map(opt => `
+                <button type="button" class="big-btn" style="background:#0b213f; border:2.5px solid #38bdf8; color:#ffffff; font-size:1.8rem; font-weight:900; padding:10px 6px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);" onclick="responderContaMatematica(${opt}, this)">
+                  ${opt}
+                </button>
+              `).join('')}
             </div>
 
-            <!-- NARRATIVA E BOTÃO DE OUVIR -->
-            <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:600px; background:#08182e; border:1px solid #1e3a63; border-radius:10px; padding:6px 12px; gap:8px;">
-              <span id="math-narrativa-txt" style="font-size:0.85rem; font-weight:700; color:#e2e8f0; flex:1;">
-                ${c.narrativa}
-              </span>
-              <button type="button" class="big-btn" style="background:#0284c7; font-size:0.78rem; padding:4px 10px; border-radius:8px;" onclick="speak('${c.narrativa}')">
-                🔊 Ouvir
-              </button>
-            </div>
-          </div>
-
-          <!-- BOTÕES DE RESPOSTA GIGANTES TÁTEIS (GRID 4 ITENS) -->
-          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
-            ${c.options.map(opt => `
-              <button type="button" class="big-btn" style="background:#0b213f; border:2.5px solid #38bdf8; color:#ffffff; font-size:1.8rem; font-weight:900; padding:10px 6px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);" onclick="responderContaMatematica(${opt}, this)">
-                ${opt}
-              </button>
-            `).join('')}
           </div>
 
         </div>
