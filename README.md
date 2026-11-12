@@ -28,10 +28,10 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 | ![Lousa Mágica Neon](docs/screenshots/07_lousa_magica_neon.png) | ![Painel dos Pais](docs/screenshots/08_painel_pais_admin.png) |
 | *Quadro de desenho digital com pincéis neon vibrantes, borracha tátil, carimbos colecionáveis e reconhecimento inteligente do que a criança desenhou.* | *Painel dos pais com indicador de Wi-Fi, auto-salvamento de motores de IA (Ollama, OpenCode, Gemini, OpenAI, Groq), controle de tempo de tela e mensagens.* |
 
-| 🤖 9. Fábrica de Robôs Stark (Oficina de Criação) |
+| 🏎️ 9. Corrida Turbo Stark (Super Piloto dos Campeões) |
 | :---: |
 | ![Fábrica de Robôs Stark](docs/screenshots/09_quarto_engenharia.png) |
-| *Bancada de robótica e engenharia infantil: a criança customiza seu próprio robô (cabeça, peito com reator arc, braços e pernas) e o ativa com efeitos cibernéticos e luzes neon!* |
+| *Pista de corrida arcade interestelar neon: a criança pilota o super carro Stark desviando de obstáculos, coletando moedas de ouro e ativando o Super Nitro até a linha de chegada!* |
 
 ---
 
@@ -58,17 +58,16 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 
 ### 👁️ 3. Visão Computacional Local de Borda com `@vladmandic/human`
 - **Biblioteca Embarcada 100% Local:** Modelos de visão (`blazeface`, `emotion`, `handtrack`, `handlandmark-lite`) instalados diretamente em `static/libs/human/` (8.3 MB), sem necessidade de downloads de CDN ou envio de frames para servidores externos.
-- **Espelho das Emoções:** Reconhecimento de expressões faciais da criança (feliz, surpreso, calmo) com dicas amigáveis de regulação emocional e autoconhecimento.
+- **Espelho das Emoções:** Reconhecimento facial inteligente de sorrisos e carinhas com limiar dinâmico adaptativo, detecção de felicidade/sorriso imediata, feedback sonoro e botão de confirmação instantânea para não travar a brincadeira da criança.
 - **Mãozinhas na Câmera & Mestre da Matemática:** Detecção tátil de dedinhos levantados direto na webcam para desafios matemáticos e contagem progressiva.
 - **Zero Lag no Intel Atom N450:** Sistema de trava de processamento (`isProcessing` guards) com descarte automático de frames sobrepostos (*frame dropping*), mantendo a interface nos 60 FPS estáveis.
 
-### 🎮 4. Fábrica de Robôs Stark & Novos Jogos Educativos
-- **🤖 Fábrica de Robôs Stark (Oficina de Criação):** Quarto de Engenharia integrado diretamente como modal na grade de jogos:
-  - Cabeça: *TV Retrô Fofa 📺, Capacete Cyber 🪖, Androide Holográfico 🤖, Olhos de Laser 👾*.
-  - Peito: *Reator Arc Stark 💠, Armadura Titânio 🛡️, Engrenagens ⚙️, Bateria Solar 🔋*.
-  - Braços: *Garras de Resgate 🦾, Jatos 🚀, Mãos Amigas 👋, Braços de Mola 💪*.
-  - Pernas: *Esteiras de Tanque 🚜, Pernas Biônicas 🦿, Disco Antigravidade 🛸, Rodas Turbo 🛞*.
-  - Botão *⚡ ATIVAR MEU ROBÔ!*: Ilumina o robô em neon, dispara efeitos cibernéticos, gera fala divertida do Jarvis e premia a criança com moedas de ouro!
+### 🎮 4. Corrida Turbo Stark & Novos Jogos Educativos
+- **🏎️ Corrida Turbo Stark (Super Piloto dos Campeões):** Jogo de corrida arcade interestelar neon ultra-fluido:
+  - **Jogabilidade Ativa em 3 Faixas:** A criança pilota a máquina Stark usando as setinhas `←` `→`, o mouse ou tocando diretamente nas faixas da pista na tela touch do netbook.
+  - **Coleta de Moedas & Estrelas:** Pegue moedas douradas (+1 moeda no pote), estrelas de ouro e baterias de Reator Arc para recarregar o Nitro!
+  - **🔥 Super Nitro Turbo (240 km/h):** Aceleração máxima com rastro de chamas azuis, atração magnética de moedas próximas e som de turbina potente.
+  - **🏁 Grande Prêmio Stark (1000m):** Ao cruzar a linha quadriculada de chegada, chuva de confetes 2D, troféu dourado gigante, elogio do Jarvis e premiação real de +3 moedas de ouro!
 - **➕ Mestre da Matemática:** Operações de adição (+), subtração (-), multiplicação (×) e divisão (÷) com maçãs, estrelas e suporte à contagem de dedinhos na câmera.
 - **🦖 Parque dos Dinossauros com Sons Autênticos:** Sons e rugidos reais e organização lateral ergonômica, mantendo a tela do netbook (1024x600) sempre limpa e desobstruída.
 - **🦁 Expedição dos Bichos Expandida:** Mais animais com áudios reais capturados da natureza e Desafio do Ouvido.
@@ -225,7 +224,7 @@ sudo apt install ./jarvis-kids-os_3.8.0.deb
 21. **🕵️ Detetive Stark: Jogo dos 7 Erros:** Olhos de águia para encontrar detalhes secretos em cenas de alta visibilidade com incentivos do Jarvis.
 22. **🔬 Laboratório de Misturas & Ciências:** Misturador de cores primárias, termômetro dos 3 estados da água (gelo, líquido, vapor) e o super ímã magnético.
 23. **♟️ Academia de Xadrez do Pequeno Mestre:** Aprenda o movimento do Peão, Cavalo em L, Torre e grandes jogadas com mini-tabuleiro interativo e dicas do Jarvis.
-24. **🤖 Fábrica de Robôs Stark:** Oficina de criação e robótica infantil com personalização de cabeças, reatores arc, braços e esteiras, com ativação neon e sons cibernéticos!
+24. **🏎️ Corrida Turbo Stark:** Pista interestelar neon de alta velocidade com desvio de cones, coleta de moedas e estrelas, turbo nitro e Grande Troféu dos Campeões com +3 moedas!
 
 ---
 

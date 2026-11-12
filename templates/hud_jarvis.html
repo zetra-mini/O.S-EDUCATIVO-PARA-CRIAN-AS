@@ -3667,13 +3667,13 @@
         acao: () => openPlanetRecyclingGame()
       },
       {
-        id: 'fabrica_robos',
+        id: 'corrida_turbo',
         pagina: 7,
-        nome: 'Fábrica de Robôs Stark',
-        desc: 'Construa e dê vida ao seu próprio super robô com peças e luzes neon',
-        icone: '🤖',
-        cor: '#f59e0b',
-        acao: () => openRobotFactoryGame()
+        nome: 'Corrida Turbo Stark',
+        desc: 'Pilote o super carro neon na pista interestelar, colete moedas e ative o nitro',
+        icone: '🏎️',
+        cor: '#f43f5e',
+        acao: () => openTurboRacingGame()
       }
     ];
 
@@ -5037,11 +5037,11 @@
         replyLocal = 'Abrindo os Guardiões da Terra e a Reciclagem Mágica! Vamos salvar o planeta!';
         acaoLocal = () => { closeModal(false); openPlanetRecyclingGame(); };
       }
-      // 26. FÁBRICA DE ROBÔS STARK
-      else if (/fabrica de robo|fabrica de robos|montar robo|criar robo|construir robo|oficina de robo/i.test(spokenNorm)) {
+      // 26. CORRIDA TURBO STARK
+      else if (/corrida|carro|pilotar|pista|turbo|super carro|automovel/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Abrindo a Fábrica de Robôs Stark! Vamos construir seu robô!';
-        acaoLocal = () => { closeModal(false); openRobotFactoryGame(); };
+        replyLocal = 'Motores roncando! Abrindo a Corrida Turbo Stark! Pilote com velocidade!';
+        acaoLocal = () => { closeModal(false); openTurboRacingGame(); };
       }
       // 24. CORTESIA
       else if (/boa noite/i.test(spokenNorm)) {
@@ -5151,7 +5151,7 @@
         else if (acao === 'abrir_engenharia') abrirQuartoEngenhariaModal();
         else if (acao === 'abrir_matematica') openMathMasterGame();
         else if (acao === 'abrir_reciclagem') openPlanetRecyclingGame();
-        else if (acao === 'abrir_fabrica_robos') openRobotFactoryGame();
+        else if (acao === 'abrir_corrida_turbo') openTurboRacingGame();
       } catch (err) {
         console.warn('Erro ao executar acao frontend:', err);
       }
@@ -5195,11 +5195,14 @@
     let emoDesafioAtual = { chave: 'happy', nome: 'Alegre / Sorrindo', emoji: '😄' };
 
     const MAPA_EMOCOES_HUMAN = {
-      happy: { pt: 'Muito Feliz & Alegre!', emoji: '😄', cor: '#10b981', fala: 'Que sorriso lindo e contagiante, campeão!' },
+      happy: { pt: 'Muito Feliz & Sorrindo!', emoji: '😄', cor: '#10b981', fala: 'Que sorriso lindo e contagiante, campeão!' },
+      surprise: { pt: 'Uau! Que Surpresa!', emoji: '😲', cor: '#fbbf24', fala: 'Olhos bem abertos! Você parece super surpreso!' },
       surprised: { pt: 'Uau! Que Surpresa!', emoji: '😲', cor: '#fbbf24', fala: 'Olhos bem abertos! Você parece super surpreso!' },
       sad: { pt: 'Carinha Triste', emoji: '😢', cor: '#38bdf8', fala: 'Vejo uma carinha triste. O Jarvis está aqui com você, herói!' },
       angry: { pt: 'Bravo / Chateado', emoji: '😠', cor: '#ef4444', fala: 'Parece que você está bravinho! Que tal respirar fundo com a flor da calma?' },
-      neutral: { pt: 'Calmo & Focado', emoji: '😌', cor: '#a855f7', fala: 'Você está super calmo e tranquilo!' }
+      neutral: { pt: 'Calmo & Sereno', emoji: '😌', cor: '#a855f7', fala: 'Você está super calmo e tranquilo!' },
+      fear: { pt: 'Assustado / Espantado', emoji: '😨', cor: '#7c3aed', fala: 'O Jarvis está aqui para te proteger, herói!' },
+      disgust: { pt: 'Carinha de Eca!', emoji: '😝', cor: '#f97316', fala: 'Que careta engraçada você fez!' }
     };
 
     function renderEmotionsMirrorStage(stage) {
@@ -5219,24 +5222,27 @@
             </div>
           </div>
 
-          <!-- LADO DIREITO: DESAFIO DA MÍMICA & MISSÃO (+3 🪙) -->
+          <!-- LADO DIREITO: DESAFIO DA MÍMICA & MISSÃO (+2 🪙) -->
           <div style="background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
               <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase;">
                 🎭 Desafio da Mímica Facial (+2 🪙)
               </div>
               <div style="font-size:1.15rem; font-weight:900; color:#facc15; margin:6px 0;" id="emo-desafio-titulo">
-                Missão: Faça uma Carinha Feliz!
+                Missão: Faça uma Carinha Alegre / Sorrindo!
               </div>
               <div style="font-size:3rem; text-align:center; margin:8px 0; animation:pulse 1.5s infinite;" id="emo-desafio-emoji">
                 😄
               </div>
               <div style="font-size:0.9rem; color:#cbd5e1; line-height:1.35; background:#041426; padding:8px 10px; border-radius:8px; border:1px solid #1e3a63;" id="emo-desafio-dica">
-                Dê um grande sorriso para a câmera! Mostre toda a sua alegria de herói!
+                Dê um grande sorriso para a câmera do Jarvis!
               </div>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-size:1rem; font-weight:900; padding:10px;" onclick="forcarSucessoEmocaoAtual()">
+                ✨ Estou Sorrindo! (Confirmar 😄)
+              </button>
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-size:0.88rem; font-weight:900; padding:8px;" onclick="sortearNovoDesafioEmocao()">
                 🎲 Sortear Outra Carinha
               </button>
@@ -5269,20 +5275,20 @@
           };
         }
 
-        speak('Espelho Mágico das Emoções ativado! Olhe para a câmera e faça a carinha do desafio!');
+        speak('Espelho Mágico ativado! Dê um belo sorriso para a câmera do Jarvis!');
         showToast('📸 Espelho Mágico Ativado!');
 
-        // Loop de IA com Human local (~5 FPS leve com drop-frame guard)
+        // Loop de detecção inteligente
         let isHumanEmoProcessing = false;
         emoMirrorInterval = setInterval(async () => {
           if (!emoMirrorStream || !video || video.readyState < 2) return;
-          if (isHumanEmoProcessing) return; // Drop-frame preventivo para o Intel Atom
+          if (isHumanEmoProcessing) return;
           isHumanEmoProcessing = true;
           try {
             const overlay = document.getElementById('emo-mirror-overlay');
             const emo = await processarFrameHumanEmotion(video, overlay);
             if (emo && emo.emotion) {
-              atualizarFeedbackEmocao(emo.emotion, emo.score);
+              atualizarFeedbackEmocao(emo);
             }
           } catch(e) {
           } finally {
@@ -5296,43 +5302,70 @@
       }
     }
 
-    function atualizarFeedbackEmocao(emocaoKey, score) {
-      const info = MAPA_EMOCOES_HUMAN[emocaoKey] || { pt: 'Pensativo', emoji: '🤔', cor: '#94a3b8', fala: '' };
+    function atualizarFeedbackEmocao(emo) {
+      if (!emo) return;
+      let emocaoKey = emo.emotion;
+      let score = emo.score;
+
+      // Se o desafio for 'happy' e a pontuação de sorriso for relevante (>= 0.20)
+      if (emoDesafioAtual.chave === 'happy' && (emocaoKey === 'happy' || (emo.happyScore && emo.happyScore >= 0.20))) {
+        emocaoKey = 'happy';
+        score = Math.max(score, emo.happyScore || 0);
+      } else if ((emoDesafioAtual.chave === 'surprise' || emoDesafioAtual.chave === 'surprised') && (emocaoKey === 'surprise' || emocaoKey === 'surprised' || (emo.surpriseScore && emo.surpriseScore >= 0.20))) {
+        emocaoKey = 'surprise';
+        score = Math.max(score, emo.surpriseScore || 0);
+      }
+
+      const info = MAPA_EMOCOES_HUMAN[emocaoKey] || { pt: 'Pensativo / Atento', emoji: '🤔', cor: '#94a3b8', fala: '' };
       const eBox = document.getElementById('emo-detected-box');
       const eEmoji = document.getElementById('emo-detected-emoji');
       const eText = document.getElementById('emo-detected-text');
 
       if (eEmoji) eEmoji.textContent = info.emoji;
-      if (eText) eText.textContent = `${info.pt} (Confiança: ${Math.round(score * 100)}%)`;
+      if (eText) eText.textContent = `${info.pt} (Detecção: ${Math.round(score * 100)}%)`;
       if (eBox) eBox.style.borderColor = info.cor;
 
       const agora = Date.now();
-      // Verifica se acertou o desafio atual
-      if (emocaoKey === emoDesafioAtual.chave && score > 0.45) {
-        if (agora - emoCooldownFalaMs > 5000) {
+      // Limiar super amigável para crianças (>= 0.22)
+      const bateu = (emoDesafioAtual.chave === 'happy' && (emocaoKey === 'happy' || (emo.happyScore && emo.happyScore >= 0.20))) ||
+                    (emoDesafioAtual.chave === 'neutral' && (emocaoKey === 'neutral' || score >= 0.22)) ||
+                    ((emoDesafioAtual.chave === 'surprise' || emoDesafioAtual.chave === 'surprised') && (emocaoKey === 'surprise' || emocaoKey === 'surprised' || (emo.surpriseScore && emo.surpriseScore >= 0.20))) ||
+                    (emocaoKey === emoDesafioAtual.chave && score >= 0.22);
+
+      if (bateu) {
+        if (agora - emoCooldownFalaMs > 4500) {
           emoCooldownFalaMs = agora;
-          playCelebrationFanfare();
-          dispararChuvaCoracoes(45);
-          speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você fez a carinha certinha de ${emoDesafioAtual.nome}! Ganhou 2 moedas de herói!`);
-          showToast('🌟 Desafio Concluído! +2 Moedas!');
-
-          const pEl = document.getElementById('pote-fichas-val');
-          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
-          fetch('/api/fichas/bonificar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantidade: 2, motivo: 'desafio_espelho_emocoes' })
-          }).catch(() => null);
-
-          setTimeout(() => sortearNovoDesafioEmocao(), 3500);
+          dispararCelebracaoEmocaoAcerto();
         }
       }
+    }
+
+    function forcarSucessoEmocaoAtual() {
+      dispararCelebracaoEmocaoAcerto(true);
+    }
+
+    function dispararCelebracaoEmocaoAcerto(manual = false) {
+      playCelebrationFanfare();
+      dispararChuvaCoracoes(50);
+      const crianca = appState.config.child_name || 'Kaleo';
+      speak(`Sensacional, super ${crianca}! Você fez a carinha perfeita de ${emoDesafioAtual.nome}! Ganhou 2 moedas de ouro!`);
+      showToast('🌟 Desafio Concluído! +2 Moedas de Ouro!');
+
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
+      fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 2, motivo: 'desafio_espelho_emocoes' })
+      }).catch(() => null);
+
+      setTimeout(() => sortearNovoDesafioEmocao(), 3500);
     }
 
     function sortearNovoDesafioEmocao() {
       const opcoes = [
         { chave: 'happy', nome: 'Alegre / Sorrindo', emoji: '😄', dica: 'Dê um grande sorriso para a câmera do Jarvis!' },
-        { chave: 'surprised', nome: 'Surpreso(a)', emoji: '😲', dica: 'Abra bem a boca e arregale os olhinhos de surpresa!' },
+        { chave: 'surprise', nome: 'Surpreso(a)', emoji: '😲', dica: 'Abra bem a boca e arregale os olhinhos de surpresa!' },
         { chave: 'neutral', nome: 'Calmo & Sereno', emoji: '😌', dica: 'Fique bem relaxado e tranquilo olhando para o Jarvis!' },
         { chave: 'angry', nome: 'Bravo / Valente', emoji: '😠', dica: 'Faça uma carinha bem brava e valente de herói!' }
       ];
@@ -5351,7 +5384,7 @@
       speak(`Nova missão do Espelho: Faça uma carinha ${emoDesafioAtual.nome}! ${emoDesafioAtual.dica}`);
     }
 
-    function encerrarEspelhoDasEmocoes() {
+        function encerrarEspelhoDasEmocoes() {
       if (emoMirrorInterval) { clearInterval(emoMirrorInterval); emoMirrorInterval = null; }
       if (emoMirrorStream) {
         try { emoMirrorStream.getTracks().forEach(t => t.stop()); } catch(e) {}
@@ -6075,6 +6108,8 @@
 
       // 3. Desliga imediatamente câmeras e visões computacionais (Contagem de Dedos e Matemática)
       if (typeof stopFingerCameraMode === 'function') stopFingerCameraMode();
+      if (typeof encerrarCorridaTurbo === 'function') encerrarCorridaTurbo();
+      if (typeof encerrarEspelhoDasEmocoes === 'function') encerrarEspelhoDasEmocoes();
       if (typeof encerrarCameraMatematica === 'function') encerrarCameraMatematica();
 
       // 4. Para timers de música, metrônomos e batidas
@@ -6652,7 +6687,8 @@
     let jarvisHumanCarregando = false;
 
     async function obterJarvisHuman(modo = 'hand') {
-      if (typeof Human === 'undefined') return null;
+      const HumanConstructor = (typeof Human !== 'undefined') ? (Human.Human || Human.default || Human) : null;
+      if (!HumanConstructor) return null;
       if (!jarvisHumanInstance) {
         if (jarvisHumanCarregando) return null;
         jarvisHumanCarregando = true;
@@ -6666,32 +6702,37 @@
             filter: { enabled: true, width: 320, height: 240 },
             face: {
               enabled: modo === 'face_emotion',
-              detector: { modelPath: 'blazeface.json', minConfidence: 0.4 },
-              emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.35 },
+              detector: { modelPath: 'blazeface.json', minConfidence: 0.25 },
+              emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.20 },
               iris: { enabled: false },
               description: { enabled: false }
             },
             body: { enabled: false },
             hand: {
               enabled: modo === 'hand',
-              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.4 },
+              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.25 },
               landmarks: { modelPath: 'handlandmark-lite.json' }
             },
             gesture: { enabled: true }
           };
-          jarvisHumanInstance = new Human(config);
+          jarvisHumanInstance = new HumanConstructor(config);
           await jarvisHumanInstance.load();
         } catch (err) {
-          console.warn('Human WebGL falhou, tentando fallback WASM/CPU:', err);
+          console.warn('Human WebGL falhou, tentando fallback CPU:', err);
           try {
-            jarvisHumanInstance = new Human({
+            jarvisHumanInstance = new HumanConstructor({
               modelBasePath: '/static/libs/human/models',
-              backend: 'wasm',
+              backend: 'cpu',
               async: true,
               warmup: 'none',
-              face: { enabled: modo === 'face_emotion' },
+              filter: { enabled: true, width: 240, height: 180 },
+              face: {
+                enabled: modo === 'face_emotion',
+                detector: { modelPath: 'blazeface.json', minConfidence: 0.20 },
+                emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.20 }
+              },
               body: { enabled: false },
-              hand: { enabled: modo === 'hand' }
+              hand: { enabled: modo === 'hand', detector: { modelPath: 'handtrack.json', minConfidence: 0.20 } }
             });
             await jarvisHumanInstance.load();
           } catch(e2) {
@@ -6707,8 +6748,8 @@
           jarvisHumanInstance.config.hand.enabled = true;
         } else if (modo === 'face_emotion') {
           jarvisHumanInstance.config.face.enabled = true;
-          jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.4 };
-          jarvisHumanInstance.config.face.emotion = { enabled: true, modelPath: 'emotion.json', minConfidence: 0.35 };
+          jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.25 };
+          jarvisHumanInstance.config.face.emotion = { enabled: true, modelPath: 'emotion.json', minConfidence: 0.20 };
           jarvisHumanInstance.config.hand.enabled = false;
         }
       }
@@ -6787,14 +6828,31 @@
             const ctx = overlay.getContext('2d');
             if (ctx) {
               ctx.clearRect(0, 0, overlay.width, overlay.height);
+              if (f.box) {
+                const [bx, by, bw, bh] = f.box;
+                ctx.strokeStyle = '#00f0ff';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(bx, by, bw, bh);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
+                ctx.fillRect(bx, by, bw, bh);
+              }
               if (human.draw && human.draw.face) {
                 try { human.draw.face(overlay, res.face); } catch(eD) {}
               }
             }
           }
           if (f.emotion && f.emotion.length > 0) {
+            const happyItem = f.emotion.find(e => e.emotion === 'happy');
+            const surpriseItem = f.emotion.find(e => e.emotion === 'surprise' || e.emotion === 'surprised');
             const sorted = [...f.emotion].sort((a, b) => b.score - a.score);
-            return sorted[0];
+            const top = sorted[0];
+            return {
+              emotion: top.emotion,
+              score: top.score,
+              all: f.emotion,
+              happyScore: happyItem ? happyItem.score : 0,
+              surpriseScore: surpriseItem ? surpriseItem.score : 0
+            };
           }
         }
       } catch(e) {}
@@ -14923,312 +14981,498 @@
 
 
     // =========================================================================
-    // NOVO JOGO 3: FÁBRICA DE ROBÔS STARK (OFICINA DE CRIAÇÃO)
+    // NOVO JOGO 3: CORRIDA TURBO STARK (SUPER PILOTO DOS CAMPEÕES)
     // =========================================================================
-    const ROBOT_PARTS = {
-      cabecas: [
-        { nome: 'TV Retrô Fofa', icone: '📺', fala: 'Bip bop! Olá amigo, eu vejo tudo com minha tela mágica!' },
-        { nome: 'Capacete Stark Cyber', icone: '🪖', fala: 'Sistemas Stark online! Armadura de titânio protegida!' },
-        { nome: 'Androide Holográfico', icone: '🤖', fala: 'Processador quântico pronto para grandes aventuras!' },
-        { nome: 'Olhos de Laser 3D', icone: '👾', fala: 'Visão de raio-X ativada! Posso ver através de paredes!' }
-      ],
-      troncos: [
-        { nome: 'Reator Arc Stark', icone: '💠', desc: 'Energia infinita azul neon' },
-        { nome: 'Armadura Titânio Dourada', icone: '🛡️', desc: 'Super resistência a impactos' },
-        { nome: 'Engrenagens a Vapor', icone: '⚙️', desc: 'Força mecânica de mil cavalos' },
-        { nome: 'Bateria Solar Neon', icone: '🔋', desc: 'Carrega com a luz do sol' }
-      ],
-      bracos: [
-        { nome: 'Garras de Resgate', icone: '🦾', desc: 'Pega qualquer peso do chão' },
-        { nome: 'Jatos Propulsores', icone: '🚀', desc: 'Super propulsão aérea' },
-        { nome: 'Mãos Amigas de Alta Precisão', icone: '👋', desc: 'Cumprimenta e ajuda nas tarefas' },
-        { nome: 'Braços de Mola', icone: '💪', desc: 'Super alcance elástico' }
-      ],
-      pernas: [
-        { nome: 'Esteiras Todo-Terreno', icone: '🚜', desc: 'Passa por lama e pedras' },
-        { nome: 'Pernas Biônicas Velozes', icone: '🦿', desc: 'Corre mais rápido que o vento' },
-        { nome: 'Jato Flutuante Antigravidade', icone: '🛸', desc: 'Flutua no ar suavemente' },
-        { nome: 'Rodas Turbo de Corrida', icone: '🛞', desc: 'Velocidade turbo no asfalto' }
-      ]
+    let turboRacingState = {
+      active: false,
+      carLane: 1, // 0: esquerda, 1: centro, 2: direita
+      carX: 190,
+      carY: 240,
+      carColor: '#ef4444',
+      carModelName: 'Vermelho Stark',
+      speed: 6,
+      distance: 1000,
+      coins: 0,
+      score: 0,
+      nitro: 80,
+      isNitro: false,
+      roadOffset: 0,
+      items: [],
+      particles: [],
+      finished: false,
+      wobble: 0
     };
+    let turboAnimId = null;
+    let turboKeyHandler = null;
 
-    let robotConfig = { cabeca: 0, peito: 0, bracos: 0, pernas: 0, nome: 'Titan Stark' };
-    let robotModoVisual = 'oficina'; // 'oficina' ou 'missao'
-    let robotAnimandoAcao = null;
-
-    function openRobotFactoryGame() {
-      pushModalScreen('🤖 FÁBRICA DE ROBÔS STARK', (body) => {
+    function openTurboRacingGame() {
+      pushModalScreen('🏎️ CORRIDA TURBO STARK (SUPER PILOTO)', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo à Bancada de Robótica Stark, engenheiro ${appState.config.child_name || 'Kaleo'}! Monte as peças do seu robô e aperte o botão de ativar para testar os super poderes na arena!`);
-        robotModoVisual = 'oficina';
-        renderRobotFactoryBody(body);
+        setTimeout(() => playTone(659, 100), 100);
+        setTimeout(() => playTone(784, 150), 200);
+        const crianca = appState.config.child_name || 'Kaleo';
+        speak(`Motores roncando, piloto ${crianca}! Use as setas ou toque na pista para desviar dos cones, pegar moedas e acelerar com o Nitro Turbo!`);
+        renderTurboRacingBody(body);
       }, true);
     }
 
-    function trocarPecaRobo(categoria, delta) {
-      playTone(587, 80);
-      const total = ROBOT_PARTS[categoria].length;
-      robotConfig[categoria] = (robotConfig[categoria] + delta + total) % total;
-      const b = document.getElementById('modal-body');
-      if (b) renderRobotFactoryBody(b);
-    }
-
-    function executarAcaoSuperRobo(tipo) {
-      destravarAudioNavegador();
-      const arenaRobo = document.getElementById('robo-arena-visual');
-      const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
-      const t = ROBOT_PARTS.troncos[robotConfig.peito];
-      const b = ROBOT_PARTS.bracos[robotConfig.bracos];
-      const p = ROBOT_PARTS.pernas[robotConfig.pernas];
-
-      if (tipo === 'laser') {
-        // Som Sci-Fi de Laser Sweep
-        try {
-          const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(1400, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.35);
-          gain.gain.setValueAtTime(0.4, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 0.35);
-        } catch(e) {}
-
-        if (arenaRobo) {
-          arenaRobo.style.filter = 'drop-shadow(0 0 25px #ef4444) brightness(1.4)';
-          setTimeout(() => arenaRobo.style.filter = '', 500);
-        }
-        showToast('🔥 Raio Laser Neon Disparado!');
-        speak('Zzap! Laser de plasma ativado com sucesso!');
-
-      } else if (tipo === 'turbo') {
-        // Som de Turbina Propulsora
-        try {
-          const ctx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(80, ctx.currentTime);
-          osc.frequency.linearRampToValueAtTime(520, ctx.currentTime + 0.5);
-          osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 1.0);
-          gain.gain.setValueAtTime(0.3, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 1.0);
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.start(); osc.stop(ctx.currentTime + 1.0);
-        } catch(e) {}
-
-        if (arenaRobo) {
-          arenaRobo.style.transform = 'translateY(-20px) scale(1.08)';
-          arenaRobo.style.filter = 'drop-shadow(0 15px 25px #00f0ff)';
-          setTimeout(() => {
-            arenaRobo.style.transform = '';
-            arenaRobo.style.filter = '';
-          }, 800);
-        }
-        showToast('🚀 Turbo Jato Ativado! Voando alto!');
-        speak(`Propulsores ${p.nome} na potência máxima! Subindo!`);
-
-      } else if (tipo === 'garra') {
-        playTone(350, 100, 'square');
-        setTimeout(() => playTone(700, 150, 'square'), 120);
-        showToast('🦾 Super Garra Mecânica Acionada! +1 Moeda!');
-        speak(`${b.nome} resgatou uma bateria de energia estelar!`);
-        
-        fetch('/api/fichas/bonificar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantidade: 1, motivo: 'garra_robo_stark' })
-        }).catch(() => null);
-        const pEl = document.getElementById('pote-fichas-val');
-        if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 1;
-
-      } else if (tipo === 'danca') {
-        // Dança Robótica com batida cibernética alegre
-        playTone(440, 90);
-        setTimeout(() => playTone(554, 90), 120);
-        setTimeout(() => playTone(659, 90), 240);
-        setTimeout(() => playTone(880, 150), 360);
-
-        if (arenaRobo) {
-          arenaRobo.style.animation = 'pulseMic 0.3s 4 alternate';
-          setTimeout(() => arenaRobo.style.animation = '', 1200);
-        }
-        showToast('🕺 Dança dos Robôs Stark!');
-        speak('Bip bip bop! Olhe como eu sei dançar no ritmo da música!');
-
-      } else if (tipo === 'fala') {
-        speak(c.fala);
+    function encerrarCorridaTurbo() {
+      if (turboAnimId) {
+        cancelAnimationFrame(turboAnimId);
+        turboAnimId = null;
+      }
+      if (turboKeyHandler) {
+        window.removeEventListener('keydown', turboKeyHandler);
+        turboKeyHandler = null;
+      }
+      if (turboRacingState) {
+        turboRacingState.active = false;
       }
     }
 
-    function renderRobotFactoryBody(body) {
-      const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
-      const t = ROBOT_PARTS.troncos[robotConfig.peito];
-      const b = ROBOT_PARTS.bracos[robotConfig.bracos];
-      const p = ROBOT_PARTS.pernas[robotConfig.pernas];
+    function renderTurboRacingBody(body) {
+      encerrarCorridaTurbo();
+
+      turboRacingState = {
+        active: true,
+        carLane: 1,
+        carX: 190,
+        carY: 236,
+        carColor: '#ef4444',
+        carModelName: 'Vermelho Stark',
+        speed: 6.5,
+        distance: 1000,
+        coins: 0,
+        score: 0,
+        nitro: 85,
+        isNitro: false,
+        roadOffset: 0,
+        items: [],
+        particles: [],
+        finished: false,
+        wobble: 0
+      };
 
       body.innerHTML = `
-        <div style="display:grid; grid-template-columns: minmax(240px, 1fr) 1.25fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
+        <div style="display:grid; grid-template-columns: minmax(360px, 390px) 1.2fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- COLUNA ESQUERDA: O ROBÔ MONTADO EM TEMPO REAL COM EFEITOS NEON -->
-          <div style="background:#020914; border:2.5px solid #00f0ff; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(0,240,255,0.25);">
+          <!-- COLUNA ESQUERDA: PISTA DE CORRIDA CANVAS 2D -->
+          <div style="background:#020914; border:2.5px solid #00f0ff; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(0,240,255,0.25); position:relative;">
             
-            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-              <span style="font-size:0.75rem; font-weight:900; background:#042f2e; color:#5eead4; border:1px solid #14b8a6; padding:2px 8px; border-radius:999px;">
-                ${robotModoVisual === 'oficina' ? '🛠️ BANCADA DE CRIAÇÃO' : '⚡ ARENA DE PODERES'}
-              </span>
-              <div style="font-size:0.95rem; font-weight:900; color:#00f0ff; text-transform:uppercase;">
-                🤖 ${robotConfig.nome}
-              </div>
-            </div>
+            <canvas id="turbo-track-canvas" width="370" height="280" style="background:#0a0f1d; border-radius:10px; border:2px solid #1e3a5f; cursor:pointer; width:100%; max-width:370px;"></canvas>
 
-            <!-- SILHUETA VISUAL DO ROBÔ COM ANIMAÇÃO -->
-            <div id="robo-arena-visual" style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:8px; background:#041426; border:1.5px solid #1e3a63; border-radius:12px; width:100%; max-width:210px; transition:all 0.3s;">
-              <div style="font-size:2.8rem; line-height:1; filter:drop-shadow(0 0 10px #00f0ff); animation:pulse 2s infinite;">${c.icone}</div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
-                <span style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 12px #fde047);">${t.icone}</span>
-                <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
-              </div>
-              <div style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 8px #38bdf8);">${p.icone}</div>
+            <!-- CONTROLES TÁTEIS RÁPIDOS INFERIORES -->
+            <div style="display:flex; width:100%; gap:8px; margin-top:6px;">
+              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.1rem; font-weight:900;" onclick="moverCarroTurbo(-1)">
+                ◀ ESQUERDA
+              </button>
+              <button type="button" class="big-btn" id="btn-turbo-nitro" style="flex:1.2; background:linear-gradient(135deg, #f97316 0%, #ef4444 100%); padding:8px 0; font-size:1.05rem; font-weight:900; box-shadow:0 0 12px rgba(249,115,22,0.5);" onclick="ativarNitroTurbo()">
+                🔥 NITRO TURBO!
+              </button>
+              <button type="button" class="big-btn" style="flex:1; background:#0284c7; padding:8px 0; font-size:1.1rem; font-weight:900;" onclick="moverCarroTurbo(1)">
+                DIREITA ▶
+              </button>
             </div>
-
-            <!-- BOTÃO PRINCIPAL DE MODO -->
-            ${robotModoVisual === 'oficina' ? `
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.95rem; font-weight:900; padding:8px 14px; width:100%; border-radius:10px; box-shadow:0 0 15px rgba(0,240,255,0.4);" onclick="darVidaAoRoboStark()">
-                ⚡ ATIVAR MEU ROBÔ! (+3 🪙)
-              </button>
-            ` : `
-              <button type="button" class="big-btn" style="background:#1e293b; color:#38bdf8; border:1.5px solid #0284c7; font-size:0.85rem; font-weight:900; padding:6px 14px; width:100%; border-radius:10px;" onclick="robotModoVisual='oficina'; const b = document.getElementById('modal-body'); if (b) renderRobotFactoryBody(b);">
-                🛠️ Voltar à Oficina de Peças
-              </button>
-            `}
           </div>
 
-          <!-- COLUNA DIREITA: OFICINA DE PEÇAS OU PAINEL DE PODERES DA ARENA -->
-          ${robotModoVisual === 'oficina' ? `
-            <!-- MODO OFICINA: TROCA DE PEÇAS -->
-            <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 12px; gap:6px;">
-              
-              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase;">
-                🔧 Escolha os Módulos do Robô:
+          <!-- COLUNA DIREITA: PAINEL DE INSTRUMENTOS STARK -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; gap:8px;">
+            
+            <!-- HEADER DO PAINEL -->
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="font-size:1.1rem; font-weight:900; color:#00f0ff;">
+                🏎️ Super Piloto Stark
               </div>
-
-              <!-- 1. CABEÇA -->
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🪖 Cabeça:</span>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('cabecas', -1)">◀</button>
-                  <span style="font-size:1.2rem;">${c.icone}</span>
-                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${c.nome}</span>
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('cabecas', 1)">▶</button>
-                </div>
-              </div>
-
-              <!-- 2. TRONCO / PEITO -->
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🛡️ Peito:</span>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('troncos', -1)">◀</button>
-                  <span style="font-size:1.2rem;">${t.icone}</span>
-                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${t.nome}</span>
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('troncos', 1)">▶</button>
-                </div>
-              </div>
-
-              <!-- 3. BRAÇOS -->
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🦾 Braços:</span>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('bracos', -1)">◀</button>
-                  <span style="font-size:1.2rem;">${b.icone}</span>
-                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${b.nome}</span>
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('bracos', 1)">▶</button>
-                </div>
-              </div>
-
-              <!-- 4. PERNAS -->
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
-                <span style="font-size:0.82rem; font-weight:800; color:#38bdf8;">🦿 Pernas:</span>
-                <div style="display:flex; align-items:center; gap:6px;">
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('pernas', -1)">◀</button>
-                  <span style="font-size:1.2rem;">${p.icone}</span>
-                  <span style="font-size:0.78rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${p.nome}</span>
-                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('pernas', 1)">▶</button>
-                </div>
-              </div>
-
-              <div style="font-size:0.75rem; color:#94a3b8; text-align:center; background:rgba(0,0,0,0.3); padding:4px; border-radius:8px;">
-                💡 Combine as peças e aperte Ativar para testar os poderes na arena!
-              </div>
-
+              <span id="turbo-hud-speed" style="background:#7c2d12; color:#fed7aa; border:1.5px solid #ea580c; padding:3px 10px; border-radius:8px; font-weight:900; font-size:0.95rem;">
+                120 km/h
+              </span>
             </div>
-          ` : `
-            <!-- MODO MISSÃO: ARENA DE SUPER PODERES DO ROBÔ -->
-            <div style="display:flex; flex-direction:column; justify-content:space-between; background:#031022; border:2px solid #00f0ff; border-radius:14px; padding:10px 14px; gap:8px; box-shadow:0 0 25px rgba(0,240,255,0.2);">
-              
-              <div>
-                <div style="font-size:1.1rem; font-weight:900; color:#00f0ff;">
-                  ⚡ Centro de Controle do ${robotConfig.nome}
-                </div>
-                <div style="font-size:0.8rem; color:#cbd5e1; margin-top:2px;">
-                  Sistemas operacionais ativados! Acione os poderes do seu robô abaixo:
-                </div>
-              </div>
 
-              <!-- GRADE DE 4 SUPER PODERES TÁTEIS -->
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                <button type="button" class="big-btn" style="background:#7f1d1d; border:2px solid #ef4444; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('laser')">
-                  <span style="font-size:1.5rem;">🔥</span> <span>Disparar Laser</span>
-                </button>
-                <button type="button" class="big-btn" style="background:#0369a1; border:2px solid #38bdf8; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('turbo')">
-                  <span style="font-size:1.5rem;">🚀</span> <span>Turbo Propulsão</span>
-                </button>
-                <button type="button" class="big-btn" style="background:#15803d; border:2px solid #86efac; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('garra')">
-                  <span style="font-size:1.5rem;">🦾</span> <span>Ação da Garra</span>
-                </button>
-                <button type="button" class="big-btn" style="background:#6b21a8; border:2px solid #c084fc; color:#fff; padding:10px 8px; border-radius:10px; display:flex; align-items:center; gap:8px; font-size:0.85rem; font-weight:900;" onclick="executarAcaoSuperRobo('danca')">
-                  <span style="font-size:1.5rem;">🕺</span> <span>Dança Robótica</span>
-                </button>
+            <!-- PLACAR: DISTÂNCIA RESTANTE E MOEDAS -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:8px; text-align:center;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🏁 Chegada em:</div>
+                <div id="turbo-hud-distance" style="font-size:1.35rem; font-weight:900; color:#facc15;">1000m</div>
               </div>
+              <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:8px; text-align:center;">
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:800; text-transform:uppercase;">🪙 Moedas Pegas:</div>
+                <div id="turbo-hud-coins" style="font-size:1.35rem; font-weight:900; color:#4ade80;">0</div>
+              </div>
+            </div>
 
-              <!-- BOTÃO DE FALA ROBÓTICA -->
-              <button type="button" class="big-btn" style="background:#071e3d; border:1.5px solid #38bdf8; color:#fde047; padding:8px 12px; border-radius:10px; font-size:0.85rem; font-weight:900; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="executarAcaoSuperRobo('fala')">
-                <span>💬</span> <span>Falar Frase do Robô: "${c.fala}"</span>
+            <!-- BARRA DE ENERGIA DO NITRO -->
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800; color:#cbd5e1; margin-bottom:3px;">
+                <span>⚡ Tanque de Nitro Arc:</span>
+                <span id="turbo-hud-nitro-val">85%</span>
+              </div>
+              <div style="width:100%; height:14px; background:#041426; border-radius:8px; border:1px solid #1e3a63; overflow:hidden;">
+                <div id="turbo-hud-nitro-bar" style="width:85%; height:100%; background:linear-gradient(90deg, #38bdf8, #f59e0b, #ef4444); border-radius:8px; transition:width 0.2s;"></div>
+              </div>
+            </div>
+
+            <!-- SELETOR DE CORES DO SUPER CARRO -->
+            <div>
+              <div style="font-size:0.8rem; font-weight:800; color:#94a3b8; margin-bottom:4px;">🎨 Cor da Sua Máquina:</div>
+              <div style="display:flex; gap:6px;">
+                <button type="button" class="btn" style="flex:1; background:#ef4444; color:#fff; padding:6px 0; font-size:0.8rem; font-weight:900; border:2px solid #fff;" onclick="trocarCorCarroTurbo('#ef4444', 'Vermelho Stark', this)">🔴</button>
+                <button type="button" class="btn" style="flex:1; background:#0284c7; color:#fff; padding:6px 0; font-size:0.8rem; font-weight:900;" onclick="trocarCorCarroTurbo('#00f0ff', 'Azul Neon', this)">🔵</button>
+                <button type="button" class="btn" style="flex:1; background:#eab308; color:#000; padding:6px 0; font-size:0.8rem; font-weight:900;" onclick="trocarCorCarroTurbo('#facc15', 'Relâmpago Ouro', this)">🟡</button>
+                <button type="button" class="btn" style="flex:1; background:#10b981; color:#fff; padding:6px 0; font-size:0.8rem; font-weight:900;" onclick="trocarCorCarroTurbo('#10b981', 'Fênix Esmeralda', this)">🟢</button>
+              </div>
+            </div>
+
+            <!-- AÇÕES RÁPIDAS: BUZINA & REINICIAR -->
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="big-btn" style="flex:1; background:#334155; font-size:0.9rem; font-weight:900; padding:8px 0;" onclick="tocarBuzinaTurbo()">
+                📢 Buzinar! (Bi-Bi!)
               </button>
-
+              <button type="button" class="big-btn" style="flex:1; background:#065f46; font-size:0.9rem; font-weight:900; padding:8px 0;" onclick="renderTurboRacingBody(document.getElementById('modal-body'))">
+                🔄 Reiniciar Pista
+              </button>
             </div>
-          `}
+
+          </div>
 
         </div>
       `;
+
+      // Inicia motor gráfico Canvas
+      iniciarLoopCanvasTurbo();
     }
 
-    async function darVidaAoRoboStark() {
-      const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
-      playTone(523, 100);
-      setTimeout(() => playTone(659, 100), 100);
-      setTimeout(() => playTone(784, 120), 200);
-      setTimeout(() => playTone(1046, 250), 320);
+    function trocarCorCarroTurbo(cor, nome, btn) {
+      if (!turboRacingState) return;
+      turboRacingState.carColor = cor;
+      turboRacingState.carModelName = nome;
+      playTone(587, 80);
+      showToast(`🏎️ Carro: ${nome}!`);
+      if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll('button').forEach(b => b.style.border = 'none');
+        btn.style.border = '2px solid #fff';
+      }
+    }
 
-      robotModoVisual = 'missao';
-      const b = document.getElementById('modal-body');
-      if (b) renderRobotFactoryBody(b);
+    function moverCarroTurbo(delta) {
+      if (!turboRacingState || turboRacingState.finished) return;
+      playTone(440, 60, 'square');
+      turboRacingState.carLane = Math.max(0, Math.min(2, turboRacingState.carLane + delta));
+    }
 
-      speak(`Robô ativado com sucesso! ${c.fala} Bem-vindo à arena de testes! Você ganhou 3 moedas de ouro!`);
-      showToast('🤖 Robô Stark Online! +3 Moedas!');
+    function ativarNitroTurbo() {
+      if (!turboRacingState || turboRacingState.finished) return;
+      if (turboRacingState.nitro < 10) {
+        playTone(200, 150);
+        showToast('⚡ Nitro vazio! Pegue as baterias na pista!');
+        return;
+      }
+      turboRacingState.isNitro = true;
+      playTone(350, 100);
+      setTimeout(() => playTone(700, 200), 100);
+      showToast('🚀 SUPER NITRO ATIVADO! VRUUUUM!');
 
+      setTimeout(() => {
+        if (turboRacingState) turboRacingState.isNitro = false;
+      }, 3500);
+    }
+
+    function tocarBuzinaTurbo() {
+      playTone(740, 100, 'square');
+      setTimeout(() => playTone(880, 150, 'square'), 110);
+      showToast('📢 Bi-bi! Sai da frente que o campeão vem aí!');
+    }
+
+    function iniciarLoopCanvasTurbo() {
+      const canvas = document.getElementById('turbo-track-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const laneX = [65, 185, 305];
+      let spawnCounter = 0;
+
+      // Eventos de Toque e Clique no Canvas para mudar de faixa instantaneamente
+      canvas.onpointerdown = (ev) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = (ev.clientX - rect.left) * (canvas.width / rect.width);
+        if (clickX < 125) turboRacingState.carLane = 0;
+        else if (clickX < 245) turboRacingState.carLane = 1;
+        else turboRacingState.carLane = 2;
+        playTone(480, 50);
+      };
+
+      // Teclado Setas ← e → e Barra de Espaço
+      turboKeyHandler = (e) => {
+        if (!turboRacingState || !turboRacingState.active) return;
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moverCarroTurbo(-1);
+        else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moverCarroTurbo(1);
+        else if (e.key === ' ' || e.key === 'ArrowUp') ativarNitroTurbo();
+        else if (e.key === 'b' || e.key === 'h') tocarBuzinaTurbo();
+      };
+      window.addEventListener('keydown', turboKeyHandler);
+
+      function loop() {
+        if (!turboRacingState || !turboRacingState.active) return;
+
+        const s = turboRacingState;
+        const currentSpeed = s.isNitro ? 13 : s.speed;
+        s.roadOffset = (s.roadOffset + currentSpeed) % 40;
+
+        // Atualiza Nitro
+        if (s.isNitro) {
+          s.nitro = Math.max(0, s.nitro - 0.45);
+          if (s.nitro <= 0) s.isNitro = false;
+        }
+
+        // Atualiza Distância
+        if (!s.finished) {
+          s.distance = Math.max(0, s.distance - (currentSpeed * 0.32));
+          const distEl = document.getElementById('turbo-hud-distance');
+          if (distEl) distEl.textContent = `${Math.round(s.distance)}m`;
+
+          const spdEl = document.getElementById('turbo-hud-speed');
+          if (spdEl) spdEl.textContent = `${Math.round(currentSpeed * 18)} km/h`;
+
+          const nValEl = document.getElementById('turbo-hud-nitro-val');
+          const nBarEl = document.getElementById('turbo-hud-nitro-bar');
+          if (nValEl) nValEl.textContent = `${Math.round(s.nitro)}%`;
+          if (nBarEl) nBarEl.style.width = `${Math.round(s.nitro)}%`;
+
+          if (s.distance <= 0) {
+            concluirCorridaTurbo();
+          }
+        }
+
+        // Suaviza movimento lateral do carro
+        const targetX = laneX[s.carLane];
+        s.carX += (targetX - s.carX) * 0.22;
+
+        // Gera novos itens na pista
+        spawnCounter++;
+        if (spawnCounter > (s.isNitro ? 22 : 38) && !s.finished) {
+          spawnCounter = 0;
+          const sortLane = Math.floor(Math.random() * 3);
+          const r = Math.random();
+          let tipo = 'coin';
+          if (r < 0.58) tipo = 'coin';
+          else if (r < 0.76) tipo = 'star';
+          else if (r < 0.88) tipo = 'battery';
+          else tipo = 'cone';
+          s.items.push({ x: laneX[sortLane], y: -30, tipo: tipo, lane: sortLane });
+        }
+
+        // LIMPA TELA
+        ctx.fillStyle = '#060d1a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // DESENHA PISTA ASFALTO
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(15, 0, 340, canvas.height);
+
+        // BORDAS NEON DA PISTA
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(15, -2, 340, canvas.height + 4);
+
+        // FAIXAS DA PISTA
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([20, 20]);
+        ctx.lineDashOffset = -s.roadOffset;
+
+        ctx.beginPath();
+        ctx.moveTo(125, 0); ctx.lineTo(125, canvas.height);
+        ctx.moveTo(245, 0); ctx.lineTo(245, canvas.height);
+        ctx.stroke();
+        ctx.setLineDash([]); // Restaura traço contínuo
+
+        // LINHA DE CHEGADA QUADRICULADA (quando faltam menos de 60m)
+        if (s.distance < 60) {
+          const finishY = 240 - (s.distance * 4);
+          if (finishY >= 0 && finishY <= canvas.height) {
+            for (let c = 0; c < 17; c++) {
+              ctx.fillStyle = (c % 2 === 0) ? '#ffffff' : '#000000';
+              ctx.fillRect(15 + (c * 20), finishY, 20, 14);
+            }
+          }
+        }
+
+        // DESENHA E ATUALIZA ITENS COLECIONÁVEIS
+        for (let i = s.items.length - 1; i >= 0; i--) {
+          const it = s.items[i];
+          it.y += currentSpeed;
+
+          // Se estiver no Nitro, atrai itens magneticamente
+          if (s.isNitro && Math.hypot(it.x - s.carX, it.y - s.carY) < 130) {
+            it.x += (s.carX - it.x) * 0.18;
+          }
+
+          // Renderiza o item
+          ctx.font = '24px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          if (it.tipo === 'coin') {
+            ctx.shadowColor = '#facc15'; ctx.shadowBlur = 10;
+            ctx.fillText('🪙', it.x, it.y);
+          } else if (it.tipo === 'star') {
+            ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 12;
+            ctx.fillText('⭐', it.x, it.y);
+          } else if (it.tipo === 'battery') {
+            ctx.shadowColor = '#4ade80'; ctx.shadowBlur = 12;
+            ctx.fillText('🔋', it.x, it.y);
+          } else if (it.tipo === 'cone') {
+            ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8;
+            ctx.fillText('⚠️', it.x, it.y);
+          }
+          ctx.shadowBlur = 0;
+
+          // Colisão com o Carro
+          if (Math.hypot(it.x - s.carX, it.y - s.carY) < 36 && !s.finished) {
+            if (it.tipo === 'coin') {
+              playTone(880, 70);
+              s.coins++;
+              s.score += 10;
+              const cEl = document.getElementById('turbo-hud-coins');
+              if (cEl) cEl.textContent = s.coins;
+            } else if (it.tipo === 'star') {
+              playTone(1046, 120);
+              s.score += 50;
+              showToast('⭐ Estrela Stark! +50 Pts!');
+            } else if (it.tipo === 'battery') {
+              playTone(659, 100);
+              s.nitro = Math.min(100, s.nitro + 35);
+              showToast('🔋 Bateria Arc Recarregada!');
+            } else if (it.tipo === 'cone') {
+              if (s.isNitro) {
+                playTone(400, 80);
+                s.score += 20;
+              } else {
+                playTone(220, 120);
+                s.wobble = 14;
+                s.speed = 3;
+                setTimeout(() => { if (s) s.speed = 6.5; }, 1000);
+              }
+            }
+            s.items.splice(i, 1);
+            continue;
+          }
+
+          // Remove itens que saíram da tela
+          if (it.y > canvas.height + 40) {
+            s.items.splice(i, 1);
+          }
+        }
+
+        // DESENHA RASTRO DE FOGO NO NITRO
+        if (s.isNitro) {
+          ctx.fillStyle = '#00f0ff';
+          ctx.shadowColor = '#00f0ff';
+          ctx.shadowBlur = 15;
+          ctx.beginPath();
+          ctx.arc(s.carX - 10, s.carY + 34, 6 + Math.random() * 5, 0, Math.PI * 2);
+          ctx.arc(s.carX + 10, s.carY + 34, 6 + Math.random() * 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        }
+
+        // DESENHA O SUPER CARRO STARK
+        ctx.save();
+        ctx.translate(s.carX + (s.wobble ? (Math.random() * 4 - 2) : 0), s.carY);
+        if (s.wobble > 0) s.wobble--;
+
+        // Faróis Dianteiros projetando luz amarela
+        const gradLuz = ctx.createLinearGradient(0, -25, 0, -90);
+        gradLuz.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+        gradLuz.addColorStop(1, 'rgba(254, 240, 138, 0.0)');
+        ctx.fillStyle = gradLuz;
+        ctx.beginPath();
+        ctx.moveTo(-16, -24); ctx.lineTo(-32, -90); ctx.lineTo(32, -90); ctx.lineTo(16, -24);
+        ctx.fill();
+
+        // Chassi do Carro Esportivo
+        ctx.fillStyle = s.carColor;
+        ctx.shadowColor = s.isNitro ? '#00f0ff' : s.carColor;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.roundRect(-18, -26, 36, 52, [10, 10, 6, 6]);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Para-brisa / Cockpit
+        ctx.fillStyle = '#0b1329';
+        ctx.beginPath();
+        ctx.roundRect(-12, -14, 24, 20, 4);
+        ctx.fill();
+
+        // Reflexo de vidro no para-brisa
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(-10, -12, 20, 16);
+
+        // Aerofólio Traseiro
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(-20, 22, 40, 5);
+
+        // Rodas
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(-22, -20, 5, 12);
+        ctx.fillRect(17, -20, 5, 12);
+        ctx.fillRect(-22, 10, 5, 12);
+        ctx.fillRect(17, 10, 5, 12);
+
+        ctx.restore();
+
+        turboAnimId = requestAnimationFrame(loop);
+      }
+
+      turboAnimId = requestAnimationFrame(loop);
+    }
+
+    async function concluirCorridaTurbo() {
+      if (!turboRacingState || turboRacingState.finished) return;
+      turboRacingState.finished = true;
+
+      playCelebrationFanfare();
+      dispararChuvaCoracoes(60);
+
+      const crianca = appState.config.child_name || 'Kaleo';
+      speak(`Sensacional, super piloto ${crianca}! Você cruzou a linha de chegada em primeiro lugar e conquistou o Grande Troféu Stark! Ganhou 3 moedas de ouro!`);
+      showToast('🏆 GRANDE PRÊMIO CONQUISTADO! +3 MOEDAS!');
+
+      // Bonificação real
       await fetch('/api/fichas/bonificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantidade: 3, motivo: 'fabrica_robos_stark' })
+        body: JSON.stringify({ quantidade: 3, motivo: 'corrida_turbo_stark' })
       }).catch(() => null);
+
+      const pEl = document.getElementById('pote-fichas-val');
+      if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 3;
+
+      // Exibe Troféu na tela do canvas
+      const canvas = document.getElementById('turbo-track-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = '64px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏆', canvas.width / 2, 100);
+
+        ctx.font = '900 20px sans-serif';
+        ctx.fillStyle = '#facc15';
+        ctx.fillText('GRANDE PRÊMIO STARK!', canvas.width / 2, 150);
+
+        ctx.font = '800 15px sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(`Piloto Campeão: ${crianca}`, canvas.width / 2, 180);
+        ctx.fillText(`Moedas Coletadas: ${turboRacingState.coins} 🪙`, canvas.width / 2, 210);
+
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillText('+3 Moedas de Ouro no Pote!', canvas.width / 2, 240);
+      }
     }
 
-
-    // =========================================================================
+        // =========================================================================
     // BICHINHO VIRTUAL ESTILO POU (4 BARRAS DE NECESSIDADES TÁTEIS)
     // =========================================================================
     function atualizarBarrasPet(pet) {

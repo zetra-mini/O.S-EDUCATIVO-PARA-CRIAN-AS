@@ -728,13 +728,13 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["fábrica de robô", "fabrica de robo", "fábrica de robôs", "fabrica de robos", "montar robô", "montar robo", "criar robô", "criar robo", "construir robô", "construir robo", "oficina de robô", "oficina de robo"]):
-            reply = f"Oficina de Robótica Stark online, criador {self.name}! Vamos escolher as peças e construir seu próprio super robô!"
+        if any(w in text_lower for w in ["corrida", "carro", "pilotar", "pista", "turbo", "super carro", "automóvel", "automovel", "corrida turbo"]):
+            reply = f"Motores roncando e turbo calibrado, piloto {self.name}! Abrindo a Corrida Turbo Stark! Aperte o cinto e acelere!"
             return {
                 "ok": True,
-                "intencao": "fabrica_robos",
+                "intencao": "corrida_turbo",
                 "resposta_voz": reply,
-                "acao_frontend": "abrir_fabrica_robos",
+                "acao_frontend": "abrir_corrida_turbo",
                 "dados": {},
             }
 
