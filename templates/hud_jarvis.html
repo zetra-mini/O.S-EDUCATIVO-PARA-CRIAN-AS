@@ -10978,6 +10978,10 @@
       if (indiceDiccaoAtual >= listaAtual.length) indiceDiccaoAtual = 0;
       const item = listaAtual[indiceDiccaoAtual];
 
+      const palavraNatural = (item.silabas && abaDiccaoAtiva !== 'travalinguas')
+        ? item.silabas.join('')
+        : item.palavra.replace(/\s*-\s*/g, '');
+
       body.innerHTML = `
         <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box; overflow:hidden;">
           
@@ -11032,14 +11036,14 @@
 
             <!-- BOTÕES DE AÇÃO: OUVIR E FALAR COM O JARVIS -->
             <div style="display:flex; gap:8px; justify-content:center; width:100%; max-width:580px; margin-top:2px; flex-wrap:wrap;">
-              <button type="button" class="big-btn" style="flex:1; min-width:140px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #38bdf8; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="ouvirJarvisFalarPalavra('${item.fala_lenta.replace(/'/g, "\\'")}')">
+              <button type="button" class="big-btn" style="flex:1; min-width:140px; background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border:2px solid #38bdf8; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="ouvirJarvisFalarPalavra('${escapeJs(palavraNatural)}')">
                 🔊 Ouvir o Jarvis
               </button>
-              <button type="button" class="big-btn" style="flex:1; min-width:140px; background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); border:2px solid #818cf8; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="ouvirJarvisSilabaPorSilaba('${item.fala_silabas ? item.fala_silabas.replace(/'/g, "\\'") : item.fala_lenta.replace(/'/g, "\\'")}')">
-                🔉 Sílaba por Sílaba
+              <button type="button" class="big-btn" style="flex:1; min-width:140px; background:linear-gradient(135deg, #4f46e5 0%, #4338ca 100%); border:2px solid #818cf8; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="ouvirJarvisSilabaPorSilaba('${item.fala_silabas ? escapeJs(item.fala_silabas) : escapeJs(item.fala_lenta)}')">
+                🔉 Soletrar Sílabas
               </button>
-              <button type="button" class="big-btn" id="btn-diccao-falar" style="flex:1.2; min-width:160px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="treinarMinhaVozDiccao('${item.palavra.replace(/'/g, "\\'")}')">
-                🎙️ Minha Vez de Falar! (+5🪙)
+              <button type="button" class="big-btn" id="btn-diccao-falar" style="flex:1.2; min-width:160px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:2px solid #34d399; padding:8px 12px; font-size:0.92rem; font-weight:900;" onclick="treinarMinhaVozDiccao('${escapeJs(palavraNatural)}')">
+                🎙️ Minha Vez de Falar! (+2🪙)
               </button>
             </div>
 
@@ -11133,12 +11137,15 @@
 
       const item = lista[indiceDiccaoAtual];
       const nomeCriança = appState.config.child_name || 'Kaleo';
+      const palavraNatural = (item.silabas && abaDiccaoAtiva !== 'travalinguas')
+        ? item.silabas.join('')
+        : item.palavra.replace(/\s*-\s*/g, '');
 
       const body = document.getElementById('modal-body');
       if (body) renderSpeechTrainingBody(body);
 
-      // Frase animada e pausada dita pelo robô Jarvis
-      const textoSorteio = `Bip bip, super-herói ${nomeCriança}! O Jarvis escolheu uma palavra mágica nova para você treinar a dicção: ${item.silabas ? item.silabas.join('... ') : item.palavra}! ${item.dica} Vamos falar juntos?`;
+      // Frase animada dita pelo robô Jarvis com a palavra natural (sem soletrar)
+      const textoSorteio = `Bip bip, super-herói ${nomeCriança}! O Jarvis escolheu uma palavra mágica nova para você treinar a dicção: ${palavraNatural}! ${item.dica} Vamos falar juntos?`;
       speak(textoSorteio, {
         onEnd: () => {
           if (eyesHappy && voiceState !== 'speaking') eyesHappy.style.display = 'none';
