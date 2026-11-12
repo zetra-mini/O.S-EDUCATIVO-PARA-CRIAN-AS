@@ -552,6 +552,46 @@ class JarvisBrain:
                 "dados": {},
             }
 
+        if any(w in text_lower for w in ["engenharia", "blockly", "programação", "programacao", "robótica", "robotica", "código", "codigo"]):
+            reply = f"Abrindo a Bancada de Programação e Engenharia Stark, pequeno engenheiro {self.name}!"
+            return {
+                "ok": True,
+                "intencao": "engenharia_blockly",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_engenharia",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["matemática", "matematica", "somar", "diminuir", "multiplicar", "dividir", "continha", "continhas", "fazer conta", "tabuada", "adição", "adicao", "subtração", "subtracao"]):
+            reply = f"Laboratório de Matemática Stark ativo, super campeão {self.name}! Vamos somar, diminuir, multiplicar e dividir com frutas e heróis!"
+            return {
+                "ok": True,
+                "intencao": "matematica_stark",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_matematica",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["reciclagem", "reciclar", "lixo", "lixeira", "guardiões da terra", "guardioes da terra", "meio ambiente", "salvar o planeta"]):
+            reply = f"Missão Guardiões da Terra iniciada, herói {self.name}! Vamos separar o lixo nas lixeiras coloridas e cuidar do nosso planeta!"
+            return {
+                "ok": True,
+                "intencao": "reciclagem_planeta",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_reciclagem",
+                "dados": {},
+            }
+
+        if any(w in text_lower for w in ["fábrica de robô", "fabrica de robo", "fábrica de robôs", "fabrica de robos", "montar robô", "montar robo", "criar robô", "criar robo", "construir robô", "construir robo", "oficina de robô", "oficina de robo"]):
+            reply = f"Oficina de Robótica Stark online, criador {self.name}! Vamos escolher as peças e construir seu próprio super robô!"
+            return {
+                "ok": True,
+                "intencao": "fabrica_robos",
+                "resposta_voz": reply,
+                "acao_frontend": "abrir_fabrica_robos",
+                "dados": {},
+            }
+
         # 18. Jogar / Brincar geral (Apenas se nenhum jogo específico acima foi detectado)
         termos_gerais = ["jogar", "jogo", "brincar", "brincadeira", "jogos", "todos os jogos", "menu de jogos", "lista de jogos"]
         if any(w in text_lower for w in termos_gerais):

@@ -3415,7 +3415,7 @@
     // CENTRAL DE JOGOS & ESTUDOS DO KALEO (PAGINADO, ZERO SCROLL, 17 JOGOS)
     // =========================================================================
     let paginaJogosModalAtual = 1;
-    const TOTAL_PAGINAS_JOGOS = 6;
+    const TOTAL_PAGINAS_JOGOS = 7;
 
     const JOGOS_KATALOGO = [
       // PÁGINA 1: HISTÓRIAS, LETRINHAS, DEDINHOS E IDIOMAS
@@ -3644,6 +3644,44 @@
         icone: '🦖',
         cor: '#ef4444',
         acao: () => openDinosaurFossilsGame()
+      },
+
+      // PÁGINA 7: ENGENHARIA, MATEMÁTICA, RECICLAGEM E FÁBRICA DE ROBÔS
+      {
+        id: 'engenharia',
+        pagina: 7,
+        nome: 'Quarto de Engenharia & Robótica',
+        desc: 'Bancada de programação visual com blocos Blockly',
+        icone: '⚙️',
+        cor: '#00f0ff',
+        acao: () => abrirQuartoEngenhariaModal()
+      },
+      {
+        id: 'matematica',
+        pagina: 7,
+        nome: 'Mestre da Matemática (+, -, ×, ÷)',
+        desc: 'Aprenda a somar, diminuir, multiplicar e dividir com frutas e heróis',
+        icone: '🧮',
+        cor: '#10b981',
+        acao: () => openMathMasterGame()
+      },
+      {
+        id: 'reciclagem',
+        pagina: 7,
+        nome: 'Guardiões da Terra & Reciclagem',
+        desc: 'Separe o lixo nas lixeiras coloridas e salve o planeta',
+        icone: '♻️',
+        cor: '#22c55e',
+        acao: () => openPlanetRecyclingGame()
+      },
+      {
+        id: 'fabrica_robos',
+        pagina: 7,
+        nome: 'Fábrica de Robôs Stark',
+        desc: 'Construa e dê vida ao seu próprio super robô com peças e luzes neon',
+        icone: '🤖',
+        cor: '#f59e0b',
+        acao: () => openRobotFactoryGame()
       }
     ];
 
@@ -3694,7 +3732,6 @@
           <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 14px; display:flex; align-items:center; justify-content:space-between;">
             <div style="font-size:1.02rem; font-weight:900; color:#38bdf8; display:flex; align-items:center; gap:8px;">
               <span>⭐ Escolha uma atividade para brincar:</span>
-              <a href="/engenharia" id="quarto-engenharia-btn" onclick="event.preventDefault(); abrirQuartoEngenhariaModal();" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.8rem; font-weight:900; padding:4px 10px; border-radius:8px; text-decoration:none; margin-left:8px; cursor:pointer;">⚙️ Quarto de Engenharia (Blockly)</a>
             </div>
             <span style="font-size:0.85rem; font-weight:900; background:#1e293b; color:#fde047; padding:4px 12px; border-radius:999px;">
               Página ${paginaJogosModalAtual} de ${TOTAL_PAGINAS_JOGOS}
@@ -4996,6 +5033,24 @@
         replyLocal = 'Abrindo o Quarto de Engenharia e Programação Stark!';
         acaoLocal = () => { closeModal(false); abrirQuartoEngenhariaModal(); };
       }
+      // 24. MESTRE DA MATEMÁTICA (+, -, ×, ÷)
+      else if (/matematica|somar|diminuir|multiplicar|dividir|continha|continhas|fazer conta|tabuada|adicao|subtracao/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Mestre da Matemática Stark! Vamos somar, diminuir, multiplicar e dividir!';
+        acaoLocal = () => { closeModal(false); openMathMasterGame(); };
+      }
+      // 25. GUARDIÕES DA TERRA & RECICLAGEM
+      else if (/reciclagem|reciclar|lixo|lixeira|guardioes da terra|meio ambiente|salvar o planeta/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo os Guardiões da Terra e a Reciclagem Mágica! Vamos salvar o planeta!';
+        acaoLocal = () => { closeModal(false); openPlanetRecyclingGame(); };
+      }
+      // 26. FÁBRICA DE ROBÔS STARK
+      else if (/fabrica de robo|fabrica de robos|montar robo|criar robo|construir robo|oficina de robo/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Fábrica de Robôs Stark! Vamos construir seu robô!';
+        acaoLocal = () => { closeModal(false); openRobotFactoryGame(); };
+      }
       // 24. CORTESIA
       else if (/boa noite/i.test(spokenNorm)) {
         matchedLocal = true;
@@ -5083,6 +5138,10 @@
             else if (data.acao_frontend === 'abrir_ciencias_misturas') openScienceLabGame();
             else if (data.acao_frontend === 'abrir_xadrez_mestre') openChessAcademyGame();
             else if (data.acao_frontend === 'abrir_dinossauros_fosseis') openDinosaurFossilsGame();
+            else if (data.acao_frontend === 'abrir_engenharia') abrirQuartoEngenhariaModal();
+            else if (data.acao_frontend === 'abrir_matematica') openMathMasterGame();
+            else if (data.acao_frontend === 'abrir_reciclagem') openPlanetRecyclingGame();
+            else if (data.acao_frontend === 'abrir_fabrica_robos') openRobotFactoryGame();
 
             // O MICROFONE PERMANECE 100% DESLIGADO! ZERO WAKE-WORD. ZERO REINÍCIO OCULTO.
           }
@@ -6337,90 +6396,117 @@
       speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name || 'Kaleo'}! Toque nos dedinhos ou em um número!`);
 
       body.innerHTML = `
-        <!-- SELETOR DE MODOS -->
-        <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+        <!-- SELETOR DE MODOS COMPACTO -->
+        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; justify-content:center;">
           <button type="button" class="music-tab-btn active" id="tab-fc-free" onclick="switchFingerCountingMode('free')">🖐️ Mãos Livres & Números</button>
           <button type="button" class="music-tab-btn" id="tab-fc-cam" onclick="switchFingerCountingMode('cam')">📸 Mãozinha na Câmera (IA)</button>
           <button type="button" class="music-tab-btn" id="tab-fc-quiz" onclick="switchFingerCountingMode('quiz')">🎮 Jogo: Quantos Dedinhos?</button>
           <button type="button" class="music-tab-btn" id="tab-fc-song" onclick="playCountingSong()">▶️ Canção de Contar (1 ao 10)</button>
         </div>
-        <!-- CONTAINER DA CÂMERA INTELIGENTE COM IA DE VISÃO E FILTRO ANTI-JITTER -->
-        <div id="fc-cam-box" style="display:none; flex-direction:column; align-items:center; justify-content:center; background:#020617; border:3px solid #38bdf8; border-radius:18px; padding:12px; margin-bottom:10px; box-shadow:0 0 25px rgba(56,189,248,0.35);">
-          <div style="font-size:1.15rem; font-weight:800; color:#38bdf8; margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; width:100%; max-width:320px;">
-            <span>📸 Visão IA dos Dedinhos</span>
-            <span id="fc-engine-tag" style="background:#0284c7; color:#fff; font-size:0.72rem; padding:2px 8px; border-radius:999px; font-weight:900;">MediaPipe Hands IA</span>
+
+        <!-- WRAPPER DO MODO LIVRE & QUIZ -->
+        <div id="fc-free-wrapper" style="display:flex; flex-direction:column; gap:6px; flex:1;">
+          <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
+          <div style="background:#0b192e; border:2px solid #38bdf8; border-radius:14px; padding:6px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div id="fc-big-num" style="font-size:2.8rem; font-weight:900; color:#facc15; text-shadow:0 0 15px rgba(250, 204, 21, 0.6); line-height:1; min-width:50px; text-align:center;">0</div>
+              <div>
+                <div id="fc-word-title" style="font-size:1.25rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
+                <div id="fc-concrete-items" style="font-size:0.95rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
+              </div>
+            </div>
+            <button type="button" class="big-btn" style="background:#059669; font-size:0.9rem; padding:6px 14px;" onclick="speakCurrentNumberHint()">🔊 Ouvir Járvis</button>
           </div>
-          <div style="position:relative; width:320px; height:240px; border-radius:14px; overflow:hidden; border:2px solid #0284c7; background:#000;">
-            <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
-            <canvas id="fc-canvas-overlay" width="320" height="240" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; transform:scaleX(-1);"></canvas>
-            <div id="fc-cam-badge" style="position:absolute; bottom:8px; left:8px; right:8px; background:rgba(15,23,42,0.92); color:#facc15; padding:6px 12px; border-radius:12px; font-weight:900; font-size:0.92rem; border:1.5px solid #eab308; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(6px);">
-              <span id="fc-cam-badge-text">🖐️ Mostre sua mãozinha...</span>
-              <span id="fc-cam-stability-bar" style="font-size:0.75rem; color:#38bdf8; font-weight:700;"></span>
+
+          <!-- PRATELEIRA VISUAL CONCRETA: FRUTINHAS / MAÇÃS GIGANTES PARA CRIANÇAS -->
+          <div id="fc-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; min-height:36px; padding:4px 10px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:12px;">
+            <span style="color:#94a3b8; font-size:0.95rem; font-weight:700;">Toque em um número para ver as frutinhas!</span>
+          </div>
+
+          <!-- CONTAINER DO DIAGRAMA DAS MÃOS CARTOON NITIDAS -->
+          <div style="background:#061224; border:2px solid #1e293b; border-radius:14px; padding:6px 10px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
+            <svg viewBox="0 0 620 205" style="width:100%; max-width:540px; height:150px;" id="fc-hands-svg">
+              <defs>
+                <filter id="hand-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
+                </filter>
+              </defs>
+
+              <!-- MÃO ESQUERDA -->
+              <g id="fc-hand-left" transform="translate(30, 8)">
+                <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
+                <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
+                <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">✋ ESQUERDA</text>
+              </g>
+
+              <!-- MÃO DIREITA -->
+              <g id="fc-hand-right" transform="translate(370, 8)">
+                <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
+                <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
+                <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">🤚 DIREITA</text>
+              </g>
+            </svg>
+
+            <!-- DICA FLUTUANTE INFORMATIVA -->
+            <div id="fc-feedback-bar" style="font-size:0.95rem; font-weight:800; color:#fef08a; text-align:center; min-height:22px; margin-top:2px;">
+              Toque nos dedinhos para levantar ou escolha um número abaixo!
             </div>
           </div>
-          <button type="button" class="big-btn" style="margin-top:10px; background:#ef4444; font-size:0.9rem; padding:6px 16px;" onclick="switchFingerCountingMode('free')">❌ Desligar Câmera</button>
         </div>
 
-        <!-- PAINEL CENTRAL DE DESTAQUE DO NÚMERO -->
-        <div style="background:#0b192e; border:3px solid #38bdf8; border-radius:18px; padding:10px 16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <div id="fc-big-num" style="font-size:3.2rem; font-weight:900; color:#facc15; text-shadow:0 0 20px rgba(250, 204, 21, 0.6); line-height:1; min-width:60px; text-align:center;">0</div>
-            <div>
-              <div id="fc-word-title" style="font-size:1.5rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
-              <div id="fc-concrete-items" style="font-size:1.1rem; color:#38bdf8; font-weight:700; margin-top:2px;">Mãozinhas fechadas! Nenhum dedinho levantado.</div>
+        <!-- WRAPPER DO MODO CÂMERA (LAYOUT 2 COLUNAS PROJETADO PARA TELAS 1024x600 NETBOOK INTEL ATOM) -->
+        <div id="fc-cam-box" style="display:none; grid-template-columns: minmax(260px, 1fr) 1.2fr; gap:10px; align-items:stretch; background:#020617; border:2px solid #38bdf8; border-radius:14px; padding:8px 12px; margin-bottom:6px; box-shadow:0 0 20px rgba(56,189,248,0.25);">
+          <!-- COLUNA ESQUERDA: CÂMERA COM ASPECTO NATIVO E ZERO DISTORÇÃO -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px;">
+            <div style="font-size:0.92rem; font-weight:800; color:#38bdf8; display:flex; align-items:center; justify-content:space-between; width:100%;">
+              <span>📸 Visão IA Dedinhos</span>
+              <span id="fc-engine-tag" style="background:#0284c7; color:#fff; font-size:0.7rem; padding:1px 8px; border-radius:999px; font-weight:900;">MediaPipe IA</span>
+            </div>
+
+            <div id="fc-video-wrapper" style="position:relative; width:100%; max-width:280px; aspect-ratio:4/3; max-height:190px; border-radius:10px; overflow:hidden; border:2px solid #0284c7; background:#000; display:flex; align-items:center; justify-content:center;">
+              <video id="fc-video-feed" autoplay playsinline muted style="width:100%; height:100%; object-fit:contain; transform:scaleX(-1); background:#000;"></video>
+              <canvas id="fc-canvas-overlay" width="320" height="240" style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none; transform:scaleX(-1);"></canvas>
+              <div id="fc-cam-badge" style="position:absolute; bottom:4px; left:4px; right:4px; background:rgba(15,23,42,0.92); color:#facc15; padding:3px 8px; border-radius:8px; font-weight:900; font-size:0.78rem; border:1px solid #eab308; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(6px);">
+                <span id="fc-cam-badge-text">🖐️ Mostre sua mãozinha...</span>
+                <span id="fc-cam-stability-bar" style="font-size:0.7rem; color:#38bdf8; font-weight:700;"></span>
+              </div>
+            </div>
+
+            <button type="button" class="big-btn" style="background:#ef4444; font-size:0.8rem; padding:4px 12px; width:100%; max-width:280px;" onclick="switchFingerCountingMode('free')">
+              ❌ Desligar Câmera
+            </button>
+          </div>
+
+          <!-- COLUNA DIREITA: FEEDBACK VISUAL EM TEMPO REAL COM NÚMERO E MAÇÃS -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:12px; padding:8px 12px; gap:6px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div id="fc-cam-big-num" style="font-size:2.8rem; font-weight:900; color:#facc15; text-shadow:0 0 15px rgba(250, 204, 21, 0.6); line-height:1; min-width:50px; text-align:center;">0</div>
+              <div>
+                <div id="fc-cam-word-title" style="font-size:1.25rem; font-weight:900; color:#ffffff; letter-spacing:1px;">ZERO</div>
+                <div id="fc-cam-concrete-items" style="font-size:0.88rem; color:#38bdf8; font-weight:700; margin-top:1px;">Mãozinhas fechadas! Mostre os dedinhos para a câmera!</div>
+              </div>
+            </div>
+
+            <div id="fc-cam-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:4px; flex-wrap:wrap; min-height:36px; padding:4px 8px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:10px;">
+              <span style="color:#94a3b8; font-size:0.85rem; font-weight:700;">Levante os dedinhos na câmera!</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+              <span style="font-size:0.8rem; color:#fef08a; font-weight:800;">✨ Segure a mãozinha estável!</span>
+              <button type="button" class="big-btn" style="background:#059669; font-size:0.8rem; padding:4px 10px;" onclick="speakCurrentNumberHint()">🔊 Ouvir</button>
             </div>
           </div>
-          <button type="button" class="big-btn" style="background:#059669; font-size:1rem; padding:8px 16px;" onclick="speakCurrentNumberHint()">🔊 Ouvir Járvis</button>
         </div>
 
-        <!-- PRATELEIRA VISUAL CONCRETA: FRUTINHAS / MAÇÃS GIGANTES PARA CRIANÇAS -->
-        <div id="fc-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; min-height:48px; padding:6px 14px; background:#040e1e; border:2px dashed #38bdf8; border-radius:14px; margin-bottom:10px;">
-          <span style="color:#94a3b8; font-size:1.05rem; font-weight:700;">Toque em um número para ver as frutinhas!</span>
-        </div>
-
-        <!-- CONTAINER DO DIAGRAMA DAS MÃOS CARTOON NITIDAS -->
-        <div style="background:#061224; border:2px solid #1e293b; border-radius:18px; padding:8px 12px; margin-bottom:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; position:relative;" id="fc-hands-container">
-          <svg viewBox="0 0 620 205" style="width:100%; max-width:580px; height:185px;" id="fc-hands-svg">
-            <defs>
-              <filter id="hand-glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#00f0ff" flood-opacity="0.8"/>
-              </filter>
-            </defs>
-
-            <!-- MÃO ESQUERDA -->
-            <g id="fc-hand-left" transform="translate(30, 8)">
-              <!-- Punho e Palma Cartoon -->
-              <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
-              <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
-              <!-- Linhas fofas da palma -->
-              <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
-              <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">✋ ESQUERDA</text>
-            </g>
-
-            <!-- MÃO DIREITA -->
-            <g id="fc-hand-right" transform="translate(370, 8)">
-              <!-- Punho e Palma Cartoon -->
-              <rect x="70" y="145" width="45" height="30" rx="8" fill="#fdba74" stroke="#ea580c" stroke-width="3"/>
-              <path d="M 50 115 C 50 78, 138 78, 138 115 C 138 155, 50 155, 50 115 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="3"/>
-              <!-- Linhas fofas da palma -->
-              <path d="M 68 110 Q 94 130 120 110" stroke="#f97316" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <path d="M 74 125 Q 94 140 114 125" stroke="#f97316" stroke-width="2" fill="none" stroke-linecap="round"/>
-              <text x="94" y="148" fill="#0f172a" font-size="10.5" font-weight="900" text-anchor="middle">🤚 DIREITA</text>
-            </g>
-          </svg>
-
-          <!-- DICA FLUTUANTE INFORMATIVA -->
-          <div id="fc-feedback-bar" style="font-size:1.15rem; font-weight:800; color:#fef08a; text-align:center; min-height:26px;">
-            Toque nos dedinhos para levantar ou escolha um número abaixo!
-          </div>
-        </div>
-
-        <!-- RÉGUA COLORIDA DOS NÚMEROS DE 0 A 10 -->
-        <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap;" id="fc-num-bar"></div>
+        <!-- RÉGUA COLORIDA DOS NÚMEROS DE 0 A 10 (COMPACTA) -->
+        <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin-top:2px;" id="fc-num-bar"></div>
 
         <!-- ÁREA DO QUIZ (OCULTA INICIALMENTE) -->
-        <div id="fc-quiz-box" style="display:none; margin-top:8px; gap:12px; justify-content:center; flex-wrap:wrap;"></div>
+        <div id="fc-quiz-box" style="display:none; margin-top:6px; gap:8px; justify-content:center; flex-wrap:wrap;"></div>
       `;
 
       renderHandsSvgElements();
@@ -6511,35 +6597,39 @@
 
     function renderConcreteShelf(num) {
       const shelf = document.getElementById('fc-concrete-shelf');
-      if (!shelf) return;
-      shelf.innerHTML = '';
+      const camShelf = document.getElementById('fc-cam-concrete-shelf');
+      
+      const renderContent = (target, isCam = false) => {
+        if (!target) return;
+        target.innerHTML = '';
+        if (num === 0) {
+          target.innerHTML = `<span style="color:#94a3b8; font-size:${isCam ? '0.85rem' : '1.05rem'}; font-weight:700;">✊ Mãozinhas fechadas!</span>`;
+          return;
+        }
+        for (let i = 1; i <= num; i++) {
+          const apple = document.createElement('span');
+          apple.style.cssText = `font-size:${isCam ? '1.8rem' : '2.2rem'}; cursor:pointer; user-select:none; animation:pulseMic 0.5s ease-out ${i * 0.05}s; filter:drop-shadow(0 2px 8px rgba(239,68,68,0.6));`;
+          apple.textContent = '🍎';
+          apple.title = `Maçã número ${i}`;
+          apple.onclick = () => {
+            playTone(600 + i * 50, 110);
+            if (i === num) {
+              speak(`Contamos ${i}! No total temos exatamente ${num} maçã${num > 1 ? 's' : ''}!`);
+              playSfxCoin();
+            } else {
+              speak(`${i}...`);
+            }
+          };
+          target.appendChild(apple);
+        }
+        const label = document.createElement('span');
+        label.style.cssText = `font-size:${isCam ? '0.95rem' : '1.15rem'}; font-weight:900; color:#fde047; margin-left:6px; align-self:center;`;
+        label.textContent = `= ${num}!`;
+        target.appendChild(label);
+      };
 
-      if (num === 0) {
-        shelf.innerHTML = '<span style="color:#94a3b8; font-size:1.15rem; font-weight:700;">✊ Mãozinhas fechadas! Nenhuma maçã levantada.</span>';
-        return;
-      }
-
-      for (let i = 1; i <= num; i++) {
-        const apple = document.createElement('span');
-        apple.style.cssText = `font-size:2.3rem; cursor:pointer; user-select:none; animation:pulseMic 0.5s ease-out ${i * 0.05}s; filter:drop-shadow(0 2px 8px rgba(239,68,68,0.6));`;
-        apple.textContent = '🍎';
-        apple.title = `Maçã número ${i}`;
-        apple.onclick = () => {
-          playTone(600 + i * 50, 110);
-          if (i === num) {
-            speak(`Contamos ${i}! No total temos exatamente ${num} maçã${num > 1 ? 's' : ''}!`);
-            playSfxCoin();
-          } else {
-            speak(`${i}...`);
-          }
-        };
-        shelf.appendChild(apple);
-      }
-
-      const label = document.createElement('span');
-      label.style.cssText = 'font-size:1.25rem; font-weight:900; color:#fde047; margin-left:8px; align-self:center;';
-      label.textContent = `= ${num} Maçã${num > 1 ? 's' : ''}!`;
-      shelf.appendChild(label);
+      renderContent(shelf, false);
+      renderContent(camShelf, true);
     }
 
     function toggleSingleFinger(fingerId) {
@@ -6641,6 +6731,14 @@
       if (wordTitle) wordTitle.textContent = data.word;
       if (concrete) concrete.textContent = data.items;
       if (feedback) feedback.textContent = data.hint;
+
+      // Atualiza também o painel integrado da câmera em tempo real
+      const camBigNum = document.getElementById('fc-cam-big-num');
+      const camWordTitle = document.getElementById('fc-cam-word-title');
+      const camConcrete = document.getElementById('fc-cam-concrete-items');
+      if (camBigNum) camBigNum.textContent = num;
+      if (camWordTitle) camWordTitle.textContent = data.word;
+      if (camConcrete) camConcrete.textContent = data.items;
     }
 
     function speakCurrentNumberHint() {
@@ -6712,8 +6810,8 @@
 
       const camBox = document.getElementById('fc-cam-box');
       if (camBox) camBox.style.display = 'none';
-      const handsCont = document.getElementById('fc-hands-container');
-      if (handsCont) handsCont.style.display = 'flex';
+      const freeWrap = document.getElementById('fc-free-wrapper');
+      if (freeWrap) freeWrap.style.display = 'flex';
     }
 
     // Carregador assíncrono seguro de scripts externos (MediaPipe Web)
@@ -6731,15 +6829,15 @@
 
     async function startFingerCameraMode() {
       const camBox = document.getElementById('fc-cam-box');
-      const handsCont = document.getElementById('fc-hands-container');
+      const freeWrap = document.getElementById('fc-free-wrapper');
       const numBar = document.getElementById('fc-num-bar');
       const quizBox = document.getElementById('fc-quiz-box');
       const engineTag = document.getElementById('fc-engine-tag');
 
       if (quizBox) quizBox.style.display = 'none';
       if (numBar) numBar.style.display = 'flex';
-      if (handsCont) handsCont.style.display = 'none';
-      if (camBox) camBox.style.display = 'flex';
+      if (freeWrap) freeWrap.style.display = 'none';
+      if (camBox) camBox.style.display = 'grid';
 
       speak('Mostre sua mãozinha para a câmera do Jarvis! Segure os dedinhos firmes!');
       showToast('📸 Ativando Visão IA de Dedinhos...');
@@ -6758,7 +6856,22 @@
         });
         fcCameraStream = stream;
         const video = document.getElementById('fc-video-feed');
-        if (video) video.srcObject = stream;
+        if (video) {
+          video.srcObject = stream;
+          video.onloadedmetadata = () => {
+            const vW = video.videoWidth || 320;
+            const vH = video.videoHeight || 240;
+            const overlay = document.getElementById('fc-canvas-overlay');
+            const wrapper = document.getElementById('fc-video-wrapper');
+            if (overlay) {
+              overlay.width = vW;
+              overlay.height = vH;
+            }
+            if (wrapper) {
+              wrapper.style.aspectRatio = `${vW} / ${vH}`;
+            }
+          };
+        }
 
         // Tenta carregar MediaPipe Hands oficial se disponível
         let usouMediaPipe = false;
@@ -6808,7 +6921,7 @@
 
       } catch (err) {
         if (camBox) camBox.style.display = 'none';
-        if (handsCont) handsCont.style.display = 'flex';
+        if (freeWrap) freeWrap.style.display = 'flex';
         speak('Não consegui ligar a câmera! Você pode brincar tocando nos dedinhos da tela!');
         showToast('⚠️ Câmera não acessível ou sem permissão.');
       }
@@ -13332,6 +13445,520 @@
       }).catch(() => null);
       const pEl = document.getElementById('pote-fichas-val');
       if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 10;
+    }
+
+
+    // =========================================================================
+    // NOVO JOGO 1: MESTRE DA MATEMÁTICA STARK (+, -, ×, ÷)
+    // =========================================================================
+    let mathOpAtual = 'soma';
+    let mathContaAtual = null;
+    let mathAcertosContador = 0;
+
+    function openMathMasterGame() {
+      pushModalScreen('🧮 MESTRE DA MATEMÁTICA (+, -, ×, ÷)', (body) => {
+        playTone(523, 100);
+        speak(`Bem-vindo ao Laboratório de Matemática Stark, super campeão ${appState.config.child_name || 'Kaleo'}! Vamos aprender a somar, diminuir, multiplicar e dividir com frutas e heróis!`);
+        mathOpAtual = 'soma';
+        mathAcertosContador = 0;
+        gerarNovaContaMatematica('soma');
+        renderMathMasterBody(body);
+      }, true);
+    }
+
+    function selecionarOperacaoMatematica(op) {
+      mathOpAtual = op;
+      playTone(600, 80);
+      gerarNovaContaMatematica(op);
+      const b = document.getElementById('modal-body');
+      if (b) renderMathMasterBody(b);
+      const nomes = { soma: 'adição e juntar', subtracao: 'diminuir e tirar', multiplicacao: 'grupos e multiplicação', divisao: 'repartir e divisão' };
+      speak(`Modo ${nomes[op]} ativado!`);
+    }
+
+    function gerarNovaContaMatematica(op) {
+      let a = 1, b = 1, ans = 2, simbolo = '+', icone = '🍎', nome = 'maçãs', narrativa = '', visualHtml = '';
+
+      if (op === 'soma') {
+        a = Math.floor(Math.random() * 5) + 1;
+        b = Math.floor(Math.random() * 4) + 1;
+        ans = a + b;
+        simbolo = '+';
+        icone = '🍎';
+        nome = 'maçãs';
+        narrativa = `Você tem ${a} maçã${a > 1 ? 's' : ''} e ganhou mais ${b} maçã${b > 1 ? 's' : ''}. Juntando tudo, quantas maçãs você tem agora?`;
+        visualHtml = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; font-size:1.8rem;">
+            <div style="background:#031326; border:2px solid #38bdf8; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
+              ${'🍎'.repeat(a)} <span style="font-size:1rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${a})</span>
+            </div>
+            <span style="font-size:2rem; font-weight:900; color:#38bdf8;">+</span>
+            <div style="background:#031326; border:2px solid #38bdf8; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
+              ${'🍎'.repeat(b)} <span style="font-size:1rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${b})</span>
+            </div>
+            <span style="font-size:2rem; font-weight:900; color:#fde047;">=</span>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:6px 16px; font-weight:900; color:#fde047;">❓</div>
+          </div>
+        `;
+      } else if (op === 'subtracao') {
+        a = Math.floor(Math.random() * 4) + 4; // 4 a 7
+        b = Math.floor(Math.random() * (a - 1)) + 1;
+        ans = a - b;
+        simbolo = '−';
+        icone = '⭐';
+        nome = 'estrelas';
+        narrativa = `Você tinha ${a} estrelas brilhantes e o robozinho usou ${b} para acender o foguete. Quantas estrelas sobraram?`;
+        visualHtml = `
+          <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; font-size:1.8rem;">
+            <div style="background:#031326; border:2px solid #f97316; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
+              ${'⭐'.repeat(ans)}${'<span style="opacity:0.25; filter:grayscale(1);">⭐</span>'.repeat(b)}
+              <span style="font-size:1rem; color:#fde047; font-weight:900; align-self:center; margin-left:4px;">(${a} no total)</span>
+            </div>
+            <span style="font-size:2rem; font-weight:900; color:#ef4444;">−</span>
+            <div style="background:#031326; border:2px solid #ef4444; border-radius:12px; padding:6px 12px; display:flex; gap:4px;">
+              ${'⭐'.repeat(b)} <span style="font-size:1rem; color:#ef4444; font-weight:900; align-self:center; margin-left:4px;">(tirou ${b})</span>
+            </div>
+            <span style="font-size:2rem; font-weight:900; color:#fde047;">=</span>
+            <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:6px 16px; font-weight:900; color:#fde047;">❓</div>
+          </div>
+        `;
+      } else if (op === 'multiplicacao') {
+        const grupos = Math.floor(Math.random() * 3) + 2; // 2 a 4
+        const porG = Math.floor(Math.random() * 2) + 2;   // 2 ou 3
+        a = grupos;
+        b = porG;
+        ans = a * b;
+        simbolo = '×';
+        icone = '🤖';
+        nome = 'robôs';
+        narrativa = `Temos ${a} caixas mágicas, e dentro de cada caixa moram ${b} robozinhos! É ${b} repetido ${a} vezes. Quantos robôs no total?`;
+        const caixasArr = [];
+        for (let k = 0; k < a; k++) {
+          caixasArr.push(`
+            <div style="background:#02152b; border:2px solid #8b5cf6; border-radius:10px; padding:4px 8px; display:flex; align-items:center; gap:3px;">
+              📦 ${'🤖'.repeat(b)}
+            </div>
+          `);
+        }
+        visualHtml = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; font-size:1.5rem;">
+              ${caixasArr.join('')}
+              <span style="font-size:1.8rem; font-weight:900; color:#fde047;">=</span>
+              <div style="background:#0f2744; border:2px dashed #fde047; border-radius:12px; padding:4px 12px; font-weight:900; color:#fde047;">❓</div>
+            </div>
+            <div style="font-size:0.85rem; color:#a78bfa; font-weight:800;">
+              💡 Dica Stark: ${Array(a).fill(b).join(' + ')} = ?
+            </div>
+          </div>
+        `;
+      } else { // divisao
+        const amigos = 2;
+        const porA = Math.floor(Math.random() * 4) + 2; // 2 a 5
+        const total = amigos * porA;
+        a = total;
+        b = amigos;
+        ans = porA;
+        simbolo = '÷';
+        icone = '🧁';
+        nome = 'docinhos';
+        narrativa = `Temos ${a} docinhos deliciosos para repartir igualmente entre ${b} amiguinhos! Quantos docinhos cada um vai receber?`;
+        visualHtml = `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="background:#02152b; border:2px solid #eab308; border-radius:12px; padding:4px 14px; font-size:1.6rem; display:flex; gap:4px; align-items:center;">
+              🧁 Total: ${'🧁'.repeat(a)} <span style="font-size:0.95rem; color:#fde047; font-weight:900; margin-left:6px;">(${a})</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; font-size:1.2rem;">
+              <div style="background:#0f2744; border:1.5px solid #38bdf8; border-radius:10px; padding:4px 10px;">🧒 Amiguinho 1: ❓</div>
+              <span style="color:#fde047; font-weight:900;">e</span>
+              <div style="background:#0f2744; border:1.5px solid #ec4899; border-radius:10px; padding:4px 10px;">👧 Amiguinha 2: ❓</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // 4 opções de resposta únicas
+      const opts = new Set([ans]);
+      while (opts.size < 4) {
+        const offset = Math.floor(Math.random() * 5) - 2;
+        const val = ans + offset;
+        if (val >= 1 && val !== ans) opts.add(val);
+        else opts.add(ans + opts.size);
+      }
+      const shuffled = Array.from(opts).sort(() => Math.random() - 0.5);
+
+      mathContaAtual = {
+        a, b, ans, simbolo, icone, nome, narrativa, visualHtml, options: shuffled
+      };
+    }
+
+    function renderMathMasterBody(body) {
+      if (!mathContaAtual) gerarNovaContaMatematica(mathOpAtual);
+      const c = mathContaAtual;
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:6px; box-sizing:border-box;">
+          
+          <!-- SELETOR DAS 4 OPERAÇÕES -->
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;">
+            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'soma' ? 'background:#059669; border:2px solid #34d399;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('soma')">
+              ➕ Somar (Juntar)
+            </button>
+            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'subtracao' ? 'background:#dc2626; border:2px solid #f87171;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('subtracao')">
+              ➖ Diminuir (Tirar)
+            </button>
+            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'multiplicacao' ? 'background:#7c3aed; border:2px solid #a78bfa;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('multiplicacao')">
+              ✖️ Multiplicar (Grupos)
+            </button>
+            <button type="button" class="big-btn" style="padding:6px 4px; font-size:0.85rem; font-weight:900; ${mathOpAtual === 'divisao' ? 'background:#d97706; border:2px solid #fbbf24;' : 'background:#1e293b; opacity:0.8;'}" onclick="selecionarOperacaoMatematica('divisao')">
+              ➗ Dividir (Repartir)
+            </button>
+          </div>
+
+          <!-- QUADRO CENTRAL DA CONTA COM FEEDBACK VISUAL CONCRETO -->
+          <div style="background:#030c1a; border:2.5px solid #38bdf8; border-radius:14px; padding:10px 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1; box-shadow:0 0 20px rgba(56,189,248,0.2);">
+            
+            <!-- EXPRESSÃO MATEMÁTICA EM DESTAQUE -->
+            <div style="font-size:2.2rem; font-weight:900; color:#fde047; text-shadow:0 0 15px rgba(253,224,71,0.5); letter-spacing:2px;">
+              ${c.a} ${c.simbolo} ${c.b} = ❓
+            </div>
+
+            <!-- ÁREA VISUAL CONCRETA -->
+            <div style="width:100%; display:flex; justify-content:center; align-items:center;">
+              ${c.visualHtml}
+            </div>
+
+            <!-- NARRATIVA E BOTÃO DE OUVIR -->
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%; max-width:600px; background:#08182e; border:1px solid #1e3a63; border-radius:10px; padding:6px 12px; gap:8px;">
+              <span id="math-narrativa-txt" style="font-size:0.85rem; font-weight:700; color:#e2e8f0; flex:1;">
+                ${c.narrativa}
+              </span>
+              <button type="button" class="big-btn" style="background:#0284c7; font-size:0.78rem; padding:4px 10px; border-radius:8px;" onclick="speak('${c.narrativa}')">
+                🔊 Ouvir
+              </button>
+            </div>
+          </div>
+
+          <!-- BOTÕES DE RESPOSTA GIGANTES TÁTEIS (GRID 4 ITENS) -->
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+            ${c.options.map(opt => `
+              <button type="button" class="big-btn" style="background:#0b213f; border:2.5px solid #38bdf8; color:#ffffff; font-size:1.8rem; font-weight:900; padding:10px 6px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);" onclick="responderContaMatematica(${opt}, this)">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+
+        </div>
+      `;
+    }
+
+    async function responderContaMatematica(escolha, btnEl) {
+      if (!mathContaAtual) return;
+      if (escolha === mathContaAtual.ans) {
+        playCelebrationFanfare();
+        btnEl.style.background = '#059669';
+        btnEl.style.borderColor = '#34d399';
+        mathAcertosContador++;
+        
+        speak(`Sensacional, super herói! ${escolha} é a resposta certa! Você é um mestre da matemática!`);
+        showToast('⭐ Resposta Certa! +2 Moedas de Ouro!');
+        
+        await fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantidade: 2, motivo: 'matematica_stark' })
+        }).catch(() => null);
+
+        setTimeout(() => {
+          gerarNovaContaMatematica(mathOpAtual);
+          const b = document.getElementById('modal-body');
+          if (b) renderMathMasterBody(b);
+        }, 1300);
+      } else {
+        playTone(320, 150);
+        btnEl.style.background = '#7f1d1d';
+        btnEl.style.borderColor = '#ef4444';
+        speak(`Quase lá! Vamos contar os itens na tela juntos! Tente de novo!`);
+        setTimeout(() => {
+          btnEl.style.background = '#0b213f';
+          btnEl.style.borderColor = '#38bdf8';
+        }, 600);
+      }
+    }
+
+
+    // =========================================================================
+    // NOVO JOGO 2: GUARDIÕES DA TERRA & RECICLAGEM MÁGICA
+    // =========================================================================
+    const BANCO_RECICLAGEM = [
+      { nome: 'Casca de Banana', emoji: '🍌', tipo: 'organico', dica: 'Restos de fruta são orgânicos e viram adubo para a horta!' },
+      { nome: 'Garrafa Pet Plástica', emoji: '🥤', tipo: 'plastico', dica: 'Garrafas e potinhos de plástico vão para a lixeira vermelha!' },
+      { nome: 'Caixa de Papelão', emoji: '📦', tipo: 'papel', dica: 'Papel e caixas limpas vão para a lixeira azul!' },
+      { nome: 'Latinha de Suco', emoji: '🥫', tipo: 'metal', dica: 'Latinhas de alumínio vão para a lixeira amarela!' },
+      { nome: 'Pote de Geleia de Vidro', emoji: '🫙', tipo: 'vidro', dica: 'Potes e garrafas de vidro vão para a lixeira verde!' },
+      { nome: 'Miolo de Maçã', emoji: '🍎', tipo: 'organico', dica: 'Frutas comidas são lixo orgânico e alimentam as plantinhas!' },
+      { nome: 'Sacolinha de Plástico', emoji: '🛍️', tipo: 'plastico', dica: 'Sacolas plásticas devem ser recicladas no plástico!' },
+      { nome: 'Revistinha Velha', emoji: '📰', tipo: 'papel', dica: 'Revistas e papéis velhos viram novos cadernos no papel!' },
+      { nome: 'Tampinha de Metal', emoji: '🥄', tipo: 'metal', dica: 'Tampinhas e arames são de metal e vão no amarelo!' },
+      { nome: 'Garrafa de Vidro', emoji: '🍾', tipo: 'vidro', dica: 'Vidros são 100% recicláveis e não poluem a natureza!' }
+    ];
+
+    const LIXEIRAS_CORES = [
+      { tipo: 'papel', nome: 'Papel', cor: '#2563eb', borda: '#60a5fa', icone: '🔵' },
+      { tipo: 'plastico', nome: 'Plástico', cor: '#dc2626', borda: '#f87171', icone: '🔴' },
+      { tipo: 'metal', nome: 'Metal', cor: '#ca8a04', borda: '#fde047', icone: '🟡' },
+      { tipo: 'vidro', nome: 'Vidro', cor: '#16a34a', borda: '#4ade80', icone: '🟢' },
+      { tipo: 'organico', nome: 'Orgânico', cor: '#78350f', borda: '#d97706', icone: '🟤' }
+    ];
+
+    let reciclagemIdx = 0;
+    let reciclagemPontos = 0;
+
+    function openPlanetRecyclingGame() {
+      pushModalScreen('♻️ GUARDIÕES DA TERRA & RECICLAGEM', (body) => {
+        playTone(523, 100);
+        speak(`Alerta ecológico Stark! Ajude a proteger os animaizinhos e o planeta separando o lixo nas lixeiras coloridas certas!`);
+        reciclagemIdx = Math.floor(Math.random() * BANCO_RECICLAGEM.length);
+        reciclagemPontos = 0;
+        renderPlanetRecyclingBody(body);
+      }, true);
+    }
+
+    function renderPlanetRecyclingBody(body) {
+      const item = BANCO_RECICLAGEM[reciclagemIdx];
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:6px; box-sizing:border-box;">
+          
+          <!-- PLACAR SUPER HERÓI DA NATUREZA -->
+          <div style="background:#071a12; border:1.5px solid #22c55e; border-radius:12px; padding:6px 14px; display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.4rem;">🌱</span>
+              <span style="font-size:0.95rem; font-weight:900; color:#4ade80;">Itens Reciclados: <span id="reciclagem-pts-val">${reciclagemPontos}</span></span>
+            </div>
+            <span style="font-size:0.82rem; font-weight:800; background:#14532d; color:#86efac; padding:3px 10px; border-radius:999px;">
+              🌍 Planeta 100% Protegido
+            </span>
+          </div>
+
+          <!-- ESTEIRA COM O ITEM ATUAL EM DESTAQUE -->
+          <div style="background:#020a14; border:2.5px solid #38bdf8; border-radius:16px; padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; flex:1;">
+            <div style="font-size:0.85rem; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:1px;">
+              📦 Item para reciclar:
+            </div>
+
+            <div style="font-size:3.5rem; line-height:1; filter:drop-shadow(0 4px 12px rgba(56,189,248,0.4)); animation:pulseMic 1.8s infinite ease-in-out;">
+              ${item.emoji}
+            </div>
+
+            <div style="font-size:1.35rem; font-weight:900; color:#fde047;">
+              ${item.nome}
+            </div>
+
+            <button type="button" class="big-btn" style="background:#0284c7; font-size:0.82rem; padding:4px 12px; border-radius:8px;" onclick="speak('${item.nome}! Em qual lixeira colorida ele deve entrar?')">
+              🔊 Onde jogar este item?
+            </button>
+          </div>
+
+          <!-- AS 5 LIXEIRAS COLORIDAS OFICIAIS -->
+          <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:6px;">
+            ${LIXEIRAS_CORES.map(lix => `
+              <button type="button" class="big-btn" style="background:${lix.cor}; border:2.5px solid ${lix.borda}; padding:8px 4px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:4px; box-shadow:0 3px 8px rgba(0,0,0,0.4);" onclick="escolherLixeiraReciclagem('${lix.tipo}', this)">
+                <span style="font-size:1.4rem; line-height:1;">🗑️</span>
+                <span style="font-size:0.82rem; font-weight:900; color:#ffffff;">${lix.nome}</span>
+              </button>
+            `).join('')}
+          </div>
+
+        </div>
+      `;
+    }
+
+    async function escolherLixeiraReciclagem(tipoEscolhido, btnEl) {
+      const item = BANCO_RECICLAGEM[reciclagemIdx];
+      if (tipoEscolhido === item.tipo) {
+        playCelebrationFanfare();
+        reciclagemPontos++;
+        const pEl = document.getElementById('reciclagem-pts-val');
+        if (pEl) pEl.textContent = reciclagemPontos;
+
+        speak(`Parabéns, protetor da Terra! ${item.dica}`);
+        showToast(`🌱 Item Reciclado com Sucesso!`);
+
+        if (reciclagemPontos % 3 === 0) {
+          showToast('⭐ Bônus Ecológico! +2 Moedas de Ouro!');
+          await fetch('/api/fichas/bonificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantidade: 2, motivo: 'reciclagem_planeta' })
+          }).catch(() => null);
+        }
+
+        setTimeout(() => {
+          reciclagemIdx = (reciclagemIdx + 1) % BANCO_RECICLAGEM.length;
+          const b = document.getElementById('modal-body');
+          if (b) renderPlanetRecyclingBody(b);
+        }, 1200);
+      } else {
+        playTone(320, 150);
+        speak(`Ops! Não é essa lixeira! Pense no material do item e tente outra cor!`);
+      }
+    }
+
+
+    // =========================================================================
+    // NOVO JOGO 3: FÁBRICA DE ROBÔS STARK (OFICINA DE CRIAÇÃO)
+    // =========================================================================
+    const ROBOT_PARTS = {
+      cabecas: [
+        { nome: 'TV Retrô Fofa', icone: '📺', fala: 'Bip bop! Olá amigo, eu vejo tudo com minha tela mágica!' },
+        { nome: 'Capacete Stark Cyber', icone: '🪖', fala: 'Sistemas Stark online! Armadura de titânio protegida!' },
+        { nome: 'Androide Holográfico', icone: '🤖', fala: 'Processador quântico pronto para grandes aventuras!' },
+        { nome: 'Olhos de Laser 3D', icone: '👾', fala: 'Visão de raio-X ativada! Posso ver através de paredes!' }
+      ],
+      troncos: [
+        { nome: 'Reator Arc Stark', icone: '💠', desc: 'Energia infinita azul neon' },
+        { nome: 'Armadura Titânio Dourada', icone: '🛡️', desc: 'Super resistência a impactos' },
+        { nome: 'Engrenagens a Vapor', icone: '⚙️', desc: 'Força mecânica de mil cavalos' },
+        { nome: 'Bateria Solar Neon', icone: '🔋', desc: 'Carrega com a luz do sol' }
+      ],
+      bracos: [
+        { nome: 'Garras de Resgate', icone: '🦾', desc: 'Pega qualquer peso do chão' },
+        { nome: 'Jatos Propulsores', icone: '🚀', desc: 'Super propulsão aérea' },
+        { nome: 'Mãos Amigas de Alta Precisão', icone: '👋', desc: 'Cumprimenta e ajuda nas tarefas' },
+        { nome: 'Braços de Mola', icone: '💪', desc: 'Super alcance elástico' }
+      ],
+      pernas: [
+        { nome: 'Esteiras Todo-Terreno', icone: '🚜', desc: 'Passa por lama e pedras' },
+        { nome: 'Pernas Biônicas Velozes', icone: '🦿', desc: 'Corre mais rápido que o vento' },
+        { nome: 'Jato Flutuante Antigravidade', icone: '🛸', desc: 'Flutua no ar suavemente' },
+        { nome: 'Rodas Turbo de Corrida', icone: '🛞', desc: 'Velocidade turbo no asfalto' }
+      ]
+    };
+
+    let robotConfig = { cabeca: 0, peito: 0, bracos: 0, pernas: 0, nome: 'Titan Stark' };
+
+    function openRobotFactoryGame() {
+      pushModalScreen('🤖 FÁBRICA DE ROBÔS STARK', (body) => {
+        playTone(523, 100);
+        speak(`Bem-vindo à Bancada de Robótica Stark, engenheiro ${appState.config.child_name || 'Kaleo'}! Escolha a cabeça, peito, braços e pernas para montar seu super robô!`);
+        renderRobotFactoryBody(body);
+      }, true);
+    }
+
+    function trocarPecaRobo(categoria, delta) {
+      playTone(587, 80);
+      const total = ROBOT_PARTS[categoria].length;
+      robotConfig[categoria] = (robotConfig[categoria] + delta + total) % total;
+      const b = document.getElementById('modal-body');
+      if (b) renderRobotFactoryBody(b);
+    }
+
+    function renderRobotFactoryBody(body) {
+      const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
+      const t = ROBOT_PARTS.troncos[robotConfig.peito];
+      const b = ROBOT_PARTS.bracos[robotConfig.bracos];
+      const p = ROBOT_PARTS.pernas[robotConfig.pernas];
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:6px; box-sizing:border-box;">
+          
+          <!-- GRID EM 2 COLUNAS PROJETADO PARA TELAS 1024x600 NETBOOK -->
+          <div style="display:grid; grid-template-columns: minmax(260px, 1fr) 1.25fr; gap:10px; align-items:stretch; flex:1;">
+            
+            <!-- COLUNA ESQUERDA: O ROBÔ MONTADO EM TEMPO REAL -->
+            <div style="background:#020914; border:2.5px solid #00f0ff; border-radius:14px; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(0,240,255,0.25);">
+              <div style="font-size:0.95rem; font-weight:900; color:#00f0ff; text-transform:uppercase;">
+                🤖 ${robotConfig.nome}
+              </div>
+
+              <!-- SILHUETA VISUAL DO ROBÔ -->
+              <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:6px; background:#041426; border:1.5px solid #1e3a63; border-radius:12px; width:100%; max-width:200px;">
+                <div style="font-size:2.8rem; line-height:1; filter:drop-shadow(0 0 10px #00f0ff);">${c.icone}</div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
+                  <span style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 10px #fde047);">${t.icone}</span>
+                  <span style="font-size:1.8rem; line-height:1;">${b.icone}</span>
+                </div>
+                <div style="font-size:2.4rem; line-height:1; filter:drop-shadow(0 0 8px #38bdf8);">${p.icone}</div>
+              </div>
+
+              <!-- BOTÃO DE ATIVAÇÃO DO ROBÔ -->
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7, #00f0ff); color:#030712; font-size:0.95rem; font-weight:900; padding:8px 14px; width:100%; border-radius:10px;" onclick="darVidaAoRoboStark()">
+                ⚡ ATIVAR MEU ROBÔ!
+              </button>
+            </div>
+
+            <!-- COLUNA DIREITA: BANCADA DE PEÇAS CUSTOMIZÁVEIS -->
+            <div style="display:flex; flex-direction:column; justify-content:space-between; background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 12px; gap:6px;">
+              
+              <!-- 1. CABEÇA -->
+              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
+                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🪖 Cabeça:</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('cabecas', -1)">◀</button>
+                  <span style="font-size:1.2rem;">${c.icone}</span>
+                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${c.nome}</span>
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('cabecas', 1)">▶</button>
+                </div>
+              </div>
+
+              <!-- 2. TRONCO / PEITO -->
+              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
+                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🛡️ Peito:</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('troncos', -1)">◀</button>
+                  <span style="font-size:1.2rem;">${t.icone}</span>
+                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${t.nome}</span>
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('troncos', 1)">▶</button>
+                </div>
+              </div>
+
+              <!-- 3. BRAÇOS -->
+              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
+                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🦾 Braços:</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('bracos', -1)">◀</button>
+                  <span style="font-size:1.2rem;">${b.icone}</span>
+                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${b.nome}</span>
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('bracos', 1)">▶</button>
+                </div>
+              </div>
+
+              <!-- 4. PERNAS -->
+              <div style="display:flex; align-items:center; justify-content:space-between; background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:4px 10px;">
+                <span style="font-size:0.85rem; font-weight:800; color:#38bdf8;">🦿 Pernas:</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('pernas', -1)">◀</button>
+                  <span style="font-size:1.2rem;">${p.icone}</span>
+                  <span style="font-size:0.82rem; font-weight:800; color:#fde047; min-width:110px; text-align:center;">${p.nome}</span>
+                  <button type="button" class="big-btn" style="padding:2px 8px; font-size:0.8rem; background:#1e293b;" onclick="trocarPecaRobo('pernas', 1)">▶</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    }
+
+    async function darVidaAoRoboStark() {
+      const c = ROBOT_PARTS.cabecas[robotConfig.cabeca];
+      playTone(523, 100);
+      setTimeout(() => playTone(659, 100), 100);
+      setTimeout(() => playTone(784, 120), 200);
+      setTimeout(() => playTone(1046, 250), 320);
+
+      speak(`Robô ativado com sucesso! ${c.fala} Parabéns, engenheiro Stark! Você ganhou 3 moedas de ouro!`);
+      showToast('🤖 Robô Stark Online! +3 Moedas!');
+
+      await fetch('/api/fichas/bonificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantidade: 3, motivo: 'fabrica_robos_stark' })
+      }).catch(() => null);
     }
 
 
