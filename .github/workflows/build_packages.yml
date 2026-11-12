@@ -64,7 +64,7 @@ jobs:
       - name: Validar Sintaxe dos Scripts Python e Utilitários
         run: |
           echo "Testando compilação Python..."
-          python3 -m py_compile run_server.py server.py deploy/desktop_app/jarvis_desktop.py
+          python3 -m py_compile run_server.py jarvis_brain.py deploy/desktop_app/jarvis_desktop.py
           chmod +x pkg pkg.sh gerar_deb.sh deploy/android_app/build_apk.sh
           echo "Sintaxe validada com sucesso!"
 
