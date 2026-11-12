@@ -34,6 +34,11 @@ os.chdir(BASE_DIR)
 
 from microdot import Microdot, Request, Response, send_file
 
+# Configuração de limites de payload do Microdot (Permite áudios e vídeos da família de até 30 MB)
+# Por padrão o Microdot limita a apenas 16 KB (16384 bytes), o que causava HTTP 413 ao enviar recados de voz.
+Request.max_content_length = 30 * 1024 * 1024  # 30 MB
+Request.max_body_length = 30 * 1024 * 1024     # 30 MB
+
 # Importa módulos de negócio do Jarvis Kids OS
 from banco_dados import (
     adicionar_missao_rotina,
