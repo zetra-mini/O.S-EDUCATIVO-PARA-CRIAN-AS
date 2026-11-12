@@ -4843,54 +4843,173 @@
       playTone(659, 100);
       setTimeout(() => playTone(784, 120), 100);
 
-      // ATALHO ULTRA-RÁPIDO OFFLINE (KEYWORD SPOTTER EM 10MS SEM DEPENDER DE REDE)
-      const spokenNorm = spoken.toLowerCase().trim();
+      // -------------------------------------------------------------------------
+      // ROTEADOR INTELIGENTE DE COMANDOS DE VOZ & ATIVIDADES DIRETAS (OFFLINE 10MS)
+      // REGRA DE OURO: JOGOS ESPECÍFICOS SEMPRE ABREM DIRETO! NUNCA ABRIR A BARRA GERAL
+      // QUANDO O USUÁRIO PEDE UM JOGO ESPECÍFICO!
+      // -------------------------------------------------------------------------
+      const spokenNorm = spoken
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+
       let matchedLocal = false;
       let replyLocal = null;
       let acaoLocal = null;
 
-      if (spokenNorm.includes('jogo') || spokenNorm.includes('brincar')) {
+      // 1. JOGO DE XADREZ STARK
+      if (/xadrez|cavalo em l|xeque|peca de xadrez|peao|torre stark/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Abrindo os jogos educativos do super herói!';
-        acaoLocal = () => openGamesMenuModal(1);
-      } else if (spokenNorm.includes('livro') || spokenNorm.includes('história') || spokenNorm.includes('historinha') || spokenNorm.includes('ler')) {
+        replyLocal = 'Abrindo o Reino do Xadrez Stark! Vamos jogar xadrez, pequeno grande mestre!';
+        acaoLocal = () => { closeModal(false); openChessAcademyGame(); };
+      }
+      // 2. DETETIVE 7 ERROS
+      else if (/7 erros|sete erros|detetive|olhos de aguia|jogo dos erros|achar erros|encontrar erros/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Abrindo a Biblioteca Mágica de Histórias!';
-        acaoLocal = () => openBooksLibrary();
-      } else if (spokenNorm.includes('desenho') || spokenNorm.includes('desenhar') || spokenNorm.includes('pintar') || spokenNorm.includes('lousa')) {
+        replyLocal = 'Ativando olhos de águia! Abrindo o Detetive dos 7 Erros!';
+        acaoLocal = () => { closeModal(false); openDetectiveErrorsGame(); };
+      }
+      // 3. PARQUE DOS DINOSSAUROS & FÓSSEIS
+      else if (/dinossauro|dinossauros|fossil|fosseis|t-rex|trex|t rex|paleontologia|escavar/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Abrindo a Lousa Neon para você desenhar à vontade!';
-        acaoLocal = () => openStarkPaint();
-      } else if (spokenNorm.includes('dedo') || spokenNorm.includes('contar') || spokenNorm.includes('número')) {
+        replyLocal = 'Pás e pincéis a postos! Abrindo o Parque dos Dinossauros para escavar fósseis!';
+        acaoLocal = () => { closeModal(false); openDinosaurFossilsGame(); };
+      }
+      // 4. CIÊNCIAS & EXPERIMENTOS (VULCÃO, CALDEIRÃO, ÁGUA)
+      else if (/ciencia|ciencias|experimento|experiencia|vulcao|caldeirao|mistura|misturas|pocao|pocoes/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Vamos contar com os dedinhos das mãos!';
-        acaoLocal = () => openFingerCounting();
-      } else if (spokenNorm.includes('loja') || spokenNorm.includes('armário') || spokenNorm.includes('moeda') || spokenNorm.includes('tesouro')) {
+        replyLocal = 'Laboratório Científico Stark ativo! Vamos misturar poções e fazer experimentos!';
+        acaoLocal = () => { closeModal(false); openScienceLabGame(); };
+      }
+      // 5. EXPEDIÇÃO DOS BICHOS (ANIMAIS & SONS)
+      else if (/animais|animal|bicho|bichos|som dos bichos|sons dos bichos|som dos animais|sons dos animais|reino animal/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Expedição dos Bichos ativada! Vamos ouvir os sons dos animais com o Jarvis!';
+        acaoLocal = () => { closeModal(false); openAnimalSoundsGame(); };
+      }
+      // 6. SISTEMA SOLAR & ASTRONAUTA
+      else if (/sistema solar|planeta|planetas|astronauta|espaco|espacial|foguete|saturno|marte|jupiter/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Contagem regressiva do foguete! Abrindo o Sistema Solar e os planetas!';
+        acaoLocal = () => { closeModal(false); openSolarSystemGame(); };
+      }
+      // 7. RELÓGIO MÁGICO DO TEMPO (DESAFIO 30S)
+      else if (/relogio|que horas|horas|minutos|desafio 30|desafio dos 30|tempo/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Relógio Mágico do Tempo! Vamos aprender as horas e o desafio do tempo!';
+        acaoLocal = () => { closeModal(false); openMagicClockGame(); };
+      }
+      // 8. PINTURA & LOUSA MÁGICA NEON
+      else if (/pintura|pintar|lousa|desenhar|desenho|colorir|arte neon/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Lousa Neon para você desenhar e pintar à vontade!';
+        acaoLocal = () => { closeModal(false); openStarkPaint(); };
+      }
+      // 9. LABORATÓRIO MUSICAL / PIANO & TECLADO
+      else if (/musica|piano|teclado|instrumento|bateria|cancao|notas musicais/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Laboratório Musical Stark! Vamos tocar piano e criar canções!';
+        acaoLocal = () => { closeModal(false); openMusicComposer(); };
+      }
+      // 10. MÃOZINHAS & CONTAR DE 1 A 10 (DEDINHOS)
+      else if (/dedinho|dedinhos|dedo|dedos|maozinha|maozinhas|maos|mao|contar de 1|1 a 10/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Vamos contar com as mãozinhas e os dedinhos! Abrindo a contagem!';
+        acaoLocal = () => { closeModal(false); openFingerCounting(); };
+      }
+      // 11. ACADEMIA DAS LETRINHAS (ALFABETO & MÉTODO FÔNICO)
+      else if (/alfabeto|letrinha|letrinhas|letra|letras|vogais|fonico|escrever|abc/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Academia das Letrinhas e os sons mágicos do alfabeto!';
+        acaoLocal = () => { closeModal(false); openLiteracyAcademy(); };
+      }
+      // 12. IDIOMAS MÁGICOS (ENGLISH & ESPAÑOL)
+      else if (/ingles|espanhol|idioma|idiomas|english|espanol|cards falantes/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Welcome! Abrindo os Idiomas Mágicos com cartões falantes em inglês e espanhol!';
+        acaoLocal = () => { closeModal(false); openLanguagesAcademy(); };
+      }
+      // 13. ALIMENTAÇÃO SAUDÁVEL (PRATO DOS CAMPEÕES)
+      else if (/prato|comida saudavel|alimentacao|nutricao|fruta|frutas|legume|legumes|vegetal|salada/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Prato dos Super Campeões! Vamos montar um prato cheio de superpoderes!';
+        acaoLocal = () => { closeModal(false); openHealthyFoodGame(); };
+      }
+      // 14. HIGIENE PESSOAL (ESCOVAR DENTES, BANHO, MÃOS)
+      else if (/higiene|escovar|dente|dentes|banho|lavar as maos|lavar maos|limpinho/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Missão Super Herói Limpinho ativada! Vamos cuidar do corpinho e dos dentinhos!';
+        acaoLocal = () => { closeModal(false); openPersonalHygieneGame(); };
+      }
+      // 15. DESAFIO DO SEMÁFORO (AUTOCONTROLE)
+      else if (/semaforo|autocontrole|controle inibitorio|sinal vermelho|atencao/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Desafio do Semáforo Stark! Concentração total!';
+        acaoLocal = () => { closeModal(false); abrirModalSemaforo(); };
+      }
+      // 16. CENTRO DAS EMOÇÕES & FLOR DA CALMA
+      else if (/emocao|emocoes|calma|respirar|sentimento|sentimentos|raiva|tristeza|medo/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Centro das Emoções e a Flor da Calma! Vamos respirar fundo!';
+        acaoLocal = () => { closeModal(false); openEmotionsCenter(); };
+      }
+      // 17. TREINO DE DICÇÃO & FONOAUDIOLOGIA
+      else if (/diccao|fono|fonoaudiologia|treino de fala|falar bonito|trava lingua|palavra magica/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Treino de Dicção Stark! Vamos exercitar a boquinha!';
+        acaoLocal = () => { closeModal(false); openSpeechTrainingGame(); };
+      }
+      // 18. CINEMA STARK (FILMES & DESENHOS)
+      else if (/cinema|filme|filmes|filminho|netflix|assistir video|desenho animado/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo o Cinema Stark para você assistir seus desenhos e filminhos favoritos!';
+        acaoLocal = () => { closeModal(false); openCinemaStark(); };
+      }
+      // 19. BIBLIOTECA DE HISTÓRIAS & LIVROS MÁGICOS
+      else if (/livro|livros|historia|historias|historinha|historinhas|biblioteca|ler livro|leitura/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a Biblioteca Mágica de Histórias de Herói!';
+        acaoLocal = () => { closeModal(false); openBooksLibrary(); };
+      }
+      // 20. LOJA DO TESOURO & ARMÁRIO DO ROBÔ
+      else if (/loja|armario|moeda|moedas|tesouro|comprar acessorio|vestir jarvis/i.test(spokenNorm)) {
         matchedLocal = true;
         replyLocal = 'Abrindo a Loja do Tesouro e o Armário do Jarvis!';
-        acaoLocal = () => abrirLojaTesouro();
-      } else if (spokenNorm.includes('dino') || spokenNorm.includes('dinossauro') || spokenNorm.includes('fóssil')) {
-        matchedLocal = true;
-        replyLocal = 'Vamos escavar fósseis no Parque dos Dinossauros!';
-        acaoLocal = () => openDinosaurFossilsGame();
-      } else if (spokenNorm.includes('música') || spokenNorm.includes('piano') || spokenNorm.includes('som')) {
-        matchedLocal = true;
-        replyLocal = 'Vamos fazer música no Laboratório Stark!';
-        acaoLocal = () => openMusicComposer();
-      } else if (spokenNorm.includes('dente') || spokenNorm.includes('escovar')) {
-        matchedLocal = true;
-        replyLocal = 'Hora da missão da escovação! Vamos deixar os dentinhos limpinhos!';
-        acaoLocal = () => iniciarMissaoDente();
-      } else if (spokenNorm.includes('missão') || spokenNorm.includes('missões') || spokenNorm.includes('herói')) {
+        acaoLocal = () => { closeModal(false); abrirLojaTesouro(); };
+      }
+      // 21. QUARTEL-GENERAL DAS MISSÕES DO HERÓI
+      else if (/missao|missoes|tarefa|tarefas|quartel general/i.test(spokenNorm)) {
         matchedLocal = true;
         replyLocal = 'Abrindo o Quartel-General das Missões do Herói!';
-        acaoLocal = () => abrirModalMissoesHeroi();
-      } else if (spokenNorm.includes('boa noite')) {
+        acaoLocal = () => { closeModal(false); abrirModalMissoesHeroi(); };
+      }
+      // 22. CLIMA, TEMPERATURA E ESTAÇÕES DO ANO
+      else if (/clima|temperatura|estacoes|estacao do ano|tempo hoje|previsao|chuva|sol/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Boa noite, super Kaleo! Durma bem e tenha lindos sonhos!';
-      } else if (spokenNorm.includes('bom dia')) {
+        replyLocal = 'Abrindo o painel de Clima, Estações do Ano e Temperatura!';
+        acaoLocal = () => { closeModal(false); openWeatherSeasonsModal(); };
+      }
+      // 23. QUARTO DE ENGENHARIA & ROBÓTICA BLOCKLY
+      else if (/engenharia|programacao|codigo|blockly|robotica/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = 'Bom dia, campeão! Hoje será um dia incrível e cheio de aventuras!';
+        replyLocal = 'Abrindo o Quarto de Engenharia e Programação Stark!';
+        acaoLocal = () => { closeModal(false); abrirQuartoEngenhariaModal(); };
+      }
+      // 24. CORTESIA
+      else if (/boa noite/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = `Boa noite, super ${appState.config.child_name || 'Kaleo'}! Durma bem e tenha lindos sonhos!`;
+      } else if (/bom dia/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = `Bom dia, campeão ${appState.config.child_name || 'Kaleo'}! Hoje será um dia incrível e cheio de aventuras!`;
+      }
+      // 25. APENAS SE NENHUM JOGO ESPECÍFICO ACIMA FOI MENCIONADO: Menu Geral de Jogos
+      else if (/(^|\s)(jogos|jogo|jogar|brincar|brincadeira|brincadeiras|atividades)($|\s)/i.test(spokenNorm) || 
+               /todos os jogos|menu de jogos|lista de jogos|ver jogos|abrir jogos/i.test(spokenNorm)) {
+        matchedLocal = true;
+        replyLocal = 'Abrindo a lista com todos os jogos educativos do super herói!';
+        acaoLocal = () => { closeModal(false); openGamesMenuModal(1); };
       }
 
       if (matchedLocal) {

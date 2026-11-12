@@ -552,9 +552,10 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        # 18. Jogar / Brincar geral
-        if any(w in text_lower for w in ["jogar", "jogo", "brincar", "brincadeira", "jogos"]):
-            reply = "Eba! Adoro brincar com você, Kaleo! Escolha um dos nossos jogos incríveis ou vamos jogar a bolinha mágica!"
+        # 18. Jogar / Brincar geral (Apenas se nenhum jogo específico acima foi detectado)
+        termos_gerais = ["jogar", "jogo", "brincar", "brincadeira", "jogos", "todos os jogos", "menu de jogos", "lista de jogos"]
+        if any(w in text_lower for w in termos_gerais):
+            reply = "Eba! Adoro brincar com você, Kaleo! Abrindo a lista de todos os jogos incríveis!"
             return {
                 "ok": True,
                 "intencao": "jogos",
