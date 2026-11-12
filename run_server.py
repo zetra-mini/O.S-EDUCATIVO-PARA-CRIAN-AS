@@ -498,8 +498,18 @@ def api_pet_acessorio_desequipar(request: Request):
 
 
 @app.route("/api/fichas/status", methods=["GET"])
+@app.route("/api/loja/saldo", methods=["GET"])
 def api_fichas_status(request: Request):
     return json_response(token_mgr.obter_status_pote())
+
+@app.route("/api/status", methods=["GET"])
+def api_status_geral(request: Request):
+    return json_response({
+        "ok": True,
+        "pet": pet_mgr.obter_status(),
+        "fichas": token_mgr.obter_status_pote(),
+        "ia": brain.provider
+    })
 
 
 @app.route("/api/fichas/loja", methods=["GET"])

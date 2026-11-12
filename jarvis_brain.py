@@ -181,18 +181,155 @@ class JarvisBrain:
 
         return text
 
+    def _ensure_ollama_running(self) -> bool:
+        """Verifica se o Ollama está respondendo; se não estiver, inicia-o automaticamente em background."""
+        url = self.config.get("ollama_url", "http://127.0.0.1:11434").rstrip("/")
+        try:
+            req = urllib.request.Request(f"{url}/api/tags")
+            with urllib.request.urlopen(req, timeout=1.5) as r:
+                if r.status == 200:
+                    return True
+        except Exception:
+            pass
+
+        try:
+            if sys.platform == "win32":
+                caminhos = [
+                    os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\WinGet\Packages\Ollama.Ollama.Portable_Microsoft.Winget.Source_8wekyb3d8bbwe\ollama.exe"),
+                    os.path.expandvars(r"%LOCALAPPDATA%\Programs\Ollama\ollama.exe"),
+                    "ollama.exe",
+                    "ollama"
+                ]
+                for c in caminhos:
+                    if os.path.exists(c) or c.startswith("ollama"):
+                        try:
+                            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) | getattr(subprocess, "DETACHED_PROCESS", 0)
+                            subprocess.Popen([c, "serve"], creationflags=flags, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                            import time
+                            for _ in range(5):
+                                time.sleep(0.8)
+                                try:
+                                    with urllib.request.urlopen(f"{url}/api/tags", timeout=1.5) as r2:
+                                        if r2.status == 200:
+                                            return True
+                                except Exception:
+                                    pass
+                            break
+                        except Exception:
+                            continue
+            else:
+                subprocess.Popen(["ollama", "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                import time
+                time.sleep(1.5)
+                with urllib.request.urlopen(f"{url}/api/tags", timeout=1.5) as r2:
+                    if r2.status == 200:
+                        return True
+        except Exception:
+            pass
+        return False
+
+    def is_cognitive_question(self, text: str) -> bool:
+        """
+        Identifica se a frase é uma pergunta ou dúvida conceitual/curiosidade
+        que deve ser respondida pelo motor de IA (Llama/Gemini) e NUNCA abrir
+        modais de jogos ou rotinas do sistema.
+        """
+        t = (text or "").lower().strip()
+        if not t:
+            return False
+
+        # Termina com ponto de interrogação
+        if t.endswith("?"):
+            if not any(u in t for u in ["que horas", "horas sao", "temperatura hoje", "previsao do tempo", "quantas moedas"]):
+                return True
+
+        # Padrões interrogativos explícitos
+        padroes_pergunta = [
+            r"^(por\s*que|porque|pq|o\s*que|oq|qual|quais|como|quem|onde|aonde|quando|quanto|quantos|quantas)\b",
+            r"^(me\s+explica|me\s+conta|conta\s+sobre|fale\s+sobre|voc[eê]\s+sabe|voc[eê]\s+conhece|voc[eê]\s+gosta|o\s+que\s+acha|me\s+diz|me\s+ajuda\s+a\s+entender)\b",
+            r"^(quanto\s+[eé]|quantos\s+[eé]|como\s+[eé]|por\s*que\s+[eé]|o\s+que\s+[eé])\b",
+            r"^(ser[aá]\s+que|voc[eê]\s+pode\s+me\s+explicar|me\s+ajuda\s+a\s+entender)\b",
+            r"\b(por\s*que|porque)\b",
+        ]
+        for p in padroes_pergunta:
+            if re.search(p, t):
+                if any(u in t for u in ["que horas", "horas sao", "temperatura hoje", "previsao do tempo", "quantas moedas"]):
+                    return False
+                return True
+
+        return False
+
     def interpret_command(self, user_text: str) -> dict:
         """
         Interpreta a intenção do comando de voz do Kaleu:
-        - Clima/tempo -> chama clima_estacoes.py
-        - Moedas/tesouro -> informa saldo do pote_fichas
-        - Dente -> rotina dente brilhante
-        - Quarto/brinquedos -> rotina quarto limpo
-        - Fome/comida -> cozinha do Jarvis
-        - Jogos/brincar -> abre jogos
-        - Qualquer outra pergunta -> responde com IA (Llama local ou Gemini)
+        1. Comandos de Utilidade Imediata (horas, saldo, clima) -> 0ms
+        2. Perguntas Cognitivas/Curiosidades/Dúvidas -> IA API (Llama Local / Provedor configurado)
+        3. Comandos de Abrir Jogos/Atividades -> Execução Direta do Jogo
         """
-        text_lower = (user_text or "").lower()
+        text_lower = (user_text or "").lower().strip()
+
+        # 0. COMANDOS DE UTILIDADE IMEDIATA DO SISTEMA (Relógio, Clima Exato, Moedas)
+        if any(w in text_lower for w in ["que horas", "que horas sao", "horas agora", "horario agora"]):
+            import datetime
+            agora = datetime.datetime.now()
+            reply = f"Bip bip, herói {self.name}! Agora no relógio são exatamente {agora.hour} horas e {agora.minute} minutos!"
+            return {
+                "ok": True,
+                "intencao": "relogio_tempo",
+                "resposta_voz": reply,
+                "acao_frontend": "nenhuma",
+                "dados": {"hora": agora.strftime("%H:%M")},
+            }
+
+        if any(w in text_lower for w in ["quantas moedas", "saldo de moedas", "meu tesouro", "pote de moedas", "saldo atual"]):
+            try:
+                from economia_fichas import token_mgr
+                status = token_mgr.obter_status_pote()
+                saldo = status.get("saldo", 0)
+                reply = f"Bip bip! {self.name}, você tem {saldo} moedas brilhantes guardadas no seu Pote do Tesouro!"
+                return {
+                    "ok": True,
+                    "intencao": "tesouro",
+                    "resposta_voz": reply,
+                    "acao_frontend": "abrir_loja",
+                    "dados": status,
+                }
+            except Exception:
+                pass
+
+        if any(w in text_lower for w in ["previsão do tempo", "previsao do tempo", "temperatura hoje", "vai chover hoje", "clima hoje"]):
+            try:
+                from clima_estacoes import weather_mgr
+                cidade_cfg = self.config.get("geo_cidade", "Campo Largo")
+                estado_cfg = self.config.get("geo_estado", "Paraná")
+                weather_mgr.definir_localizacao(cidade_cfg, estado_cfg)
+                clima = weather_mgr.obter_clima_atual(forcar=True)
+                temp = clima.get("temperatura", 20)
+                desc = clima.get("descricao", "agradável")
+                cidade = clima.get("cidade", cidade_cfg)
+                conselho = clima.get("conselho_infantil", "Um ótimo dia para se divertir!")
+                reply = f"Em {cidade}, agora está fazendo {temp} graus com {desc}. {conselho}"
+                return {
+                    "ok": True,
+                    "intencao": "clima",
+                    "resposta_voz": reply,
+                    "acao_frontend": "nenhuma",
+                    "dados": clima,
+                }
+            except Exception:
+                pass
+
+        # 1. SE FOR UMA PERGUNTA COGNITIVA (DÚVIDA, CURIOSIDADE, CIÊNCIA, AMIZADE):
+        # NUNCA abre jogos nem rotinas! Vai DIRETO para o cérebro da IA (Llama local / Provedor ativo)!
+        if self.is_cognitive_question(user_text):
+            reply, engine = self.ask(user_text)
+            return {
+                "ok": True,
+                "intencao": "conversa_ia",
+                "resposta_voz": reply,
+                "acao_frontend": "nenhuma",
+                "dados": {"engine": engine, "pergunta": user_text},
+            }
 
         # 0. Cinema Stark / YouTube / Netflix (com verificação estrita de bloqueio e orientação)
         if any(w in text_lower for w in ["cinema", "youtube", "netflix", "desenho", "desenhos", "assistir", "filme"]):
@@ -946,15 +1083,27 @@ class JarvisBrain:
 
     def _call_ollama(self, user_input: str) -> str:
         try:
+            self._ensure_ollama_running()
             base_url = self.config.get("ollama_url", "http://127.0.0.1:11434").rstrip("/")
             url = f"{base_url}/api/chat"
             preferred_model = self.config.get("ollama_model", "llama3.2:1b")
 
-            models_to_try = [preferred_model]
-            if preferred_model != "llama3.2:1b":
-                models_to_try.append("llama3.2:1b")
-            if "qwen2.5:0.5b" not in models_to_try:
-                models_to_try.append("qwen2.5:0.5b")
+            # Descobre modelos disponíveis no Ollama para evitar 404
+            available = []
+            try:
+                with urllib.request.urlopen(f"{base_url}/api/tags", timeout=1.5) as r:
+                    tags = json.loads(r.read().decode("utf-8"))
+                    available = [item.get("name") for item in tags.get("models", [])]
+            except Exception:
+                pass
+
+            models_to_try = []
+            if preferred_model in available:
+                models_to_try.append(preferred_model)
+            elif available:
+                models_to_try.append(available[0])
+            else:
+                models_to_try.extend([preferred_model, "llama3.2:1b", "qwen2.5:0.5b"])
 
             messages = [{"role": "system", "content": self._child_system_instruction()}]
             messages.extend(self.local_history[-6:])
@@ -969,7 +1118,7 @@ class JarvisBrain:
                         "options": {"temperature": 0.55, "num_predict": 110},
                     }).encode("utf-8")
                     req = urllib.request.Request(url, data=payload, headers={"Content-Type": "application/json"})
-                    with urllib.request.urlopen(req, timeout=25) as res:
+                    with urllib.request.urlopen(req, timeout=12) as res:
                         data = json.loads(res.read().decode("utf-8"))
                         ans = self._clean_llm_reply((data.get("message") or {}).get("content", ""))
                         if ans:

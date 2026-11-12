@@ -4876,8 +4876,18 @@
       let replyLocal = null;
       let acaoLocal = null;
 
-      // 1. JOGO DE XADREZ STARK
-      if (/xadrez|cavalo em l|xeque|peca de xadrez|peao|torre stark/i.test(spokenNorm)) {
+      // REGRA DE OURO: SE FOR PERGUNTA COGNITIVA / DÚVIDA PARA IA
+      // (por que, como, o que, qual, quem, onde, quando, quanto, me explica, etc.)
+      // NUNCA interceptar como jogo! Vai direto para a IA no backend (/api/comando/interpretar)!
+      const isPerguntaIa = /^(por\s*que|porque|pq|o\s*que|oq|qual|quais|como|quem|onde|aonde|quando|quanto|quantos|quantas)\b/i.test(spokenNorm) ||
+                           /^(me\s+explica|me\s+conta|conta\s+sobre|fale\s+sobre|voce\s+sabe|voce\s+conhece|voce\s+gosta|o\s+que\s+acha|me\s+diz|me\s+ajuda\s+a\s+entender)\b/i.test(spokenNorm) ||
+                           spoken.trim().endsWith('?');
+
+      const isComandoUtilidade = /que horas|horas sao|temperatura hoje|previsao do tempo|quantas moedas/i.test(spokenNorm);
+
+      if (!isPerguntaIa || isComandoUtilidade) {
+        // 1. JOGO DE XADREZ STARK
+        if (/xadrez|cavalo em l|xeque|peca de xadrez|peao|torre stark/i.test(spokenNorm)) {
         matchedLocal = true;
         replyLocal = 'Abrindo o Reino do Xadrez Stark! Vamos jogar xadrez, pequeno grande mestre!';
         acaoLocal = () => { closeModal(false); openChessAcademyGame(); };
@@ -5047,6 +5057,7 @@
         replyLocal = 'Abrindo a lista com todos os jogos educativos do super herói!';
         acaoLocal = () => { closeModal(false); openGamesMenuModal(1); };
       }
+      } // Fim de if (!isPerguntaIa || isComandoUtilidade)
 
       if (matchedLocal) {
         // EXECUÇÃO ULTRA-RÁPIDA (0ms): ABRE O JOGO INSTANTANEAMENTE!
@@ -5887,17 +5898,24 @@
       // 2. Para canções de contagem e timers musicais
       if (typeof stopCountingSong === 'function') stopCountingSong();
 
-      // 3. Desliga imediatamente câmera e visões computacionais
+      // 3. Desliga imediatamente câmeras e visões computacionais (Contagem de Dedos e Matemática)
       if (typeof stopFingerCameraMode === 'function') stopFingerCameraMode();
+      if (typeof encerrarCameraMatematica === 'function') encerrarCameraMatematica();
 
       // 4. Para timers de música, metrônomos e batidas
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
 
-      // 5. Para qualquer intervalo global ou listener
+      // 5. Para timers de jogos específicos (Desafio dos 30s do Relógio Mágico, etc.)
+      if (typeof timerDesafio30s !== 'undefined' && timerDesafio30s) {
+        clearInterval(timerDesafio30s);
+        timerDesafio30s = null;
+      }
+
+      // 6. Para qualquer intervalo global ou listener
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
 
-      // 6. Silencia e pausa todos os elementos de mídia HTML5 do documento
+      // 7. Silencia e pausa todos os elementos de mídia HTML5 do documento
       document.querySelectorAll('audio, video').forEach(el => {
         try {
           el.pause();
@@ -5905,10 +5923,10 @@
         } catch (e) {}
       });
 
-      // 7. Interrompe e desconecta nós de áudio procedurais Web Audio ativos (Dinos, etc.)
+      // 8. Interrompe e desconecta nós de áudio procedurais Web Audio ativos (Dinos, Animais, etc.)
       limparNodesSonorosAtivos();
 
-      // 8. Reseta estado visual da voz do robô
+      // 9. Reseta estado visual da voz do robô
       resetVoiceToIdle();
     }
 
@@ -11768,7 +11786,7 @@
               <button type="button" class="big-btn" style="background:#0284c7; border:1.5px solid #38bdf8; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="ouvirCuriosidadeSolar()">
                 🔊 Ouvir Curiosidade
               </button>
-              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border:1.5px solid #a78bfa; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="iniciarQuizSolar()">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border:1.5px solid #a78bfa; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="iniciarQuizAstronauta()">
                 🚀 Missão Espacial (+2 🪙)
               </button>
             </div>
@@ -11792,7 +11810,7 @@
             </div>
 
             <!-- ÁREA DO QUIZ ESPACIAL (SE ATIVO) -->
-            <div id="quiz-solar-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:8px; text-align:center; width:100%; max-width:620px;"></div>
+            <div id="quiz-astronauta-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:8px; text-align:center; width:100%; max-width:620px;"></div>
 
           </div>
 
@@ -11854,6 +11872,10 @@
       const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
       playTone(659, 100);
       speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! Pousamos em ${p.nome}! ${p.desc}`);
+    }
+
+    function iniciarQuizSolar() {
+      iniciarQuizAstronauta();
     }
 
     function iniciarQuizAstronauta() {
