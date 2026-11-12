@@ -2775,6 +2775,7 @@
   <script src="/static/libs/canvas-confetti.min.js"></script>
   <script src="/static/libs/sweetalert2.all.min.js"></script>
   <script src="/static/libs/sortable.min.js"></script>
+  <script src="/static/libs/human/human.js"></script>
   <script>
     // =========================================================================
     // KIOSK HARDENING & BLOQUEIO DE SELEÇÃO / CLIQUE DIREITO
@@ -5185,6 +5186,172 @@
     }
 
     // =========================================================================
+    // ESPELHO MÁGICO DAS EMOÇÕES IA (VLADMANDIC/HUMAN)
+    // =========================================================================
+    let emoMirrorStream = null;
+    let emoMirrorInterval = null;
+    let emoUltimaEmocaoDetectada = '';
+    let emoCooldownFalaMs = 0;
+    let emoDesafioAtual = { chave: 'happy', nome: 'Alegre / Sorrindo', emoji: '😄' };
+
+    const MAPA_EMOCOES_HUMAN = {
+      happy: { pt: 'Muito Feliz & Alegre!', emoji: '😄', cor: '#10b981', fala: 'Que sorriso lindo e contagiante, campeão!' },
+      surprised: { pt: 'Uau! Que Surpresa!', emoji: '😲', cor: '#fbbf24', fala: 'Olhos bem abertos! Você parece super surpreso!' },
+      sad: { pt: 'Carinha Triste', emoji: '😢', cor: '#38bdf8', fala: 'Vejo uma carinha triste. O Jarvis está aqui com você, herói!' },
+      angry: { pt: 'Bravo / Chateado', emoji: '😠', cor: '#ef4444', fala: 'Parece que você está bravinho! Que tal respirar fundo com a flor da calma?' },
+      neutral: { pt: 'Calmo & Focado', emoji: '😌', cor: '#a855f7', fala: 'Você está super calmo e tranquilo!' }
+    };
+
+    function renderEmotionsMirrorStage(stage) {
+      stage.innerHTML = `
+        <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:10px; height:100%; max-height:calc(100vh - 120px); box-sizing:border-box;">
+          
+          <!-- LADO ESQUERDO: CÂMERA DO ESPELHO MÁGICO -->
+          <div style="background:#020914; border:2.5px solid #00f0ff; border-radius:14px; padding:8px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; box-shadow:0 0 20px rgba(0,240,255,0.25); position:relative; overflow:hidden;">
+            <div style="position:relative; width:100%; max-width:440px; height:240px; border-radius:10px; overflow:hidden; background:#000;">
+              <video id="emo-mirror-video" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+              <canvas id="emo-mirror-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; transform:scaleX(-1);"></canvas>
+            </div>
+            
+            <div id="emo-detected-box" style="margin-top:6px; background:#0a192f; border:1.5px solid #38bdf8; border-radius:10px; padding:6px 12px; width:100%; text-align:center;">
+              <span id="emo-detected-emoji" style="font-size:1.8rem; margin-right:8px;">🤖</span>
+              <span id="emo-detected-text" style="font-size:1.05rem; font-weight:900; color:#ffffff;">Olhe para a câmera do Jarvis...</span>
+            </div>
+          </div>
+
+          <!-- LADO DIREITO: DESAFIO DA MÍMICA & MISSÃO (+3 🪙) -->
+          <div style="background:#0b192e; border:1.5px solid #1e3a63; border-radius:14px; padding:10px 14px; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase;">
+                🎭 Desafio da Mímica Facial (+2 🪙)
+              </div>
+              <div style="font-size:1.15rem; font-weight:900; color:#facc15; margin:6px 0;" id="emo-desafio-titulo">
+                Missão: Faça uma Carinha Feliz!
+              </div>
+              <div style="font-size:3rem; text-align:center; margin:8px 0; animation:pulse 1.5s infinite;" id="emo-desafio-emoji">
+                😄
+              </div>
+              <div style="font-size:0.9rem; color:#cbd5e1; line-height:1.35; background:#041426; padding:8px 10px; border-radius:8px; border:1px solid #1e3a63;" id="emo-desafio-dica">
+                Dê um grande sorriso para a câmera! Mostre toda a sua alegria de herói!
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-size:0.88rem; font-weight:900; padding:8px;" onclick="sortearNovoDesafioEmocao()">
+                🎲 Sortear Outra Carinha
+              </button>
+            </div>
+          </div>
+
+        </div>
+      `;
+
+      iniciarEspelhoDasEmocoes();
+    }
+
+    async function iniciarEspelhoDasEmocoes() {
+      try {
+        encerrarEspelhoDasEmocoes();
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 320 }, height: { ideal: 240 } },
+          audio: false
+        });
+        emoMirrorStream = stream;
+        const video = document.getElementById('emo-mirror-video');
+        if (video) {
+          video.srcObject = stream;
+          video.onloadedmetadata = () => {
+            const overlay = document.getElementById('emo-mirror-overlay');
+            if (overlay) {
+              overlay.width = video.videoWidth || 320;
+              overlay.height = video.videoHeight || 240;
+            }
+          };
+        }
+
+        speak('Espelho Mágico das Emoções ativado! Olhe para a câmera e faça a carinha do desafio!');
+        showToast('📸 Espelho Mágico Ativado!');
+
+        // Loop de IA com Human local (~5 FPS leve)
+        emoMirrorInterval = setInterval(async () => {
+          if (!emoMirrorStream || !video || video.readyState < 2) return;
+          const overlay = document.getElementById('emo-mirror-overlay');
+          const emo = await processarFrameHumanEmotion(video, overlay);
+          if (emo && emo.emotion) {
+            atualizarFeedbackEmocao(emo.emotion, emo.score);
+          }
+        }, 180);
+
+      } catch(err) {
+        showToast('⚠️ Câmera indisponível no momento.');
+        speak('Não consegui ligar a câmera do Espelho Mágico! Você pode brincar nas outras abas!');
+      }
+    }
+
+    function atualizarFeedbackEmocao(emocaoKey, score) {
+      const info = MAPA_EMOCOES_HUMAN[emocaoKey] || { pt: 'Pensativo', emoji: '🤔', cor: '#94a3b8', fala: '' };
+      const eBox = document.getElementById('emo-detected-box');
+      const eEmoji = document.getElementById('emo-detected-emoji');
+      const eText = document.getElementById('emo-detected-text');
+
+      if (eEmoji) eEmoji.textContent = info.emoji;
+      if (eText) eText.textContent = `${info.pt} (Confiança: ${Math.round(score * 100)}%)`;
+      if (eBox) eBox.style.borderColor = info.cor;
+
+      const agora = Date.now();
+      // Verifica se acertou o desafio atual
+      if (emocaoKey === emoDesafioAtual.chave && score > 0.45) {
+        if (agora - emoCooldownFalaMs > 5000) {
+          emoCooldownFalaMs = agora;
+          playCelebrationFanfare();
+          dispararChuvaCoracoes(45);
+          speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você fez a carinha certinha de ${emoDesafioAtual.nome}! Ganhou 2 moedas de herói!`);
+          showToast('🌟 Desafio Concluído! +2 Moedas!');
+
+          const pEl = document.getElementById('pote-fichas-val');
+          if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
+          fetch('/api/fichas/bonificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantidade: 2, motivo: 'desafio_espelho_emocoes' })
+          }).catch(() => null);
+
+          setTimeout(() => sortearNovoDesafioEmocao(), 3500);
+        }
+      }
+    }
+
+    function sortearNovoDesafioEmocao() {
+      const opcoes = [
+        { chave: 'happy', nome: 'Alegre / Sorrindo', emoji: '😄', dica: 'Dê um grande sorriso para a câmera do Jarvis!' },
+        { chave: 'surprised', nome: 'Surpreso(a)', emoji: '😲', dica: 'Abra bem a boca e arregale os olhinhos de surpresa!' },
+        { chave: 'neutral', nome: 'Calmo & Sereno', emoji: '😌', dica: 'Fique bem relaxado e tranquilo olhando para o Jarvis!' },
+        { chave: 'angry', nome: 'Bravo / Valente', emoji: '😠', dica: 'Faça uma carinha bem brava e valente de herói!' }
+      ];
+      const filtradas = opcoes.filter(o => o.chave !== emoDesafioAtual.chave);
+      emoDesafioAtual = filtradas[Math.floor(Math.random() * filtradas.length)];
+
+      const tEl = document.getElementById('emo-desafio-titulo');
+      const eEl = document.getElementById('emo-desafio-emoji');
+      const dEl = document.getElementById('emo-desafio-dica');
+
+      if (tEl) tEl.textContent = `Missão: Faça uma Carinha ${emoDesafioAtual.nome}!`;
+      if (eEl) eEl.textContent = emoDesafioAtual.emoji;
+      if (dEl) dEl.textContent = emoDesafioAtual.dica;
+
+      playTone(587, 100);
+      speak(`Nova missão do Espelho: Faça uma carinha ${emoDesafioAtual.nome}! ${emoDesafioAtual.dica}`);
+    }
+
+    function encerrarEspelhoDasEmocoes() {
+      if (emoMirrorInterval) { clearInterval(emoMirrorInterval); emoMirrorInterval = null; }
+      if (emoMirrorStream) {
+        try { emoMirrorStream.getTracks().forEach(t => t.stop()); } catch(e) {}
+        emoMirrorStream = null;
+      }
+    }
+
+    // =========================================================================
     // ACADEMIA DE ALFABETIZAÇÃO: ENSINAR A LER E ESCREVER (4 ANOS)
     // =========================================================================
     const ALPHABET_DATA = [
@@ -6469,6 +6636,163 @@
     let countingSongTimer = null;
     let quizTargetNumber = 0;
 
+    // =========================================================================
+    // MOTOR UNIFICADO DE VISÃO COMPUTACIONAL IA (VLADMANDIC/HUMAN)
+    // Modelos 100% locais em /static/libs/human/models (Zero Dependência Externa)
+    // =========================================================================
+    let jarvisHumanInstance = null;
+    let jarvisHumanCarregando = false;
+
+    async function obterJarvisHuman(modo = 'hand') {
+      if (typeof Human === 'undefined') return null;
+      if (!jarvisHumanInstance) {
+        if (jarvisHumanCarregando) return null;
+        jarvisHumanCarregando = true;
+        try {
+          const config = {
+            modelBasePath: '/static/libs/human/models',
+            backend: 'webgl',
+            async: true,
+            warmup: 'none',
+            cacheSensitivity: 0.7,
+            filter: { enabled: true, width: 320, height: 240 },
+            face: {
+              enabled: modo === 'face_emotion',
+              detector: { modelPath: 'blazeface.json', minConfidence: 0.4 },
+              emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.35 },
+              iris: { enabled: false },
+              description: { enabled: false }
+            },
+            body: { enabled: false },
+            hand: {
+              enabled: modo === 'hand',
+              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.4 },
+              landmarks: { modelPath: 'handlandmark-lite.json' }
+            },
+            gesture: { enabled: true }
+          };
+          jarvisHumanInstance = new Human(config);
+          await jarvisHumanInstance.load();
+        } catch (err) {
+          console.warn('Human WebGL falhou, tentando fallback WASM/CPU:', err);
+          try {
+            jarvisHumanInstance = new Human({
+              modelBasePath: '/static/libs/human/models',
+              backend: 'wasm',
+              async: true,
+              warmup: 'none',
+              face: { enabled: modo === 'face_emotion' },
+              body: { enabled: false },
+              hand: { enabled: modo === 'hand' }
+            });
+            await jarvisHumanInstance.load();
+          } catch(e2) {
+            console.warn('Falha definitiva Human:', e2);
+          }
+        } finally {
+          jarvisHumanCarregando = false;
+        }
+      } else {
+        // Reconfigura modo sob demanda economizando 100% de CPU
+        if (modo === 'hand') {
+          jarvisHumanInstance.config.face.enabled = false;
+          jarvisHumanInstance.config.hand.enabled = true;
+        } else if (modo === 'face_emotion') {
+          jarvisHumanInstance.config.face.enabled = true;
+          jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.4 };
+          jarvisHumanInstance.config.face.emotion = { enabled: true, modelPath: 'emotion.json', minConfidence: 0.35 };
+          jarvisHumanInstance.config.hand.enabled = false;
+        }
+      }
+      return jarvisHumanInstance;
+    }
+
+    async function processarFrameHumanHands(video, overlay) {
+      if (!video || video.readyState < 2) return -1;
+      const human = await obterJarvisHuman('hand');
+      if (!human) return -1;
+
+      try {
+        const res = await human.detect(video);
+        let totalDedos = 0;
+
+        if (res.hand && res.hand.length > 0) {
+          if (overlay) {
+            const ctx = overlay.getContext('2d');
+            if (ctx) {
+              ctx.clearRect(0, 0, overlay.width, overlay.height);
+              ctx.strokeStyle = '#00f0ff';
+              ctx.lineWidth = 2.5;
+            }
+          }
+
+          res.hand.forEach(h => {
+            const lm = h.landmarks || h.keypoints;
+            if (lm && lm.length >= 21) {
+              const wrist = lm[0];
+              const pinkyMcp = lm[17];
+
+              // 1. Quatro Dedos Principais: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
+              const tips = [8, 12, 16, 20];
+              const pips = [6, 10, 14, 18];
+              for (let i = 0; i < 4; i++) {
+                const tip = lm[tips[i]];
+                const pip = lm[pips[i]];
+                const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
+                const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
+                if (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05) {
+                  totalDedos++;
+                }
+              }
+
+              // 2. Polegar(4)
+              const thumbTip = lm[4];
+              const thumbIp  = lm[3];
+              const dThumbTipPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
+              const dThumbIpPinky  = Math.hypot(thumbIp[0] - pinkyMcp[0], thumbIp[1] - pinkyMcp[1]);
+              if (dThumbTipPinky > dThumbIpPinky * 1.12) {
+                totalDedos++;
+              }
+            }
+          });
+
+          // Desenha feedback esqueleto leve se disponível
+          if (overlay && human.draw && human.draw.hand) {
+            try { human.draw.hand(overlay, res.hand); } catch(eD) {}
+          }
+          return totalDedos;
+        }
+      } catch(e) {}
+      return -1;
+    }
+
+    async function processarFrameHumanEmotion(video, overlay) {
+      if (!video || video.readyState < 2) return null;
+      const human = await obterJarvisHuman('face_emotion');
+      if (!human) return null;
+
+      try {
+        const res = await human.detect(video);
+        if (res.face && res.face.length > 0) {
+          const f = res.face[0];
+          if (overlay) {
+            const ctx = overlay.getContext('2d');
+            if (ctx) {
+              ctx.clearRect(0, 0, overlay.width, overlay.height);
+              if (human.draw && human.draw.face) {
+                try { human.draw.face(overlay, res.face); } catch(eD) {}
+              }
+            }
+          }
+          if (f.emotion && f.emotion.length > 0) {
+            const sorted = [...f.emotion].sort((a, b) => b.score - a.score);
+            return sorted[0];
+          }
+        }
+      } catch(e) {}
+      return null;
+    }
+
     function openFingerCounting() {
       const body = openModal('🖐️ CONTAR DE 1 A 10 COM AS MÃOZINHAS');
       speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name || 'Kaleo'}! Toque nos dedinhos ou em um número!`);
@@ -6995,48 +7319,47 @@
           };
         }
 
-        // Tenta carregar MediaPipe Hands oficial se disponível
-        let usouMediaPipe = false;
-        try {
-          const ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
-          const ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
-
-          if (ok1 && ok2 && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
-            const hands = new Hands({
-              locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-            });
-            hands.setOptions({
-              maxNumHands: 2,
-              modelComplexity: 0, // Lite (ultraleve para Intel Atom / CPU fraca)
-              minDetectionConfidence: 0.55,
-              minTrackingConfidence: 0.5
-            });
-
-            hands.onResults((results) => {
-              processarResultadoMediaPipe(results);
-            });
-
-            const camera = new Camera(video, {
-              onFrame: async () => {
-                if (fcCameraStream && hands) {
-                  await hands.send({ image: video });
-                }
-              },
-              width: 320,
-              height: 240
-            });
-            camera.start();
-            fcMediaPipeHandsInstance = hands;
-            fcMediaPipeCameraInstance = camera;
-            usouMediaPipe = true;
-            if (engineTag) engineTag.textContent = 'MediaPipe IA (2 Mãos)';
+        // 1. Prioridade Máxima: Vladmandic/Human Local (100% Offline e calibrado para Intel Atom)
+        let usouMotorLocal = false;
+        if (typeof Human !== 'undefined') {
+          try {
+            const human = await obterJarvisHuman('hand');
+            if (human) {
+              usouMotorLocal = true;
+              if (engineTag) engineTag.textContent = 'Human IA Local (2 Mãos)';
+              iniciarLoopHumanHands(video);
+            }
+          } catch(eH) {
+            console.warn('Human falhou, tentando fallback:', eH);
           }
-        } catch (eMp) {
-          console.warn('Fallback para Motor Biométrico em Canvas:', eMp);
         }
 
-        // Se MediaPipe falhou ou estiver offline, roda o Motor Biométrico em Canvas local
-        if (!usouMediaPipe) {
+        // 2. Se Human não estiver disponível, tenta MediaPipe CDN
+        if (!usouMotorLocal) {
+          try {
+            const ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
+            const ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
+            if (ok1 && ok2 && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
+              const hands = new Hands({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+              });
+              hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.55, minTrackingConfidence: 0.5 });
+              hands.onResults((results) => { processarResultadoMediaPipe(results); });
+              const camera = new Camera(video, {
+                onFrame: async () => { if (fcCameraStream && hands) await hands.send({ image: video }); },
+                width: 320, height: 240
+              });
+              camera.start();
+              fcMediaPipeHandsInstance = hands;
+              fcMediaPipeCameraInstance = camera;
+              usouMotorLocal = true;
+              if (engineTag) engineTag.textContent = 'MediaPipe IA (2 Mãos)';
+            }
+          } catch (eMp) {}
+        }
+
+        // 3. Fallback final: Motor Biométrico em Canvas local
+        if (!usouMotorLocal) {
           if (engineTag) engineTag.textContent = 'Visão Geométrica Local';
           iniciarMotorBiometricoCanvas(video);
         }
@@ -7050,6 +7373,19 @@
     }
 
     // Processamento do esqueleto MediaPipe Hands (Inspirado nos 3 repositórios)
+    function iniciarLoopHumanHands(video) {
+      if (fcCameraInterval) clearInterval(fcCameraInterval);
+      const overlay = document.getElementById('fc-canvas-overlay');
+
+      fcCameraInterval = setInterval(async () => {
+        if (!fcCameraStream || !video || video.readyState < 2) return;
+        const total = await processarFrameHumanHands(video, overlay);
+        if (total >= 0) {
+          alimentarFiltroEstabilidade(total);
+        }
+      }, 160); // ~6 FPS, ultra leve no Intel Atom N450
+    }
+
     function processarResultadoMediaPipe(results) {
       const overlay = document.getElementById('fc-canvas-overlay');
       if (!overlay) return;
@@ -9904,10 +10240,11 @@
 
       body.innerHTML = `
         <!-- ABAS DO JOGO DAS EMOÇÕES -->
-        <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
-          <button type="button" class="music-tab-btn active" id="tab-emo-game" onclick="switchEmotionsTab('game')">🎮 Jogo: Como o Amigo se Sente?</button>
-          <button type="button" class="music-tab-btn" id="tab-emo-wheel" onclick="switchEmotionsTab('wheel')">🎭 Meu Coração & Sentimentos</button>
-          <button type="button" class="music-tab-btn" id="tab-emo-breath" onclick="switchEmotionsTab('breath')">🌸 Florzinha da Calma (Respiração)</button>
+        <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+          <button type="button" class="music-tab-btn active" id="tab-emo-game" onclick="switchEmotionsTab('game')">🎮 Jogo do Amigo</button>
+          <button type="button" class="music-tab-btn" id="tab-emo-wheel" onclick="switchEmotionsTab('wheel')">🎭 Sentimentos</button>
+          <button type="button" class="music-tab-btn" id="tab-emo-breath" onclick="switchEmotionsTab('breath')">🌸 Flor da Calma</button>
+          <button type="button" class="music-tab-btn" id="tab-emo-mirror" onclick="switchEmotionsTab('mirror')" style="background:linear-gradient(135deg, #0284c7 0%, #00f0ff 100%); color:#030712; font-weight:900;">📸 Espelho Mágico IA</button>
         </div>
 
         <div id="emotions-main-stage" style="flex:1; display:flex; flex-direction:column;"></div>
@@ -9928,12 +10265,17 @@
       const stage = document.getElementById('emotions-main-stage');
       if (!stage) return;
 
+      if (tabKey !== 'mirror') {
+        encerrarEspelhoDasEmocoes();
+      }
       if (tabKey === 'game') {
         renderEmotionsGameStage(stage);
       } else if (tabKey === 'wheel') {
         renderEmotionsFeelingsStage(stage);
       } else if (tabKey === 'breath') {
         renderEmotionsBreathingStage(stage);
+      } else if (tabKey === 'mirror') {
+        renderEmotionsMirrorStage(stage);
       }
     }
 
