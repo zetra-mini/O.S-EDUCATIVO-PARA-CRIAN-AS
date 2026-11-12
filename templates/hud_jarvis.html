@@ -6121,6 +6121,11 @@
       if (activeInterval) { clearInterval(activeInterval); activeInterval = null; }
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
+      if (typeof encerrarCorridaTurbo === 'function') encerrarCorridaTurbo();
+      if (typeof encerrarDefensorGalactico === 'function') encerrarDefensorGalactico();
+      if (typeof encerrarReatorArkanoid === 'function') encerrarReatorArkanoid();
+      if (typeof encerrarJetpackStark === 'function') encerrarJetpackStark();
+      if (typeof encerrarCircuitoNeon === 'function') encerrarCircuitoNeon();
       resetVoiceToIdle();
       playTone(659, 90);
 
@@ -6152,6 +6157,11 @@
       if (keyHandler) { window.removeEventListener('keydown', keyHandler); keyHandler = null; }
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
       if (typeof encerrarEspelhoDasEmocoes === 'function') encerrarEspelhoDasEmocoes();
+      if (typeof encerrarCorridaTurbo === 'function') encerrarCorridaTurbo();
+      if (typeof encerrarDefensorGalactico === 'function') encerrarDefensorGalactico();
+      if (typeof encerrarReatorArkanoid === 'function') encerrarReatorArkanoid();
+      if (typeof encerrarJetpackStark === 'function') encerrarJetpackStark();
+      if (typeof encerrarCircuitoNeon === 'function') encerrarCircuitoNeon();
 
       // Se a tela atual for a Loja ou se a pilha tiver apenas 1 item, fecha direto para a tela inicial
       const current = modalNavStack.length > 0 ? modalNavStack[modalNavStack.length - 1] : null;
@@ -15585,19 +15595,14 @@
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           if (it.tipo === 'coin') {
-            ctx.shadowColor = '#facc15'; ctx.shadowBlur = 10;
             ctx.fillText('🪙', it.x, it.y);
           } else if (it.tipo === 'star') {
-            ctx.shadowColor = '#38bdf8'; ctx.shadowBlur = 12;
             ctx.fillText('⭐', it.x, it.y);
           } else if (it.tipo === 'battery') {
-            ctx.shadowColor = '#4ade80'; ctx.shadowBlur = 12;
             ctx.fillText('🔋', it.x, it.y);
           } else if (it.tipo === 'cone') {
-            ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8;
             ctx.fillText('⚠️', it.x, it.y);
           }
-          ctx.shadowBlur = 0;
 
           // Colisão com o Carro
           if (Math.hypot(it.x - s.carX, it.y - s.carY) < 36 && !s.finished) {
@@ -15636,16 +15641,19 @@
           }
         }
 
-        // DESENHA RASTRO DE FOGO NO NITRO
+        // DESENHA RASTRO DE FOGO NO NITRO (Otimizado Intel Atom: arco duplo sem Gaussian Blur)
         if (s.isNitro) {
-          ctx.fillStyle = '#00f0ff';
-          ctx.shadowColor = '#00f0ff';
-          ctx.shadowBlur = 15;
+          ctx.fillStyle = 'rgba(0, 240, 255, 0.4)';
           ctx.beginPath();
-          ctx.arc(s.carX - 10, s.carY + 34, 6 + Math.random() * 5, 0, Math.PI * 2);
-          ctx.arc(s.carX + 10, s.carY + 34, 6 + Math.random() * 5, 0, Math.PI * 2);
+          ctx.arc(s.carX - 10, s.carY + 36, 9 + Math.random() * 4, 0, Math.PI * 2);
+          ctx.arc(s.carX + 10, s.carY + 36, 9 + Math.random() * 4, 0, Math.PI * 2);
           ctx.fill();
-          ctx.shadowBlur = 0;
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(s.carX - 10, s.carY + 32, 4, 0, Math.PI * 2);
+          ctx.arc(s.carX + 10, s.carY + 32, 4, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         // DESENHA O SUPER CARRO STARK
@@ -15664,12 +15672,12 @@
 
         // Chassi do Carro Esportivo
         ctx.fillStyle = s.carColor;
-        ctx.shadowColor = s.isNitro ? '#00f0ff' : s.carColor;
-        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.roundRect(-18, -26, 36, 52, [10, 10, 6, 6]);
         ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.strokeStyle = s.isNitro ? '#00f0ff' : 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = s.isNitro ? 2.5 : 1.5;
+        ctx.stroke();
 
         // Para-brisa / Cockpit
         ctx.fillStyle = '#0b1329';
@@ -16156,13 +16164,12 @@
         }
       });
 
-      // Lasers
+      // Lasers (Otimizado Intel Atom: preenchimento duplo rápido)
       galacticDefenderState.lasers.forEach(l => {
-        ctx.fillStyle = l.isTurbo ? '#facc15' : '#00f0ff';
-        ctx.shadowColor = l.isTurbo ? '#ef4444' : '#00f0ff';
-        ctx.shadowBlur = 8;
-        ctx.fillRect(l.x - 2, l.y, 4, 12);
-        ctx.shadowBlur = 0;
+        ctx.fillStyle = l.isTurbo ? 'rgba(239, 68, 68, 0.35)' : 'rgba(0, 240, 255, 0.35)';
+        ctx.fillRect(l.x - 3, l.y - 1, 6, 14);
+        ctx.fillStyle = l.isTurbo ? '#facc15' : '#ffffff';
+        ctx.fillRect(l.x - 1.5, l.y, 3, 12);
       });
 
       // Nave do Jogador (Stark Interceptor)
@@ -16628,17 +16635,14 @@
         if (p.life <= 0) arkanoidState.particles.splice(i, 1);
       }
 
-      // Blocos
+      // Blocos (Otimizado Intel Atom: renderização vetorial nítida sem blur)
       arkanoidState.bricks.forEach(br => {
         if (br.alive) {
           ctx.fillStyle = br.color;
-          ctx.shadowColor = br.color;
-          ctx.shadowBlur = 6;
           ctx.fillRect(br.x, br.y, br.w, br.h);
-          ctx.shadowBlur = 0;
 
           // Borda interna brilhante
-          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.45)';
           ctx.lineWidth = 1;
           ctx.strokeRect(br.x + 1, br.y + 1, br.w - 2, br.h - 2);
 
@@ -16667,24 +16671,28 @@
       const pw = arkanoidState.paddleW;
       const ph = arkanoidState.paddleH;
 
-      ctx.fillStyle = 'linear-gradient(90deg, #0284c7, #00f0ff)';
-      ctx.shadowColor = '#00f0ff';
-      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#0284c7';
       ctx.fillRect(px, py, pw, ph);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(px, py, pw, ph);
 
       // Cantos e núcleo
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(px + pw / 2 - 12, py + 2, 24, ph - 4);
       ctx.restore();
 
-      // Esferas
+      // Esferas (Arco com núcleo brilhante sem blur)
       arkanoidState.balls.forEach(b => {
         ctx.save();
         ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r + 2, 0, Math.PI * 2);
+        ctx.fillStyle = b.isFire ? 'rgba(249, 115, 22, 0.4)' : 'rgba(0, 240, 255, 0.4)';
+        ctx.fill();
+
+        ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = b.isFire ? '#f97316' : '#00f0ff';
-        ctx.shadowColor = b.isFire ? '#ef4444' : '#38bdf8';
-        ctx.shadowBlur = 12;
+        ctx.fillStyle = b.isFire ? '#f97316' : '#ffffff';
         ctx.fill();
         ctx.restore();
       });
@@ -17397,19 +17405,23 @@
         if (p.life <= 0) neonSnakeState.particles.splice(i, 1);
       }
 
-      // Núcleo Arc (Comida)
+      // Núcleo Arc (Comida - halo com preenchimento duplo)
       const cx = offX + neonSnakeState.core.x * cs + cs / 2;
       const cy = offY + neonSnakeState.core.y * cs + cs / 2;
       ctx.save();
       ctx.beginPath();
-      ctx.arc(cx, cy, 7, 0, Math.PI * 2);
-      ctx.fillStyle = '#10b981';
-      ctx.shadowColor = '#34d399';
-      ctx.shadowBlur = 10;
+      ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(52, 211, 153, 0.3)';
       ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#10b981';
+      ctx.fill();
+
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
-      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 2.5, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
@@ -17422,7 +17434,7 @@
         ctx.fillText('🪙', mx, my + 5);
       }
 
-      // Rastro / Corpo da Cobrinha
+      // Rastro / Corpo da Cobrinha (Otimizado Intel Atom)
       neonSnakeState.snake.forEach((seg, idx) => {
         const sx = offX + seg.x * cs + 1;
         const sy = offY + seg.y * cs + 1;
@@ -17430,9 +17442,10 @@
         if (idx === 0) {
           // Cabeça
           ctx.fillStyle = '#34d399';
-          ctx.shadowColor = '#00f0ff';
-          ctx.shadowBlur = 8;
           ctx.fillRect(sx, sy, cs - 2, cs - 2);
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(sx, sy, cs - 2, cs - 2);
 
           // Olhos cibernéticos
           ctx.fillStyle = '#ffffff';

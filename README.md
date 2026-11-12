@@ -266,6 +266,27 @@ sudo apt install ./jarvis-kids-os_3.9.0.deb
 
 ---
 
+## 📦 Instalação Rápida no Linux (antiX, xlinux, Debian, Ubuntu) com o comando pkg
+
+O J.A.R.V.I.S. Kids OS conta com o instalador e gerenciador universal **pkg**, otimizado especificamente para netbooks modestos (**Asus Eee PC**, **Acer Aspire One**, processadores **Intel Atom N450/N270** e 1GB a 2GB de RAM):
+
+### ⚡ Instalação Rápida em 1 Passo:
+```bash
+git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git
+cd O.S-EDUCATIVO-PARA-CRIAN-AS
+./pkg install
+```
+O instalador configura tudo de forma 100% autônoma: detecta o gerenciador (`pkg`, `apt-get`, `apk`, `pacman`), instala dependências de sistema (`python3`, `alsa-utils`, `mpg123`, `chromium`), otimiza o kernel (ZRAM e `swappiness=15` para netbooks), cria o atalho na área de trabalho e adiciona o comando global `pkg` no PATH do sistema!
+
+### 🎮 Comandos do Utilitário `pkg`:
+```bash
+pkg start     # Inicia o servidor e abre o quiosque em tela cheia no navegador
+pkg status    # Mostra o status do servidor, consumo de memória RAM e porta
+pkg stop      # Encerra o servidor com segurança
+pkg update    # Atualiza o sistema com a versão mais recente do GitHub
+```
+
+
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)
 
 ### Pré-requisitos (Modo Dev)

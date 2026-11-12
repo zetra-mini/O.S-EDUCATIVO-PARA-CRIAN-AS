@@ -59,6 +59,9 @@ elif command -v pacman >/dev/null 2>&1; then
   sudo pacman -Sy --noconfirm python python-pip alsa-utils espeak-ng mpg123 chromium || true
 elif command -v dnf >/dev/null 2>&1; then
   sudo dnf install -y python3 python3-pip alsa-utils espeak-ng mpg123 chromium || true
+elif command -v pkg >/dev/null 2>&1; then
+  pkg update -y || true
+  pkg install -y python python-pip alsa-utils mpg123 chromium 2>/dev/null || true
 fi
 
 # Instala dependências Python (prioriza venv ou pip local)
