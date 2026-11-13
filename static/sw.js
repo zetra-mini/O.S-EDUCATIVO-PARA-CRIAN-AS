@@ -1,9 +1,15 @@
-// Service Worker Oficial do JARVIS Kids OS - Suporte 100% Offline e PWA
-const CACHE_NAME = 'jarvis-kids-os-v3.3';
+// Service Worker Oficial do JARVIS Kids OS - Suporte 100% Offline e PWA (Awesome Offline-First)
+const CACHE_NAME = 'jarvis-kids-os-v3.9.6';
 const ASSETS_TO_CACHE = [
   '/',
   '/pais',
-  '/manifest.json'
+  '/manifest.json',
+  '/static/libs/animate.min.css',
+  '/static/libs/canvas-confetti.min.js',
+  '/static/libs/sweetalert2.all.min.js',
+  '/static/libs/sortable.min.js',
+  '/api/public/lua',
+  '/api/public/paises'
 ];
 
 self.addEventListener('install', (event) => {

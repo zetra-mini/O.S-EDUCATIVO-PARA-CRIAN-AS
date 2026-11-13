@@ -70,6 +70,21 @@
       overflow: hidden;
     }
 
+    /* AWESOME ACCESSIBILITY: MODO ALTA NITIDEZ (TN LCD NETBOOK) */
+    body.high-contrast-mode {
+      background: #00040a !important;
+      filter: contrast(120%) brightness(105%) !important;
+    }
+    body.high-contrast-mode * {
+      text-shadow: none !important;
+    }
+    body.high-contrast-mode .pou-coin-badge,
+    body.high-contrast-mode .pou-weather-badge,
+    body.high-contrast-mode .big-btn {
+      border-width: 2.5px !important;
+      border-color: #00f0ff !important;
+    }
+
     /* TOP BAR INFANTIL */
     header {
       height: 56px;
@@ -2237,8 +2252,11 @@
       <!-- ESPAÇO CENTRAL LIVRE E DESOBSTRUÍDO -->
       <span id="pou-room-title" style="display:none;"></span>
 
-      <!-- PAINEL DOS PAIS -->
-      <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:6px 14px; font-size:1.05rem;" title="Painel dos Pais">⚙️</button>
+      <!-- PAINEL DOS PAIS & ACESSIBILIDADE NETBOOK -->
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button type="button" class="btn-parents" id="btn-toggle-contrast" onclick="toggleModoNitidezNetbook()" style="padding:6px 11px; font-size:1.05rem;" title="Modo Alta Nitidez / Acessibilidade Netbook">👁️</button>
+        <button type="button" class="btn-parents" onclick="openParentsGate()" style="padding:6px 14px; font-size:1.05rem;" title="Painel dos Pais">⚙️</button>
+      </div>
     </header>
 
     <!-- BANNER DE ALERTA DE BATERIA DO NETBOOK -->
@@ -3911,7 +3929,21 @@
       } catch (e) {}
     }
 
-    // EFEITOS SONOROS DE FEEDBACK IMEDIATO (0ms LATÊNCIA, 0 REDE, 100% OFFLINE)
+    function toggleModoNitidezNetbook() {
+      const isHigh = document.body.classList.toggle('high-contrast-mode');
+      try { localStorage.setItem('jarvis_high_contrast', isHigh ? '1' : '0'); } catch(e) {}
+      playSfx('click');
+      showToast(isHigh ? '👁️ Modo Alta Nitidez Ativado!' : '👁️ Modo Normal Ativado!');
+    }
+
+    // Inicialização do modo nitidez
+    try {
+      if (localStorage.getItem('jarvis_high_contrast') === '1') {
+        document.body.classList.add('high-contrast-mode');
+      }
+    } catch(e) {}
+
+    // EFEITOS SONOROS PROCEDURAIS (JSFXR / AWESOME WEB AUDIO - 0ms LATÊNCIA, 0 RAM, 100% OFFLINE)
     function playSfxClick() {
       playTone(580, 45, 'sine', 0.15);
     }
@@ -3936,6 +3968,77 @@
           try { osc.disconnect(); gain.disconnect(); } catch (err) {}
         };
       } catch (e) {}
+    }
+
+    function playSfxLaser() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.15);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+        osc.onended = () => { try { osc.disconnect(); gain.disconnect(); } catch(e) {} };
+      } catch(e) {}
+    }
+
+    function playSfxJump() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(620, now + 0.14);
+        gain.gain.setValueAtTime(0.20, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.14);
+        osc.onended = () => { try { osc.disconnect(); gain.disconnect(); } catch(e) {} };
+      } catch(e) {}
+    }
+
+    function playSfxPowerup() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        const chord = [261.63, 329.63, 392.00, 523.25, 659.25];
+        chord.forEach((freq, idx) => {
+          setTimeout(() => playTone(freq, 110, 'triangle', 0.18), idx * 45);
+        });
+      } catch(e) {}
+    }
+
+    function playSfxSnap() {
+      try {
+        destravarAudioNavegador();
+        if (!audioCtx) return;
+        playTone(1174.66, 60, 'sine', 0.22); // D6 magnetic chime
+        setTimeout(() => playTone(1760.00, 80, 'sine', 0.16), 40); // A6
+      } catch(e) {}
+    }
+
+    function playSfx(type) {
+      if (type === 'coin') playSfxCoin();
+      else if (type === 'laser') playSfxLaser();
+      else if (type === 'jump') playSfxJump();
+      else if (type === 'powerup') playSfxPowerup();
+      else if (type === 'snap') playSfxSnap();
+      else if (type === 'error') playSfxError();
+      else if (type === 'success' || type === 'win') playSfxSuccess();
+      else playSfxClick();
     }
 
     function playSfxSuccess() {
@@ -18219,16 +18322,56 @@
     ];
 
     let formasAlvoAtual = null;
+    let modoFormasAtual = 'formas'; // 'formas' ou 'tangram'
 
     function abrirFormasCoresModal() {
-      pushModalScreen('🔷 CORES, FORMAS & LÓGICA ESPACIAL', (body) => {
-        carregarJogoFormasCores(body);
-      }, true);
+      pushModalScreen('🔷 FORMAS, CORES & TANGRAM MAGNÉTICO', (body) => {
+        carregarEstruturaFormasCores(body);
+      }, true, () => {
+        encerrarTangramMagnetico();
+      });
     }
 
-    function carregarJogoFormasCores(body) {
+    function carregarEstruturaFormasCores(body) {
       if (!body) body = document.getElementById('modal-screen-body');
       if (!body) return;
+
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:8px; box-sizing:border-box; overflow:hidden;">
+          
+          <!-- SELETOR DE MODOS: IDENTIFICAR VS TANGRAM MAGNÉTICO -->
+          <div style="display:flex; gap:8px; justify-content:space-between; align-items:center; background:#071326; border:1.5px solid #1e3a63; border-radius:12px; padding:6px 10px;">
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="big-btn" id="btn-submodo-formas" style="padding:6px 14px; font-size:0.85rem; font-weight:900; background:${modoFormasAtual === 'formas' ? '#0284c7' : '#1e293b'}; border:2px solid ${modoFormasAtual === 'formas' ? '#00f0ff' : '#334155'};" onclick="alternarSubModoFormas('formas')">
+                🎯 Identificar Formas
+              </button>
+              <button type="button" class="big-btn" id="btn-submodo-tangram" style="padding:6px 14px; font-size:0.85rem; font-weight:900; background:${modoFormasAtual === 'tangram' ? '#7c3aed' : '#1e293b'}; border:2px solid ${modoFormasAtual === 'tangram' ? '#a78bfa' : '#334155'};" onclick="alternarSubModoFormas('tangram')">
+                🧩 Tangram Magnético Stark
+              </button>
+            </div>
+            <span style="font-size:0.8rem; font-weight:800; color:#38bdf8;">Creative Coding 2D (60 FPS)</span>
+          </div>
+
+          <div id="submodo-formas-stage" style="flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden;"></div>
+        </div>
+      `;
+
+      if (modoFormasAtual === 'formas') {
+        renderizarQuizFormas(document.getElementById('submodo-formas-stage'));
+      } else {
+        renderizarTangramMagnetico(document.getElementById('submodo-formas-stage'));
+      }
+    }
+
+    function alternarSubModoFormas(modo) {
+      modoFormasAtual = modo;
+      playTone(523, 70);
+      const b = document.getElementById('modal-screen-body');
+      if (b) carregarEstruturaFormasCores(b);
+    }
+
+    function renderizarQuizFormas(stage) {
+      if (!stage) return;
       playTone(587, 80);
 
       const embaralhadas = [...FORMAS_CORES_CATALOGO].sort(() => Math.random() - 0.5);
@@ -18238,34 +18381,32 @@
       const childName = (appState.config && appState.config.child_name) || 'Kaleo';
       const promptFala = `Toque no ${formasAlvoAtual.forma} ${formasAlvoAtual.cor}!`;
 
-      body.innerHTML = `
-        <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box; overflow:hidden;">
-          
+      stage.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; gap:8px;">
           <!-- TOPO: INSTRUÇÃO DO JARVIS EM DESTAQUE -->
-          <div style="background:linear-gradient(135deg, #0f213d 0%, #081426 100%); border:2px solid #38bdf8; border-radius:16px; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <span style="font-size:2.8rem; animation:pulseMic 1.4s infinite;">🔷</span>
+          <div style="background:linear-gradient(135deg, #0f213d 0%, #081426 100%); border:2px solid #38bdf8; border-radius:14px; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:2.4rem; animation:pulseMic 1.4s infinite;">🔷</span>
               <div>
-                <div style="font-size:0.85rem; font-weight:800; color:#38bdf8; text-transform:uppercase;">MISSÃO ESPACIAL DO JARVIS:</div>
-                <div style="font-size:1.35rem; font-weight:900; color:#fde047;">
+                <div style="font-size:0.75rem; font-weight:800; color:#38bdf8; text-transform:uppercase;">MISSÃO DO JARVIS:</div>
+                <div style="font-size:1.2rem; font-weight:900; color:#fde047;">
                   Toque no <span style="color:#ffffff; text-decoration:underline;">${formasAlvoAtual.forma} ${formasAlvoAtual.cor}</span>!
                 </div>
               </div>
             </div>
-            <button type="button" class="big-btn" style="background:#0284c7; padding:8px 16px; font-size:0.95rem; display:flex; align-items:center; gap:6px;" onclick="speak('${escapeJs(promptFala)}')">
-              <span>🔊</span>
-              <span>Ouvir Novamente</span>
+            <button type="button" class="big-btn" style="background:#0284c7; padding:6px 12px; font-size:0.85rem;" onclick="speak('${escapeJs(promptFala)}')">
+              🔊 Ouvir
             </button>
           </div>
 
-          <!-- GRID 2x2 TÁTIL COM 4 FORMAS GRANDES (ZERO SCROLL) -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:12px; flex:1; min-height:260px;" id="formas-grid">
+          <!-- GRID 2x2 TÁTIL COM 4 FORMAS GRANDES -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:10px; flex:1;" id="formas-grid">
             ${opcoes.map((item, idx) => `
-              <button type="button" class="big-btn" id="btn-forma-${idx}" style="background:#0b192e; border:3px solid #334155; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; transition:all 0.15s ease; padding:12px; box-sizing:border-box;" onclick="responderFormaCor('${item.id}', 'btn-forma-${idx}')">
-                <div style="min-height:70px; display:flex; align-items:center; justify-content:center;">
+              <button type="button" class="big-btn" id="btn-forma-${idx}" style="background:#0b192e; border:3px solid #334155; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; padding:8px; box-sizing:border-box;" onclick="responderFormaCor('${item.id}', 'btn-forma-${idx}')">
+                <div style="min-height:55px; display:flex; align-items:center; justify-content:center;">
                   ${item.html}
                 </div>
-                <div style="font-size:1.2rem; font-weight:900; color:#ffffff;">
+                <div style="font-size:1.1rem; font-weight:900; color:#ffffff;">
                   ${item.forma} ${item.cor}
                 </div>
               </button>
@@ -18273,15 +18414,14 @@
           </div>
 
           <!-- RODAPÉ DE RECOMPENSA -->
-          <div style="background:#071224; border:1.5px solid #1e293b; border-radius:12px; padding:6px 14px; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.9rem; font-weight:800; color:#34d399;">
-              ⭐ Cada acerto soma +5 Moedas ao Pote Real!
+          <div style="background:#071224; border:1.5px solid #1e293b; border-radius:10px; padding:4px 12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.82rem; font-weight:800; color:#34d399;">
+              ⭐ Cada acerto soma +5 Moedas de Ouro!
             </span>
-            <span id="formas-feedback-msg" style="font-size:0.95rem; font-weight:900; color:#facc15;">
+            <span id="formas-feedback-msg" style="font-size:0.85rem; font-weight:900; color:#facc15;">
               Toque na forma correta!
             </span>
           </div>
-
         </div>
       `;
 
@@ -18340,6 +18480,340 @@
           }
         }, 800);
       }
+    }
+
+    // =========================================================================
+    // TANGRAM MAGNÉTICO STARK (AWESOME CREATIVE CODING / CANVAS 2D OFFLINE)
+    // =========================================================================
+    const TANGRAM_FIGURAS = [
+      {
+        nome: 'Foguete Cósmico Stark 🚀',
+        fala: 'Vamos montar um super Foguete Espacial para explorar as estrelas!',
+        icone: '🚀',
+        alvos: [
+          { tipo: 'tri_lg', x: 260, y: 70, rot: 0, cor: '#ef4444' },
+          { tipo: 'tri_lg', x: 260, y: 150, rot: 180, cor: '#3b82f6' },
+          { tipo: 'quadrado', x: 260, y: 195, rot: 45, cor: '#facc15' },
+          { tipo: 'tri_md', x: 200, y: 190, rot: 270, cor: '#10b981' },
+          { tipo: 'tri_sm', x: 320, y: 190, rot: 90, cor: '#a855f7' },
+          { tipo: 'tri_sm', x: 260, y: 245, rot: 0, cor: '#ec4899' },
+          { tipo: 'paralelo', x: 210, y: 240, rot: 45, cor: '#f97316' }
+        ]
+      },
+      {
+        nome: 'Gatinho Amigo 🐱',
+        fala: 'Vamos montar a silhueta do gatinho com suas orelhinhas triangulares!',
+        icone: '🐱',
+        alvos: [
+          { tipo: 'tri_sm', x: 235, y: 70, rot: 0, cor: '#ec4899' },
+          { tipo: 'tri_sm', x: 285, y: 70, rot: 0, cor: '#a855f7' },
+          { tipo: 'quadrado', x: 260, y: 105, rot: 0, cor: '#facc15' },
+          { tipo: 'tri_md', x: 260, y: 155, rot: 180, cor: '#10b981' },
+          { tipo: 'tri_lg', x: 260, y: 215, rot: 0, cor: '#ef4444' },
+          { tipo: 'tri_lg', x: 260, y: 215, rot: 90, cor: '#3b82f6' },
+          { tipo: 'paralelo', x: 325, y: 235, rot: 135, cor: '#f97316' }
+        ]
+      },
+      {
+        nome: 'Casinha do Herói 🏠',
+        fala: 'Vamos montar o telhado e a estrutura da casinha do herói!',
+        icone: '🏠',
+        alvos: [
+          { tipo: 'tri_lg', x: 220, y: 90, rot: 315, cor: '#ef4444' },
+          { tipo: 'tri_lg', x: 300, y: 90, rot: 45, cor: '#3b82f6' },
+          { tipo: 'quadrado', x: 260, y: 170, rot: 0, cor: '#facc15' },
+          { tipo: 'tri_md', x: 200, y: 170, rot: 180, cor: '#10b981' },
+          { tipo: 'tri_sm', x: 320, y: 150, rot: 90, cor: '#a855f7' },
+          { tipo: 'tri_sm', x: 320, y: 200, rot: 270, cor: '#ec4899' },
+          { tipo: 'paralelo', x: 260, y: 235, rot: 0, cor: '#f97316' }
+        ]
+      },
+      {
+        nome: 'Barco à Vela ⛵',
+        fala: 'Prepare-se para velejar pelo oceano azul das formas geométricas!',
+        icone: '⛵',
+        alvos: [
+          { tipo: 'tri_lg', x: 260, y: 80, rot: 0, cor: '#3b82f6' },
+          { tipo: 'tri_md', x: 220, y: 110, rot: 180, cor: '#10b981' },
+          { tipo: 'tri_sm', x: 260, y: 145, rot: 90, cor: '#a855f7' },
+          { tipo: 'quadrado', x: 260, y: 185, rot: 0, cor: '#facc15' },
+          { tipo: 'tri_lg', x: 190, y: 215, rot: 180, cor: '#ef4444' },
+          { tipo: 'tri_sm', x: 260, y: 215, rot: 0, cor: '#ec4899' },
+          { tipo: 'paralelo', x: 320, y: 215, rot: 0, cor: '#f97316' }
+        ]
+      }
+    ];
+
+    let tangramFiguraIdx = 0;
+    let tangramPecas = [];
+    let tangramSelecionadaIdx = -1;
+    let tangramDrag = false;
+    let tangramOffset = { x: 0, y: 0 };
+    let tangramConcluido = false;
+
+    function renderizarTangramMagnetico(stage) {
+      if (!stage) return;
+      const fig = TANGRAM_FIGURAS[tangramFiguraIdx];
+      tangramConcluido = false;
+      tangramSelecionadaIdx = -1;
+
+      // Inicializa 7 peças espalhadas nas laterais prontas para montagem
+      const cores = ['#ef4444', '#3b82f6', '#10b981', '#facc15', '#a855f7', '#ec4899', '#f97316'];
+      tangramPecas = fig.alvos.map((alvo, idx) => {
+        const lateralEsquerda = idx % 2 === 0;
+        return {
+          id: idx,
+          tipo: alvo.tipo,
+          x: lateralEsquerda ? 55 + (idx * 6) : 465 - (idx * 6),
+          y: 60 + (idx * 28),
+          rot: 0,
+          cor: alvo.cor,
+          alvoX: alvo.x,
+          alvoY: alvo.y,
+          alvoRot: alvo.rot,
+          encaixada: false
+        };
+      });
+
+      stage.innerHTML = `
+        <div style="display:flex; flex-direction:column; height:100%; justify-content:space-between; gap:6px;">
+          
+          <!-- BARRA DE CONTROLE SUPERIOR -->
+          <div style="background:linear-gradient(135deg, #09192f 0%, #030712 100%); border:1.5px solid #7c3aed; border-radius:12px; padding:6px 12px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.8rem;">${fig.icone}</span>
+              <div>
+                <div style="font-size:0.75rem; color:#c084fc; font-weight:800;">FIGURA DO DESAFIO:</div>
+                <div style="font-size:1.05rem; font-weight:900; color:#ffffff;">${fig.nome}</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="big-btn" style="background:#7c3aed; border:1px solid #c084fc; padding:5px 10px; font-size:0.8rem; font-weight:800;" onclick="girarPecaTangramSelecionada()">
+                🔄 Girar Peça (45°)
+              </button>
+              <button type="button" class="big-btn" style="background:#0284c7; border:1px solid #38bdf8; padding:5px 10px; font-size:0.8rem; font-weight:800;" onclick="proximaFiguraTangram()">
+                ✨ Próxima Figura
+              </button>
+            </div>
+          </div>
+
+          <!-- ÁREA DO CANVAS INTERATIVO 2D (520x260) -->
+          <div style="flex:1; background:#020617; border:2px solid #1e3a63; border-radius:14px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <canvas id="tangram-canvas" width="540" height="260" style="width:100%; height:100%; object-fit:contain; cursor:pointer; touch-action:none;"></canvas>
+            <div id="tangram-win-overlay" style="display:none; position:absolute; inset:0; background:rgba(2,6,23,0.85); flex-direction:column; align-items:center; justify-content:center; gap:8px; border-radius:14px;">
+              <div style="font-size:3.2rem; animation:pulse 0.8s infinite;">🌟 🏆 🌟</div>
+              <div style="font-size:1.4rem; font-weight:900; color:#facc15;">MUITO BEM, CAMPEÃO!</div>
+              <div style="font-size:0.95rem; color:#bae6fd;">Figura concluída com encaixe magnético perfeito! +10 Moedas de Ouro!</div>
+              <button type="button" class="big-btn" style="background:#10b981; padding:8px 18px; font-size:0.95rem; margin-top:6px;" onclick="proximaFiguraTangram()">
+                Próxima Figura ➡️
+              </button>
+            </div>
+          </div>
+
+          <!-- DICA INFERIOR -->
+          <div style="background:#071224; border:1px solid #1e293b; border-radius:10px; padding:4px 12px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.8rem; color:#94a3b8; font-weight:800;">
+              💡 Arraste as peças coloridas até a silhueta central pontilhada!
+            </span>
+            <span id="tangram-status-txt" style="font-size:0.82rem; font-weight:900; color:#38bdf8;">
+              0 de 7 peças encaixadas
+            </span>
+          </div>
+
+        </div>
+      `;
+
+      iniciarCanvasTangram();
+      speak(fig.fala);
+    }
+
+    function iniciarCanvasTangram() {
+      const cvs = document.getElementById('tangram-canvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+
+      const desenharPoligonoTangram = (ctx, tipo, cor, alpha = 1) => {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = cor;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (tipo === 'tri_lg') {
+          ctx.moveTo(-45, 30); ctx.lineTo(45, 30); ctx.lineTo(0, -35);
+        } else if (tipo === 'tri_md') {
+          ctx.moveTo(-32, 22); ctx.lineTo(32, 22); ctx.lineTo(0, -25);
+        } else if (tipo === 'tri_sm') {
+          ctx.moveTo(-22, 15); ctx.lineTo(22, 15); ctx.lineTo(0, -18);
+        } else if (tipo === 'quadrado') {
+          ctx.rect(-20, -20, 40, 40);
+        } else if (tipo === 'paralelo') {
+          ctx.moveTo(-30, 16); ctx.lineTo(15, 16); ctx.lineTo(30, -16); ctx.lineTo(-15, -16);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      const loopDesenhoTangram = () => {
+        if (!document.getElementById('tangram-canvas')) return;
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+        // 1. Desenha silhuetas alvos em pontilhado neon no centro
+        const fig = TANGRAM_FIGURAS[tangramFiguraIdx];
+        fig.alvos.forEach(alvo => {
+          ctx.save();
+          ctx.translate(alvo.x, alvo.y);
+          ctx.rotate((alvo.rot * Math.PI) / 180);
+          ctx.setLineDash([4, 4]);
+          desenharPoligonoTangram(ctx, alvo.tipo, 'rgba(124, 58, 237, 0.25)', 0.6);
+          ctx.restore();
+        });
+
+        // 2. Desenha as 7 peças móveis
+        tangramPecas.forEach((p, idx) => {
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          desenharPoligonoTangram(ctx, p.tipo, p.cor, p.encaixada ? 0.95 : (idx === tangramSelecionadaIdx ? 1 : 0.85));
+
+          if (idx === tangramSelecionadaIdx) {
+            // Anel brilhante indicador de peça selecionada
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-26, -26, 52, 52);
+          }
+          ctx.restore();
+        });
+
+        requestAnimationFrame(loopDesenhoTangram);
+      };
+
+      // Manipulação por toque / mouse fluida
+      const obterCoords = (e) => {
+        const rect = cvs.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const scaleX = cvs.width / rect.width;
+        const scaleY = cvs.height / rect.height;
+        return {
+          x: (clientX - rect.left) * scaleX,
+          y: (clientY - rect.top) * scaleY
+        };
+      };
+
+      cvs.onpointerdown = (e) => {
+        const pt = obterCoords(e);
+        tangramSelecionadaIdx = -1;
+        for (let i = tangramPecas.length - 1; i >= 0; i--) {
+          const p = tangramPecas[i];
+          const dist = Math.hypot(p.x - pt.x, p.y - pt.y);
+          if (dist < 38) {
+            tangramSelecionadaIdx = i;
+            tangramDrag = true;
+            tangramOffset = { x: pt.x - p.x, y: pt.y - p.y };
+            playSfx('click');
+            break;
+          }
+        }
+      };
+
+      cvs.onpointermove = (e) => {
+        if (!tangramDrag || tangramSelecionadaIdx < 0) return;
+        const pt = obterCoords(e);
+        const p = tangramPecas[tangramSelecionadaIdx];
+        p.x = Math.max(30, Math.min(cvs.width - 30, pt.x - tangramOffset.x));
+        p.y = Math.max(30, Math.min(cvs.height - 30, pt.y - tangramOffset.y));
+      };
+
+      cvs.onpointerup = () => {
+        if (!tangramDrag || tangramSelecionadaIdx < 0) {
+          tangramDrag = false;
+          return;
+        }
+        tangramDrag = false;
+        const p = tangramPecas[tangramSelecionadaIdx];
+
+        // Verificação de encaixe magnético suave (distância < 35px e rotação compatível)
+        const dX = Math.abs(p.x - p.alvoX);
+        const dY = Math.abs(p.y - p.alvoY);
+        const rotDif = Math.abs((p.rot % 360) - (p.alvoRot % 360));
+
+        if (dX < 35 && dY < 35 && (rotDif === 0 || rotDif === 360)) {
+          p.x = p.alvoX;
+          p.y = p.alvoY;
+          p.encaixada = true;
+          playSfx('snap');
+        } else {
+          p.encaixada = false;
+        }
+
+        verificarConclusaoTangram();
+      };
+
+      loopDesenhoTangram();
+    }
+
+    function girarPecaTangramSelecionada() {
+      if (tangramSelecionadaIdx < 0 || !tangramPecas[tangramSelecionadaIdx]) {
+        playTone(330, 80);
+        return;
+      }
+      const p = tangramPecas[tangramSelecionadaIdx];
+      p.rot = (p.rot + 45) % 360;
+      playSfx('click');
+
+      // Testa se agora bateu no alvo
+      const dX = Math.abs(p.x - p.alvoX);
+      const dY = Math.abs(p.y - p.alvoY);
+      const rotDif = Math.abs((p.rot % 360) - (p.alvoRot % 360));
+      if (dX < 35 && dY < 35 && (rotDif === 0 || rotDif === 360)) {
+        p.x = p.alvoX;
+        p.y = p.alvoY;
+        p.encaixada = true;
+        playSfx('snap');
+      } else {
+        p.encaixada = false;
+      }
+
+      verificarConclusaoTangram();
+    }
+
+    function verificarConclusaoTangram() {
+      const totalEncaixadas = tangramPecas.filter(p => p.encaixada).length;
+      const stEl = document.getElementById('tangram-status-txt');
+      if (stEl) stEl.textContent = `${totalEncaixadas} de 7 peças encaixadas`;
+
+      if (totalEncaixadas === 7 && !tangramConcluido) {
+        tangramConcluido = true;
+        playSfx('win');
+        playCelebrationFanfare();
+        dispararChuvaCoracoes(50);
+        const wOverlay = document.getElementById('tangram-win-overlay');
+        if (wOverlay) wOverlay.style.display = 'flex';
+
+        fetch('/api/fichas/bonificar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ quantidade: 10, motivo: 'tangram_concluido' })
+        }).catch(() => null);
+
+        const crianca = appState.config.child_name || 'Kaleo';
+        speak(`Sensacional, super ${crianca}! Você encaixou todas as 7 peças do Tangram! Ganhou 10 moedas de ouro!`);
+      }
+    }
+
+    function proximaFiguraTangram() {
+      tangramFiguraIdx = (tangramFiguraIdx + 1) % TANGRAM_FIGURAS.length;
+      playTone(659, 100);
+      renderizarTangramMagnetico(document.getElementById('submodo-formas-stage'));
+    }
+
+    function encerrarTangramMagnetico() {
+      tangramDrag = false;
+      tangramSelecionadaIdx = -1;
     }
 
     // =========================================================================
