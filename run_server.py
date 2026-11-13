@@ -708,6 +708,41 @@ def api_clima_geografia(request: Request):
 
 
 # ==============================================================================
+# ROTAS DE APIS PÚBLICAS & CONHECIMENTO GLOBAL (OFFLINE-FIRST)
+# ==============================================================================
+import integracoes_externas as public_apis
+
+@app.route("/api/public/iss", methods=["GET"])
+def api_public_iss(request: Request):
+    return json_response(public_apis.obter_posicao_iss())
+
+
+@app.route("/api/public/paises", methods=["GET"])
+def api_public_paises(request: Request):
+    return json_response(public_apis.obter_catalogo_paises())
+
+
+@app.route("/api/public/numero/<num>", methods=["GET"])
+def api_public_numero(request: Request, num: str):
+    try:
+        val = int(num)
+    except Exception:
+        val = 0
+    return json_response(public_apis.obter_fato_numero(val))
+
+
+@app.route("/api/public/dicionario/<palavra>", methods=["GET"])
+def api_public_dicionario(request: Request, palavra: str):
+    return json_response(public_apis.consultar_dicionario(palavra))
+
+
+@app.route("/api/public/lua", methods=["GET"])
+def api_public_lua(request: Request):
+    return json_response(public_apis.obter_fase_lua())
+
+
+
+# ==============================================================================
 # ROTAS DE MENSAGENS REMOTAS DA FAMÍLIA (PRESENÇA PATERNA)
 # ==============================================================================
 

@@ -5371,7 +5371,7 @@
 
             <div style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
               <button type="button" class="big-btn" id="btn-emo-confirmar" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:#fff; font-size:0.95rem; font-weight:900; padding:8px;" onclick="forcarSucessoEmocaoAtual()">
-                ✨ Estou Fazendo ${emoDesafioAtual.emoji}! (Confirmar)
+                ✨ Estou Fazendo a Carinha! (Confirmar ${emoDesafioAtual.emoji})
               </button>
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color:#fff; font-size:0.85rem; font-weight:900; padding:6px;" onclick="sortearNovoDesafioEmocao()">
                 🎲 Sortear Outra Carinha
@@ -5437,11 +5437,11 @@
       let emocaoKey = emo.emotion;
       let score = emo.score;
 
-      // Se o desafio for 'happy' e a pontuação de sorriso for relevante (>= 0.20)
-      if (emoDesafioAtual.chave === 'happy' && (emocaoKey === 'happy' || (emo.happyScore && emo.happyScore >= 0.20))) {
+      // Se o desafio for 'happy' e a pontuação de sorriso for relevante (>= 0.10)
+      if (emoDesafioAtual.chave === 'happy' && (emocaoKey === 'happy' || (emo.happyScore && emo.happyScore >= 0.10))) {
         emocaoKey = 'happy';
         score = Math.max(score, emo.happyScore || 0);
-      } else if ((emoDesafioAtual.chave === 'surprise' || emoDesafioAtual.chave === 'surprised') && (emocaoKey === 'surprise' || emocaoKey === 'surprised' || (emo.surpriseScore && emo.surpriseScore >= 0.20))) {
+      } else if ((emoDesafioAtual.chave === 'surprise' || emoDesafioAtual.chave === 'surprised') && (emocaoKey === 'surprise' || emocaoKey === 'surprised' || (emo.surpriseScore && emo.surpriseScore >= 0.10))) {
         emocaoKey = 'surprise';
         score = Math.max(score, emo.surpriseScore || 0);
       }
@@ -5456,14 +5456,15 @@
       if (eBox) eBox.style.borderColor = info.cor;
 
       const agora = Date.now();
-      // Limiar super amigável para crianças (>= 0.22)
-      const bateu = (emoDesafioAtual.chave === 'happy' && (emocaoKey === 'happy' || (emo.happyScore && emo.happyScore >= 0.20))) ||
-                    (emoDesafioAtual.chave === 'neutral' && (emocaoKey === 'neutral' || score >= 0.22)) ||
-                    ((emoDesafioAtual.chave === 'surprise' || emoDesafioAtual.chave === 'surprised') && (emocaoKey === 'surprise' || emocaoKey === 'surprised' || (emo.surpriseScore && emo.surpriseScore >= 0.20))) ||
-                    (emocaoKey === emoDesafioAtual.chave && score >= 0.22);
+      // Limiar super amigável para crianças (>= 0.10 para sorrisos e surpresas, 0.18 geral)
+      const bateu = (emoDesafioAtual.chave === 'happy' && (emocaoKey === 'happy' || (emo.happyScore && emo.happyScore >= 0.10))) ||
+                    (emoDesafioAtual.chave === 'neutral' && (emocaoKey === 'neutral' || score >= 0.20)) ||
+                    ((emoDesafioAtual.chave === 'surprise' || emoDesafioAtual.chave === 'surprised') && (emocaoKey === 'surprise' || emocaoKey === 'surprised' || (emo.surpriseScore && emo.surpriseScore >= 0.10))) ||
+                    (emocaoKey === emoDesafioAtual.chave && score >= 0.18) ||
+                    (['wink', 'tongue', 'hero', 'love', 'sleepy', 'silly'].includes(emoDesafioAtual.chave) && score >= 0.20);
 
       if (bateu) {
-        if (agora - emoCooldownFalaMs > 4500) {
+        if (agora - emoCooldownFalaMs > 4000) {
           emoCooldownFalaMs = agora;
           dispararCelebracaoEmocaoAcerto();
         }
@@ -5506,7 +5507,7 @@
       if (tEl) tEl.textContent = `Missão: Faça uma Carinha ${emoDesafioAtual.nome}!`;
       if (eEl) eEl.textContent = emoDesafioAtual.emoji;
       if (dEl) dEl.textContent = emoDesafioAtual.dica;
-      if (cBtn) cBtn.innerHTML = `✨ Estou Fazendo ${emoDesafioAtual.emoji}! (Confirmar)`;
+      if (cBtn) cBtn.innerHTML = `✨ Estou Fazendo a Carinha! (Confirmar ${emoDesafioAtual.emoji})`;
 
       speak(`Desafio escolhido: Faça uma carinha ${emoDesafioAtual.nome}! ${emoDesafioAtual.dica}`);
     }
@@ -5523,7 +5524,7 @@
       if (tEl) tEl.textContent = `Missão: Faça uma Carinha ${emoDesafioAtual.nome}!`;
       if (eEl) eEl.textContent = emoDesafioAtual.emoji;
       if (dEl) dEl.textContent = emoDesafioAtual.dica;
-      if (cBtn) cBtn.innerHTML = `✨ Estou Fazendo ${emoDesafioAtual.emoji}! (Confirmar)`;
+      if (cBtn) cBtn.innerHTML = `✨ Estou Fazendo a Carinha! (Confirmar ${emoDesafioAtual.emoji})`;
 
       playTone(587, 100);
       speak(`Nova missão do Espelho: Faça uma carinha ${emoDesafioAtual.nome}! ${emoDesafioAtual.dica}`);
@@ -8133,6 +8134,9 @@
             <button type="button" class="big-btn" id="btn-modo-quiz" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'quiz' ? '#f59e0b' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'quiz' ? '#fbbf24' : '#334155'};" onclick="trocarModoIdioma('quiz')">
               🎯 Adivinhe (+5 🪙)
             </button>
+            <button type="button" class="big-btn" id="btn-modo-paises" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'paises' ? '#8b5cf6' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'paises' ? '#a78bfa' : '#334155'};" onclick="trocarModoIdioma('paises')">
+              🌍 Passaporte dos Países
+            </button>
           </div>
         </div>
 
@@ -8174,6 +8178,7 @@
       modoIdiomaAtivo = novoModo;
       const btnCards = document.getElementById('btn-modo-cards');
       const btnQuiz = document.getElementById('btn-modo-quiz');
+      const btnPaises = document.getElementById('btn-modo-paises');
       if (btnCards) {
         btnCards.style.background = modoIdiomaAtivo === 'cards' ? '#10b981' : '#1e293b';
         btnCards.style.borderColor = modoIdiomaAtivo === 'cards' ? '#34d399' : '#334155';
@@ -8181,6 +8186,14 @@
       if (btnQuiz) {
         btnQuiz.style.background = modoIdiomaAtivo === 'quiz' ? '#f59e0b' : '#1e293b';
         btnQuiz.style.borderColor = modoIdiomaAtivo === 'quiz' ? '#fbbf24' : '#334155';
+      }
+      if (btnPaises) {
+        btnPaises.style.background = modoIdiomaAtivo === 'paises' ? '#8b5cf6' : '#1e293b';
+        btnPaises.style.borderColor = modoIdiomaAtivo === 'paises' ? '#a78bfa' : '#334155';
+      }
+      const pillsContainer = document.getElementById('lang-cat-pills');
+      if (pillsContainer) {
+        pillsContainer.style.display = modoIdiomaAtivo === 'paises' ? 'none' : 'flex';
       }
       renderizarEstagioIdioma();
     }
@@ -8210,7 +8223,41 @@
       const stage = document.getElementById('lang-stage');
       if (!stage) return;
 
-      if (modoIdiomaAtivo === 'cards') {
+      if (modoIdiomaAtivo === 'paises') {
+        stage.innerHTML = '<div style="text-align:center; color:#38bdf8; padding:20px;">Carregando Passaporte Mundial dos Países...</div>';
+        try {
+          const res = await fetch('/api/public/paises');
+          const data = await res.json();
+          const paises = data.paises || [];
+          stage.innerHTML = `
+            <div style="background:#0b192e; border:1.5px solid #1e3a63; border-radius:12px; padding:10px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-weight:900; color:#38bdf8; font-size:1rem;">🌍 PASSAPORTE GLOBAL STARK: ${paises.length} PAÍSES DO MUNDO</span>
+              <span style="font-size:0.85rem; color:#facc15; font-weight:800;">Toque em qualquer país para ouvir a saudação nativa!</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px; padding:2px;">
+              ${paises.map(p => `
+                <div class="lang-word-card" onclick="falarSaudacaoPais('${escapeJs(p.nome)}', '${escapeJs(p.saudacao_nativa)}', '${p.codigo_fala}', '${escapeJs(p.capital)}')" style="background:#071224; border:2px solid #38bdf8; border-radius:14px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; text-align:center; cursor:pointer; min-height:160px; box-sizing:border-box;">
+                  <div>
+                    <div style="font-size:2.8rem; line-height:1; margin-bottom:4px;">${p.bandeira}</div>
+                    <div style="font-size:1.15rem; font-weight:900; color:#ffffff;">${p.nome}</div>
+                    <div style="font-size:0.8rem; color:#38bdf8; font-weight:700;">🏛️ Capital: ${p.capital}</div>
+                  </div>
+                  <div style="margin-top:6px; background:#040c1a; border-radius:8px; padding:4px 6px;">
+                    <div style="font-size:0.75rem; color:#fde047; font-weight:800;">🗣️ "${p.saudacao_nativa}"</div>
+                    <div style="font-size:0.72rem; color:#94a3b8;">${p.idioma_oficial}</div>
+                  </div>
+                  <button type="button" class="big-btn" style="width:100%; margin-top:6px; padding:4px; font-size:0.75rem; background:#0284c7; border-radius:6px;" onclick="event.stopPropagation(); falarSaudacaoPais('${escapeJs(p.nome)}', '${escapeJs(p.saudacao_nativa)}', '${p.codigo_fala}', '${escapeJs(p.capital)}')">
+                    🔊 Dizer Olá!
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          speak('Passaporte mundial aberto! Toque em qualquer país para aprender a dizer olá em seu idioma oficial!');
+        } catch(e) {
+          stage.innerHTML = '<div style="text-align:center; color:#ef4444; padding:20px;">Não foi possível carregar os países no momento.</div>';
+        }
+      } else if (modoIdiomaAtivo === 'cards') {
         stage.innerHTML = '<div style="text-align:center; color:#38bdf8; padding:20px;">Buscando cartões mágicos...</div>';
         try {
           const res = await fetch(`/api/idiomas/palavras?idioma=${idiomaAtivo}&categoria=${categoriaIdiomaAtiva}`);
@@ -8337,6 +8384,16 @@
         }
       } catch (e) {
         showHudToast('Erro ao validar resposta.');
+      }
+    }
+
+    function falarSaudacaoPais(nomePais, saudacao, codigoFala, capital) {
+      try {
+        playTone(587, 80);
+        speak(`No país ${nomePais}, cuja capital é ${capital}, as pessoas dizem: ${saudacao}!`);
+        showHudToast(`🌍 ${nomePais}: "${saudacao}"`);
+      } catch (e) {
+        speak(saudacao);
       }
     }
 
@@ -12050,6 +12107,9 @@
                 <button type="button" id="tab-btn-estacoes" class="big-btn" style="flex:1; padding:8px 12px; font-size:0.95rem; font-weight:900; background:#1e293b; opacity:0.8;" onclick="alternarAbaClimaModal('estacoes')">
                   🌸 As 4 Estações
                 </button>
+                <button type="button" id="tab-btn-lua" class="big-btn" style="flex:1; padding:8px 12px; font-size:0.95rem; font-weight:900; background:#1e293b; opacity:0.8;" onclick="alternarAbaClimaModal('lua')">
+                  🌔 Fase da Lua
+                </button>
               </div>
 
               <!-- PAINEL 1: CLIMA DE HOJE COMPACTO -->
@@ -12135,6 +12195,27 @@
                 </div>
               </div>
 
+              <!-- PAINEL 4: FASE DA LUA EM TEMPO REAL & ASTRONOMIA INFANTIL (OFFLINE-FIRST) -->
+              <div id="pane-lua-content" style="flex:1; min-height:280px; display:none; flex-direction:column; justify-content:space-between; gap:10px;">
+                <div style="background:linear-gradient(135deg, #091224 0%, #020712 100%); border:2px solid #a855f7; border-radius:18px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex:1;">
+                  <div style="display:flex; align-items:center; gap:18px;">
+                    <span id="lua-icone-grande" style="font-size:4.8rem; filter:drop-shadow(0 0 20px rgba(168,85,247,0.6));">🌔</span>
+                    <div>
+                      <div id="lua-nome-fase" style="font-size:2rem; font-weight:900; color:#ffffff; line-height:1.1;">Carregando Fase da Lua...</div>
+                      <div id="lua-detalhe-fase" style="font-size:1.1rem; font-weight:800; color:#c084fc; margin-top:4px;">Iluminação: --%</div>
+                      <div id="lua-idade-fase" style="font-size:0.92rem; color:#94a3b8; margin-top:2px;">Ciclo lunar com base no meridiano astronômico</div>
+                    </div>
+                  </div>
+                  <button type="button" class="big-btn" style="background:#7c3aed; border:1.5px solid #c084fc; padding:10px 18px; font-size:0.95rem; font-weight:900; display:flex; align-items:center; gap:8px;" onclick="falarFaseDaLuaNovamente()">
+                    <span>🔊</span>
+                    <span>Ouvir Segredo da Lua</span>
+                  </button>
+                </div>
+                <div id="lua-curiosidade-box" style="background:#071224; border:1.5px solid #a855f7; border-radius:12px; padding:10px 16px; text-align:center; font-size:0.95rem; font-weight:800; color:#f3e8ff;">
+                  🌙 A Lua é a vizinha mais fiel da Terra! Ela brilha refletindo a luz dourada do Sol!
+                </div>
+              </div>
+
             </div>
           `;
 
@@ -12152,10 +12233,11 @@
       }, true);
     }
 
-    function alternarAbaClimaModal(aba) {
+    let luaCacheDados = null;
+    async function alternarAbaClimaModal(aba) {
       abaClimaAtiva = aba;
       playTone(523, 70);
-      ['clima', 'geo', 'estacoes'].forEach(a => {
+      ['clima', 'geo', 'estacoes', 'lua'].forEach(a => {
         const btn = document.getElementById(`tab-btn-${a}`);
         const pane = document.getElementById(`pane-${a}-content`);
         if (btn) {
@@ -12173,6 +12255,48 @@
           pane.style.display = (a === aba) ? 'flex' : 'none';
         }
       });
+
+      if (aba === 'lua' && !luaCacheDados) {
+        try {
+          const res = await fetch('/api/public/lua');
+          const data = await res.json();
+          luaCacheDados = data;
+          atualizarViewFaseDaLua(data);
+        } catch(e) {
+          atualizarViewFaseDaLua({
+            fase: 'Lua Cheia',
+            icone: '🌕',
+            iluminacao_pct: 100,
+            idade_dias: 14.8,
+            curiosidade: 'A Lua Cheia ilumina a noite como um grande holofote prateado!'
+          });
+        }
+      }
+    }
+
+    function atualizarViewFaseDaLua(d) {
+      if (!d) return;
+      const iEl = document.getElementById('lua-icone-grande');
+      const nEl = document.getElementById('lua-nome-fase');
+      const dEl = document.getElementById('lua-detalhe-fase');
+      const idEl = document.getElementById('lua-idade-fase');
+      const cEl = document.getElementById('lua-curiosidade-box');
+
+      if (iEl) iEl.textContent = d.icone || '🌔';
+      if (nEl) nEl.textContent = d.fase || 'Lua Crescente';
+      if (dEl) dEl.textContent = `Iluminação: ${d.iluminacao_pct || 50}%`;
+      if (idEl) idEl.textContent = `Idade Lunar: ${d.idade_dias || 7} dias do ciclo cósmico`;
+      if (cEl && d.curiosidade) cEl.textContent = `🌙 ${d.curiosidade}`;
+
+      window._currentMoonSpeech = `Hoje a lua no céu está na fase ${d.fase}! Com ${d.iluminacao_pct} porcento de luz prateada! ${d.curiosidade || ''}`;
+      speak(window._currentMoonSpeech);
+    }
+
+    function falarFaseDaLuaNovamente() {
+      if (window._currentMoonSpeech) {
+        playTone(659, 100);
+        speak(window._currentMoonSpeech);
+      }
     }
 
     function falarPrevisaoClimaNovamente() {
@@ -12452,6 +12576,9 @@
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); border:1.5px solid #a78bfa; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="iniciarQuizAstronauta()">
                 🚀 Missão Espacial (+2 🪙)
               </button>
+              <button type="button" class="big-btn" style="background:linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%); border:1.5px solid #38bdf8; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="abrirRadarEstacaoEspacialISS()">
+                🛰️ Radar da ISS (Ao Vivo)
+              </button>
             </div>
           </div>
 
@@ -12489,6 +12616,159 @@
     }
 
     
+    async function abrirRadarEstacaoEspacialISS() {
+      playTone(587, 100);
+      pushModalScreen('🛰️ RADAR DA ESTAÇÃO ESPACIAL INTERNACIONAL (ISS)', async (body) => {
+        body.innerHTML = `
+          <div style="display:flex; flex-direction:column; height:100%; max-height:calc(100vh - 72px); justify-content:space-between; gap:10px; box-sizing:border-box;">
+            
+            <!-- CABEÇALHO COM TELEMETRIA AO VIVO -->
+            <div style="background:linear-gradient(135deg, #09192f 0%, #030712 100%); border:2px solid #00f0ff; border-radius:14px; padding:10px 16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:2.8rem; filter:drop-shadow(0 0 14px #00f0ff); animation:pulse 1.8s infinite;">🛰️</span>
+                <div>
+                  <div style="font-size:1.35rem; font-weight:900; color:#ffffff;">ISS — Estação Espacial Internacional</div>
+                  <div id="iss-coords-txt" style="font-size:0.9rem; font-weight:800; color:#38bdf8;">Conectando telemetria orbital da NASA...</div>
+                </div>
+              </div>
+              <div style="display:flex; gap:12px; align-items:center;">
+                <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px 12px; text-align:center;">
+                  <div style="font-size:0.75rem; color:#94a3b8; font-weight:800;">VELOCIDADE</div>
+                  <div style="font-size:1.15rem; font-weight:900; color:#22c55e;">27.600 km/h</div>
+                </div>
+                <div style="background:#031326; border:1px solid #1e3a63; border-radius:10px; padding:6px 12px; text-align:center;">
+                  <div style="font-size:0.75rem; color:#94a3b8; font-weight:800;">ALTITUDE</div>
+                  <div style="font-size:1.15rem; font-weight:900; color:#fde047;">~408 km</div>
+                </div>
+                <button type="button" class="big-btn" style="background:#0284c7; padding:8px 14px; font-size:0.85rem;" onclick="falarCuriosidadeISS()">
+                  🔊 Ouvir Segredo
+                </button>
+              </div>
+            </div>
+
+            <!-- MAPA ORBITAL 2D ULTRA-LEVE (CANVAS OTIMIZADO PARA INTEL ATOM) -->
+            <div style="flex:1; background:#020617; border:1.5px solid #1e3a63; border-radius:14px; position:relative; overflow:hidden; min-height:180px; display:flex; align-items:center; justify-content:center;">
+              <canvas id="iss-radar-canvas" width="600" height="220" style="width:100%; height:100%; object-fit:contain;"></canvas>
+            </div>
+
+            <!-- TRIPULAÇÃO ASTRONAUTA A BORDO -->
+            <div id="iss-crew-container" style="background:#091428; border:1px solid #1e293b; border-radius:12px; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div style="font-size:0.85rem; font-weight:900; color:#cbd5e1;">👨‍🚀 Astronautas em Órbita:</div>
+              <div id="iss-crew-pills" style="display:flex; gap:6px; flex-wrap:wrap;">
+                <span style="background:#1e293b; color:#38bdf8; font-size:0.8rem; padding:3px 10px; border-radius:999px; font-weight:800;">Rastreando cosmonautas...</span>
+              </div>
+            </div>
+
+          </div>
+        `;
+
+        try {
+          const res = await fetch('/api/public/iss');
+          const data = await res.json();
+          renderizarRadarISS(data);
+        } catch(e) {
+          renderizarRadarISS({
+            latitude: -25.43,
+            longitude: -49.27,
+            altitude_km: 408,
+            velocidade_kmh: 27600,
+            astronautas: [{ name: 'Oleg Kononenko', craft: 'ISS' }, { name: 'Nikolai Chub', craft: 'ISS' }, { name: 'Tracy Caldwell', craft: 'ISS' }],
+            total_astronautas: 3,
+            curiosidade: 'A Estação Espacial dá uma volta completa no planeta Terra a cada 90 minutos!'
+          });
+        }
+      }, true);
+    }
+
+    let issUltimosDados = null;
+    function renderizarRadarISS(data) {
+      issUltimosDados = data;
+      const cTxt = document.getElementById('iss-coords-txt');
+      if (cTxt) {
+        cTxt.textContent = `Latitude: ${data.latitude}° | Longitude: ${data.longitude}° | 1 volta na Terra em 90 min!`;
+      }
+
+      const crewPills = document.getElementById('iss-crew-pills');
+      if (crewPills && data.astronautas) {
+        crewPills.innerHTML = data.astronautas.slice(0, 5).map(a => `
+          <span style="background:#0f2744; border:1px solid #38bdf8; color:#e0f2fe; font-size:0.78rem; padding:2px 8px; border-radius:999px; font-weight:800;">
+            🚀 ${a.name}
+          </span>
+        `).join('');
+      }
+
+      // Desenho suave no canvas 2D
+      const cvs = document.getElementById('iss-radar-canvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Fundo estilizado do globo terrestre (planisfério minimalista Stark)
+      ctx.fillStyle = '#051124';
+      ctx.fillRect(0, 0, w, h);
+
+      // Linha do Equador e Trópicos
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2);
+      ctx.moveTo(0, h * 0.25); ctx.lineTo(w, h * 0.25);
+      ctx.moveTo(0, h * 0.75); ctx.lineTo(w, h * 0.75);
+      ctx.stroke();
+
+      // Grade de Meridianos
+      for (let x = 0; x <= w; x += w / 6) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+
+      // Trajetória orbital senoidal da ISS
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 4) {
+        const py = (h / 2) + Math.sin((px / w) * Math.PI * 2) * (h * 0.35);
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Posição atual da ISS
+      const normX = ((data.longitude + 180) / 360) * w;
+      const normY = ((90 - data.latitude) / 180) * h;
+
+      // Glow suave de radar
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.25)';
+      ctx.beginPath();
+      ctx.arc(normX, normY, 18, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#00f0ff';
+      ctx.beginPath();
+      ctx.arc(normX, normY, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ícone do satélite
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🛰️', normX, normY - 14);
+
+      window._currentIssSpeech = `A Estação Espacial Internacional está voando sobre o planeta agora a 27 mil quilômetros por hora! Tem ${data.total_astronautas || 3} astronautas a bordo flutuando sem gravidade!`;
+      speak(window._currentIssSpeech);
+    }
+
+    function falarCuriosidadeISS() {
+      if (window._currentIssSpeech) {
+        playTone(659, 100);
+        speak(window._currentIssSpeech);
+      }
+    }
+
     function testarGravidadePlaneta() {
       const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
       const box = document.getElementById('quiz-astronauta-box');
@@ -14979,13 +15259,16 @@
               </div>
 
               <!-- NARRATIVA E BOTÃO DE OUVIR -->
-              <div style="display:flex; align-items:center; justify-content:space-between; width:100%; background:#08182e; border:1px solid #1e3a63; border-radius:8px; padding:4px 10px; gap:8px;">
-                <span id="math-narrativa-txt" style="font-size:0.8rem; font-weight:700; color:#e2e8f0; flex:1;">
-                  ${c.narrativa}
-                </span>
-                <button type="button" class="big-btn" style="background:#0284c7; font-size:0.72rem; padding:3px 8px; border-radius:6px; white-space:nowrap;" onclick="speak('${escapeJs(c.narrativa)}')">
-                  🔊 Ouvir
-                </button>
+              <div style="display:flex; flex-direction:column; width:100%; gap:4px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; width:100%; background:#08182e; border:1px solid #1e3a63; border-radius:8px; padding:4px 10px; gap:8px;">
+                  <span id="math-narrativa-txt" style="font-size:0.8rem; font-weight:700; color:#e2e8f0; flex:1;">
+                    ${c.narrativa}
+                  </span>
+                  <button type="button" class="big-btn" style="background:#0284c7; font-size:0.72rem; padding:3px 8px; border-radius:6px; white-space:nowrap;" onclick="speak('${escapeJs(c.narrativa)}')">
+                    🔊 Ouvir
+                  </button>
+                </div>
+                <div id="math-curiosity-badge" style="display:none; background:#0f2744; border:1.5px solid #facc15; border-radius:8px; padding:4px 10px; font-size:0.8rem; font-weight:800; color:#fef08a; text-align:center;"></div>
               </div>
             </div>
 
@@ -15082,6 +15365,17 @@
         speak(`Sensacional, super herói! ${escolha} é a resposta certa! Você contou direitinho nos dedinhos!`);
         showToast('⭐ Resposta Certa! +2 Moedas de Ouro!');
         
+        // Curiosidade do número via API Pública (Offline-first)
+        fetch(`/api/public/numero/${escolha}`)
+          .then(r => r.json())
+          .then(data => {
+            const b = document.getElementById('math-curiosity-badge');
+            if (b && data.fato) {
+              b.style.display = 'block';
+              b.innerHTML = `💡 Segredo do Número ${escolha}: ${data.fato}`;
+            }
+          }).catch(() => null);
+
         await fetch('/api/fichas/bonificar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -15092,7 +15386,7 @@
           gerarNovaContaMatematica(mathOpAtual);
           const b = document.getElementById('modal-body');
           if (b) renderMathMasterBody(b);
-        }, 1300);
+        }, 1800);
       } else {
         playTone(320, 150);
         if (btnEl) {
@@ -19424,8 +19718,8 @@
           <div style="background:linear-gradient(135deg, rgba(30, 58, 138, 0.45) 0%, rgba(15, 23, 42, 0.9) 100%); border:2px solid #38bdf8; border-radius:20px; padding:14px 18px; box-shadow:0 6px 24px rgba(56, 189, 248, 0.2); display:flex; flex-direction:column; gap:12px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:52px; height:52px; border-radius:16px; background:linear-gradient(135deg, #eab308, #ca8a04); border:2px solid #fef08a; display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:0 0 16px rgba(234, 179, 8, 0.45);">
-                  🎖️
+                <div style="width:52px; height:52px; border-radius:16px; background:linear-gradient(135deg, #eab308, #ca8a04); border:2px solid #fef08a; display:flex; align-items:center; justify-content:center; font-size:2rem; box-shadow:0 0 16px rgba(234, 179, 8, 0.45); overflow:hidden;">
+                  <img src="https://robohash.org/${encodeURIComponent(childName)}.png?size=80x80&set=set1" alt="Avatar Herói" style="width:48px; height:48px; object-fit:contain;" onerror="this.outerHTML='🎖️'"/>
                 </div>
                 <div>
                   <div style="font-size:1.35rem; font-weight:900; color:#fff; letter-spacing:0.3px; display:flex; align-items:center; gap:8px;">
