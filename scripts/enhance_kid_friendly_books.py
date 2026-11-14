@@ -113,7 +113,7 @@ old_finish_action = """      if (pageIdx > 0) document.getElementById('btn-prev'
           dispararChuvaCoracoes(60);
           addStar(2);
           const moralTexto = book.moral ? ` E a grande lição de hoje é: ${book.moral}` : '';
-          speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
+          speak(`Parabéns, ${appState.config.child_name || 'Campeão'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
           voltarTelaModal();
 
           // Sincronização em segundo plano não-bloqueante
@@ -177,7 +177,7 @@ new_book_end = """      if (pageIdx > 0) document.getElementById('btn-prev').onc
     // TELA DE VITÓRIA & CELEBRAÇÃO DA HISTÓRIA (100% PENSADA PARA CRIANÇAS DE 4 ANOS)
     function concluirLivroComCelebracao(body, bookIdx) {
       const book = appState.books[bookIdx];
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       // 1. Resposta imediata em 0ms: efeitos sonoros, confetes e estrelas
       playCelebrationFanfare();

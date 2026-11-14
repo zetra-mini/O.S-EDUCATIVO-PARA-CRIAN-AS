@@ -1,5 +1,5 @@
 """
-Módulo do Mascote Virtual (Pou / B-bot Jarvis) para o Kaleu.
+Módulo do Mascote Virtual (Pou / B-bot Jarvis) para o Campeão.
 Porta a lógica matemática de necessidades do repositório POUPY para a API assíncrona Web:
 - 4 Barras de estado (0 a 100%): Higiene, Alimentação, Diversão e Energia.
 - Decaimento suave com o tempo.
@@ -185,7 +185,7 @@ class JarvisPetManager:
             token_mgr.creditar_fichas(1, f"Brincou no jogo: {jogo_nome}", "JOGO")
         return {
             "sucesso": True,
-            "mensagem": f"🎮 Bip-bip! Que divertido brincar de {jogo_nome} com você, Kaleu!",
+            "mensagem": f"🎮 Bip-bip! Que divertido brincar de {jogo_nome} com você, Campeão!",
             "status": self.obter_status(),
         }
 
@@ -199,7 +199,7 @@ class JarvisPetManager:
         )
         return {
             "sucesso": True,
-            "mensagem": "💙 O Jarvis adora o seu carinho, Kaleu! Reator Arc brilhando forte e feliz!",
+            "mensagem": "💙 O Jarvis adora o seu carinho, Campeão! Reator Arc brilhando forte e feliz!",
             "status": self.obter_status(),
         }
 
@@ -218,9 +218,9 @@ class JarvisPetManager:
         )
 
         msg = (
-            "🌙 *Click!* Luzes apagadas. O Jarvis entrou em modo de recarga e descanso... Bons sonhos, Kaleu!"
+            "🌙 *Click!* Luzes apagadas. O Jarvis entrou em modo de recarga e descanso... Bons sonhos, Campeão!"
             if novo_dormir
-            else "☀️ *Click!* Sistemas online! Bom dia, Kaleu! O Jarvis acordou pronto para aprender e brincar!"
+            else "☀️ *Click!* Sistemas online! Bom dia, Campeão! O Jarvis acordou pronto para aprender e brincar!"
         )
         return {
             "sucesso": True,
@@ -300,7 +300,7 @@ class JarvisPetManager:
 
         return {
             "sucesso": True,
-            "mensagem": f"🎉 Uau, Kaleu! Você comprou e ativou o '{item['nome']}' no Jarvis!",
+            "mensagem": f"🎉 Uau, Campeão! Você comprou e ativou o '{item['nome']}' no Jarvis!",
             "item_id": item_id,
             "acessorio_atual": item_id,
             "saldo": token_mgr.obter_status_pote()["saldo"],

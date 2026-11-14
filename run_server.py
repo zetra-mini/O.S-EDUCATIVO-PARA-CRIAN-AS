@@ -83,7 +83,7 @@ media_mgr = MediaTimeManager(brain, database=db)
 
 # Inicializa localização meteorológica & geográfica
 weather_mgr.definir_localizacao(
-    brain.config.get("geo_cidade", "Campo Largo"),
+    brain.config.get("geo_cidade", "São Paulo"),
     brain.config.get("geo_estado", "Paraná"),
     brain.config.get("geo_pais", "Brasil")
 )
@@ -768,7 +768,7 @@ def api_mensagens_marcar_aberta(request: Request):
         "msg_id": msg_id,
         "horario": datetime.now().strftime("%H:%M:%S"),
         "timestamp": time.time(),
-        "status": "Assistido pelo Kaleo",
+        "status": "Assistido pelo Campeão",
         "recompensa": 1
     }
     return json_response(res)
@@ -1018,7 +1018,7 @@ def api_comando_interpretar(request: Request):
         return json_response({
             "ok": True,
             "intencao": "conversa",
-            "resposta_voz": "Sim, Kaleu! Estou aqui pronto para te ouvir! O que você quer fazer agora?",
+            "resposta_voz": "Sim, Campeão! Estou aqui pronto para te ouvir! O que você quer fazer agora?",
             "acao_frontend": "nenhuma",
             "dados": {},
         })
@@ -1213,7 +1213,7 @@ def api_livros_listar(request: Request):
 def api_livros_gerar(request: Request):
     data = request.json or {}
     tema = data.get("tema", "Resiliência")
-    child_name = data.get("child_name") or brain.config.get("child_name", "Kaleo")
+    child_name = data.get("child_name") or brain.config.get("child_name", "Campeão")
     novo = library_mgr.gerar_historia_ia(tema=tema, child_name=child_name)
     token_mgr.creditar_fichas(2, f"Criação de Nova História: {novo.get('title')}", "EDUCATIVO")
     return json_response({"ok": True, "livro": novo})
@@ -1288,11 +1288,11 @@ def api_remote_alarme(request: Request):
     msg = data.get("mensagem", "")
 
     mensagens_padrao = {
-        "dente": "Hora de escovar os dentinhos, Kaleo! Deixe o sorriso de super-herói bem brilhante!",
+        "dente": "Hora de escovar os dentinhos, Campeão! Deixe o sorriso de super-herói bem brilhante!",
         "brinquedos": "Operação Quarto Limpo! Hora de guardar todos os brinquedos no baú!",
         "almoco": "Hora do Almoço dos Campeões! Vamos comer comidinha gostosa e saudável para carregar a bateria!",
-        "dormir": "Hora de dormir, Kaleo! Vamos descansar os olhinhos e sonhar com grandes aventuras!",
-        "personalizado": msg or "Atenção Kaleo! O papai e a mamãe têm um recado especial de rotina para você!"
+        "dormir": "Hora de dormir, Campeão! Vamos descansar os olhinhos e sonhar com grandes aventuras!",
+        "personalizado": msg or "Atenção Campeão! O papai e a mamãe têm um recado especial de rotina para você!"
     }
     texto_final = msg if (tipo == "personalizado" and msg) else mensagens_padrao.get(tipo, mensagens_padrao["dente"])
 
@@ -1556,13 +1556,13 @@ def api_hardware_manutencao(request: Request):
 
 @app.route("/api/missoes", methods=["GET"])
 def api_missoes_kiosk(request: Request):
-    """Lista missões ativas e status de hoje para o Kiosk do Kaleu."""
+    """Lista missões ativas e status de hoje para o Kiosk do Campeão."""
     return json_response({"ok": True, "missoes": listar_missoes_rotina()})
 
 
 @app.route("/api/missoes/cumprir", methods=["POST"])
 def api_missoes_cumprir(request: Request):
-    """Marca uma missão como concluída pelo Kaleu no Kiosk e premia com moedas."""
+    """Marca uma missão como concluída pelo Campeão no Kiosk e premia com moedas."""
     data = request.json or {}
     missao_id = data.get("missao_id") or data.get("id")
     if not missao_id:
@@ -1606,7 +1606,7 @@ def api_admin_missoes_delete(request: Request, id: str):
 
 @app.route("/api/arte/salvar", methods=["POST"])
 def api_arte_salvar(request: Request):
-    """Salva um desenho feito pelo Kaleu na Lousa Neon para os pais verem."""
+    """Salva um desenho feito pelo Campeão na Lousa Neon para os pais verem."""
     data = request.json or {}
     imagem = data.get("imagem") or data.get("imagem_base64")
     titulo = data.get("titulo", "Desenho Lousa Neon")
@@ -1618,7 +1618,7 @@ def api_arte_salvar(request: Request):
 
 @app.route("/api/ia/classificar_desenho", methods=["POST"])
 def api_ia_classificar_desenho(request: Request):
-    """Classifica o desenho feito na Lousa Neon pelo Kaleo com IA de borda ultraleve."""
+    """Classifica o desenho feito na Lousa Neon pelo Campeão com IA de borda ultraleve."""
     try:
         from ai_edge_engine import edge_engine
         data = request.json or {}

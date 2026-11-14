@@ -144,14 +144,14 @@ DEFAULT_DEVELOPMENT_BOOKS = [
                 "word": "BAÚ",
                 "tap_hint": "Toque na fechadura dourada do baú!",
                 "tap_sound": "twinkle",
-                "text": "Kaleu encontrou um BAÚ de madeira mágica no seu quarto. A fechadura só abria quando alguém dizia três coisas boas do dia!"
+                "text": "Campeão encontrou um BAÚ de madeira mágica no seu quarto. A fechadura só abria quando alguém dizia três coisas boas do dia!"
             },
             {
                 "scene": "chest_food",
                 "word": "OBRIGADO",
                 "tap_hint": "Toque no prato de comidinha gostosa!",
                 "tap_sound": "bell",
-                "text": "Kaleu sorriu: 'OBRIGADO pelo prato gostoso que o papai e a mamãe prepararam para me deixar forte e saudável!'"
+                "text": "Campeão sorriu: 'OBRIGADO pelo prato gostoso que o papai e a mamãe prepararam para me deixar forte e saudável!'"
             },
             {
                 "scene": "chest_hug",
@@ -279,7 +279,7 @@ DEFAULT_DEVELOPMENT_BOOKS = [
                 "word": "GENIAL",
                 "tap_hint": "Toque no robô Jarvis aplaudindo!",
                 "tap_sound": "party",
-                "text": "O Jarvis comemorou com luzes neon: 'Você é um herói GENIAL, Kaleu! A sua curiosidade vai transformar o mundo!'"
+                "text": "O Jarvis comemorou com luzes neon: 'Você é um herói GENIAL, Campeão! A sua curiosidade vai transformar o mundo!'"
             }
         ]
     },
@@ -303,7 +303,7 @@ DEFAULT_DEVELOPMENT_BOOKS = [
                 "word": "BONDADE",
                 "tap_hint": "Toque no coração que se aproxima!",
                 "tap_sound": "heartbeat",
-                "text": "Kaleu se aproximou com BONDADE e disse: 'Não fique triste, Bidu! Nós podemos construir outro castelo ainda mais bonito juntos!'"
+                "text": "Campeão se aproximou com BONDADE e disse: 'Não fique triste, Bidu! Nós podemos construir outro castelo ainda mais bonito juntos!'"
             },
             {
                 "scene": "smile_magic",
@@ -317,7 +317,7 @@ DEFAULT_DEVELOPMENT_BOOKS = [
                 "word": "SUPERPODER",
                 "tap_hint": "Toque no escudo brilhante de flores!",
                 "tap_sound": "cheer",
-                "text": "Kaleu descobriu seu maior escudo: a gentileza é um SUPERPODER que cura corações e espalha luz por onde passa!"
+                "text": "Campeão descobriu seu maior escudo: a gentileza é um SUPERPODER que cura corações e espalha luz por onde passa!"
             }
         ]
     }
@@ -413,7 +413,7 @@ class DynamicLibraryManager:
         res = self.db.executar_escrita("DELETE FROM livros_dinamicos WHERE id = ?;", (book_id,))
         return res is not None
 
-    def gerar_historia_ia(self, tema: str = "Resiliência", child_name: str = "Kaleo") -> Dict[str, Any]:
+    def gerar_historia_ia(self, tema: str = "Resiliência", child_name: str = "Campeão") -> Dict[str, Any]:
         """
         Gera uma nova história dinâmica focada em desenvolvimento pessoal.
         Garante estrutura de 4 páginas com palavras de apoio e moral prática.

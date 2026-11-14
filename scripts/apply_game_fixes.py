@@ -153,7 +153,7 @@ target_book = """        document.getElementById('btn-finish').onclick = async (
           document.getElementById('books-badge').textContent = `📖 Livros hoje: ${d.books_read_today}`;
           addStar(2);
           const moralTexto = book.moral ? ` E a grande lição de hoje é: ${book.moral}` : '';
-          speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
+          speak(`Parabéns, ${appState.config.child_name || 'Campeão'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
           voltarTelaModal();
         };"""
 
@@ -163,7 +163,7 @@ replacement_book = """        document.getElementById('btn-finish').onclick = ()
           dispararChuvaCoracoes(60);
           addStar(2);
           const moralTexto = book.moral ? ` E a grande lição de hoje é: ${book.moral}` : '';
-          speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
+          speak(`Parabéns, ${appState.config.child_name || 'Campeão'}! Você leu o livro ${book.title} e ganhou duas estrelas de Super Leitor!${moralTexto}`);
           voltarTelaModal();
 
           // Sincronização em segundo plano não-bloqueante
@@ -220,7 +220,7 @@ replacement_detetive = """    function clicarErroDetetive(id) {
       if (errosDetetiveEncontrados.length >= 7) {
         playCelebrationFanfare();
         dispararChuvaCoracoes(70);
-        speak(`Incrível, super detetive ${appState.config.child_name || 'Kaleo'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
+        speak(`Incrível, super detetive ${appState.config.child_name || 'Campeão'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 10 moedas de ouro!`);
         showToast('🏆 Missão Cumprida! +10 Moedas de Ouro!');
         
         // Bonificação imediata no pote visual (0ms)
@@ -335,7 +335,7 @@ replacement_dino_escavar = """    function escavarBlocoDino(idx) {
         playCelebrationFanfare();
         dispararChuvaCoracoes(60);
         const d = BANCO_DINOSSAUROS[dinoIdx];
-        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Kaleo'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 10 moedas de ouro!`);
+        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Campeão'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 10 moedas de ouro!`);
         showToast('🦖 Fóssil 100% Restaurado! +10 Moedas!');
 
         // Bonificação imediata no pote (0ms)
@@ -418,7 +418,7 @@ replacement_quiz_astro = """    function responderQuizAstronauta(escolha, corret
       if (escolha === correta) {
         playCelebrationFanfare();
         dispararChuvaCoracoes(50);
-        speak(`Excelente resposta, astronauta ${appState.config.child_name || 'Kaleo'}! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
+        speak(`Excelente resposta, astronauta ${appState.config.child_name || 'Campeão'}! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
         showToast('🌟 Resposta Correta! +5 Moedas do Tesouro!');
         
         const pEl = document.getElementById('pote-fichas-val');
@@ -609,7 +609,7 @@ target_xadrez = """    async function concluirDesafioXadrez() {
 replacement_xadrez = """    function concluirDesafioXadrez() {
       playCelebrationFanfare();
       dispararChuvaCoracoes(50);
-      speak(`Xeque-mate no tédio, mestre do xadrez ${appState.config.child_name || 'Kaleo'}! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
+      speak(`Xeque-mate no tédio, mestre do xadrez ${appState.config.child_name || 'Campeão'}! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
       showToast('♟️ Mestre do Xadrez! +5 Moedas!');
       const pEl = document.getElementById('pote-fichas-val');
       if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 5;

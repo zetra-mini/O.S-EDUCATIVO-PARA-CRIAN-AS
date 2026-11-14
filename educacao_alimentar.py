@@ -3,7 +3,7 @@ Módulo de Educação Alimentar e Nutricional (EAN) Gamificada.
 Ensina conceitos de nutrição saudável sem imposições rígidas:
 1. Prato Colorido dos Superpoderes (Cenoura, Brócolis, Melancia, Feijão).
 2. Semáforo dos Alimentos (Verde = Sempre, Amarelo = Moderação, Vermelho = Dias Especiais).
-3. Conexão real com a alimentação do Kaleu através do Painel dos Pais.
+3. Conexão real com a alimentação do Campeão através do Painel dos Pais.
 """
 
 from typing import Any, Dict, List
@@ -52,7 +52,7 @@ class FoodEducationManager:
             fichas = 1
             token_mgr.creditar_fichas(fichas, "Prato Colorido com 3+ Superpoderes", "ALIMENTO")
             token_mgr.creditar_estrela(1)
-            msg = f"🌈 UAU, KALEU! Seu prato tem {len(cores)} cores diferentes e superpoderes puros! Seus músculos e coração estão blindados! (+3 Moedas e +1 Estrela!)"
+            msg = f"🌈 UAU, CAMPEÃO! Seu prato tem {len(cores)} cores diferentes e superpoderes puros! Seus músculos e coração estão blindados! (+3 Moedas e +1 Estrela!)"
             animacao = "fogos_2d"
         elif tem_vermelho_doce:
             fichas = 1

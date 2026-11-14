@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
 DEFAULT_CONFIG = {
-    "child_name": "Kaleu",
+    "child_name": "Campeão",
     "active_provider": "ollama",  # 'ollama', 'opencode', 'gemini', 'openai', 'groq', 'offline'
     "mode": "ollama",  # Mantido para retrocompatibilidade
     "opencode_model": "google/gemini-2.0-flash",
@@ -270,7 +270,7 @@ class JarvisBrain:
 
     def interpret_command(self, user_text: str) -> dict:
         """
-        Interpreta a intenção do comando de voz do Kaleu:
+        Interpreta a intenção do comando de voz do Campeão:
         1. Comandos de Utilidade Imediata (horas, saldo, clima) -> 0ms
         2. Perguntas Cognitivas/Curiosidades/Dúvidas -> IA API (Llama Local / Provedor configurado)
         3. Comandos de Abrir Jogos/Atividades -> Execução Direta do Jogo
@@ -309,7 +309,7 @@ class JarvisBrain:
         if any(w in text_lower for w in ["previsão do tempo", "previsao do tempo", "temperatura hoje", "vai chover hoje", "clima hoje"]):
             try:
                 from clima_estacoes import weather_mgr
-                cidade_cfg = self.config.get("geo_cidade", "Campo Largo")
+                cidade_cfg = self.config.get("geo_cidade", "São Paulo")
                 estado_cfg = self.config.get("geo_estado", "Paraná")
                 weather_mgr.definir_localizacao(cidade_cfg, estado_cfg)
                 clima = weather_mgr.obter_clima_atual(forcar=True)
@@ -548,7 +548,7 @@ class JarvisBrain:
         if ("solar" not in text_lower) and (any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "previsão", "previsao", "estação", "estacoes", "geografia"]) or re.search(r'\b(sol|ensolarado)\b', text_lower)):
             try:
                 from clima_estacoes import weather_mgr
-                cidade_cfg = self.config.get("geo_cidade", "Campo Largo")
+                cidade_cfg = self.config.get("geo_cidade", "São Paulo")
                 estado_cfg = self.config.get("geo_estado", "Paraná")
                 weather_mgr.definir_localizacao(cidade_cfg, estado_cfg)
                 crianca = self.name
@@ -594,7 +594,7 @@ class JarvisBrain:
                 from economia_fichas import token_mgr
                 status = token_mgr.obter_status_pote()
                 saldo = status.get("saldo", 0)
-                reply = f"Bip bip! Kaleo, você tem {saldo} moedas brilhantes guardadas no seu Pote do Tesouro! Vamos ver as recompensas na loja?"
+                reply = f"Bip bip! Campeão, você tem {saldo} moedas brilhantes guardadas no seu Pote do Tesouro! Vamos ver as recompensas na loja?"
                 return {
                     "ok": True,
                     "intencao": "tesouro",
@@ -607,7 +607,7 @@ class JarvisBrain:
 
         # 15. Escovar os dentes
         if any(w in text_lower for w in ["dente", "dentes", "escova", "escovar"]):
-            reply = "Missão Dente Brilhante ativada, Kaleo! Pegue a sua escovinha que o cronômetro de 2 minutos vai começar agora! Vamos deixar o sorriso brilhando!"
+            reply = "Missão Dente Brilhante ativada, Campeão! Pegue a sua escovinha que o cronômetro de 2 minutos vai começar agora! Vamos deixar o sorriso brilhando!"
             return {
                 "ok": True,
                 "intencao": "dente",
@@ -781,7 +781,7 @@ class JarvisBrain:
         # 18. Jogar / Brincar geral (Apenas se nenhum jogo específico acima foi detectado)
         termos_gerais = ["jogar", "jogo", "brincar", "brincadeira", "jogos", "todos os jogos", "menu de jogos", "lista de jogos"]
         if any(w in text_lower for w in termos_gerais):
-            reply = "Eba! Adoro brincar com você, Kaleo! Abrindo a lista de todos os jogos incríveis!"
+            reply = "Eba! Adoro brincar com você, Campeão! Abrindo a lista de todos os jogos incríveis!"
             return {
                 "ok": True,
                 "intencao": "jogos",

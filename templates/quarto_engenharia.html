@@ -276,7 +276,7 @@
     <div class="panel">
       <div class="panel-title">🧩 Clique para Adicionar Comandos:</div>
       <div class="block-item block-fala" onclick="adicionarBloco('fala', '🗣️ Falar Mensagem')">
-        🗣️ Falar: "Bip Bip, Kaleu!"
+        🗣️ Falar: "Bip Bip, Campeão!"
       </div>
       <div class="block-item block-luz" onclick="adicionarBloco('luz', '💡 Ligar Reator Dourado')">
         💡 Mudar Cor do Reator
@@ -353,7 +353,7 @@
     // Programa inicial padrão educativo
     let programa = [
       { tipo: 'luz', label: '💡 Ligar Reator Dourado' },
-      { tipo: 'fala', label: '🗣️ Falar: "Bip Bip, Kaleu!"' },
+      { tipo: 'fala', label: '🗣️ Falar: "Bip Bip, Campeão!"' },
       { tipo: 'pulo', label: '🦘 Pulo de Vitória!' },
       { tipo: 'confetti', label: '🎉 Chuva de Confetes!' }
     ];
@@ -491,11 +491,11 @@
         } else if (b.tipo === 'fala') {
           playTone(523, 120);
           head.textContent = '🤖';
-          balao.textContent = '🗣️ Passo ' + (i+1) + ': "Bip bip, sou o Jarvis! Muito bem, Kaleu!"';
+          balao.textContent = '🗣️ Passo ' + (i+1) + ': "Bip bip, sou o Jarvis! Muito bem, Campeão!"';
           if ('speechSynthesis' in window) {
             try {
               window.speechSynthesis.cancel();
-              const u = new SpeechSynthesisUtterance('Bip bip, sou o Jarvis! Muito bem, Kaleu Noah!');
+              const u = new SpeechSynthesisUtterance('Bip bip, sou o Jarvis! Muito bem, Campeão!');
               u.lang = 'pt-BR';
               u.rate = 1.0;
               window.speechSynthesis.speak(u);

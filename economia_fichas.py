@@ -1,5 +1,5 @@
 """
-Módulo de Economia de Fichas (Token Economy) & Pote do Tesouro Real para o Kaleu.
+Módulo de Economia de Fichas (Token Economy) & Pote do Tesouro Real para o Campeão.
 Gerencia moedas, estrelas, histórico paginado (com gerador yield) e resgate de privilégios reais.
 """
 
@@ -46,7 +46,7 @@ class TokenEconomyManager:
         return True
 
     def creditar_fichas(self, quantidade: int, motivo: str, categoria: str = "ROTINA") -> Dict[str, Any]:
-        """Credita fichas na conta do Kaleu com limite pedagógico para controle de dopamina."""
+        """Credita fichas na conta do Campeão com limite pedagógico para controle de dopamina."""
         if quantidade <= 0:
             return self.obter_status_pote()
 
@@ -154,7 +154,7 @@ class TokenEconomyManager:
         novo_status = self.obter_status_pote()
         return {
             "sucesso": True,
-            "mensagem": f"Parabéns, Kaleu! Você resgatou '{item['titulo']}'!",
+            "mensagem": f"Parabéns, Campeão! Você resgatou '{item['titulo']}'!",
             "item": dict(item),
             "saldo_restante": novo_status["saldo"],
         }

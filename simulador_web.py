@@ -312,7 +312,7 @@ def api_livros_listar():
 def api_livros_gerar():
     data = request.get_json(silent=True) or {}
     tema = data.get("tema", "Resiliência")
-    child_name = data.get("child_name") or brain.config.get("child_name", "Kaleo")
+    child_name = data.get("child_name") or brain.config.get("child_name", "Campeão")
     novo = library_mgr.gerar_historia_ia(tema=tema, child_name=child_name)
     return jsonify({"ok": True, "livro": novo})
 

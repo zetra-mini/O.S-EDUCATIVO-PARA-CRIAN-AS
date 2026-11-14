@@ -645,12 +645,12 @@
       </div>
     </div>
   
-    <!-- LINHA DO TEMPO DIÁRIA DE ATIVIDADES DO KALEU (PILAR 4) -->
+    <!-- LINHA DO TEMPO DIÁRIA DE ATIVIDADES DO CAMPEÃO (PILAR 4) -->
     <div class="card" style="border: 2px solid var(--card-border); margin-top:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <div>
           <div class="card-title" style="margin:0;">⏱️ Linha do Tempo de Atividades do Dia (Hoje)</div>
-          <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Acompanhe o que o Kaleu realizou ao longo do dia com o Jarvis.</div>
+          <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Acompanhe o que o Campeão realizou ao longo do dia com o Jarvis.</div>
         </div>
         <button type="button" class="btn btn-secondary" onclick="carregarLinhaTempoAdmin()" style="font-size:0.8rem; padding:6px 12px;">
           🔄 Atualizar Linha do Tempo
@@ -701,7 +701,7 @@
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px;">
         <div>
           <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Nome da Criança (chamado pelo Jarvis):</label>
-          <input id="adm-child-name" style="margin-top:4px;" placeholder="Ex: Kaleo Noah" />
+          <input id="adm-child-name" style="margin-top:4px;" placeholder="Ex: Super Herói" />
         </div>
         <div>
           <label style="font-size:0.88rem; font-weight:700; color:var(--text-muted);">Perfil de Voz Neural PT-BR (Ultra Fluida):</label>
@@ -736,7 +736,7 @@
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">Cidade da Criança:</label>
-            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: Campo Largo" value="Campo Largo" oninput="this.dataset.modificado='true'" />
+            <input id="adm-geo-cidade" style="margin-top:4px;" placeholder="Ex: São Paulo" value="São Paulo" oninput="this.dataset.modificado='true'" />
           </div>
           <div>
             <label style="font-size:0.85rem; color:var(--text-muted);">Estado:</label>
@@ -909,11 +909,11 @@
     <div class="card">
       <div class="card-title">🎁 Pote do Tesouro & Economia de Fichas</div>
       <div style="font-size:0.95rem; color:var(--text-muted); margin-bottom:14px;">
-        As moedas representam o esforço e as rotinas cumpridas pelo Kaleo (leitura, escovação de dentes, arrumação de quarto, mini-games cognitivos). Aqui você acompanha o saldo e os combinados do mundo real!
+        As moedas representam o esforço e as rotinas cumpridas pelo Campeão (leitura, escovação de dentes, arrumação de quarto, mini-games cognitivos). Aqui você acompanha o saldo e os combinados do mundo real!
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(15,23,42,0.8); border:2px solid var(--gold); border-radius:12px; padding:16px; margin-bottom:18px;">
         <div>
-          <div style="font-size:0.9rem; color:#94a3b8; font-weight:700;">SALDO ATUAL DO KALEO:</div>
+          <div style="font-size:0.9rem; color:#94a3b8; font-weight:700;">SALDO ATUAL DO CAMPEÃO:</div>
           <div style="font-size:2.2rem; font-weight:900; color:var(--gold);">🪙 <span id="adm-tesouro-saldo">0</span> Moedas</div>
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:8px;">
@@ -928,7 +928,7 @@
     <div class="card">
       <div class="card-title">🌟 Privilégios do Mundo Real Resgatados pelo Filho</div>
       <div style="font-size:0.95rem; color:var(--text-muted); margin-bottom:12px;">
-        Quando o Kaleo troca suas moedas na Loja pelo <strong>Tesouro Real</strong> (passeio de bicicleta, cinema em família, sobremesa especial), o pedido aparece aqui imediatamente para que o papai ou a mamãe possam cumprir e marcar como entregue:
+        Quando o Campeão troca suas moedas na Loja pelo <strong>Tesouro Real</strong> (passeio de bicicleta, cinema em família, sobremesa especial), o pedido aparece aqui imediatamente para que o papai ou a mamãe possam cumprir e marcar como entregue:
       </div>
       <div id="adm-resgates-lista" style="display:flex; flex-direction:column; gap:12px;">
         <div style="color:#94a3b8; text-align:center; padding:20px;">Carregando pedidos de recompensas...</div>
@@ -1046,9 +1046,9 @@
   <!-- ========================================================================= -->
   <div class="tab-pane" id="pane-missoes">
     <div class="card" style="border: 2px solid #38bdf8;">
-      <div class="card-title" style="color:#38bdf8;">➕ Criar Nova Missão de Rotina para o Kaleu</div>
+      <div class="card-title" style="color:#38bdf8;">➕ Criar Nova Missão de Rotina para o Campeão</div>
       <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
-        As missões cadastradas aqui aparecem na prancheta de missões do Jarvis. Ao marcar cada missão como cumprida, o Kaleu ganha moedas de ouro reais para o cofrinho e comemoração com confetes!
+        As missões cadastradas aqui aparecem na prancheta de missões do Jarvis. Ao marcar cada missão como cumprida, o Campeão ganha moedas de ouro reais para o cofrinho e comemoração com confetes!
       </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:14px;">
         <div>
@@ -1083,7 +1083,7 @@
         </div>
       </div>
       <button type="button" class="btn btn-primary" onclick="criarNovaMissaoAdmin()" style="font-size:0.95rem; padding:10px 22px;">
-        ➕ Adicionar Missão à Prancheta do Kaleu
+        ➕ Adicionar Missão à Prancheta do Campeão
       </button>
     </div>
 
@@ -1091,7 +1091,7 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div>
           <div class="card-title" style="margin:0;">📋 Missões de Rotina Ativas & Status de Hoje</div>
-          <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Veja as missões programadas e quais já foram concluídas pelo Kaleu hoje.</div>
+          <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">Veja as missões programadas e quais já foram concluídas pelo Campeão hoje.</div>
         </div>
         <button type="button" class="btn btn-secondary" onclick="carregarMissoesAdmin()" style="font-size:0.85rem; padding:6px 14px;">
           🔄 Atualizar Lista
@@ -1110,9 +1110,9 @@
     <div class="card" style="border: 2px solid #a855f7;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <div>
-          <div class="card-title" style="margin:0; color:#c084fc;">🎨 Galeria de Arte da Lousa Neon do Kaleu</div>
+          <div class="card-title" style="margin:0; color:#c084fc;">🎨 Galeria de Arte da Lousa Neon do Campeão</div>
           <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">
-            Desenhos salvos diretamente pelo Kaleu quando ele clica em "📸 Mandar Desenho para o Papai" na lousa mágica.
+            Desenhos salvos diretamente pelo Campeão quando ele clica em "📸 Mandar Desenho para o Papai" na lousa mágica.
           </div>
         </div>
         <button type="button" class="btn btn-secondary" onclick="carregarArteAdmin()" style="font-size:0.85rem; padding:6px 14px;">
@@ -1440,7 +1440,7 @@
           if (data.ultimo_alarme_concluido && (Date.now() / 1000 - data.ultimo_alarme_concluido.timestamp < 3600)) {
             alarmeCard.style.display = 'block';
             document.getElementById('txt-alarme-horario').textContent = `Às ${data.ultimo_alarme_concluido.horario}`;
-            document.getElementById('txt-alarme-desc').textContent = `Kaleo cumpriu a missão "${data.ultimo_alarme_concluido.tipo}" com louvor e ganhou 🪙 ${data.ultimo_alarme_concluido.recompensa || 5} moedas!`;
+            document.getElementById('txt-alarme-desc').textContent = `Campeão cumpriu a missão "${data.ultimo_alarme_concluido.tipo}" com louvor e ganhou 🪙 ${data.ultimo_alarme_concluido.recompensa || 5} moedas!`;
           } else {
             alarmeCard.style.display = 'none';
           }
@@ -1459,7 +1459,7 @@
 
         // Preenche campos apenas se não estiverem com foco do usuário digitando
         const inpName = document.getElementById('adm-child-name');
-        if (inpName && document.activeElement !== inpName) inpName.value = adminConfig.child_name || 'Kaleo Noah';
+        if (inpName && document.activeElement !== inpName) inpName.value = adminConfig.child_name || 'Super Herói';
 
         const inpVoice = document.getElementById('adm-voice-profile');
         if (inpVoice && document.activeElement !== inpVoice && adminConfig.voice_profile) inpVoice.value = adminConfig.voice_profile;
@@ -1743,11 +1743,11 @@
 
     async function salvarConfiguracoesAdmin() {
       const payload = {
-        child_name: (document.getElementById('adm-child-name')?.value || '').trim() || 'Kaleo Noah',
+        child_name: (document.getElementById('adm-child-name')?.value || '').trim() || 'Super Herói',
         active_provider: currentAdminProvider,
         mode: currentAdminProvider,
         voice_profile: document.getElementById('adm-voice-profile')?.value || 'jarvis_antonio',
-        geo_cidade: (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'Campo Largo',
+        geo_cidade: (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo',
         geo_estado: (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná',
         geo_pais: (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil',
         youtube_url: (document.getElementById('adm-yt-url')?.value || '').trim() || 'https://www.youtubekids.com',
@@ -1790,7 +1790,7 @@
     }
 
         async function salvarLocalizacaoGeografica() {
-      const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'Campo Largo';
+      const cidade = (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo';
       const estado = (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná';
       const pais = (document.getElementById('adm-geo-pais')?.value || '').trim() || 'Brasil';
 
@@ -1836,7 +1836,7 @@
         });
         const data = await res.json();
         if (data.ok) {
-          showToast(`⏰ Alarme de rotina "${tipo}" disparado no netbook do Kaleo com sucesso!`);
+          showToast(`⏰ Alarme de rotina "${tipo}" disparado no netbook do Campeão com sucesso!`);
           if (tipo === 'personalizado') {
             document.getElementById('txt-alarme-custom').value = '';
           }
@@ -1848,7 +1848,7 @@
 
     async function testarVozAdmin() {
       const prof = document.getElementById('adm-voice-profile').value;
-      const n = document.getElementById('adm-child-name').value.trim() || 'Kaleo';
+      const n = document.getElementById('adm-child-name').value.trim() || 'Campeão';
       try {
         const res = await fetch('/api/tts', {
           method: 'POST',
@@ -2198,7 +2198,7 @@
         btnEnviar.disabled = true;
         btnEnviar.textContent = '⏳ Enviando Vídeo para o Netbook...';
       }
-      showToast('⏳ Enviando vídeo para o netbook do Kaleo...');
+      showToast('⏳ Enviando vídeo para o netbook do Campeão...');
 
       try {
         const res = await fetch('/api/mensagens/enviar', {
@@ -2219,7 +2219,7 @@
           data = { sucesso: false, erro: 'Resposta inesperada do servidor (HTTP ' + res.status + ')' };
         }
         if (res.ok && data.sucesso) {
-          showToast('🎥 Mensagem de vídeo enviada com sucesso para o Kaleo!');
+          showToast('🎥 Mensagem de vídeo enviada com sucesso para o Campeão!');
           videoBase64Gravado = null;
           document.getElementById('wrap-video-preview').style.display = 'none';
           document.getElementById('txt-legenda-video').value = '';
@@ -2311,7 +2311,7 @@
 
     async function gerarLivroIaAdmin() {
       const tema = document.getElementById('adm-livro-tema').value;
-      const child = document.getElementById('adm-child-name').value.trim() || 'Kaleo';
+      const child = document.getElementById('adm-child-name').value.trim() || 'Campeão';
       showToast('⏳ Criando fábula de desenvolvimento pessoal com IA...');
       try {
         const res = await fetch('/api/livros/gerar', {
@@ -2818,7 +2818,7 @@
         const data = await res.json();
         const galeria = data.galeria || [];
         if (galeria.length === 0) {
-          container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:24px; grid-column:1/-1;">Nenhum desenho na galeria ainda. Quando o Kaleu desenhar na Lousa Neon e apertar "📸 Mandar Desenho para o Papai", ele aparecerá aqui com muito carinho!</div>';
+          container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:24px; grid-column:1/-1;">Nenhum desenho na galeria ainda. Quando o Campeão desenhar na Lousa Neon e apertar "📸 Mandar Desenho para o Papai", ele aparecerá aqui com muito carinho!</div>';
           return;
         }
         container.innerHTML = '';
@@ -2835,7 +2835,7 @@
                 <div style="font-size:0.8rem; color:#94a3b8; margin-top:3px;">📅 ${item.data_dia} às ${item.hora}</div>
               </div>
               <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                <a href="${item.imagem_base64}" download="desenho_kaleu_${item.id}.png" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 10px; text-decoration:none;">⬇️ Salvar</a>
+                <a href="${item.imagem_base64}" download="desenho_campeão_${item.id}.png" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 10px; text-decoration:none;">⬇️ Salvar</a>
                 <button type="button" class="btn btn-danger" style="font-size:0.75rem; padding:4px 10px;" onclick="excluirArteAdmin(${item.id})">🗑️</button>
               </div>
             </div>
@@ -2870,7 +2870,7 @@
         const data = await res.json();
         const eventos = data.eventos || [];
         if (eventos.length === 0) {
-          container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:16px;">Nenhuma atividade registrada hoje ainda. Conforme o Kaleu realiza missões e usa o Jarvis, as conquistas surgirão aqui!</div>';
+          container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:16px;">Nenhuma atividade registrada hoje ainda. Conforme o Campeão realiza missões e usa o Jarvis, as conquistas surgirão aqui!</div>';
           return;
         }
         container.innerHTML = '';

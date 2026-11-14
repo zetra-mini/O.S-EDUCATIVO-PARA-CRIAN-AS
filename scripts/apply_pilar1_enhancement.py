@@ -183,7 +183,7 @@ new_pilar1_code = """    // ====================================================
       const pendentes = total - cumpridas;
       const pct = total > 0 ? Math.round((cumpridas / total) * 100) : 0;
       const moedasGanhasHoje = missoes.filter(m => Boolean(m.cumprida)).reduce((acc, m) => acc + (m.recompensa_moedas || 0), 0);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       // Atualiza badge de missões no topo do HUD
       if (typeof atualizarBadgeMissoesTop === 'function') {
@@ -364,7 +364,7 @@ new_pilar1_code = """    // ====================================================
       const m = (missoesHeroiCache || []).find(x => x.id === id);
       if (!m || m.cumprida) return;
 
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
       const moedas = m.recompensa_moedas || 5;
 
       // 1. Efeitos imediatos em 0ms (Web Audio API + Dopamina de Confetes)

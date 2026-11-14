@@ -77,7 +77,7 @@ class CalendarEventsManager:
 
         return {
             "sucesso": True,
-            "mensagem": f"🎉 Sensacional, Kaleu! Você celebrou '{evento['titulo']}' com maestria! (+{fichas} Moedas e +1 Estrela)",
+            "mensagem": f"🎉 Sensacional, Campeão! Você celebrou '{evento['titulo']}' com maestria! (+{fichas} Moedas e +1 Estrela)",
             "fichas_ganhas": fichas,
             "saldo": token_mgr.obter_status_pote()["saldo"],
         }

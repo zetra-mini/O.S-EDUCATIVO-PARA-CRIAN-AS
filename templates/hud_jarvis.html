@@ -2302,7 +2302,7 @@
           <ellipse id="robot-thruster-glow" cx="120" cy="202" rx="20" ry="8" fill="#38bdf8" opacity="0.75" filter="url(#neonCyanGlow)" />
           <ellipse cx="120" cy="200" rx="10" ry="4" fill="#ffffff" />
 
-          <!-- ONDAS SONORAS DE WAKE WORD (PULSAM QUANDO O KALEO FALA OU ATIVA O JARVIS) -->
+          <!-- ONDAS SONORAS DE WAKE WORD (PULSAM QUANDO A CRIANÇA FALA OU ATIVA O JARVIS) -->
           <g id="jarvis-soundwave-rings" style="display:none;">
             <circle cx="120" cy="90" r="75" fill="none" stroke="#00f0ff" stroke-width="2.5" opacity="0.6" class="jarvis-ring-pulse" />
             <circle cx="120" cy="90" r="95" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.4" class="jarvis-ring-pulse-delay" />
@@ -2570,7 +2570,7 @@
   <div class="drawer-backdrop" id="drawer-backdrop" onclick="toggleActivityDrawer()"></div>
   <aside class="activity-drawer" id="activity-drawer">
     <div class="drawer-header">
-      <span class="drawer-title">🎮 JOGOS & ESTUDOS DO KALEO</span>
+      <span class="drawer-title">🎮 JOGOS & ESTUDOS EDUCATIVOS</span>
       <button type="button" class="drawer-close-btn" onclick="toggleActivityDrawer()">✕</button>
     </div>
     <div class="drawer-content" id="drawer-content">
@@ -2724,7 +2724,7 @@
     <div style="background:linear-gradient(145deg, #0c2044 0%, #061126 100%); border:3px solid #f59e0b; border-radius:24px; padding:24px 20px; max-width:540px; width:100%; text-align:center; box-shadow:0 0 50px rgba(245,158,11,0.6); animation:pulseMic 1.4s infinite; display:flex; flex-direction:column; align-items:center; gap:12px;">
       <div id="alarm-icon" style="font-size:4.2rem; filter:drop-shadow(0 0 20px #facc15);">⏰</div>
       <div style="font-size:1.45rem; font-weight:900; color:#fde047; text-transform:uppercase; letter-spacing:1px;" id="alarm-title">
-        Alarme de Rotina do Kaleo!
+        Alarme de Rotina do Campeão!
       </div>
       <div id="alarm-message" style="font-size:1.15rem; font-weight:800; color:#ffffff; line-height:1.4; background:rgba(15,23,42,0.7); border:2px solid #38bdf8; border-radius:16px; padding:12px 16px; width:100%; box-sizing:border-box;">
         Hora de escovar os dentinhos!
@@ -2843,7 +2843,7 @@
               const saldo = parseInt(localStorage.getItem('jarvis_pote_saldo') || '40', 10);
               return new Response(JSON.stringify({
                 config: {
-                  child_name: localStorage.getItem('child_name') || 'Kaleo Noah',
+                  child_name: localStorage.getItem('child_name') || 'Super Herói',
                   voice_profile: 'jarvis_antonio',
                   voice_enabled: true
                 },
@@ -3139,7 +3139,7 @@
         if (eyesHappy) eyesHappy.style.display = 'none';
       }, 1400);
 
-      speak(`Nhac! Adoro ${nome}! Bateria recarregada, ${appState.config.child_name || 'Kaleo'}!`);
+      speak(`Nhac! Adoro ${nome}! Bateria recarregada, ${appState.config.child_name || 'Campeão'}!`);
     }
 
     // ALIMENTAÇÃO RÁPIDA (BOTÃO DO CENTRO NA COZINHA)
@@ -3186,7 +3186,7 @@
         if (eyesSleep) eyesSleep.style.display = 'block';
         if (eyeL) eyeL.style.display = 'none';
         if (eyeR) eyeR.style.display = 'none';
-        mostrarFalaPou('🌙 Zzz... Modo de recarga ativo. Bons sonhos, Kaleo!');
+        mostrarFalaPou('🌙 Zzz... Modo de recarga ativo. Bons sonhos, Campeão!');
         tocarSomClick();
       } else {
         if (stage) stage.style.filter = 'none';
@@ -3194,7 +3194,7 @@
         if (eyesSleep) eyesSleep.style.display = 'none';
         if (eyeL) eyeL.style.display = 'block';
         if (eyeR) eyeR.style.display = 'block';
-        mostrarFalaPou('☀️ Sistemas online! Bom dia, Kaleo! Pronto para aprender!');
+        mostrarFalaPou('☀️ Sistemas online! Bom dia, Campeão! Pronto para aprender!');
         tocarSomClick();
       }
 
@@ -3264,8 +3264,8 @@
       }, 1400);
 
       soltarCoracoes();
-      mostrarFalaPou('⚽ Bip bip! Que jogada incrível, Kaleo!');
-      speak('Bip bip! Boa cabeceada de bola, Kaleo! Você é um craque!');
+      mostrarFalaPou('⚽ Bip bip! Que jogada incrível, Campeão!');
+      speak('Bip bip! Boa cabeceada de bola, Campeão! Você é um craque!');
 
       fetch('/api/pet/brincar', {
         method: 'POST',
@@ -3425,7 +3425,7 @@
     }, 4500);
 
     // =========================================================================
-    // CENTRAL DE JOGOS & ESTUDOS DO KALEO (PAGINADO, ZERO SCROLL, 17 JOGOS)
+    // CENTRAL DE JOGOS & ESTUDOS (PAGINADO, ZERO SCROLL, 17 JOGOS)
     // =========================================================================
     let paginaJogosModalAtual = 1;
     const TOTAL_PAGINAS_JOGOS = 8;
@@ -3746,7 +3746,7 @@
         ultimoMomentoVozCentralJogos = agora;
         speak('Central de Jogos e Estudos!');
       }
-      pushModalScreen('🎮 JOGOS, ESTUDOS & AVENTURAS DO KALEO', (body) => {
+      pushModalScreen('🎮 JOGOS, ESTUDOS & AVENTURAS', (body) => {
         renderGamesMenuBody(body);
       }, true);
     }
@@ -4540,7 +4540,7 @@
       setTimeout(() => playTone(659, 140), 140);
       setTimeout(() => playTone(784, 180), 280);
       setTimeout(() => playTone(1046, 400), 460);
-      speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você conquistou a Armadura Completa do Homem de Ferro! Você é um verdadeiro super-herói Stark!`);
+      speak(`Parabéns, ${appState.config.child_name || 'Campeão'}! Você conquistou a Armadura Completa do Homem de Ferro! Você é um verdadeiro super-herói Stark!`);
     }
 
     function checkNightMode(serverNightMode) {
@@ -4577,7 +4577,7 @@
       const val = document.getElementById('top-battery-val');
       const banner = document.getElementById('battery-alert-banner');
       const bannerText = document.getElementById('battery-alert-text');
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       if (!bat.presente) {
         if (badge) badge.style.display = 'none';
@@ -5237,10 +5237,10 @@
       // 24. CORTESIA
       else if (/boa noite/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = `Boa noite, super ${appState.config.child_name || 'Kaleo'}! Durma bem e tenha lindos sonhos!`;
+        replyLocal = `Boa noite, super ${appState.config.child_name || 'Campeão'}! Durma bem e tenha lindos sonhos!`;
       } else if (/bom dia/i.test(spokenNorm)) {
         matchedLocal = true;
-        replyLocal = `Bom dia, campeão ${appState.config.child_name || 'Kaleo'}! Hoje será um dia incrível e cheio de aventuras!`;
+        replyLocal = `Bom dia, campeão ${appState.config.child_name || 'Campeão'}! Hoje será um dia incrível e cheio de aventuras!`;
       }
       // 25. APENAS SE NENHUM JOGO ESPECÍFICO ACIMA FOI MENCIONADO: Menu Geral de Jogos
       else if (/(^|\s)(jogos|jogo|jogar|brincar|brincadeira|brincadeiras|atividades)($|\s)/i.test(spokenNorm) || 
@@ -5283,7 +5283,7 @@
           executarAcaoFrontendImediata(data.acao_frontend);
         }
 
-        const replyText = data.resposta_voz || data.reply || "Sim, Kaleu!";
+        const replyText = data.resposta_voz || data.reply || "Sim, Campeão!";
 
         // ESTADO: FALANDO!
         setVoiceVisualState('speaking');
@@ -5581,7 +5581,7 @@
     function dispararCelebracaoEmocaoAcerto(manual = false) {
       playCelebrationFanfare();
       dispararChuvaCoracoes(50);
-      const crianca = appState.config.child_name || 'Kaleo';
+      const crianca = appState.config.child_name || 'Campeão';
       speak(`Sensacional, super ${crianca}! Você fez a carinha perfeita de ${emoDesafioAtual.nome}! Ganhou 2 moedas de ouro!`);
       showToast('🌟 Desafio Concluído! +2 Moedas de Ouro!');
 
@@ -5770,7 +5770,7 @@
           { c: 'G', cat: 'consoante', col: '#22c55e', name: 'G de Gato' },
           { c: 'H', cat: 'consoante', col: '#eab308', name: 'H de Herói' },
           { c: 'J', cat: 'consoante', col: '#f97316', name: 'J de Jacaré' },
-          { c: 'K', cat: 'consoante', col: '#facc15', name: 'K de Kaleo' },
+          { c: 'K', cat: 'consoante', col: '#facc15', name: 'K de Campeão' },
           { c: 'L', cat: 'consoante', col: '#38bdf8', name: 'L de Leão' },
           { c: 'M', cat: 'consoante', col: '#a855f7', name: 'M de Mamãe' },
           { c: 'N', cat: 'consoante', col: '#06b6d4', name: 'N de Navio' },
@@ -5960,7 +5960,7 @@
             if (guide) guide.style.display = 'none';
             playSfxSuccess();
             addStar(1);
-            speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você traçou a letrinha ${currentTraceChar} perfeitamente!`);
+            speak(`Sensacional, ${appState.config.child_name || 'Campeão'}! Você traçou a letrinha ${currentTraceChar} perfeitamente!`);
             const title = document.getElementById('trace-title-msg');
             if (title) title.innerHTML = `🌟 PARABÉNS! Letrinha <span style="color:#22c55e;">${currentTraceChar}</span> traçada com sucesso! Ganhou +1 Estrela!`;
           }
@@ -6054,7 +6054,7 @@
             'H': 'A letra H é mágica e companheira! H de Herói e História!',
             'I': 'Sorrisinho com dentinhos juntos: /iii/! I de Ilha e Irmão!',
             'J': 'Biquinho soltando o zumbido suave: /jjj/... /j/ de Járvis e Jacaré!',
-            'K': 'O som forte /k/... /k/! K de Kaleo Noah! O super-herói Stark!',
+            'K': 'O som forte /k/... /k/! K de Super Herói! O super-herói Stark!',
             'L': 'Língua subindo até o céu da boca: /lll/! L de Lua e Livro!',
             'M': 'Boca bem fechadinha fazendo /mmmm/! M de Música e Mamãe querida!',
             'N': 'Língua no dente de cima fazendo /nnn/! N de Navio e Nuvem!',
@@ -6467,7 +6467,7 @@
       const agora = Date.now();
       if (agora - ultimoMomentoVozBiblioteca > 90000) {
         ultimoMomentoVozBiblioteca = agora;
-        speak(`Biblioteca de Virtudes do ${appState.config.child_name || 'Kaleo'}!`);
+        speak(`Biblioteca de Virtudes do ${appState.config.child_name || 'Campeão'}!`);
       }
       pushModalScreen('📚 BIBLIOTECA MÁGICA — DESENVOLVIMENTO PESSOAL & VIRTUDES', async (body) => {
         paginaLivrosAtual = 1;
@@ -6507,7 +6507,7 @@
           <div style="background:#09192f; border:1.5px solid #1e3a63; border-radius:14px; padding:8px 12px; display:flex; flex-direction:column; gap:6px;">
             <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
               <div style="font-size:1.05rem; font-weight:900; color:#ffffff; display:flex; align-items:center; gap:6px;">
-                <span>📖 Histórias de Virtudes do Kaleo</span>
+                <span>📖 Histórias de Virtudes do Campeão</span>
                 <span style="font-size:0.8rem; background:#1e293b; color:#7dd3fc; padding:2px 8px; border-radius:999px;">Lidos hoje: ${appState.books_read_today}</span>
               </div>
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); border:1.5px solid #c084fc; font-size:0.88rem; padding:6px 14px; display:flex; align-items:center; gap:6px;" onclick="abrirGeradorHistoriaModal()">
@@ -6640,7 +6640,7 @@
     function abrirGeradorHistoriaModal() {
       pushModalScreen('✨ GERADOR DE HISTÓRIAS COM O JARVIS', (body) => {
         playTone(587, 100);
-        const childName = appState.config.child_name || 'Kaleo';
+        const childName = appState.config.child_name || 'Campeão';
 
         const virtudes = [
           { id: 'resiliencia', nome: '🌟 Resiliência & Persistência', desc: 'Aprender que errar nos faz crescer e tentar de novo com amor!' },
@@ -6684,7 +6684,7 @@
 
     async function executarGeracaoHistoria(temaId) {
       const body = document.getElementById('modal-body');
-      const childName = appState.config.child_name || 'Kaleo';
+      const childName = appState.config.child_name || 'Campeão';
 
       body.innerHTML = `
         <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:48px; gap:18px; text-align:center;">
@@ -6826,7 +6826,7 @@
     // TELA DE VITÓRIA & CELEBRAÇÃO DA HISTÓRIA (100% PENSADA PARA CRIANÇAS DE 4 ANOS)
     function concluirLivroComCelebracao(body, bookIdx) {
       const book = appState.books[bookIdx];
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       // 1. Resposta imediata em 0ms: efeitos sonoros, confetes e estrelas
       playCelebrationFanfare();
@@ -7274,7 +7274,7 @@
 
     function openFingerCounting() {
       const body = openModal('🖐️ CONTAR DE 1 A 10 COM AS MÃOZINHAS');
-      speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name || 'Kaleo'}! Toque nos dedinhos ou em um número!`);
+      speak(`Vamos aprender a contar com os dedinhos das mãos, ${appState.config.child_name || 'Campeão'}! Toque nos dedinhos ou em um número!`);
 
       body.innerHTML = `
         <!-- ESTRUTURA LATERAL OTIMIZADA PARA TELAS 1024x600 NETBOOK ACER ONE -->
@@ -8240,7 +8240,7 @@
       if (step > 10) {
         stopCountingSong();
         playCelebrationFanfare();
-        speak(`Sensacional, super ${appState.config.child_name || 'Kaleo'}! Você contou de um até dez com todos os dedinhos levantados! Ganhou uma estrela!`);
+        speak(`Sensacional, super ${appState.config.child_name || 'Campeão'}! Você contou de um até dez com todos os dedinhos levantados! Ganhou uma estrela!`);
         addStarReward(1);
         return;
       }
@@ -8277,7 +8277,7 @@
 
     function openLanguagesAcademy() {
       const body = openModal('🌍 IDIOMAS MÁGICOS — ENGLISH & ESPAÑOL');
-      speak(`Welcome, ${appState.config.child_name || 'Kaleo'}! Vamos aprender palavras mágicas em Inglês e Espanhol!`);
+      speak(`Welcome, ${appState.config.child_name || 'Campeão'}! Vamos aprender palavras mágicas em Inglês e Espanhol!`);
 
       body.innerHTML = `
         <!-- BARRA SUPERIOR UNIFICADA DE IDIOMAS (DESIGN LIMPO STARK) -->
@@ -8534,7 +8534,7 @@
           box.style.border = '2px solid #10b981';
           box.style.color = '#34d399';
           box.innerHTML = `
-            <div style="font-size:1.4rem; font-weight:900;">🎉 EXCELENTE, KALEO!</div>
+            <div style="font-size:1.4rem; font-weight:900;">🎉 EXCELENTE, CAMPEÃO!</div>
             <div style="font-size:1.05rem; margin-top:4px;">${resp.mensagem}</div>
             <div style="font-size:1.2rem; font-weight:bold; color:#facc15; margin-top:4px;">🪙 +2 Moedas para o Pote do Tesouro!</div>
           `;
@@ -8591,7 +8591,7 @@
       return String(str).replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
-    const TECH_WORDS_POOL = ['KALEO', 'JARVIS', 'SOL', 'LUA', 'BOLA', 'CASA', 'AMOR', 'HEROI', 'MAMA', 'PAPA'];
+    const TECH_WORDS_POOL = ['AMIGO', 'JARVIS', 'SOL', 'LUA', 'BOLA', 'CASA', 'AMOR', 'HEROI', 'MAMA', 'PAPA'];
 
     function openTechAcademy() {
       pushModalScreen('🖐️ TREINO DE MOUSE, TECLADO & SCROLL', (body) => {
@@ -8723,7 +8723,7 @@
           if (idx >= word.length) {
             addStar(1);
             document.getElementById('typing-word').innerHTML = `🌟 ${word} 🌟`;
-            speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você digitou ${word} certinho!`);
+            speak(`Parabéns, ${appState.config.child_name || 'Campeão'}! Você digitou ${word} certinho!`);
             setTimeout(() => {
               word = TECH_WORDS_POOL[Math.floor(Math.random() * TECH_WORDS_POOL.length)];
               idx = 0;
@@ -8878,7 +8878,7 @@
               playTone(523, 100);
               setTimeout(() => playTone(659, 100), 100);
               setTimeout(() => playTone(784, 180), 200);
-              speak(`Nham nham nham! Que delícia! Obrigado, ${appState.config.child_name || 'Kaleo'}!`);
+              speak(`Nham nham nham! Que delícia! Obrigado, ${appState.config.child_name || 'Campeão'}!`);
               advance();
             } else {
               // Retorna suavemente
@@ -8909,7 +8909,7 @@
           addStar(1);
           phase = 1; hits = 0;
           if (inst) inst.innerHTML = '🏆 Mestre do Mouse! Você ganhou +1 Estrela Stark!';
-          speak(`Parabéns, ${appState.config.child_name || 'Kaleo'}! Você dominou o mouse e o touchpad perfeitamente!`);
+          speak(`Parabéns, ${appState.config.child_name || 'Campeão'}! Você dominou o mouse e o touchpad perfeitamente!`);
         }
         spawn();
       }
@@ -9000,7 +9000,7 @@
             setTimeout(() => playTone(659, 100), 100);
             setTimeout(() => playTone(784, 180), 200);
             addStar(1);
-            speak(`Uau, ${appState.config.child_name || 'Kaleo'}! O foguete subiu até a estrela! Agora Fase 2: gire a rodinha para BAIXO!`);
+            speak(`Uau, ${appState.config.child_name || 'Campeão'}! O foguete subiu até a estrela! Agora Fase 2: gire a rodinha para BAIXO!`);
             
             setTimeout(() => {
               wheelPhase = 2;
@@ -9044,7 +9044,7 @@
             inst.innerHTML = '🏆 MESTRE DA RODINHA DO MOUSE! Parabéns!';
             inst.style.color = '#4ade80';
             vehicle.textContent = '💎';
-            speak(`Sensacional, ${appState.config.child_name || 'Kaleo'}! Você dominou o scroll para cima e para baixo!`);
+            speak(`Sensacional, ${appState.config.child_name || 'Campeão'}! Você dominou o scroll para cima e para baixo!`);
           }
         }
       }
@@ -9562,7 +9562,7 @@
             if (melodyIdx >= activeMelody.notes.length) {
               addStar(1);
               updateSkyPrompt(`🏆 Parabéns! Você tocou "${activeMelody.title}" todinha!`, '#34d399');
-              speak(`Muito bem, ${appState.config.child_name || 'Kaleo'}! Você tocou a música todinha como um verdadeiro maestro!`);
+              speak(`Muito bem, ${appState.config.child_name || 'Campeão'}! Você tocou a música todinha como um verdadeiro maestro!`);
               activeMelody = null;
               highlightKey(null);
             } else {
@@ -9771,7 +9771,7 @@
 
         setTimeout(() => {
           addStar(1);
-          speak(`Que melodia incrível você inventou, ${appState.config.child_name || 'Kaleo'}! Ganhou +1 Estrela!`);
+          speak(`Que melodia incrível você inventou, ${appState.config.child_name || 'Campeão'}! Ganhou +1 Estrela!`);
         }, recordedNotes.length * 380 + 400);
       };
 
@@ -9953,7 +9953,7 @@
       playTone(523, 100);
       pratoItensSelecionados = [];
       abaAlimentoAtiva = 'proteina';
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       speak(`Bem-vindo ao Prato dos Super Campeões, herói ${childName}! Escolha os alimentos ao lado para colocar no seu prato e ganhar moedas de ouro!`);
 
@@ -9963,7 +9963,7 @@
     }
 
     function renderizarTelaPrato(body) {
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       // Agrupa alimentos no prato
       const gruposNoPrato = {
@@ -9992,7 +9992,7 @@
             <!-- TOPO: STATUS E LIMPAR -->
             <div style="display:flex; align-items:center; justify-content:space-between;">
               <div style="font-size:1.05rem; font-weight:900; color:#fde047; display:flex; align-items:center; gap:6px;">
-                <span>🍽️ Prato do Kaleo</span>
+                <span>🍽️ Prato do Campeão</span>
                 <span style="background:${totalGrupos === 4 ? '#10b981' : '#0284c7'}; color:#fff; font-size:0.8rem; padding:2px 8px; border-radius:999px;">${totalGrupos}/4</span>
               </div>
               <button type="button" class="big-btn" style="background:#475569; padding:4px 10px; font-size:0.8rem;" onclick="limparPratoGame()">🗑️ Limpar</button>
@@ -10122,7 +10122,7 @@
     }
 
     async function avaliarPratoFinal() {
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
       if (!pratoItensSelecionados.length) {
         speak(`Coloque alguns alimentos gostosos no prato primeiro, ${childName}!`);
         return;
@@ -10150,7 +10150,7 @@
           falaBox.innerHTML = `🏆 <span style="color:#fde047; font-weight:900;">PRATO DE SUPER CAMPEÃO!</span> +3 Moedas 🪙 e +2 Estrelas ⭐!`;
         }
         speak(msg);
-        mostrarFalaPou(`🌈 Uau, Kaleo! Prato perfeito com todos os grupos nutritivos! (+3 Moedas!)`);
+        mostrarFalaPou(`🌈 Uau, Campeão! Prato perfeito com todos os grupos nutritivos! (+3 Moedas!)`);
       } else if (grupos.size >= 3) {
         playTone(659, 150);
         addStarReward(1);
@@ -10174,7 +10174,7 @@
 
     function openPersonalHygieneGame() {
       playTone(587, 100);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       speak(`Bem-vindo à Academia de Higiene Pessoal, herói ${childName}! Cuidar do corpo, lavar as mãos, escovar os dentes e tomar banho são os superpoderes dos verdadeiros campeões! Escolha uma missão para começar!`);
 
@@ -10184,7 +10184,7 @@
     }
 
     function renderizarMenuHigiene(body) {
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       body.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:16px; max-width:960px; margin:0 auto; padding-bottom:14px;">
@@ -10253,7 +10253,7 @@
     function iniciarMissaoLavarMaos() {
       pushModalScreen('🧼 MISSÃO: LAVAR AS MÃOS', (body) => {
         playTone(523, 100);
-        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+        const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
         speak(`Missão: Lavar as Mãos! Toque no sabão e depois nos monstrinhos de germes para mandar todos embora com água e espuma!`);
 
@@ -10328,7 +10328,7 @@
     function iniciarMissaoEscovarDentes() {
       pushModalScreen('🪥 MISSÃO: ESCOVAR OS DENTES', (body) => {
         playTone(587, 100);
-        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+        const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
         speak(`Missão: Escovação Mágica dos Dentinhos! Toque nas partes dos dentes para fazer o movimento de trenzinho e vassourinha!`);
 
@@ -10396,7 +10396,7 @@
     function iniciarMissaoSuperBanho() {
       pushModalScreen('🚿 MISSÃO: BANHO DOS CAMPEÕES', (body) => {
         playTone(523, 100);
-        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+        const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
         speak(`Missão: Super Banho dos Campeões! Toque nas etapas para ligar a água morna, passar sabonete, lavar o cabelo e secar os pezinhos!`);
 
@@ -10465,7 +10465,7 @@
     function iniciarMissaoUnhasCabelo() {
       pushModalScreen('✂️ MISSÃO: UNHAS & CABELO', (body) => {
         playTone(523, 100);
-        const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+        const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
         speak(`Missão: Unhas Limpinhas e Penteado de Herói! Cuidar das unhas e do cabelo deixa você estiloso e saudável!`);
 
@@ -11025,7 +11025,7 @@
 
     function openTalkModal() {
       const body = openModal('🐶 CONVERSAR COM O LUCKY (J.A.R.V.I.S.)');
-      speak(`Au au! Olá, ${appState.config.child_name || 'Kaleo'}! Eu sou o Lucky, seu cachorrinho robô! Toque no microfone para falar comigo ou escolha uma brincadeira!`);
+      speak(`Au au! Olá, ${appState.config.child_name || 'Campeão'}! Eu sou o Lucky, seu cachorrinho robô! Toque no microfone para falar comigo ou escolha uma brincadeira!`);
 
       body.innerHTML = `
         <div style="background:#0a192f; border:3px solid #38bdf8; border-radius:18px; padding:12px 18px; font-size:clamp(0.98rem, 1.8vw, 1.25rem); font-weight:800; text-align:center; margin-bottom:12px; min-height:48px; max-height:105px; overflow-y:auto; word-break:break-word; line-height:1.35; display:flex; align-items:center; justify-content:center; scrollbar-width:thin;" id="jarvis-talk-reply">
@@ -11911,7 +11911,7 @@
       palavraSurpresaAtiva = false;
       pushModalScreen('🗣️ FONOAUDIOLOGIA & DICÇÃO DO HERÓI', (body) => {
         playTone(523, 90);
-        speak(`Bem-vindo à Academia de Fala e Dicção, ${appState.config.child_name || 'Kaleo'}! Vamos treinar a boquinha e falar palavras incríveis! Clique no botão roxo se quiser que o Jarvis escolha uma palavra nova para você!`);
+        speak(`Bem-vindo à Academia de Fala e Dicção, ${appState.config.child_name || 'Campeão'}! Vamos treinar a boquinha e falar palavras incríveis! Clique no botão roxo se quiser que o Jarvis escolha uma palavra nova para você!`);
         renderSpeechTrainingBody(body);
       }, true);
     }
@@ -12079,7 +12079,7 @@
       palavraSurpresaAtiva = true;
 
       const item = lista[indiceDiccaoAtual];
-      const nomeCriança = appState.config.child_name || 'Kaleo';
+      const nomeCriança = appState.config.child_name || 'Campeão';
       const palavraNatural = (item.silabas && abaDiccaoAtiva !== 'travalinguas')
         ? item.silabas.join('')
         : item.palavra.replace(/\s*-\s*/g, '');
@@ -12122,7 +12122,7 @@
       if (eyesHappy) eyesHappy.style.display = 'block';
 
       showToast(`🌟 Sensacional! Pronúncia de "${palavraAlvo}" Nota 10! +5 Moedas!`);
-      speak(`Sensacional, super-herói ${appState.config.child_name || 'Kaleo'}! Sua pronúncia e dicção ficaram perfeitas! Você ganhou duas moedas de herói!`);
+      speak(`Sensacional, super-herói ${appState.config.child_name || 'Campeão'}! Sua pronúncia e dicção ficaram perfeitas! Você ganhou duas moedas de herói!`);
 
       try {
         await fetch('/api/fichas/bonificar', {
@@ -12163,7 +12163,7 @@
     async function openWeatherSeasonsModal() {
       playTone(587, 100);
       pushModalScreen('🌤️ CLIMA, GEOGRAFIA & AS 4 ESTAÇÕES', async (body) => {
-        const childName = appState.config.child_name || 'Kaleo';
+        const childName = appState.config.child_name || 'Campeão';
 
         body.innerHTML = `
           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; gap:16px;">
@@ -12182,7 +12182,7 @@
           // Standalone / Offline / Mobile Fallback dinâmico com Open-Meteo
           if (!resClima && navigator.onLine) {
             try {
-              const cid = (appState.config && appState.config.geo_cidade) || 'Campo Largo';
+              const cid = (appState.config && appState.config.geo_cidade) || 'São Paulo';
               const q = encodeURIComponent(cid);
               const gRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${q}&count=1&language=pt&format=json`).then(r => r.json());
               if (gRes && gRes.results && gRes.results[0]) {
@@ -12219,7 +12219,7 @@
             estacao_ano: (new Date().getMonth() >= 2 && new Date().getMonth() <= 4) ? 'Outono' : ((new Date().getMonth() >= 5 && new Date().getMonth() <= 7) ? 'Inverno' : ((new Date().getMonth() >= 8 && new Date().getMonth() <= 10) ? 'Primavera' : 'Verão')),
             conselho_infantil: 'O dia está ótimo para brincar e aprender! Lembre-se de tomar água!',
             acessorio_mascote: 'oculos_sol.png',
-            cidade: (appState.config && appState.config.geo_cidade) || 'Campo Largo',
+            cidade: (appState.config && appState.config.geo_cidade) || 'São Paulo',
             estado: (appState.config && appState.config.geo_estado) || 'Paraná',
             pais: 'Brasil',
             planeta: 'Planeta Terra'
@@ -12236,7 +12236,7 @@
           };
 
           window._lastClimaGeo = clima;
-          const cidadeNome = clima.cidade || (appState.config && appState.config.geo_cidade) || 'Campo Largo';
+          const cidadeNome = clima.cidade || (appState.config && appState.config.geo_cidade) || 'São Paulo';
           const estadoNome = clima.estado || (appState.config && appState.config.geo_estado) || 'Paraná';
           const paisNome = clima.pais || 'Brasil';
 
@@ -12479,7 +12479,7 @@
     }
 
     function falarGeografiaNovamente() {
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
       const c = window._lastClimaGeo || {};
       const cid = c.cidade || (appState.config && appState.config.geo_cidade) || 'São Paulo';
       const est = c.estado || (appState.config && appState.config.geo_estado) || 'São Paulo';
@@ -12489,7 +12489,7 @@
     }
 
     function tocarEstacaoAno(nomeEstacao) {
-      const childName = appState.config.child_name || 'Kaleo';
+      const childName = appState.config.child_name || 'Campeão';
       const box = document.getElementById('estacao-explicacao-box');
 
       const explicacoes = {
@@ -12680,7 +12680,7 @@
       playTone(587, 120);
       setTimeout(() => playTone(880, 160), 120);
       resetInactivityTimer();
-      speak(`Olá, ${appState.config.child_name || 'Kaleu'}! O que vamos explorar hoje?`);
+      speak(`Olá, ${appState.config.child_name || 'Campeão'}! O que vamos explorar hoje?`);
     }
 
     function voltarAoMascoteCentral() {
@@ -12714,7 +12714,7 @@
     function openSolarSystemGame() {
       pushModalScreen('🪐 SISTEMA SOLAR & PLANETAS DO UNIVERSO', (body) => {
         playTone(587, 100);
-        speak(`Aperte os cintos, astronauta ${appState.config.child_name || 'Kaleo'}! O Jarvis está no comando da nossa nave espacial! Vamos explorar os planetas do Sistema Solar!`);
+        speak(`Aperte os cintos, astronauta ${appState.config.child_name || 'Campeão'}! O Jarvis está no comando da nossa nave espacial! Vamos explorar os planetas do Sistema Solar!`);
         renderSolarSystemBody(body);
       }, true);
     }
@@ -12986,7 +12986,7 @@
     function ouvirCuriosidadeSolar() {
       const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
       playTone(659, 100);
-      speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! Pousamos em ${p.nome}! ${p.desc}`);
+      speak(`Atenção, super-herói ${appState.config.child_name || 'Campeão'}! Pousamos em ${p.nome}! ${p.desc}`);
     }
 
     function iniciarQuizSolar() {
@@ -13023,7 +13023,7 @@
       if (escolha === correta) {
         playCelebrationFanfare();
         dispararChuvaCoracoes(50);
-        speak(`Excelente resposta, astronauta ${appState.config.child_name || 'Kaleo'}! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
+        speak(`Excelente resposta, astronauta ${appState.config.child_name || 'Campeão'}! Você acertou na mosca! É ${correta}! Ganhou 5 moedas espaciais!`);
         showToast('🌟 Resposta Correta! +5 Moedas do Tesouro!');
         
         const pEl = document.getElementById('pote-fichas-val');
@@ -13081,7 +13081,7 @@
     function openAnimalSoundsGame() {
       pushModalScreen('🦁 REINO ANIMAL & SONS DA NATUREZA', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo à Expedição dos Bichos, biólogo ${appState.config.child_name || 'Kaleo'}! Escolha um animal para ouvir o som e aprender sobre a natureza!`);
+        speak(`Bem-vindo à Expedição dos Bichos, biólogo ${appState.config.child_name || 'Campeão'}! Escolha um animal para ouvir o som e aprender sobre a natureza!`);
         renderAnimalSoundsBody(body);
       }, true);
     }
@@ -13394,7 +13394,7 @@
     function openMagicClockGame() {
       pushModalScreen('⏰ O RELÓGIO MÁGICO DO TEMPO & HORAS', (body) => {
         playTone(587, 100);
-        speak(`Bem-vindo ao Relógio Mágico, ${appState.config.child_name || 'Kaleo'}! Clique nos números do relógio para mudar a hora e ver o dia virar noite!`);
+        speak(`Bem-vindo ao Relógio Mágico, ${appState.config.child_name || 'Campeão'}! Clique nos números do relógio para mudar a hora e ver o dia virar noite!`);
         renderMagicClockBody(body);
       }, true);
     }
@@ -13607,7 +13607,7 @@
       const bgAudio = document.getElementById('audio-timer-young-love');
       if (bgAudio) { bgAudio.currentTime = 0; bgAudio.play().catch(() => {}); }
 
-      speak(`Desafio dos 30 segundos ativado, herói ${appState.config.child_name || 'Kaleo'}! Missão: guarde 3 brinquedos ou dê 5 pulos bem altos antes do tempo acabar! Valendo!`);
+      speak(`Desafio dos 30 segundos ativado, herói ${appState.config.child_name || 'Campeão'}! Missão: guarde 3 brinquedos ou dê 5 pulos bem altos antes do tempo acabar! Valendo!`);
 
       box.innerHTML = `
         <div style="font-size:1.15rem; font-weight:900; color:#fdba74;">⚡ DESAFIO DOS 30 SEGUNDOS DO HERÓI!</div>
@@ -13702,7 +13702,7 @@
       errosDetetiveEncontrados = [];
       pushModalScreen('🕵️ DETETIVE STARK: JOGO DOS 7 ERROS', (body) => {
         playTone(523, 100);
-        speak(`Atenção, super detetive ${appState.config.child_name || 'Kaleo'}! Abra bem os olhinhos de águia! Encontre os 7 detalhes diferentes na cena da direita!`);
+        speak(`Atenção, super detetive ${appState.config.child_name || 'Campeão'}! Abra bem os olhinhos de águia! Encontre os 7 detalhes diferentes na cena da direita!`);
         renderDetectiveErrorsBody(body);
       }, true);
     }
@@ -13797,7 +13797,7 @@
       if (errosDetetiveEncontrados.length >= 7) {
         playCelebrationFanfare();
         dispararChuvaCoracoes(70);
-        speak(`Incrível, super detetive ${appState.config.child_name || 'Kaleo'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 2 moedas de ouro!`);
+        speak(`Incrível, super detetive ${appState.config.child_name || 'Campeão'}! Você usou seus olhos de águia e encontrou todos os 7 erros! Ganhou 2 moedas de ouro!`);
         showToast('🏆 Missão Cumprida! +10 Moedas de Ouro!');
         
         // Bonificação imediata no pote visual (0ms)
@@ -13847,7 +13847,7 @@
     function openScienceLabGame() {
       pushModalScreen('🔬 LABORATÓRIO DE MISTURAS & CIÊNCIAS', (body) => {
         playTone(659, 100);
-        speak(`Bem-vindo ao Laboratório Científico Stark, cientista ${appState.config.child_name || 'Kaleo'}! Vamos misturar poções mágicas, criar a erupção do vulcão e brincar com ímãs!`);
+        speak(`Bem-vindo ao Laboratório Científico Stark, cientista ${appState.config.child_name || 'Campeão'}! Vamos misturar poções mágicas, criar a erupção do vulcão e brincar com ímãs!`);
         renderScienceLabBody(body);
       }, true);
     }
@@ -14174,7 +14174,7 @@
       if (desafioCaldeiraoAtual && receita.nome.includes(desafioCaldeiraoAtual.toUpperCase())) {
         setTimeout(() => {
           playCelebrationFanfare();
-          speak(`Sensacional, super cientista ${appState.config.child_name || 'Kaleu'}! Você completou o Desafio do Mago e criou a cor ${receita.nome}! Ganhou moedas bônus!`);
+          speak(`Sensacional, super cientista ${appState.config.child_name || 'Campeão'}! Você completou o Desafio do Mago e criou a cor ${receita.nome}! Ganhou moedas bônus!`);
           showToast('🌟 Desafio do Mago Cumprido! +10 Moedas!');
         }, 1200);
         desafioCaldeiraoAtual = null;
@@ -14259,7 +14259,7 @@
         banner.style.color = '#fde047';
         banner.textContent = txt;
       }
-      speak(`Atenção, Mago ${appState.config.child_name || 'Kaleu'}! O seu desafio é misturar duas poções para criar a cor ${desafioCaldeiraoAtual}! Quais cores você vai misturar?`);
+      speak(`Atenção, Mago ${appState.config.child_name || 'Campeão'}! O seu desafio é misturar duas poções para criar a cor ${desafioCaldeiraoAtual}! Quais cores você vai misturar?`);
     }
 
     function renderExperimentoVulcao() {
@@ -14469,7 +14469,7 @@
       posPecaXadrez = { r: 2, c: 2 };
       pushModalScreen('♟️ ACADEMIA DE XADREZ DO PEQUENO MESTRE', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo ao Reino do Xadrez, pequeno grande mestre ${appState.config.child_name || 'Kaleo'}! Clique nas estrelinhas verdes para ver a peça se mover pelo tabuleiro!`);
+        speak(`Bem-vindo ao Reino do Xadrez, pequeno grande mestre ${appState.config.child_name || 'Campeão'}! Clique nas estrelinhas verdes para ver a peça se mover pelo tabuleiro!`);
         renderChessAcademyBody(body);
       }, true);
     }
@@ -14613,7 +14613,7 @@
     function concluirDesafioXadrez() {
       playCelebrationFanfare();
       dispararChuvaCoracoes(50);
-      speak(`Xeque-mate no tédio, mestre do xadrez ${appState.config.child_name || 'Kaleo'}! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
+      speak(`Xeque-mate no tédio, mestre do xadrez ${appState.config.child_name || 'Campeão'}! Você aprendeu as jogadas certas e ganhou 5 moedas reais!`);
       showToast('♟️ Mestre do Xadrez! +2 Moedas!');
       const pEl = document.getElementById('pote-fichas-val');
       if (pEl) pEl.textContent = parseInt(pEl.textContent || '0') + 2;
@@ -14665,7 +14665,7 @@
       ferramentaDinoAtiva = 'martelo';
       pushModalScreen('🦖 PARQUE DOS DINOSSAUROS & MUSEU STARK', (body) => {
         playTone(440, 100);
-        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Kaleo'}! Escolha sua ferramenta de escavação e desenterre os ossos para reconstruir o dinossauro no museu!`);
+        speak(`Atenção, paleontólogo ${appState.config.child_name || 'Campeão'}! Escolha sua ferramenta de escavação e desenterre os ossos para reconstruir o dinossauro no museu!`);
         renderDinosaurFossilsBody(body);
       }, true);
     }
@@ -14903,7 +14903,7 @@
         playCelebrationFanfare();
         dispararChuvaCoracoes(60);
         const d = BANCO_DINOSSAUROS[dinoIdx];
-        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Kaleo'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 2 moedas de ouro!`);
+        speak(`Incrível, super paleontólogo ${appState.config.child_name || 'Campeão'}! Você restaurou o esqueleto fóssil do ${d.nome}! Ele agora está vivo na galeria do museu! Ganhou 2 moedas de ouro!`);
         showToast('🦖 Fóssil 100% Restaurado! +10 Moedas!');
 
         // Bonificação imediata no pote (0ms)
@@ -15139,7 +15139,7 @@
     function openMathMasterGame() {
       pushModalScreen('🧮 MESTRE DA MATEMÁTICA COM DEDINHOS (+, -, ×, ÷)', (body) => {
         playTone(523, 100);
-        speak(`Bem-vindo ao Laboratório de Matemática Stark, super herói ${appState.config.child_name || 'Kaleo'}! Vamos aprender a somar, diminuir e contar nos dedinhos das mãos!`);
+        speak(`Bem-vindo ao Laboratório de Matemática Stark, super herói ${appState.config.child_name || 'Campeão'}! Vamos aprender a somar, diminuir e contar nos dedinhos das mãos!`);
         mathOpAtual = 'soma';
         mathAcertosContador = 0;
         mathVisualMode = 'dedinhos';
@@ -15766,7 +15766,7 @@
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
-        const crianca = appState.config.child_name || 'Kaleo';
+        const crianca = appState.config.child_name || 'Campeão';
         speak(`Motores roncando, piloto ${crianca}! Use as setas ou toque na pista para desviar dos cones, pegar moedas e acelerar com o Nitro Turbo!`);
         renderTurboRacingBody(body);
       }, true, () => encerrarCorridaTurbo());
@@ -16282,7 +16282,7 @@
       playCelebrationFanfare();
       dispararChuvaCoracoes(60);
 
-      const crianca = appState.config.child_name || 'Kaleo';
+      const crianca = appState.config.child_name || 'Campeão';
       speak(`Sensacional, super piloto ${crianca}! Você cruzou a linha de chegada em primeiro lugar e conquistou o Grande Troféu Stark! Ganhou 3 moedas de ouro!`);
       showToast('🏆 GRANDE PRÊMIO CONQUISTADO! +3 MOEDAS!');
 
@@ -16341,7 +16341,7 @@
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
-        const crianca = appState.config.child_name || 'Kaleo';
+        const crianca = appState.config.child_name || 'Campeão';
         speak(`Sistemas de tiro armados, comandante ${crianca}! Mova a nave com as setas ou deslize na tela, destrua os drones alienígenas e dispare o Turbo Laser!`);
         renderGalacticDefenderBody(body);
       }, true, () => encerrarDefensorGalactico());
@@ -16871,7 +16871,7 @@
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
-        const crianca = appState.config.child_name || 'Kaleo';
+        const crianca = appState.config.child_name || 'Campeão';
         speak(`Reator quântico energizado, ${crianca}! Rebata a esfera na base magnética, destrua os blocos de vibranium e colete power-ups turbo!`);
         renderArkanoidBody(body);
       }, true, () => encerrarReatorArkanoid());
@@ -17414,7 +17414,7 @@
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
-        const crianca = appState.config.child_name || 'Kaleo';
+        const crianca = appState.config.child_name || 'Campeão';
         speak(`Propulsores ativados, ${crianca}! Toque na tela para voar contra a gravidade, passe pelos portais e pegue os anéis turbo!`);
         renderJetpackBody(body);
       }, true, () => encerrarJetpackStark());
@@ -17886,7 +17886,7 @@
         playTone(523, 100);
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(784, 150), 200);
-        const crianca = appState.config.child_name || 'Kaleo';
+        const crianca = appState.config.child_name || 'Campeão';
         speak(`Circuito quântico conectado, piloto ${crianca}! Use as setas para guiar a corrente de luz, absorva os núcleos e ative o Turbo Sprint!`);
         renderNeonSnakeBody(body);
       }, true, () => encerrarCircuitoNeon());
@@ -18490,7 +18490,7 @@
       const opcoes = embaralhadas.slice(0, 4);
       formasAlvoAtual = opcoes[Math.floor(Math.random() * opcoes.length)];
 
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
       const promptFala = `Toque no ${formasAlvoAtual.forma} ${formasAlvoAtual.cor}!`;
 
       stage.innerHTML = `
@@ -18912,7 +18912,7 @@
           body: JSON.stringify({ quantidade: 10, motivo: 'tangram_concluido' })
         }).catch(() => null);
 
-        const crianca = appState.config.child_name || 'Kaleo';
+        const crianca = appState.config.child_name || 'Campeão';
         speak(`Sensacional, super ${crianca}! Você encaixou todas as 7 peças do Tangram! Ganhou 10 moedas de ouro!`);
       }
     }
@@ -19530,7 +19530,7 @@
         });
         atualizarAcessorioVisual(null);
         showToast('Robô Jarvis agora está sem nenhum acessório!');
-        speak(`Prontinho, ${appState.config.child_name || 'Kaleo'}! Tirei todos os acessórios do Jarvis!`);
+        speak(`Prontinho, ${appState.config.child_name || 'Campeão'}! Tirei todos os acessórios do Jarvis!`);
         carregarConteudoAbaLoja();
       } catch (e) {}
     }
@@ -19625,7 +19625,7 @@
           const tEl = document.getElementById('jarvis-eat-title');
           if (tEl) tEl.textContent = '🔋 100% CARREGADO & PRONTO!';
 
-          speak(`Huuuum! Bateria recarregada a 100%! Que super energia gostosa, ${appState.config.child_name || 'Kaleo'}! Meus circuitos estão no máximo!`);
+          speak(`Huuuum! Bateria recarregada a 100%! Que super energia gostosa, ${appState.config.child_name || 'Campeão'}! Meus circuitos estão no máximo!`);
         }, 1100);
 
         // 3. Finaliza animação e remove overlay
@@ -19668,7 +19668,7 @@
           if (d.comida || d.tipo === 'comida') {
             await animarJarvisComendoConsumivel(itemId, nome, icone);
           } else {
-            speak(`Uau, ${appState.config.child_name || 'Kaleo'}! Eu adorei o ${nome}! Ficou incrível em mim!`);
+            speak(`Uau, ${appState.config.child_name || 'Campeão'}! Eu adorei o ${nome}! Ficou incrível em mim!`);
           }
           await carregarConteudoAbaLoja();
         } else {
@@ -19690,7 +19690,7 @@
           playTone(784, 160);
           showToast(d.mensagem);
           atualizarAcessorioVisual(d.acessorio_atual);
-          speak(`Prontinho, Kaleu! Já vesti o ${nome}! O que achou?`);
+          speak(`Prontinho, Campeão! Já vesti o ${nome}! O que achou?`);
           await carregarConteudoAbaLoja();
         }
       } catch (e) {}
@@ -19708,7 +19708,7 @@
           playTone(523, 140);
           showToast(d.mensagem);
           atualizarAcessorioVisual(null);
-          speak(`Tirei o ${nome} e guardei no meu armário, Kaleu!`);
+          speak(`Tirei o ${nome} e guardei no meu armário, Campeão!`);
           await carregarConteudoAbaLoja();
         }
       } catch (e) {}
@@ -19767,11 +19767,11 @@
             playTone(659, 150);
             const quem = msg.remetente || 'papai';
             if (tipo === 'video') {
-              speak(`Kaleo! O ${quem} enviou um vídeo com muito carinho para você assistir!`);
+              speak(`Campeão! O ${quem} enviou um vídeo com muito carinho para você assistir!`);
             } else if (tipo === 'audio') {
-              speak(`Kaleo! O ${quem} gravou uma mensagem de voz para você ouvir!`);
+              speak(`Campeão! O ${quem} gravou uma mensagem de voz para você ouvir!`);
             } else {
-              speak(`Kaleo! Tem uma cartinha especial do ${quem} esperando por você!`);
+              speak(`Campeão! Tem uma cartinha especial do ${quem} esperando por você!`);
             }
           }
         } else {
@@ -19996,7 +19996,7 @@
                   relModal.style.display = 'flex';
                   pararTodosAudiosESpeech();
                   playTone(587, 100);
-                  speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! O Cinema Stark foi liberado pelos seus pais! Você gostaria de assistir agora?`);
+                  speak(`Atenção, super-herói ${appState.config.child_name || 'Campeão'}! O Cinema Stark foi liberado pelos seus pais! Você gostaria de assistir agora?`);
                 }
               }
             }
@@ -20068,7 +20068,7 @@
         bipStep++;
       }, 700);
 
-      speak(`Atenção, super-herói ${appState.config.child_name || 'Kaleo'}! Alarme de rotina ativado! ${alarme.mensagem}`);
+      speak(`Atenção, super-herói ${appState.config.child_name || 'Campeão'}! Alarme de rotina ativado! ${alarme.mensagem}`);
     }
 
     async function dispensarAlarmeHeroico() {
@@ -20091,7 +20091,7 @@
         setTimeout(() => playTone(659, 100), 100);
         setTimeout(() => playTone(880, 240), 200);
         showToast('🌟 Missão de rotina concluída com louvor! +5 Moedas!');
-        speak(`Muito bem, ${appState.config.child_name || 'Kaleo'}! Missão cumprida! Você ganhou duas moedas de herói!`);
+        speak(`Muito bem, ${appState.config.child_name || 'Campeão'}! Missão cumprida! Você ganhou duas moedas de herói!`);
         atualizarPoteVisual();
       } catch (e) {}
     }
@@ -20103,7 +20103,7 @@
           <div style="text-align:center; padding:16px;">
             <div style="font-size:4rem;">🏎️🧱</div>
             <div style="font-size:1.3rem; font-weight:900; color:#fff; margin-bottom:12px;">
-              Atenção, Kaleu! Missão Guardar Brinquedos Ativada pelo Papai!
+              Atenção, Campeão! Missão Guardar Brinquedos Ativada pelo Papai!
             </div>
             <div style="font-size:1.1rem; color:#facc15; margin-bottom:18px;">
               Como você quer guardar primeiro: os carrinhos ou os blocos de montar?
@@ -20113,7 +20113,7 @@
             </button>
           </div>
         `;
-        speak('Atenção, Kaleu! O papai chamou para a Operação Quarto Limpo! Vamos guardar os brinquedos juntos?');
+        speak('Atenção, Campeão! O papai chamou para a Operação Quarto Limpo! Vamos guardar os brinquedos juntos?');
       } else if (acao === 'calma') {
         openEmotionsCenter();
       }
@@ -20276,7 +20276,7 @@
       const pendentes = total - cumpridas;
       const pct = total > 0 ? Math.round((cumpridas / total) * 100) : 0;
       const moedasGanhasHoje = missoes.filter(m => Boolean(m.cumprida)).reduce((acc, m) => acc + (m.recompensa_moedas || 0), 0);
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
 
       // Atualiza badge de missões no topo do HUD
       if (typeof atualizarBadgeMissoesTop === 'function') {
@@ -20457,7 +20457,7 @@
       const m = (missoesHeroiCache || []).find(x => x.id === id);
       if (!m || m.cumprida) return;
 
-      const childName = (appState.config && appState.config.child_name) || 'Kaleo';
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
       const moedas = m.recompensa_moedas || 5;
 
       // 1. Efeitos imediatos em 0ms (Web Audio API + Dopamina de Confetes)
@@ -20526,7 +20526,7 @@
       const minutos = agora.getMinutes();
       if ((horas > 20 || (horas === 20 && minutos >= 30)) && !avisouModoDormirHoje) {
         avisouModoDormirHoje = true;
-        const childName = (appState.config && appState.config.child_name) || 'Kaleu';
+        const childName = (appState.config && appState.config.child_name) || 'Campeão';
         speak(`Atenção super-herói ${childName}! O relógio dos heróis bateu 20h30! É hora de colocar o pijaminha quentinho, escovar os dentes e se preparar para descansar! O Jarvis vai descansar os propulsores com você!`);
         try {
           fetch('/api/admin/hardware/filtro_luz', {
@@ -20602,8 +20602,8 @@
           body: JSON.stringify({ rotina_id: 'dente_manha' })
         });
         const d = await res.json();
-        showToast('✨ Parabéns, Kaleu! Dentinhos brilhando como diamantes!');
-        speak('Parabéns, Kaleu! Seus dentes ficaram limpinhos e você ganhou 10 moedas de herói!');
+        showToast('✨ Parabéns, Campeão! Dentinhos brilhando como diamantes!');
+        speak('Parabéns, Campeão! Seus dentes ficaram limpinhos e você ganhou 10 moedas de herói!');
         atualizarPoteVisual();
       } catch (e) {}
     }
@@ -20622,7 +20622,7 @@
       const m = document.getElementById('media-time-release-modal');
       if (m) m.style.display = 'none';
       playTone(523, 80);
-      speak(`Combinado, ${appState.config.child_name || 'Kaleo'}! Vamos continuar nos divertindo com as nossas brincadeiras!`);
+      speak(`Combinado, ${appState.config.child_name || 'Campeão'}! Vamos continuar nos divertindo com as nossas brincadeiras!`);
     }
 
     // =========================================================================

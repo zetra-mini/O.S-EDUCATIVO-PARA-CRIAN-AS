@@ -52,7 +52,7 @@ class EdgeAIEngine:
         Classifica um desenho vindo da Lousa Mágica Neon.
         Recebe a imagem em formato dataURL (base64) e analisa
         a silhueta, densidade, aspecto e características do traço.
-        Retorna nome amigável, emoji, elogio para Kaleo e moedas.
+        Retorna nome amigável, emoji, elogio para Campeão e moedas.
         """
         if not imagem_base64:
             return {"ok": False, "erro": "Imagem vazia"}
@@ -101,7 +101,7 @@ class EdgeAIEngine:
                 "classe": "sol",
                 "emoji": "☀️",
                 "titulo": "Sol Brilhante",
-                "elogio": "Bip bip, super Kaleo! O Jarvis viu que você desenhou um lindo Sol radiante e quentinho!",
+                "elogio": "Bip bip, super Campeão! O Jarvis viu que você desenhou um lindo Sol radiante e quentinho!",
                 "moedas": 2
             },
             {
@@ -115,7 +115,7 @@ class EdgeAIEngine:
                 "classe": "coracao",
                 "emoji": "❤️",
                 "titulo": "Coração Cheio de Amor",
-                "elogio": "Que lindo, Kaleo! Um coração quentinho cheio de carinho para o papai e a mamãe!",
+                "elogio": "Que lindo, Campeão! Um coração quentinho cheio de carinho para o papai e a mamãe!",
                 "moedas": 2
             },
             {

@@ -3,7 +3,7 @@ Módulo de Detecção da Palavra-Chave 'Jarvis' (Wake Word) e Vigilância de Áu
 Projetado para rodar em thread separada sem consumir CPU excessiva do Intel Atom:
 1. Suporte a Picovoice Porcupine (se chave configurada).
 2. Fallback desacoplado para escuta Web (Web Speech API no navegador) e eventos leves.
-3. Notificação instantânea para o frontend ao detectar o chamado do Kaleu.
+3. Notificação instantânea para o frontend ao detectar o chamado do Campeão.
 """
 
 import os

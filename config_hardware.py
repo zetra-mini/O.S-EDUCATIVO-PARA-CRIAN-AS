@@ -402,7 +402,7 @@ class HardwareManager:
             return {"sucesso": False, "erro": str(e)}
 
     def aplicar_filtro_luz_noturna(self, ativar: bool = True) -> Dict[str, Any]:
-        """Aplica filtro de luz noturna quente (3500K) para proteção ocular do Kaleu."""
+        """Aplica filtro de luz noturna quente (3500K) para proteção ocular do Campeão."""
         if "linux" not in SISTEMA:
             return {"sucesso": True, "ativo": ativar}
 

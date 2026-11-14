@@ -164,7 +164,7 @@ class DatabaseManager:
             gc.collect()
 
     def inicializar_tabelas(self) -> None:
-        """Cria e estrutura todas as tabelas necessárias para o ecossistema educativo do Kaleu."""
+        """Cria e estrutura todas as tabelas necessárias para o ecossistema educativo do Campeão."""
         conn = sqlite3.connect(self.db_path, timeout=5.0)
         configurar_pragmas(conn)
         cursor = conn.cursor()
@@ -472,7 +472,7 @@ class DatabaseManager:
             """
             CREATE TABLE IF NOT EXISTS galeria_arte (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                titulo TEXT DEFAULT 'Obra de Arte do Kaleu',
+                titulo TEXT DEFAULT 'Obra de Arte do Campeão',
                 imagem_base64 TEXT NOT NULL,
                 data_dia TEXT NOT NULL,
                 hora TEXT NOT NULL,
@@ -583,7 +583,7 @@ class DatabaseManager:
                 (24, 6, "Festa Junina & Tradições", "brasil", "Pula a fogueira com alegria e comidinhas de milho gostosas!", "chapeu_palha.png", "quiz", 20),
                 (20, 7, "Dia do Amigo & Espaço", "ciencia", "Um viva para os grandes amigos que viajam com a gente pelo universo!", "capacete_espaco.png", "quiz", 20),
                 (21, 9, "Dia da Árvore", "natureza", "As árvores dão sombra fresquinha e ar puro para respirarmos bem fundo!", "folhinha.png", "missao_real", 20),
-                (12, 10, "Dia das Crianças & Imaginação", "brasil", "Hoje o dia é todo seu, Kaleu! Muita brincadeira, sorrisos e afeto!", "coroa_ouro.png", "minigame", 30),
+                (12, 10, "Dia das Crianças & Imaginação", "brasil", "Hoje o dia é todo seu, Campeão! Muita brincadeira, sorrisos e afeto!", "coroa_ouro.png", "minigame", 30),
                 (29, 10, "Dia Nacional do Livro", "brasil", "Cada história é uma nave espacial que nos leva a lugares mágicos!", "livro_magico.png", "missao_real", 25),
             ]
             cursor.executemany(
@@ -856,7 +856,7 @@ def cumprir_missao_rotina(missao_id: int, data_dia: Optional[str] = None) -> Dic
         (int(missao_id), dia, hora, moedas)
     )
 
-    # Credita as moedas no pote de fichas do Kaleu
+    # Credita as moedas no pote de fichas do Campeão
     from economia_fichas import TokenEconomyManager
     econ = TokenEconomyManager(db)
     status_pote = econ.creditar_fichas(moedas, f"Missão cumprida: {m['titulo']}", categoria="MISSAO")
@@ -883,11 +883,11 @@ def cumprir_missao_rotina(missao_id: int, data_dia: Optional[str] = None) -> Dic
 # ==============================================================================
 
 def salvar_desenho_arte(imagem_base64: str, titulo: str = "Desenho Lousa Neon") -> Dict[str, Any]:
-    """Salva um desenho feito pelo Kaleu no banco de dados e adiciona à linha do tempo."""
+    """Salva um desenho feito pelo Campeão no banco de dados e adiciona à linha do tempo."""
     import datetime
     dia = datetime.date.today().isoformat()
     hora = datetime.datetime.now().strftime("%H:%M")
-    tit = (titulo or "Desenho do Kaleu").strip()
+    tit = (titulo or "Desenho do Campeão").strip()
 
     sql = """
         INSERT INTO galeria_arte (titulo, imagem_base64, data_dia, hora)
@@ -927,7 +927,7 @@ def excluir_desenho_arte(arte_id: int) -> bool:
 # ==============================================================================
 
 def registrar_atividade_linha_tempo(tipo: str, titulo: str, descricao: str = "", icone: str = "🌟") -> None:
-    """Registra uma atividade recente do Kaleu na linha do tempo diária para os pais."""
+    """Registra uma atividade recente do Campeão na linha do tempo diária para os pais."""
     import datetime
     dia = datetime.date.today().isoformat()
     hora = datetime.datetime.now().strftime("%H:%M")
@@ -945,7 +945,7 @@ def registrar_atividade_linha_tempo(tipo: str, titulo: str, descricao: str = "",
 
 
 def listar_linha_tempo(data_dia: Optional[str] = None, limite: int = 50) -> List[Dict[str, Any]]:
-    """Consulta a linha do tempo de atividades do Kaleu para uma determinada data."""
+    """Consulta a linha do tempo de atividades do Campeão para uma determinada data."""
     import datetime
     dia = data_dia or datetime.date.today().isoformat()
     sql = """

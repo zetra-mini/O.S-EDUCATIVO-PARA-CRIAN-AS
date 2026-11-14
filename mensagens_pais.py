@@ -1,6 +1,6 @@
 """
 Módulo de Presença Paterna e Mensagens Remotas da Família.
-Transforma o computador em uma ponte afetiva segura entre o pai/mãe e o Kaleu:
+Transforma o computador em uma ponte afetiva segura entre o pai/mãe e o Campeão:
 1. Tabela mensagens_familia no SQLite WAL.
 2. Ciclo de status em tempo real: ENVIADA -> RECEBIDA -> ABERTA.
 3. Rastreamento com hora exata para visualização no celular dos pais.
@@ -192,7 +192,7 @@ class FamilyMessagesManager:
             "id": msg_id,
             "tipo": tipo,
             "caminho_midia": caminho_midia,
-            "mensagem": f"Recado de {tipo} enviado com carinho para o netbook do Kaleo!",
+            "mensagem": f"Recado de {tipo} enviado com carinho para o netbook do Campeão!",
         }
 
     def verificar_novas_para_crianca(self) -> Optional[Dict[str, Any]]:

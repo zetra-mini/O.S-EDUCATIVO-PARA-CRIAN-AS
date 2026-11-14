@@ -1,5 +1,9 @@
 # 🚀 J.A.R.V.I.S. Kids OS v3.9.6 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
 
+> 📢 **PROJETO ABERTO PARA A COMUNIDADE — EM DESENVOLVIMENTO ATIVO**  
+> Este projeto agora é público e de código aberto! Se você deseja colaborar com novas ideias, jogos educativos, correções de bugs, histórias infantis ou otimizações para computadores modestos, sua ajuda é muito bem-vinda!  
+> 📜 Consulte nossas **[Diretrizes de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md)** e o **[Código de Conduta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)** para conhecer os pilares arquiteturais inegociáveis.
+
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
 ---
@@ -172,7 +176,7 @@ Inspirado na arquitetura do **TensorFlow Lite**, **XNNPACK** e **QuickDraw**, o 
 
 ### 🔮 1. Lousa Mágica Inteligente com Visão de Desenhos (QuickDraw Edge)
 - **Botão `🔮 O que o Jarvis vê?`:** A criança desenha livremente na Lousa Neon e clica no botão mágico. A IA de borda analisa a imagem instantaneamente e o Jarvis reconhece o que foi desenhado (*Sol, Estrela, Coração, Foguete, Casinha, Dinossauro, Peixinho, Florzinha*).
-- **Elogio Falado & Recompensa Gamificada:** O Jarvis fala em voz alta elogiando a imaginação do pequeno herói (*"Bip bip, super Kaleo! O Jarvis viu que você desenhou um lindo Sol radiante e quentinho!"*), dispara confetes 2D e adiciona +2 moedas de ouro no Pote do Tesouro.
+- **Elogio Falado & Recompensa Gamificada:** O Jarvis fala em voz alta elogiando a imaginação do pequeno herói (*"Bip bip, super Campeão! O Jarvis viu que você desenhou um lindo Sol radiante e quentinho!"*), dispara confetes 2D e adiciona +2 moedas de ouro no Pote do Tesouro.
 - **Suporte Total a Touch:** Adicionado suporte nativo a toques de dedos na tela (`touchstart`, `touchmove`, `touchend`), permitindo desenhar com os dedinhos em netbooks touch, tablets e smartphones.
 
 ### 📸 2. Desafio dos Dedinhos com Câmera Mágica (Hand Vision)
@@ -432,6 +436,24 @@ Acessível por qualquer smartphone, tablet ou computador na mesma rede Wi-Fi (`h
 
 ---
 
+## 🤝 Projeto Aberto para a Comunidade & Como Contribuir
+
+O **J.A.R.V.I.S. Kids OS** é um projeto de código aberto em **desenvolvimento ativo**, construído com a missão de transformar computadores esquecidos em supercomputadores educativos para crianças.
+
+Qualquer pessoa da comunidade pode sugerir melhorias, reportar falhas, adicionar novos jogos, criar histórias ilustradas ou propor otimizações de código!
+
+### 📌 Pilares de Desenvolvimento:
+1. **🛡️ Privacidade Infantil Estrita:** Zero coleta de dados, sem nomes reais, fotos ou telemetria invasiva.
+2. **⚡ Performance Ultraleve:** Backend Microdot (< 15MB RAM) e JavaScript puro; fluidez garantida no processador Intel Atom N450.
+3. **📐 Resolução 1024x600:** Nenhuma interface deve esconder botões vitais ou depender de scroll oculto; utilize sempre paginação tátil.
+4. **🔇 Zero Audio Overlap:** Ao fechar qualquer jogo ou atividade, todos os sons, loops de canvas e síntese de voz são cancelados na hora.
+5. **🇧🇷 Idioma Padrão:** Textos e falas exclusivamente em Português do Brasil (pt-BR) com tom acolhedor e encorajador.
+6. **🟢 Nível Fácil por Padrão:** Novos jogos devem sempre iniciar no modo fácil para garantir diversão e confiança à criança.
+
+👉 **Leia o [Guia Completo de Contribuição (CONTRIBUTING.md)](CONTRIBUTING.md) e o nosso [Código de Conduta (CODE_OF_CONDUCT.md)](CODE_OF_CONDUCT.md)** para saber como clonar, testar localmente e abrir seu Pull Request!
+
+---
+
 ## 🛡️ Licença e Dedicação
 
-Desenvolvido com amor, carinho e dedicação paterna para **Kaleo Noah**, unindo a mais avançada psicologia do desenvolvimento infantil à engenharia de software de alta eficiência.
+Desenvolvido com amor, carinho e dedicação paterna para **Super Herói**, unindo a mais avançada psicologia do desenvolvimento infantil à engenharia de software de alta eficiência.

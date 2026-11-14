@@ -65,7 +65,7 @@ class CompanionRoutinesManager:
 
         return {
             "sucesso": True,
-            "mensagem": f"🌟 Parabéns, Kaleu! Missão '{rotina['titulo']}' cumprida com sucesso! (+{fichas} Moedas no Pote!)",
+            "mensagem": f"🌟 Parabéns, Campeão! Missão '{rotina['titulo']}' cumprida com sucesso! (+{fichas} Moedas no Pote!)",
             "fichas_ganhas": fichas,
             "status_pote": token_mgr.obter_status_pote(),
             "status_pet": pet_mgr.obter_status(),
@@ -81,7 +81,7 @@ class CompanionRoutinesManager:
         if motivo == "guardar_brinquedos":
             return {
                 "titulo": "Operação Quarto Limpo & Resgate de Herói",
-                "validacao_emocional": "Eu sei, Kaleu, parar de brincar quando a diversão tá boa é chato mesmo! Mas sabe de uma coisa? Os heróis guardam suas ferramentas para achá-las no próximo treino!",
+                "validacao_emocional": "Eu sei, Campeão, parar de brincar quando a diversão tá boa é chato mesmo! Mas sabe de uma coisa? Os heróis guardam suas ferramentas para achá-las no próximo treino!",
                 "escolha_dirigida": {
                     "pergunta": "Como vamos começar nossa operação?",
                     "opcoes": [

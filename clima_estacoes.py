@@ -19,7 +19,6 @@ from banco_dados import db
 
 # Coordenadas conhecidas das principais capitais e cidades brasileiras (fallback ultra-rápido offline)
 CIDADES_BRASIL = {
-    "campo largo": (-25.4595, -49.5301, "Campo Largo", "PR"),
     "curitiba": (-25.4284, -49.2733, "Curitiba", "PR"),
     "londrina": (-23.3045, -51.1696, "Londrina", "PR"),
     "maringa": (-23.4205, -51.9331, "Maringá", "PR"),
@@ -55,7 +54,7 @@ CIDADES_BRASIL = {
     "vitoria": (-20.3155, -40.3128, "Vitória", "ES"),
 }
 
-DEFAULT_LAT = -25.4595  # Campo Largo / Curitiba (PR) como padrão local da família
+DEFAULT_LAT = -25.4595  # São Paulo / Curitiba (PR) como padrão local da família
 DEFAULT_LON = -49.5301
 
 
@@ -80,7 +79,7 @@ class WeatherSeasonManager:
         self.db = database
         self.lat = lat
         self.lon = lon
-        self.cidade = "Campo Largo"
+        self.cidade = "São Paulo"
         self.estado = "Paraná"
         self.pais = "Brasil"
         self.continente = "América do Sul"

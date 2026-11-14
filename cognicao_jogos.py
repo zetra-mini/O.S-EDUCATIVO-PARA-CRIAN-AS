@@ -35,7 +35,7 @@ CARDS_INICIAIS = [
     ("NUMEROS", "Quantas patinhas tem o cachorrinho ou o gatinho?", "4️⃣ Quatro Patas", ["4️⃣ Quatro Patas", "2️⃣ Duas Patas", "3️⃣ Três Patas", "6️⃣ Seis Patas"]),
     ("NUMEROS", "Quantos dedinhos você tem em uma mãozinha?", "5️⃣ Cinco Dedos", ["5️⃣ Cinco Dedos", "3️⃣ Três Dedos", "2️⃣ Dois Dedos", "🔟 Dez Dedos"]),
     ("LETRAS", "Qual a primeira letra da palavra BOLA?", "⚽ Letra B", ["⚽ Letra B", "🚗 Letra C", "🍎 Letra A", "🌙 Letra M"]),
-    ("LETRAS", "Qual a letrinha que começa o nome do herói KALEO?", "👑 Letra K", ["👑 Letra K", "⚽ Letra B", "☀️ Letra S", "🚀 Letra R"]),
+    ("LETRAS", "Qual a letrinha que começa o nome do assistente JARVIS?", "🤖 Letra J", ["🤖 Letra J", "⚽ Letra B", "☀️ Letra S", "🚀 Letra R"]),
     ("LETRAS", "Qual a letrinha mágica de AVIÃO e AMIGO?", "✈️ Letra A", ["✈️ Letra A", "🦆 Letra P", "🐱 Letra G", "⭐ Letra E"]),
 ]
 
@@ -87,7 +87,7 @@ class CognitionGamesManager:
             pet_mgr.brincar(10, "Semáforo Stark")
             return {
                 "sucesso": True,
-                "mensagem": "⚡ Excelente reflexo e paciência, Kaleu! Você sabe a hora certa de agir!",
+                "mensagem": "⚡ Excelente reflexo e paciência, Campeão! Você sabe a hora certa de agir!",
                 "fichas_ganhas": 3,
                 "saldo": token_mgr.obter_status_pote()["saldo"],
             }
@@ -250,7 +250,7 @@ class CognitionGamesManager:
                 "confetes": True,
                 "fichas_ganhas": 5,
                 "saldo": token_mgr.obter_status_pote()["saldo"],
-                "mensagem": "🎉 Maravilha, Kaleu! Você tem um super ouvido de biólogo! Ganhou +5 Moedas e +1 Estrela!",
+                "mensagem": "🎉 Maravilha, Campeão! Você tem um super ouvido de biólogo! Ganhou +5 Moedas e +1 Estrela!",
             }
         else:
             return {

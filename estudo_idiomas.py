@@ -1,6 +1,6 @@
 """
 Módulo de Estudo Lúdico de Idiomas (Inglês e Espanhol) — Jarvis Kids OS
-Projetado especialmente para Kaleo Noah (~4 anos).
+Projetado especialmente para Super Herói (~4 anos).
 Foco pedagógico:
 1. Imersão visual e sonora com cards táteis e grandes.
 2. Vocabulário essencial do cotidiano infantil: Animais, Cores, Mãozinhas & Números, Comidas, Saudações, Família.
@@ -1025,9 +1025,9 @@ def validar_resposta(palavra_id: str, opcao_escolhida: str, idioma: str = "en") 
             categoria="IDIOMAS",
         )
         if idioma == "en":
-            elogio = f"Great job, Kaleo! You found the {palavra_alvo_texto}! Ganhou +5 fichas para o seu Pote do Tesouro!"
+            elogio = f"Great job, Campeão! You found the {palavra_alvo_texto}! Ganhou +5 fichas para o seu Pote do Tesouro!"
         else:
-            elogio = f"¡Muy bien, Kaleo! ¡Encontraste el {palavra_alvo_texto}! Ganhou +5 fichas para o seu Pote do Tesouro!"
+            elogio = f"¡Muy bien, Campeão! ¡Encontraste el {palavra_alvo_texto}! Ganhou +5 fichas para o seu Pote do Tesouro!"
 
         return {
             "acertou": True,
