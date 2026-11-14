@@ -7025,8 +7025,10 @@
             body: { enabled: false },
             hand: {
               enabled: modo === 'hand',
-              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.25 },
-              landmarks: { modelPath: 'handlandmark-lite.json' }
+              rotation: false,
+              landmarks: true,
+              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.15 },
+              skeleton: { modelPath: 'handlandmark-lite.json' }
             },
             gesture: { enabled: true }
           };
@@ -7047,7 +7049,12 @@
                 emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.20 }
               },
               body: { enabled: false },
-              hand: { enabled: modo === 'hand', detector: { modelPath: 'handtrack.json', minConfidence: 0.20 } }
+              hand: {
+                enabled: modo === 'hand',
+                landmarks: true,
+                detector: { modelPath: 'handtrack.json', minConfidence: 0.15 },
+                skeleton: { modelPath: 'handlandmark-lite.json' }
+              }
             });
             await jarvisHumanInstance.load();
           } catch(e2) {
@@ -7061,6 +7068,9 @@
         if (modo === 'hand') {
           jarvisHumanInstance.config.face.enabled = false;
           jarvisHumanInstance.config.hand.enabled = true;
+          jarvisHumanInstance.config.hand.landmarks = true;
+          jarvisHumanInstance.config.hand.detector = { modelPath: 'handtrack.json', minConfidence: 0.15, maxDetected: 2 };
+          jarvisHumanInstance.config.hand.skeleton = { modelPath: 'handlandmark-lite.json' };
         } else if (modo === 'face_emotion') {
           jarvisHumanInstance.config.face.enabled = true;
           jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.25 };
@@ -7081,30 +7091,49 @@
         let totalDedos = 0;
 
         if (res.hand && res.hand.length > 0) {
-          if (overlay) {
-            const ctx = overlay.getContext('2d');
-            if (ctx) {
-              ctx.clearRect(0, 0, overlay.width, overlay.height);
-              ctx.strokeStyle = '#00f0ff';
-              ctx.lineWidth = 2.5;
-            }
+          const ctx = overlay ? overlay.getContext('2d') : null;
+          if (ctx && overlay) {
+            ctx.clearRect(0, 0, overlay.width, overlay.height);
           }
 
           res.hand.forEach(h => {
-            const lm = h.landmarks || h.keypoints;
-            if (lm && lm.length >= 21) {
+            // Em Human: h.keypoints é o array com as 21 coordenadas [x, y, z]
+            // h.landmarks é o objeto com as análises de curvatura { thumb: { curl, direction }, ... }
+            const rawKps = h.keypoints;
+            let lm = null;
+            if (Array.isArray(rawKps) && rawKps.length >= 21) {
+              lm = rawKps.map(p => {
+                if (Array.isArray(p)) return [p[0], p[1], p[2] || 0];
+                if (p && p.position && Array.isArray(p.position)) return [p.position[0], p.position[1], p.position[2] || 0];
+                if (p && typeof p.x === 'number') return [p.x, p.y, p.z || 0];
+                return [0, 0, 0];
+              });
+            }
+
+            const curls = (h.landmarks && typeof h.landmarks === 'object') ? h.landmarks : null;
+            const estadosDedos = [false, false, false, false, false]; // Polegar, Indicador, Médio, Anelar, Mindinho
+
+            if (lm) {
               const wrist = lm[0];
               const pinkyMcp = lm[17];
 
               // 1. Quatro Dedos Principais: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
               const tips = [8, 12, 16, 20];
               const pips = [6, 10, 14, 18];
+              const nomes = ['index', 'middle', 'ring', 'pinky'];
+
               for (let i = 0; i < 4; i++) {
                 const tip = lm[tips[i]];
                 const pip = lm[pips[i]];
                 const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
                 const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
-                if (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05) {
+                const nome = nomes[i];
+
+                const estendidoGeo = (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05) || (dTipWrist > dPipWrist * 1.15);
+                const estendidoCurl = curls && curls[nome] && (curls[nome].curl === 'none' || curls[nome].curl === 'half');
+
+                if (estendidoGeo || estendidoCurl) {
+                  estadosDedos[i + 1] = true;
                   totalDedos++;
                 }
               }
@@ -7114,29 +7143,62 @@
               const thumbIp  = lm[3];
               const dThumbTipPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
               const dThumbIpPinky  = Math.hypot(thumbIp[0] - pinkyMcp[0], thumbIp[1] - pinkyMcp[1]);
-              if (dThumbTipPinky > dThumbIpPinky * 1.12) {
+              const thumbGeo = (dThumbTipPinky > dThumbIpPinky * 1.08);
+              const thumbCurl = curls && curls.thumb && (curls.thumb.curl === 'none' || curls.thumb.curl === 'half');
+
+              if (thumbGeo || thumbCurl) {
+                estadosDedos[0] = true;
                 totalDedos++;
               }
+
+              // Desenho elegante do esqueleto da mão (feedback visual Stark imediato)
+              if (ctx && overlay) {
+                // Linhas conectando juntas dos dedos
+                const conexoes = [
+                  [0, 1], [1, 2], [2, 3], [3, 4],       // Polegar
+                  [0, 5], [5, 6], [6, 7], [7, 8],       // Indicador
+                  [0, 9], [9, 10], [10, 11], [11, 12],  // Médio
+                  [0, 13], [13, 14], [14, 15], [15, 16],// Anelar
+                  [0, 17], [17, 18], [18, 19], [19, 20] // Mindinho
+                ];
+                ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                conexoes.forEach(([idxA, idxB]) => {
+                  ctx.moveTo(lm[idxA][0], lm[idxA][1]);
+                  ctx.lineTo(lm[idxB][0], lm[idxB][1]);
+                });
+                ctx.stroke();
+
+                // Desenha todos os 21 pontos
+                lm.forEach((pt) => {
+                  ctx.beginPath();
+                  ctx.arc(pt[0], pt[1], 3, 0, Math.PI * 2);
+                  ctx.fillStyle = '#00f0ff';
+                  ctx.fill();
+                });
+
+                // Destaca as 5 pontas dos dedos com cor vibrante (verde = levantado, laranja = dobrado)
+                const tipIndices = [4, 8, 12, 16, 20];
+                tipIndices.forEach((tIdx, dIdx) => {
+                  const pt = lm[tIdx];
+                  const up = estadosDedos[dIdx];
+                  ctx.beginPath();
+                  ctx.arc(pt[0], pt[1], up ? 7 : 4.5, 0, Math.PI * 2);
+                  ctx.fillStyle = up ? '#22c55e' : '#f97316';
+                  ctx.fill();
+                });
+              }
+
+            } else if (curls) {
+              // Fallback se keypoints falhou mas curl existe
+              ['index', 'middle', 'ring', 'pinky'].forEach(f => {
+                if (curls[f] && (curls[f].curl === 'none' || curls[f].curl === 'half')) totalDedos++;
+              });
+              if (curls.thumb && curls.thumb.curl !== 'full') totalDedos++;
             }
           });
 
-          if (overlay) {
-            const ctx = overlay.getContext('2d');
-            if (ctx) {
-              ctx.clearRect(0, 0, overlay.width, overlay.height);
-              ctx.fillStyle = '#00f0ff';
-              res.hand.forEach(h => {
-                const lm = h.landmarks || h.keypoints;
-                if (lm) {
-                  lm.forEach(pt => {
-                    ctx.beginPath();
-                    ctx.arc(pt[0], pt[1], 3, 0, Math.PI * 2);
-                    ctx.fill();
-                  });
-                }
-              });
-            }
-          }
           return totalDedos;
         } else if (overlay) {
           const ctx = overlay.getContext('2d');
@@ -7620,9 +7682,9 @@
     let fcMediaPipeCameraInstance = null;
 
     // Buffer temporal de suavização e histerese (elimina oscilações rápidas)
-    const BUFFER_SMOOTH_SIZE = 7;
-    const TEMPO_ESTABILIDADE_DEDOS_MS = 1100; // Segurar estável por 1.1s para oficializar
-    const COOLDOWN_FALA_CAM_MS = 3000;        // Mínimo de 3.0s entre falas do Jarvis
+    const BUFFER_SMOOTH_SIZE = 5;
+    const TEMPO_ESTABILIDADE_DEDOS_MS = 750;  // Segurar estável por 0.75s para oficializar (rápido e suave no Netbook)
+    const COOLDOWN_FALA_CAM_MS = 2500;        // Mínimo de 2.5s entre falas do Jarvis
 
     let fcHistoricoAmostras = [];
     let fcCandidatoEstavel = -1;
@@ -8218,39 +8280,41 @@
       speak(`Welcome, ${appState.config.child_name || 'Kaleo'}! Vamos aprender palavras mágicas em Inglês e Espanhol!`);
 
       body.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap;">
+        <!-- BARRA SUPERIOR UNIFICADA DE IDIOMAS (DESIGN LIMPO STARK) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap; background:#071224; border:1.5px solid #1e3a63; border-radius:12px; padding:6px 10px;">
           <!-- SELETOR DE IDIOMA -->
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="big-btn" id="btn-lang-en" style="padding:8px 14px; font-size:0.95rem; background:${idiomaAtivo === 'en' ? '#0284c7' : '#1e293b'}; border:2px solid ${idiomaAtivo === 'en' ? '#38bdf8' : '#334155'};" onclick="trocarIdiomaEstudo('en')">
-              🇺🇸 ENGLISH (Inglês)
+          <div style="display:flex; gap:4px; align-items:center;">
+            <span style="font-size:0.75rem; font-weight:900; color:#94a3b8; margin-right:2px;">IDIOMA:</span>
+            <button type="button" class="big-btn" id="btn-lang-en" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:8px; background:${idiomaAtivo === 'en' ? '#0284c7' : '#0f172a'}; border:1.5px solid ${idiomaAtivo === 'en' ? '#38bdf8' : '#334155'};" onclick="trocarIdiomaEstudo('en')">
+              🇺🇸 EN (Inglês)
             </button>
-            <button type="button" class="big-btn" id="btn-lang-es" style="padding:8px 14px; font-size:0.95rem; background:${idiomaAtivo === 'es' ? '#0284c7' : '#1e293b'}; border:2px solid ${idiomaAtivo === 'es' ? '#38bdf8' : '#334155'};" onclick="trocarIdiomaEstudo('es')">
-              🇪🇸 ESPAÑOL (Espanhol)
+            <button type="button" class="big-btn" id="btn-lang-es" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:8px; background:${idiomaAtivo === 'es' ? '#0284c7' : '#0f172a'}; border:1.5px solid ${idiomaAtivo === 'es' ? '#38bdf8' : '#334155'};" onclick="trocarIdiomaEstudo('es')">
+              🇪🇸 ES (Espanhol)
             </button>
           </div>
 
           <!-- SELETOR DE MODO -->
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="big-btn" id="btn-modo-cards" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'cards' ? '#10b981' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'cards' ? '#34d399' : '#334155'};" onclick="trocarModoIdioma('cards')">
-              🃏 Cards Falantes
+          <div style="display:flex; gap:4px; align-items:center;">
+            <button type="button" class="big-btn" id="btn-modo-cards" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:8px; background:${modoIdiomaAtivo === 'cards' ? '#10b981' : '#0f172a'}; border:1.5px solid ${modoIdiomaAtivo === 'cards' ? '#34d399' : '#334155'};" onclick="trocarModoIdioma('cards')">
+              🃏 Cards
             </button>
-            <button type="button" class="big-btn" id="btn-modo-quiz" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'quiz' ? '#f59e0b' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'quiz' ? '#fbbf24' : '#334155'};" onclick="trocarModoIdioma('quiz')">
-              🎯 Adivinhe (+5 🪙)
+            <button type="button" class="big-btn" id="btn-modo-quiz" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:8px; background:${modoIdiomaAtivo === 'quiz' ? '#f59e0b' : '#0f172a'}; border:1.5px solid ${modoIdiomaAtivo === 'quiz' ? '#fbbf24' : '#334155'};" onclick="trocarModoIdioma('quiz')">
+              🎯 Quiz (+5 🪙)
             </button>
-            <button type="button" class="big-btn" id="btn-modo-paises" style="padding:8px 14px; font-size:0.9rem; background:${modoIdiomaAtivo === 'paises' ? '#8b5cf6' : '#1e293b'}; border:2px solid ${modoIdiomaAtivo === 'paises' ? '#a78bfa' : '#334155'};" onclick="trocarModoIdioma('paises')">
-              🌍 Passaporte dos Países
+            <button type="button" class="big-btn" id="btn-modo-paises" style="padding:5px 12px; font-size:0.85rem; font-weight:900; border-radius:8px; background:${modoIdiomaAtivo === 'paises' ? '#8b5cf6' : '#0f172a'}; border:1.5px solid ${modoIdiomaAtivo === 'paises' ? '#a78bfa' : '#334155'};" onclick="trocarModoIdioma('paises')">
+              🌍 Países
             </button>
           </div>
         </div>
 
-        <!-- PÍLULAS DE CATEGORIAS -->
-        <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:12px;" id="lang-cat-pills">
-          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'animais' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'animais' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('animais')">🐶 Animais</button>
-          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'cores' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'cores' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('cores')">🎨 Cores</button>
-          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'numeros' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'numeros' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('numeros')">🖐️ Mãos & Números</button>
-          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'comidas' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'comidas' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('comidas')">🍎 Comidas</button>
-          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'saudacoes' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'saudacoes' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('saudacoes')">👋 Saudações</button>
-          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'familia' ? 'active' : ''}" style="${categoriaIdiomaAtiva === 'familia' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('familia')">👨‍👩‍👦 Família</button>
+        <!-- PÍLULAS DE CATEGORIAS (LINHA ÚNICA COMPACTA COM ROLAGEM SUAVE) -->
+        <div style="display:flex; gap:5px; overflow-x:auto; padding-bottom:6px; margin-bottom:8px; scrollbar-width:none;" id="lang-cat-pills">
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'animais' ? 'active' : ''}" style="padding:4px 10px; font-size:0.8rem; font-weight:800; border-radius:999px; ${categoriaIdiomaAtiva === 'animais' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('animais')">🐶 Animais</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'cores' ? 'active' : ''}" style="padding:4px 10px; font-size:0.8rem; font-weight:800; border-radius:999px; ${categoriaIdiomaAtiva === 'cores' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('cores')">🎨 Cores</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'numeros' ? 'active' : ''}" style="padding:4px 10px; font-size:0.8rem; font-weight:800; border-radius:999px; ${categoriaIdiomaAtiva === 'numeros' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('numeros')">🖐️ Números</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'comidas' ? 'active' : ''}" style="padding:4px 10px; font-size:0.8rem; font-weight:800; border-radius:999px; ${categoriaIdiomaAtiva === 'comidas' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('comidas')">🍎 Comidas</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'saudacoes' ? 'active' : ''}" style="padding:4px 10px; font-size:0.8rem; font-weight:800; border-radius:999px; ${categoriaIdiomaAtiva === 'saudacoes' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('saudacoes')">👋 Saudações</button>
+          <button type="button" class="quick-pill ${categoriaIdiomaAtiva === 'familia' ? 'active' : ''}" style="padding:4px 10px; font-size:0.8rem; font-weight:800; border-radius:999px; ${categoriaIdiomaAtiva === 'familia' ? 'background:#0284c7; color:#fff;' : ''}" onclick="filtrarCategoriaIdioma('familia')">👨‍👩‍👧 Família</button>
         </div>
 
         <!-- ÁREA DE CONTEÚDO PRINCIPAL (CARDS OU QUIZ) -->
@@ -8372,17 +8436,22 @@
           }
 
           stage.innerHTML = `
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; padding:4px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; padding:6px 2px;">
               ${palavras.map(p => `
-                <div class="lang-word-card" onclick="falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')" style="background:#071224; border:2px solid #1e3a8a; border-radius:14px; padding:8px 6px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; cursor:pointer; min-height:185px; max-height:220px; box-sizing:border-box; transition:transform 0.15s, border-color 0.15s; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-                  <div style="font-size:2.2rem; line-height:1; margin-bottom:2px;">${p.icone}</div>
-                  <div style="${p.palavra.length > 10 ? 'font-size:1.05rem;' : 'font-size:1.22rem;'} font-weight:900; color:#38bdf8; letter-spacing:0.3px; line-height:1.15; word-break:break-word;">${p.palavra}</div>
-                  <div style="font-size:0.78rem; color:#facc15; font-style:italic; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${p.pronuncia_som}">"${p.pronuncia_som}"</div>
-                  <div style="font-size:0.85rem; color:#e2e8f0; font-weight:bold; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;" title="${p.pt}">${p.pt}</div>
-                  ${p.gesto ? `<div style="font-size:0.7rem; color:#94a3b8; margin-top:4px; background:#0f172a; padding:3px 6px; border-radius:6px; width:100%; box-sizing:border-box; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${p.gesto}">👉 ${p.gesto}</div>` : ''}
-                  <button type="button" class="big-btn" style="width:100%; margin-top:6px; padding:5px; font-size:0.8rem; background:#0284c7; border-radius:8px;" onclick="event.stopPropagation(); falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')">
-                    🔊 Ouvir
-                  </button>
+                <div class="lang-word-card" onclick="falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')" style="background:#071224; border:2px solid #1e3a8a; border-radius:14px; padding:12px 10px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; cursor:pointer; min-height:205px; box-sizing:border-box; transition:transform 0.15s, border-color 0.15s; box-shadow:0 4px 14px rgba(0,0,0,0.35);">
+                  <div style="display:flex; flex-direction:column; align-items:center; width:100%;">
+                    <div style="font-size:2.8rem; line-height:1; margin-bottom:4px;">${p.icone}</div>
+                    <div style="${p.palavra.length > 10 ? 'font-size:1.15rem;' : 'font-size:1.35rem;'} font-weight:900; color:#38bdf8; letter-spacing:0.3px; line-height:1.15; word-break:break-word;">${p.palavra}</div>
+                    <div style="font-size:0.85rem; color:#facc15; font-style:italic; margin-top:2px;">"${p.pronuncia_som}"</div>
+                    <div style="font-size:0.95rem; color:#e2e8f0; font-weight:bold; margin-top:3px;">${p.pt}</div>
+                  </div>
+                  
+                  <div style="width:100%; margin-top:8px;">
+                    ${p.gesto ? `<div style="font-size:0.78rem; color:#94a3b8; line-height:1.3; background:#0f172a; padding:5px 8px; border-radius:8px; margin-bottom:6px; text-align:center; word-break:break-word;">👉 ${p.gesto}</div>` : ''}
+                    <button type="button" class="big-btn" style="width:100%; padding:6px; font-size:0.85rem; font-weight:800; background:#0284c7; border:1px solid #38bdf8; border-radius:8px;" onclick="event.stopPropagation(); falarPalavraIdioma('${escapeJs(p.palavra)}', '${p.idioma}', '${escapeJs(p.pt)}')">
+                      🔊 Ouvir
+                    </button>
+                  </div>
                 </div>
               `).join('')}
             </div>
@@ -12661,7 +12730,7 @@
               <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
                 🪐 Astres & Planetas
               </div>
-              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:270px; scrollbar-width:thin; padding-right:2px;">
+              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:310px; scrollbar-width:thin; scrollbar-color:#38bdf8 #071224; padding-right:2px;">
                 ${BANCO_SISTEMA_SOLAR.map((item, idx) => `
                   <button type="button" class="big-btn" style="padding:6px 8px; font-size:0.8rem; font-weight:800; border-radius:8px; display:flex; align-items:center; gap:6px; ${idx === corpoSolarIdx ? `background:${item.cor}25; border:1.5px solid ${item.cor}; color:#fff;` : 'background:#0f172a; border:1px solid #1e293b; color:#94a3b8;'}" onclick="selecionarCorpoSolar(${idx})">
                     <span style="font-size:1.15rem; line-height:1;">${item.icon}</span>
@@ -12685,25 +12754,25 @@
             </div>
           </div>
 
-          <!-- PALCO PRINCIPAL DIREITO: PLANETA EM DESTAQUE -->
-          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:2.5px solid ${p.cor}; border-radius:14px; padding:12px 18px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
+          <!-- PALCO PRINCIPAL DIREITO: PLANETA EM DESTAQUE (LAYOUT HARMONIOSO STARK) -->
+          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:2.5px solid ${p.cor}; border-radius:14px; padding:18px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
             
-            <div style="font-size:4rem; line-height:1; filter:drop-shadow(0 0 20px ${p.cor}); animation:pulse 2s infinite;">${p.icon}</div>
-            
-            <div>
-              <div style="display:flex; gap:8px; justify-content:center; align-items:center;">
-                <span style="background:${p.cor}33; color:${p.cor}; border:1px solid ${p.cor}; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">${p.tipo}</span>
-                <span style="background:#1e293b; color:#94a3b8; padding:2px 8px; border-radius:999px; font-size:0.75rem;">🌡️ ${p.temp}</span>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div style="font-size:4.8rem; line-height:1; filter:drop-shadow(0 0 24px ${p.cor}); animation:pulse 2.2s infinite;">${p.icon}</div>
+              
+              <div style="display:flex; gap:8px; justify-content:center; align-items:center; margin-top:2px;">
+                <span style="background:${p.cor}33; color:${p.cor}; border:1.5px solid ${p.cor}; padding:3px 12px; border-radius:999px; font-size:0.8rem; font-weight:900;">${p.tipo}</span>
+                <span style="background:#1e293b; color:#94a3b8; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:700;">🌡️ ${p.temp}</span>
               </div>
-              <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-top:4px;">${p.nome}</div>
+              <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">${p.nome}</div>
             </div>
 
-            <div style="font-size:0.95rem; color:#e2e8f0; max-width:620px; line-height:1.35; background:rgba(0,0,0,0.4); padding:8px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+            <div style="font-size:1.02rem; color:#e2e8f0; max-width:620px; line-height:1.45; background:rgba(0,0,0,0.5); padding:12px 18px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); box-shadow:0 4px 15px rgba(0,0,0,0.3);">
               ${p.desc}
             </div>
 
             <!-- ÁREA DO QUIZ ESPACIAL (SE ATIVO) -->
-            <div id="quiz-astronauta-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:8px; text-align:center; width:100%; max-width:620px;"></div>
+            <div id="quiz-astronauta-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:12px; text-align:center; width:100%; max-width:620px;"></div>
 
           </div>
 
@@ -12979,34 +13048,35 @@
     // JOGO 19: REINO ANIMAL & SONS DA NATUREZA (BIÓLOGO STARK)
     // =========================================================================
     const BANCO_ANIMAIS_STARK = [
-      { id: 'leao', nome: 'Leão Majestoso', rotuloCurto: 'Leão', icon: '🦁', habitat: 'Savana Africana', curiosidade: 'O rei dos animais! O seu rugido real pode ser ouvido a até 8 quilômetros de distância na savana!' },
-      { id: 'elefante', nome: 'Elefante Gentil', rotuloCurto: 'Elefante', icon: '🐘', habitat: 'Florestas & Savanas', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba para beber água, cheirar e fazer carinho nos filhotes!' },
-      { id: 'sapo', nome: 'Sapinho Cantor', rotuloCurto: 'Sapo', icon: '🐸', habitat: 'Lagoas e Rios', curiosidade: 'Os sapos cantam na beira da água e ajudam o planeta comendo mosquitinhos e insetos!' },
-      { id: 'cavalo', nome: 'Cavalo Veloz', rotuloCurto: 'Cavalo', icon: '🐴', habitat: 'Campos e Fazendas', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
-      { id: 'passaro', nome: 'Passarinho Cantador', rotuloCurto: 'Pássaro', icon: '🐦', habitat: 'Copas das Árvores', curiosidade: 'Eles cantam bem cedinho na janela para avisar toda a floresta que um novo dia de luz começou!' },
-      { id: 'arara', nome: 'Arara Azul 🇧🇷', rotuloCurto: 'Arara', icon: '🦜', habitat: 'Pantanal & Florestas', curiosidade: 'Uma das aves mais belas do Brasil! Ela tem penas azul-cobalto brilhantes e voa sempre em casal!' },
-      { id: 'mico', nome: 'Mico-Leão-Dourado 🇧🇷', rotuloCurto: 'Mico', icon: '🐒', habitat: 'Mata Atlântica', curiosidade: 'Tesouro nacional da fauna brasileira com juba dourada! Ele salta com grande agilidade nos galhos altos!' },
-      { id: 'onca', nome: 'Onça-Pintada 🇧🇷', rotuloCurto: 'Onça', icon: '🐆', habitat: 'Amazônia & Pantanal', curiosidade: 'O maior felino das Américas! Ela adora nadar nos rios e tem patas muito silenciosas e fortes!' },
-      { id: 'coruja', nome: 'Coruja Sábia', rotuloCurto: 'Coruja', icon: '🦉', habitat: 'Noite na Floresta', curiosidade: 'As corujas têm olhos enormes que enxergam no escuro e giram a cabecinha quase uma volta inteira!' },
-      { id: 'golfinho', nome: 'Golfinho Curioso', rotuloCurto: 'Golfinho', icon: '🐬', habitat: 'Oceanos Azuis', curiosidade: 'Um dos animais mais inteligentes do planeta! Eles conversam entre si usando assobios e estalos mágicos!' },
-      { id: 'jacare', nome: 'Jacaré do Pantanal 🇧🇷', rotuloCurto: 'Jacaré', icon: '🐊', habitat: 'Rios e Pantanal', curiosidade: 'Ele toma sol na beira do rio para aquecer o corpo e nada com grande agilidade com a cauda!' },
-      { id: 'baleia', nome: 'Baleia Gigante', rotuloCurto: 'Baleia', icon: '🐋', habitat: 'Fundo do Mar', curiosidade: 'A baleia azul é o maior ser vivo que já existiu! Ela canta canções que viajam centenas de quilômetros no mar!' },
-      { id: 'cachorro', nome: 'Cachorrinho Leal', rotuloCurto: 'Cãozinho', icon: '🐶', habitat: 'Lares & Quintais', curiosidade: 'O melhor amigo da criança! Ele protege nossa casa, abana o rabinho feliz e adora carinho!' },
-      { id: 'gato', nome: 'Gatinho Fofo', rotuloCurto: 'Gatinho', icon: '🐱', habitat: 'Casas & Telhados', curiosidade: 'Eles têm bigodes mágicos para equilíbrio e ronronam baixinho quando estão muito calmos e felizes!' },
-      { id: 'vaca', nome: 'Vaquinha Gentil', rotuloCurto: 'Vaquinha', icon: '🐮', habitat: 'Pastos & Fazendas', curiosidade: 'As vaquinhas pastam a grama verdinha, têm amigas inseparáveis e dão leite quentinho e saudável!' },
-      { id: 'pato', nome: 'Patinho Alegre', rotuloCurto: 'Patinho', icon: '🦆', habitat: 'Lagos & Lagoas', curiosidade: 'Suas patinhas funcionam como remos velozes e suas penas têm um óleo natural que não deixa a água molhar!' },
-      { id: 'urso', nome: 'Urso Pardo', rotuloCurto: 'Urso', icon: '🐻', habitat: 'Florestas & Montanhas', curiosidade: 'Os ursos têm um olfato super potente, dormem o inverno todo na caverna e adoram comer mel docinho!' },
-      { id: 'pinguim', nome: 'Pinguim do Gelo', rotuloCurto: 'Pinguim', icon: '🐧', habitat: 'Gelo da Antártida', curiosidade: 'Eles não voam no ar, mas "voam" nadando velozes debaixo da água gelada e escorregam na neve!' },
-      // NOVOS BICHOS ADICIONADOS COM SONS REAIS E PROCEDURAIS
-      { id: 'lobo', nome: 'Lobo-Guará do Cerrado 🇧🇷', rotuloCurto: 'Lobo', icon: '🐺', habitat: 'Cerrado Brasileiro', curiosidade: 'O belo lobo de patas compridas do Brasil! Ele é dócil, adora comer a fruta-do-lobo e tem um uivo lindo!' },
-      { id: 'ovelha', nome: 'Ovelhinha Macia', rotuloCurto: 'Ovelha', icon: '🐑', habitat: 'Pastos & Montanhas', curiosidade: 'Elas têm uma lã quentinha e fofa, andam sempre em rebanho unidas e dizem mééé bem suave!' },
-      { id: 'galo', nome: 'Galo Madrugador', rotuloCurto: 'Galo', icon: '🐓', habitat: 'Sítios & Chácaras', curiosidade: 'O despertador da natureza! Ele bate as asas e canta cocoricó bem forte para acordar a fazenda!' },
-      { id: 'abelha', nome: 'Abelhinha Operária', rotuloCurto: 'Abelha', icon: '🐝', habitat: 'Jardins de Flores', curiosidade: 'As grandes heroínas da natureza! Elas voam de flor em flor, polinizam as plantas e fazem o mel docinho!' },
-      { id: 'macaco', nome: 'Macaco Curioso', rotuloCurto: 'Macaco', icon: '🐵', habitat: 'Florestas Tropicais', curiosidade: 'Super inteligentes e brincalhões! Eles usam o rabo como uma quinta mão para se pendurar nos galhos!' },
-      { id: 'grilo', nome: 'Grilinho Noturno', rotuloCurto: 'Grilo', icon: '🦗', habitat: 'Jardins & Gramados', curiosidade: 'Eles cantam esfregando as asinhas uma na outra como um violino mágico para acalmar a noite!' }
+      { id: 'leao', categoria: 'terra', somReal: true, nome: 'Leão Majestoso', rotuloCurto: 'Leão', icon: '🦁', habitat: 'Savana Africana', curiosidade: 'O rei dos animais! O seu rugido real pode ser ouvido a até 8 quilômetros de distância na savana!' },
+      { id: 'elefante', categoria: 'terra', somReal: true, nome: 'Elefante Gentil', rotuloCurto: 'Elefante', icon: '🐘', habitat: 'Florestas & Savanas', curiosidade: 'O maior animal terrestre do planeta! Ele usa a tromba para beber água, cheirar e fazer carinho nos filhotes!' },
+      { id: 'sapo', categoria: 'agua', somReal: true, nome: 'Sapinho Cantor', rotuloCurto: 'Sapo', icon: '🐸', habitat: 'Lagoas e Rios', curiosidade: 'Os sapos cantam na beira da água e ajudam o planeta comendo mosquitinhos e insetos!' },
+      { id: 'cavalo', categoria: 'terra', somReal: true, nome: 'Cavalo Veloz', rotuloCurto: 'Cavalo', icon: '🐴', habitat: 'Campos e Fazendas', curiosidade: 'Os cavalos têm uma visão incrível, conseguem dormir em pé e são amigos leais dos humanos há milhares de anos!' },
+      { id: 'passaro', categoria: 'aves', somReal: true, nome: 'Passarinho Cantador', rotuloCurto: 'Pássaro', icon: '🐦', habitat: 'Copas das Árvores', curiosidade: 'Eles cantam bem cedinho na janela para avisar toda a floresta que um novo dia de luz começou!' },
+      { id: 'arara', categoria: 'aves', somReal: true, true: true, somReal: true, nome: 'Arara Azul 🇧🇷', rotuloCurto: 'Arara', icon: '🦜', habitat: 'Pantanal & Florestas', curiosidade: 'Uma das aves mais belas do Brasil! Ela tem penas azul-cobalto brilhantes e voa sempre em casal!' },
+      { id: 'mico', categoria: 'terra', somReal: true, nome: 'Mico-Leão-Dourado 🇧🇷', rotuloCurto: 'Mico', icon: '🐒', habitat: 'Mata Atlântica', curiosidade: 'Tesouro nacional da fauna brasileira com juba dourada! Ele salta com grande agilidade nos galhos altos!' },
+      { id: 'onca', categoria: 'terra', somReal: true, nome: 'Onça-Pintada 🇧🇷', rotuloCurto: 'Onça', icon: '🐆', habitat: 'Amazônia & Pantanal', curiosidade: 'O maior felino das Américas! Ela adora nadar nos rios e tem patas muito silenciosas e fortes!' },
+      { id: 'coruja', categoria: 'aves', somReal: true, nome: 'Coruja Sábia', rotuloCurto: 'Coruja', icon: '🦉', habitat: 'Noite na Floresta', curiosidade: 'As corujas têm olhos enormes que enxergam no escuro e giram a cabecinha quase uma volta inteira!' },
+      { id: 'golfinho', categoria: 'agua', somReal: true, nome: 'Golfinho Curioso', rotuloCurto: 'Golfinho', icon: '🐬', habitat: 'Oceanos Azuis', curiosidade: 'Um dos animais mais inteligentes do planeta! Eles conversam entre si usando assobios e estalos mágicos!' },
+      { id: 'jacare', categoria: 'agua', somReal: true, nome: 'Jacaré do Pantanal 🇧🇷', rotuloCurto: 'Jacaré', icon: '🐊', habitat: 'Rios e Pantanal', curiosidade: 'Ele toma sol na beira do rio para aquecer o corpo e nada com grande agilidade com a cauda!' },
+      { id: 'baleia', categoria: 'agua', somReal: true, nome: 'Baleia Gigante', rotuloCurto: 'Baleia', icon: '🐋', habitat: 'Fundo do Mar', curiosidade: 'A baleia azul é o maior ser vivo que já existiu! Ela canta canções que viajam centenas de quilômetros no mar!' },
+      { id: 'cachorro', categoria: 'terra', somReal: true, nome: 'Cachorrinho Leal', rotuloCurto: 'Cãozinho', icon: '🐶', habitat: 'Lares & Quintais', curiosidade: 'O melhor amigo da criança! Ele protege nossa casa, abana o rabinho feliz e adora carinho!' },
+      { id: 'gato', categoria: 'terra', somReal: true, nome: 'Gatinho Fofo', rotuloCurto: 'Gatinho', icon: '🐱', habitat: 'Casas & Telhados', curiosidade: 'Eles têm bigodes mágicos para equilíbrio e ronronam baixinho quando estão muito calmos e felizes!' },
+      { id: 'vaca', categoria: 'terra', somReal: true, nome: 'Vaquinha Gentil', rotuloCurto: 'Vaquinha', icon: '🐮', habitat: 'Pastos & Fazendas', curiosidade: 'As vaquinhas pastam a grama verdinha, têm amigas inseparáveis e dão leite quentinho e saudável!' },
+      { id: 'pato', categoria: 'aves', somReal: true, nome: 'Patinho Alegre', rotuloCurto: 'Patinho', icon: '🦆', habitat: 'Lagos & Lagoas', curiosidade: 'Suas patinhas funcionam como remos velozes e suas penas têm um óleo natural que não deixa a água molhar!' },
+      { id: 'urso', categoria: 'terra', somReal: true, nome: 'Urso Pardo', rotuloCurto: 'Urso', icon: '🐻', habitat: 'Florestas & Montanhas', curiosidade: 'Os ursos têm um olfato super potente, dormem o inverno todo na caverna e adoram comer mel docinho!' },
+      { id: 'pinguim', categoria: 'agua', somReal: true, nome: 'Pinguim do Gelo', rotuloCurto: 'Pinguim', icon: '🐧', habitat: 'Gelo da Antártida', curiosidade: 'Eles não voam no ar, mas "voam" nadando velozes debaixo da água gelada e escorregam na neve!' },
+      // NOVOS BICHOS DA NATUREZA COM ÁUDIO PROCEDURAL E SÍNTESE ACÚSTICA
+      { id: 'lobo', categoria: 'terra', somReal: false, nome: 'Lobo-Guará do Cerrado 🇧🇷', rotuloCurto: 'Lobo', icon: '🐺', habitat: 'Cerrado Brasileiro', curiosidade: 'O belo lobo de patas compridas do Brasil! Ele é dócil, adora comer a fruta-do-lobo e tem um uivo lindo!' },
+      { id: 'ovelha', categoria: 'terra', somReal: false, nome: 'Ovelhinha Macia', rotuloCurto: 'Ovelha', icon: '🐑', habitat: 'Pastos & Montanhas', curiosidade: 'Elas têm uma lã quentinha e fofa, andam sempre em rebanho unidas e dizem mééé bem suave!' },
+      { id: 'galo', categoria: 'aves', somReal: false, nome: 'Galo Madrugador', rotuloCurto: 'Galo', icon: '🐓', habitat: 'Sítios & Chácaras', curiosidade: 'O despertador da natureza! Ele bate as asas e canta cocoricó bem forte para acordar a fazenda!' },
+      { id: 'abelha', categoria: 'aves', somReal: false, nome: 'Abelhinha Operária', rotuloCurto: 'Abelha', icon: '🐝', habitat: 'Jardins de Flores', curiosidade: 'As grandes heroínas da natureza! Elas voam de flor em flor, polinizam as plantas e fazem o mel docinho!' },
+      { id: 'macaco', categoria: 'terra', somReal: false, nome: 'Macaco Curioso', rotuloCurto: 'Macaco', icon: '🐵', habitat: 'Florestas Tropicais', curiosidade: 'Super inteligentes e brincalhões! Eles usam o rabo como uma quinta mão para se pendurar nos galhos!' },
+      { id: 'grilo', categoria: 'aves', somReal: false, nome: 'Grilinho Noturno', rotuloCurto: 'Grilo', icon: '🦗', habitat: 'Jardins & Gramados', curiosidade: 'Eles cantam esfregando as asinhas uma na outra como um violino mágico para acalmar a noite!' }
     ];
 
     let animalSelecionadoIdx = 0;
+    let categoriaAnimalAtiva = 'todos';
 
     function openAnimalSoundsGame() {
       pushModalScreen('🦁 REINO ANIMAL & SONS DA NATUREZA', (body) => {
@@ -13016,31 +13086,66 @@
       }, true);
     }
 
+    function filtrarCategoriaAnimal(cat) {
+      categoriaAnimalAtiva = cat;
+      const b = document.querySelector('.modal-body');
+      if (b) renderAnimalSoundsBody(b);
+    }
+
     function renderAnimalSoundsBody(body) {
       const a = BANCO_ANIMAIS_STARK[animalSelecionadoIdx];
+      const listaFiltrada = BANCO_ANIMAIS_STARK.filter(item => {
+        if (categoriaAnimalAtiva === 'todos') return true;
+        return item.categoria === categoriaAnimalAtiva;
+      });
+
       body.innerHTML = `
-        <div style="display:grid; grid-template-columns: 210px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
+        <div style="display:grid; grid-template-columns: 220px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- BARRA LATERAL ESQUERDA: LISTA DE ANIMAIS -->
+          <!-- BARRA LATERAL ESQUERDA: FILTROS E LISTA COMPLETA DOS 24 BICHOS -->
           <div style="display:flex; flex-direction:column; gap:4px; background:#071c14; border:1.5px solid #14532d; border-radius:14px; padding:8px; justify-content:space-between; overflow:hidden;">
             <div>
               <div style="font-size:0.85rem; font-weight:900; color:#4ade80; text-transform:uppercase; margin-bottom:6px; text-align:center;">
-                🦁 Bichos da Terra
+                🦁 Reino Animal (${BANCO_ANIMAIS_STARK.length} Bichos)
               </div>
-              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:270px; scrollbar-width:thin; padding-right:2px;">
-                ${BANCO_ANIMAIS_STARK.map((item, idx) => `
-                  <button type="button" class="big-btn" style="padding:5px 8px; font-size:0.8rem; font-weight:800; border-radius:8px; display:flex; align-items:center; gap:6px; ${idx === animalSelecionadoIdx ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="selecionarAnimal(${idx})">
-                    <span style="font-size:1.2rem; line-height:1;">${item.icon}</span>
-                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.rotuloCurto}</span>
-                  </button>
-                `).join('')}
+
+              <!-- ABAS DE CATEGORIAS RÁPIDAS -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-bottom:6px;">
+                <button type="button" class="big-btn" style="padding:4px 6px; font-size:0.75rem; font-weight:900; border-radius:6px; ${categoriaAnimalAtiva === 'todos' ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="filtrarCategoriaAnimal('todos')">
+                  🐾 Todos (${BANCO_ANIMAIS_STARK.length})
+                </button>
+                <button type="button" class="big-btn" style="padding:4px 6px; font-size:0.75rem; font-weight:900; border-radius:6px; ${categoriaAnimalAtiva === 'terra' ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="filtrarCategoriaAnimal('terra')">
+                  🌍 Terra (11)
+                </button>
+                <button type="button" class="big-btn" style="padding:4px 6px; font-size:0.75rem; font-weight:900; border-radius:6px; ${categoriaAnimalAtiva === 'agua' ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="filtrarCategoriaAnimal('agua')">
+                  🌊 Água (5)
+                </button>
+                <button type="button" class="big-btn" style="padding:4px 6px; font-size:0.75rem; font-weight:900; border-radius:6px; ${categoriaAnimalAtiva === 'aves' ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="filtrarCategoriaAnimal('aves')">
+                  🦜 Aves (8)
+                </button>
+              </div>
+
+              <!-- LISTA DE BICHOS COM SCROLL VISÍVEL E TOQUE FÁCIL -->
+              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:260px; scrollbar-width:thin; scrollbar-color:#34d399 #071c14; padding-right:2px;">
+                ${listaFiltrada.map((item) => {
+                  const realIdx = BANCO_ANIMAIS_STARK.indexOf(item);
+                  return `
+                    <button type="button" class="big-btn" style="padding:5px 8px; font-size:0.8rem; font-weight:800; border-radius:8px; display:flex; align-items:center; justify-content:space-between; ${realIdx === animalSelecionadoIdx ? 'background:#059669; border:1.5px solid #34d399; color:#fff;' : 'background:#0b2e21; border:1px solid #14532d; color:#a7f3d0;'}" onclick="selecionarAnimal(${realIdx})">
+                      <div style="display:flex; align-items:center; gap:6px; overflow:hidden;">
+                        <span style="font-size:1.25rem; line-height:1;">${item.icon}</span>
+                        <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.rotuloCurto}</span>
+                      </div>
+                      <span style="font-size:0.68rem; padding:1px 5px; border-radius:999px; ${item.somReal ? 'background:#10b98133; color:#6ee7b7; border:1px solid #10b981;' : 'background:#064e3b; color:#a7f3d0;'}">${item.somReal ? '🔊 Real' : '🎶 Som'}</span>
+                    </button>
+                  `;
+                }).join('')}
               </div>
             </div>
 
             <!-- AÇÕES RÁPIDAS NO PAINEL LATERAL -->
             <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
               <button type="button" class="big-btn" style="background:#059669; border:1.5px solid #34d399; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="tocarSomAnimalStark('${a.id}')">
-                🔊 Som Real
+                🔊 Ouvir Som Real
               </button>
               <button type="button" class="big-btn" style="background:linear-gradient(135deg, #d97706 0%, #b45309 100%); border:1.5px solid #fde047; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="iniciarDesafioSomAnimal()">
                 🎧 Adivinhar o Bicho (+2 🪙)
@@ -13051,21 +13156,28 @@
             </div>
           </div>
 
-          <!-- PALCO PRINCIPAL DIREITO: ANIMAL EM DESTAQUE -->
-          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:2.5px solid #10b981; border-radius:14px; padding:12px 18px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; box-shadow:0 0 30px rgba(16,185,129,0.25);">
-            <div style="font-size:4rem; line-height:1; animation:pulse 1.8s infinite;">${a.icon}</div>
+          <!-- PALCO PRINCIPAL DIREITO: ANIMAL EM DESTAQUE (LAYOUT HARMONIOSO STARK) -->
+          <div style="background:radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border:2.5px solid #10b981; border-radius:14px; padding:18px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; box-shadow:0 0 35px rgba(16,185,129,0.3); overflow:hidden;">
             
-            <div>
-              <span style="background:rgba(16,185,129,0.2); color:#6ee7b7; border:1px solid #10b981; padding:2px 10px; border-radius:999px; font-size:0.75rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
-              <div style="font-size:1.5rem; font-weight:900; color:#ffffff; margin-top:4px;">${a.nome}</div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div style="font-size:5rem; line-height:1; animation:pulse 1.8s infinite; filter:drop-shadow(0 0 20px rgba(16,185,129,0.4));">${a.icon}</div>
+              
+              <div style="margin-top:2px;">
+                <span style="background:rgba(16,185,129,0.25); color:#6ee7b7; border:1.5px solid #10b981; padding:3px 14px; border-radius:999px; font-size:0.8rem; font-weight:900;">🏞️ Habitat: ${a.habitat}</span>
+              </div>
+              <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">${a.nome}</div>
             </div>
 
-            <div style="font-size:0.92rem; color:#d1fae5; max-width:580px; line-height:1.35; background:rgba(0,0,0,0.35); padding:8px 14px; border-radius:10px;">
+            <div style="font-size:1.02rem; color:#d1fae5; max-width:600px; line-height:1.45; background:rgba(0,0,0,0.45); padding:12px 18px; border-radius:12px; border:1px solid rgba(16,185,129,0.25); box-shadow:0 4px 15px rgba(0,0,0,0.3);">
               ${a.curiosidade}
             </div>
 
+            <button type="button" class="big-btn" style="background:#059669; border:2px solid #34d399; color:#fff; padding:10px 24px; font-size:1.05rem; font-weight:900; border-radius:10px; cursor:pointer;" onclick="tocarSomAnimalStark('${a.id}')">
+              🔊 Tocar Som do ${a.rotuloCurto}
+            </button>
+
             <!-- ÁREA DO DESAFIO DO OUVIDO -->
-            <div id="desafio-bicho-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:8px; text-align:center; width:100%; max-width:580px;"></div>
+            <div id="desafio-bicho-box" style="display:none; background:#0f172a; border:2px solid #f59e0b; border-radius:12px; padding:12px; text-align:center; width:100%; max-width:600px;"></div>
 
           </div>
 
