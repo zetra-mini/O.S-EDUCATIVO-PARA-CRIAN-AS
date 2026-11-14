@@ -19,11 +19,12 @@ echo -e "${CYAN}================================================================
 echo -e "Sistema Educativo, Companheiro Emocional e Assistente de Estudos"
 echo -e "Desenvolvido com Engenharia de Alta Eficiência para Hardware Leve\n"
 
-# Verifica se o script está sendo rodado como usuário normal (não diretamente como root)
+# Detecta modo de privilégios (root vs usuário comum com sudo)
 if [ "$EUID" -eq 0 ]; then
-  echo -e "${RED}[!] Atenção: Execute este script com o usuário comum do sistema (ex: a criança ou pai).${NC}"
-  echo -e "    O script solicitará privilégios 'sudo' apenas quando estritamente necessário."
-  exit 1
+  echo -e "${YELLOW}[i] Executando com privilégios de superusuário (root).${NC}"
+  SUDO_CMD=""
+else
+  SUDO_CMD="sudo"
 fi
 
 APP_DIR="$HOME/jarvis-kids-os"
@@ -43,8 +44,8 @@ fi
 # Detecta gerenciador de pacotes
 echo -e "${YELLOW}[2/6] Atualizando repositórios e instalando dependências essenciais do Linux...${NC}"
 if command -v apt-get >/dev/null 2>&1; then
-  sudo apt-get update -qq || true
-  sudo apt-get install -y \
+  $SUDO_CMD apt-get update -qq || true
+  $SUDO_CMD apt-get install -y \
     python3 \
     python3-pip \
     python3-venv \
@@ -54,11 +55,11 @@ if command -v apt-get >/dev/null 2>&1; then
     mpg123 \
     x11-xserver-utils \
     unclutter \
-    chromium-browser || sudo apt-get install -y chromium || sudo apt-get install -y firefox-esr || true
+    chromium-browser || $SUDO_CMD apt-get install -y chromium || $SUDO_CMD apt-get install -y firefox-esr || true
 elif command -v pacman >/dev/null 2>&1; then
-  sudo pacman -Sy --noconfirm python python-pip alsa-utils espeak-ng mpg123 chromium || true
+  $SUDO_CMD pacman -Sy --noconfirm python python-pip alsa-utils espeak-ng mpg123 chromium || true
 elif command -v dnf >/dev/null 2>&1; then
-  sudo dnf install -y python3 python3-pip alsa-utils espeak-ng mpg123 chromium || true
+  $SUDO_CMD dnf install -y python3 python3-pip alsa-utils espeak-ng mpg123 chromium || true
 elif command -v pkg >/dev/null 2>&1; then
   pkg update -y || true
   pkg install -y python python-pip alsa-utils mpg123 chromium 2>/dev/null || true
@@ -81,12 +82,12 @@ fi
 # Otimização de ZRAM e Memória RAM para netbooks
 echo -e "${YELLOW}[4/6] Otimizando consumo de memória e latência do sistema operacional...${NC}"
 if [ -f /etc/default/zramswap ]; then
-  sudo sed -i 's/^#*ALGO=.*/ALGO=lz4/' /etc/default/zramswap || true
-  sudo sed -i 's/^#*PERCENT=.*/PERCENT=50/' /etc/default/zramswap || true
-  sudo service zramswap restart 2>/dev/null || true
+  $SUDO_CMD sed -i 's/^#*ALGO=.*/ALGO=lz4/' /etc/default/zramswap || true
+  $SUDO_CMD sed -i 's/^#*PERCENT=.*/PERCENT=50/' /etc/default/zramswap || true
+  $SUDO_CMD service zramswap restart 2>/dev/null || true
 fi
 if [ -d /etc/sysctl.d ]; then
-  echo "vm.swappiness=15" | sudo tee /etc/sysctl.d/99-jarvis-kids.conf >/dev/null 2>&1 || true
+  echo "vm.swappiness=15" | $SUDO_CMD tee /etc/sysctl.d/99-jarvis-kids.conf >/dev/null 2>&1 || true
 fi
 
 # Cria script de inicialização do quiosque

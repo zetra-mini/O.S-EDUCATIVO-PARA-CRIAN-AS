@@ -1,3 +1,3 @@
 @echo off
 cd /d "%~dp0"
-start "" pythonw jarvis_os.py
+call iniciar_web_windows.bat

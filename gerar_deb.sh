@@ -82,13 +82,16 @@ Description: Sistema Operacional Educativo Inteligente para Criancas (Stark Edge
 EOF
 
 # 4. Script postinst
-cat << 'EOF' > "${DEB_DIR}/DEBIAN/postinst"
+cat << EOF > "${DEB_DIR}/DEBIAN/postinst"
 #!/bin/sh
 set -e
 chmod +x /usr/bin/jarvis-kids 2>/dev/null || true
 chmod +x /opt/jarvis-kids-os/*.sh 2>/dev/null || true
+chmod +x /opt/jarvis-kids-os/pkg /opt/jarvis-kids-os/pkg.sh 2>/dev/null || true
+ln -sf /opt/jarvis-kids-os/pkg /usr/local/bin/pkg 2>/dev/null || true
 python3 -m pip install --break-system-packages microdot edge-tts 2>/dev/null || python3 -m pip install microdot edge-tts 2>/dev/null || true
-echo "✅ JARVIS Kids OS v3.7.0 instalado com sucesso em /opt/jarvis-kids-os!"
+echo "✅ JARVIS Kids OS v${VERSION} instalado com sucesso em /opt/jarvis-kids-os!"
+echo "Use 'pkg start' para iniciar o quiosque em tela cheia!"
 exit 0
 EOF
 chmod +x "${DEB_DIR}/DEBIAN/postinst"

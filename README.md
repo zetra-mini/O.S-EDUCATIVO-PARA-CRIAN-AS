@@ -1,4 +1,4 @@
-# 🚀 J.A.R.V.I.S. Kids OS v3.9.5 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
+# 🚀 J.A.R.V.I.S. Kids OS v3.9.6 — Edição Stark Edge & Multi-IA (OpenCode, Ollama Local & Visão Humana)
 
 Sistema operacional educativo, companheiro emocional e assistente gamificado estilo **JARVIS do Homem de Ferro**, projetado sob medida com princípios de engenharia de software de alta eficiência para netbooks modestos e computadores com recursos restritos (modelo original **Acer Aspire One / Asus Eee PC** com `Intel Atom 1.6 GHz`, `1 GB a 2 GB RAM`, tela `1024x600`), expandido para arquitetura **multiplataforma universal** compatível com **Linux Kiosk**, **Windows Desktop**, **macOS (.app)** e **Android (.apk autônomo offline)**!
 
@@ -32,6 +32,44 @@ Telas reais capturadas diretamente do sistema em execução na resolução nativ
 | :---: |
 | ![Fábrica de Robôs Stark](docs/screenshots/09_quarto_engenharia.png) |
 | *Pista de corrida arcade interestelar neon: a criança pilota o super carro Stark desviando de obstáculos, coletando moedas de ouro e ativando o Super Nitro até a linha de chegada!* |
+
+---
+
+## 🌟 Novidades da Versão 3.9.6 (Visão IA de Dedinhos Blindada, 24 Bichos com Som Real, Idiomas em 4 Colunas, Sistema Solar Equilibrado & Tangram 2D)
+
+### 📸 1. Visão Computacional de Dedinhos & Mãozinhas Blindada (`@vladmandic/human`)
+- **Carregamento Completo do Esqueleto da Mão:** Corrigida a inicialização do modelo esquelético `handlandmark-lite.json` com `landmarks: true` e `skeleton: { modelPath: 'handlandmark-lite.json' }`.
+- **Extração Robusta de 21 Keypoints:** Suporte nativo a coordenadas tridimensionais `[x, y, z]` e avaliação cruzada com estados nativos de curvatura dos dedos (`h.landmarks` curls: `none`, `half`, `full`).
+- **Renderização em Tempo Real no Canvas:** Desenho estético HUD Stark das falanges e articulações da mão com pontas destacadas em verde vibrante quando estendidas e laranja quando flexionadas.
+- **Resposta Instantânea e Anti-Jitter:** Redução do buffer para 5 amostras e tempo de estabilização para 0.75s, eliminando congelamentos e respondendo com fluidez máxima no Intel Atom N450.
+
+### 🦁 2. Reino Animal Expandido: 24 Bichos da Natureza com Áudio Real de Estúdio
+- **18 Arquivos de Áudio Real (.mp3):** Sons reais de estúdio em alta fidelidade (`leao`, `elefante`, `sapo`, `cavalo`, `passaro`, `arara`, `mico`, `onca`, `coruja`, `golfinho`, `jacare`, `baleia`, `cachorro`, `gato`, `vaca`, `pato`, `urso`, `pinguim`), além de 6 bichos adicionais com síntese acústica procedural (`lobo`, `ovelha`, `galo`, `abelha`, `macaco`, `grilo`).
+- **Abas de Categorias Rápidas:** Filtros táteis no topo da barra lateral: `🐾 Todos (24)`, `🌍 Terra (11)`, `🌊 Água (5)` e `🦜 Aves (8)`.
+- **Rolagem Acessível e Visível:** Barra de rolagem esmeralda fina estilizada para toque e botões com badge `🔊 Real` para identificação visual imediata.
+
+### 🌍 3. Idiomas Mágicos Reorganizado (English & Español)
+- **Barra Superior Unificada e Limpa:** Controles consolidados em linha única compacta com alternador de idioma (`🇺🇸 EN` | `🇪🇸 ES`) e modo (`🃏 Cards` | `🎯 Quiz` | `🌍 Países`).
+- **Cartões em 4 Colunas Confortáveis (`minmax(180px, 1fr)`):** Textos descritivos e gestos de brincadeira (`p.gesto`) sem cortes ou reticências, com formatação multilinha natural e fácil leitura no LCD 1024x600.
+- **Clique em Todo o Cartão:** Basta a criança tocar em qualquer ponto do cartão para ouvir a pronúncia e tradução com síntese neural de voz.
+
+### 🪐 4. Sistema Solar Centralizado e Equilibrado
+- **Eliminação de Vazio Vertical:** Substituição do espaçamento disperso por um cartão herói centralizado e harmônico (`justify-content: center; gap: 16px;`).
+- **Astro em Alta Evidência:** Ícone aumentado para 4.8rem, insígnias de temperatura e curiosidades emolduradas com proporção perfeita para telas de netbooks 1024x600.
+
+### 🧩 5. Tangram Magnético Stark 2D
+- Jogo tátil de raciocínio espacial e encaixe geométrico com 7 peças clássicas (triângulos, quadrado e paralelogramo).
+- Encaixe magnético com rotação em 45°, partículas luminosas ao acertar a posição e efeitos sonoros procedurais Web Audio sem peso de memória.
+
+### 👁️ 6. Modo Alta Nitidez para Telas TN de Netbooks
+- Botão de acessibilidade rápida `👁️` no topo do HUD que eleva o contraste e a saturação da interface para telas LCD antigas e opacas do Acer Aspire One e Asus Eee PC.
+
+### 🌐 7. Integração de 5 APIs Públicas Inteligentes
+- **🛰️ Radar da ISS ao Vivo:** Coordenadas e velocidade reais da Estação Espacial Internacional no Sistema Solar.
+- **🌙 Fases da Lua de Conway:** Cálculo astronômico preciso e offline-first do ciclo lunar.
+- **🔢 Curiosidades Matemáticas:** Fatos numéricos divertidos integrados aos desafios de matemática.
+- **🌍 Passaporte Global Stark:** 16 países do mundo com bandeiras, capitais e saudações nativas no módulo de idiomas.
+- **🤖 Avatares Robóticos Robohash:** Geração de robôs colecionáveis nas missões diárias.
 
 ---
 
@@ -184,11 +222,11 @@ Os arquivos compilados são gerados automaticamente pelo [GitHub Actions CI/CD](
 
 | Formato | Plataforma Alvo | Arquivo de Download | Como Instalar / Executar |
 | :--- | :--- | :--- | :--- |
-| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.9.0.deb` | `sudo dpkg -i jarvis-kids-os_3.9.0.deb` |
-| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.9.0-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
-| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.9.0-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
-| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.9.0-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
-| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.9.0-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
+| 🐧 **.deb** | Debian / antiX / Ubuntu / Raspberry Pi OS | `jarvis-kids-os_3.9.6.deb` | `sudo dpkg -i jarvis-kids-os_3.9.6.deb` |
+| 📦 **.tar.gz** | Linux Kiosk Standalone (Netbook Atom) | `jarvis-kids-os-3.9.6-linux-desktop.tar.gz` | `tar -xzf jarvis-kids-os-*.tar.gz && ./iniciar_jarvis_linux.sh` |
+| 🪟 **.zip** | Windows 7 / 10 / 11 (Desktop) | `jarvis-kids-os-3.9.6-windows-desktop.zip` | Extrair e clicar em `iniciar_jarvis_windows.bat` |
+| 📱 **.apk** | Android Celulares & Tablets Infantis | `jarvis-kids-os-3.9.6-android.apk` | Instalar no Android e permitir microfone (Modo Autônomo Offline Nativo) |
+| 🍏 **.app** | macOS (Intel & Apple Silicon M1/M2/M3) | `jarvis-kids-os-3.9.6-macos.app.zip` | Extrair e abrir `JARVIS-Kids-OS.app` |
 | 📱 **PWA** | Smartphone dos Pais (iOS / Android) | Acesso direto via navegador | Acessar `/admin` e clicar em *Adicionar à Tela Inicial* |
 
 ---
@@ -225,12 +263,12 @@ Uma das maiores vantagens do JARVIS Kids OS quando instalado no **antiX Linux** 
 Basta baixar o arquivo `.deb` da versão mais recente nas Releases e executar no terminal do antiX:
 
 ```bash
-sudo dpkg -i jarvis-kids-os_3.9.0.deb || sudo apt-get install -f -y
+sudo dpkg -i jarvis-kids-os_3.9.6.deb || sudo apt-get install -f -y
 ```
 
 Ou usando o comando do `apt`:
 ```bash
-sudo apt install ./jarvis-kids-os_3.9.0.deb
+sudo apt install ./jarvis-kids-os_3.9.6.deb
 ```
 
 **Pronto! A partir desse momento, tudo é 100% automático:**
@@ -290,25 +328,71 @@ sudo apt install ./jarvis-kids-os_3.9.0.deb
 
 ---
 
-## 📦 Instalação Rápida no Linux (antiX, xlinux, Debian, Ubuntu) com o comando pkg
+## 📦 Guia Completo de Instalação & Execução por Plataforma
 
-O J.A.R.V.I.S. Kids OS conta com o instalador e gerenciador universal **pkg**, otimizado especificamente para netbooks modestos (**Asus Eee PC**, **Acer Aspire One**, processadores **Intel Atom N450/N270** e 1GB a 2GB de RAM):
+### 🐧 1. Linux (antiX Linux, xlinux, Debian, Ubuntu, Mint, Raspberry Pi OS)
 
-### ⚡ Instalação Rápida em 1 Passo:
+#### Opção A — Utilitário Universal `pkg` (Recomendado para Netbooks Atom):
 ```bash
 git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git
 cd O.S-EDUCATIVO-PARA-CRIAN-AS
+chmod +x pkg pkg.sh
 ./pkg install
 ```
 O instalador configura tudo de forma 100% autônoma: detecta o gerenciador (`pkg`, `apt-get`, `apk`, `pacman`), instala dependências de sistema (`python3`, `alsa-utils`, `mpg123`, `chromium`), otimiza o kernel (ZRAM e `swappiness=15` para netbooks), cria o atalho na área de trabalho e adiciona o comando global `pkg` no PATH do sistema!
 
-### 🎮 Comandos do Utilitário `pkg`:
+**Comandos do Utilitário `pkg`:**
 ```bash
 pkg start     # Inicia o servidor e abre o quiosque em tela cheia no navegador
 pkg status    # Mostra o status do servidor, consumo de memória RAM e porta
 pkg stop      # Encerra o servidor com segurança
 pkg update    # Atualiza o sistema com a versão mais recente do GitHub
 ```
+
+#### Opção B — Instalador Automático de Kiosk:
+```bash
+bash install_linux.sh
+```
+
+#### Opção C — Pacote Oficial `.deb`:
+```bash
+sudo dpkg -i jarvis-kids-os_3.9.6.deb || sudo apt-get install -f -y
+```
+
+---
+
+### 🪟 2. Windows (Windows 11, 10, 8, 7)
+
+1. Faça o clone ou baixe o arquivo `.zip` das Releases:
+   ```cmd
+   git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git
+   cd O.S-EDUCATIVO-PARA-CRIAN-AS
+   ```
+2. Dê um duplo clique no arquivo **`iniciar_web_windows.bat`** (ou `testar_no_windows.bat`).
+3. O script inicia o servidor em segundo plano e abre automaticamente o Microsoft Edge ou Google Chrome em **Modo Kiosk (Tela Cheia Nativa)** na resolução da sua tela!
+
+---
+
+### 📱 3. Android (Celulares, Tablets & Termux)
+
+#### Opção A — Aplicativo Nativo (.apk):
+Baixe e instale diretamente o `jarvis-kids-os-3.9.6-android.apk` da aba de Releases. O app opera de forma autônoma e 100% offline.
+
+#### Opção B — Via Terminal Termux:
+```bash
+pkg update && pkg install -y python git alsa-utils mpg123
+git clone https://github.com/zetra-mini/O.S-EDUCATIVO-PARA-CRIAN-AS.git
+cd O.S-EDUCATIVO-PARA-CRIAN-AS
+chmod +x pkg pkg.sh
+./pkg install
+pkg start
+```
+
+---
+
+### 🍏 4. macOS (Intel & Apple Silicon M1/M2/M3)
+
+Baixe o arquivo `jarvis-kids-os-3.9.6-macos.app.zip`, descompacte e abra o aplicativo **`JARVIS-Kids-OS.app`**.
 
 
 ## 🚀 Como Executar Localmente (Desenvolvimento & Testes)

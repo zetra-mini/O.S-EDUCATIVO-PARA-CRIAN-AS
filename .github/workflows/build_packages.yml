@@ -9,7 +9,7 @@ name: Compilar Pacotes e Releases do JARVIS Kids OS
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Versão da Release (opcional, ex: 3.9.5)'
+        description: 'Versão da Release (opcional, ex: 3.9.6)'
         required: false
         default: ''
 
@@ -37,7 +37,7 @@ jobs:
           elif [ -f VERSION ]; then
             RAW_VER=$(cat VERSION | tr -d '[:space:]')
           else
-            RAW_VER="3.9.5"
+            RAW_VER="3.9.6"
           fi
           echo "VERSION=${RAW_VER}" >> $GITHUB_ENV
           echo "TAG_NAME=v${RAW_VER}" >> $GITHUB_ENV
@@ -70,7 +70,7 @@ jobs:
 
       - name: 1. Compilar Pacote Debian Kiosk (.deb)
         run: |
-          VERSION="${VERSION:-3.9.5}"
+          VERSION="${VERSION:-3.9.6}"
           ARCH="all"
           DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
           mkdir -p "${DEB_DIR}/DEBIAN"
@@ -138,7 +138,7 @@ jobs:
 
       - name: 2. Empacotar Versão Desktop Linux (.tar.gz)
         run: |
-          VERSION="${VERSION:-3.9.5}"
+          VERSION="${VERSION:-3.9.6}"
           TAR_DIR="jarvis-kids-os-${VERSION}-linux-desktop"
           mkdir -p "${TAR_DIR}"
           cp -r ./* "${TAR_DIR}/" 2>/dev/null || true
@@ -149,7 +149,7 @@ jobs:
 
       - name: 3. Empacotar Versão Desktop Windows (.zip)
         run: |
-          VERSION="${VERSION:-3.9.5}"
+          VERSION="${VERSION:-3.9.6}"
           ZIP_DIR="jarvis-kids-os-${VERSION}-windows-desktop"
           mkdir -p "${ZIP_DIR}"
           cp -r ./* "${ZIP_DIR}/" 2>/dev/null || true
@@ -160,7 +160,7 @@ jobs:
 
       - name: 4. Compilar Aplicativo Android (.apk)
         run: |
-          VERSION="${VERSION:-3.9.5}"
+          VERSION="${VERSION:-3.9.6}"
           echo "Compilando pacote Android .apk..."
           bash deploy/android_app/build_apk.sh
           echo "Pacote .apk gerado:"
@@ -168,7 +168,7 @@ jobs:
 
       - name: 5. Empacotar Bundle macOS / Desktop (.app e .app.zip)
         run: |
-          VERSION="${VERSION:-3.9.5}"
+          VERSION="${VERSION:-3.9.6}"
           echo "Estruturando bundle macOS .app..."
           APP_DIR="JARVIS-Kids-OS.app"
           mkdir -p "${APP_DIR}/Contents/MacOS"
@@ -191,7 +191,7 @@ jobs:
 
       - name: 6. Empacotar Instalador Standalone Universal PKG (.tar.gz)
         run: |
-          VERSION="${VERSION:-3.9.5}"
+          VERSION="${VERSION:-3.9.6}"
           tar -czf "jarvis-kids-pkg-installer-${VERSION}.tar.gz" pkg pkg.sh
           echo "Instalador universal PKG gerado com sucesso!"
 
