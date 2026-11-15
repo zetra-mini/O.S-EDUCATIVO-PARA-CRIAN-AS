@@ -1236,8 +1236,19 @@ def api_livros_excluir(request: Request):
 
 @app.route("/api/media/tick", methods=["POST"])
 def api_media_tick(request: Request):
-    rem = media_mgr.add_watched_seconds(10)
-    return json_response({"ok": True, "remaining_sec": rem})
+    data = request.json or {}
+    secs = int(data.get("seconds", 5))
+    media_mgr.add_watched_seconds(secs)
+    perm = media_mgr.check_permission()
+    is_allowed = perm.get("allowed", False)
+    rem = perm.get("remaining_sec", 0) if is_allowed else 0
+    return json_response({
+        "ok": True,
+        "allowed": is_allowed,
+        "remaining_sec": rem,
+        "reason": perm.get("reason", ""),
+        "message": perm.get("message", "")
+    })
 
 
 @app.route("/api/media/bonus", methods=["POST"])

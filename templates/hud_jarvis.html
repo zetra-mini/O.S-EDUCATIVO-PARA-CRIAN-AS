@@ -807,7 +807,7 @@
       position: fixed;
       inset: 0;
       background: radial-gradient(circle, #7f1d1d 0%, #040914 85%);
-      z-index: 500;
+      z-index: 10000;
       display: none;
       flex-direction: column;
       align-items: center;
@@ -2803,6 +2803,21 @@
     // =========================================================================
     window.addEventListener('contextmenu', e => e.preventDefault());
     window.addEventListener('dragstart', e => e.preventDefault());
+
+    // Se a criança voltar o foco para a janela do sistema enquanto assiste, verifica imediatamente se o tempo acabou
+    window.addEventListener('focus', () => {
+      if (typeof cinemaActiveSession !== 'undefined' && cinemaActiveSession) {
+        fetch('/api/media/tick', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ seconds: 1 })
+        }).then(r => r.json()).then(d => {
+          if (d.allowed === false || d.remaining_sec <= 0) {
+            if (typeof encerrarSessaoCinema === 'function') encerrarSessaoCinema(true);
+          }
+        }).catch(() => {});
+      }
+    });
 
     window.dispararConfetesDopamina = function(count = 50) {
       try {
@@ -6427,6 +6442,16 @@
       if (typeof encerrarHoverboard === 'function') encerrarHoverboard();
       if (typeof encerrarHelicoptero === 'function') encerrarHelicoptero();
 
+      // 3.1 Encerra janelas e timers de streaming de vídeo (YouTube Kids / Netflix)
+      if (typeof fecharJanelaEProcessoVideo === 'function') {
+        fecharJanelaEProcessoVideo();
+      }
+      if (typeof cinemaTimerInterval !== 'undefined' && cinemaTimerInterval) {
+        clearInterval(cinemaTimerInterval);
+        cinemaTimerInterval = null;
+      }
+      cinemaActiveSession = false;
+
       // 4. Para timers de música, metrônomos e batidas
       if (typeof stopMusicRhythmBeat === 'function') stopMusicRhythmBeat();
 
@@ -9792,17 +9817,104 @@
     // =========================================================================
     // 4. CINEMA STARK: JANELA CONTROLADA + ESCUDO DE BLOQUEIO INFALÍVEL
     // =========================================================================
+    let cinemaPopupWin = null;
+    let cinemaActiveSession = false;
+    let cinemaTimerInterval = null;
+    let cinemaLastTickTime = 0;
+    let cinemaWarnedTwoMin = false;
+
+    function isCinemaModalAberto() {
+      const modal = document.getElementById('activity-modal');
+      const title = document.getElementById('modal-title');
+      return !!(modal && modal.classList.contains('open') && title && title.textContent && title.textContent.includes('CINEMA'));
+    }
+
+    function fecharJanelaEProcessoVideo() {
+      // 1. Fecha janela popup de streaming (YouTube Kids / Netflix)
+      try {
+        if (cinemaPopupWin && !cinemaPopupWin.closed) {
+          cinemaPopupWin.close();
+        }
+      } catch (e) {}
+      cinemaPopupWin = null;
+
+      // 2. Notifica o backend para encerrar processos nativos de navegadores se houver
+      fetch('/api/media/close', { method: 'POST' }).catch(() => {});
+    }
+
+    function encerrarSessaoCinema(dispararBloqueio = false) {
+      cinemaActiveSession = false;
+      if (cinemaTimerInterval) {
+        clearInterval(cinemaTimerInterval);
+        cinemaTimerInterval = null;
+      }
+      if (activeInterval) {
+        clearInterval(activeInterval);
+        activeInterval = null;
+      }
+
+      fecharJanelaEProcessoVideo();
+
+      // Fecha o modal da atividade imediatamente se for a tela de assistir
+      if (isCinemaModalAberto()) {
+        closeModal(false);
+      }
+
+      if (dispararBloqueio) {
+        triggerCinemaLockdown();
+      }
+    }
+
+    function triggerCinemaLockdown() {
+      // 1. Garante fechamento da janela e processos
+      fecharJanelaEProcessoVideo();
+
+      // 2. Fecha o modal de atividade (página de assistir)
+      closeModal(false);
+
+      // 3. Efeitos sonoros amigáveis de aviso
+      playTone(330, 250);
+      setTimeout(() => playTone(220, 350), 280);
+
+      // 4. Exibe o escudo de bloqueio do cinema (z-index 10000)
+      const shield = document.getElementById('cinema-shield');
+      if (shield) {
+        shield.classList.add('open');
+      }
+
+      // 5. Fala pedagógica carinhosa do Jarvis
+      const childName = (appState.config && appState.config.child_name) || 'Campeão';
+      speak(`O tempo do filminho terminou por hoje, ${childName}! Parabéns por cumprir o combinado com sabedoria!`);
+      showHudToast('⏰ O tempo do vídeo terminou!');
+    }
+
+    function closeShieldAndGoBooks() {
+      const shield = document.getElementById('cinema-shield');
+      if (shield) shield.classList.remove('open');
+      openBooksLibrary();
+    }
+
+    function closeShieldAndGoMusic() {
+      const shield = document.getElementById('cinema-shield');
+      if (shield) shield.classList.remove('open');
+      openMusicComposer();
+    }
+
     async function openCinemaStark() {
+      // Encerra qualquer sessão anterior residual
+      encerrarSessaoCinema(false);
+
       const body = openModal('🎬 CINEMA STARK — TUDO TEM O SEU TEMPO');
       await loadState(false);
       const perm = appState.media_permission;
 
-      if (!perm.allowed) {
-        speak(perm.message);
+      if (!perm || !perm.allowed) {
+        const msg = perm ? perm.message : 'Horário de cinema indisponível no momento.';
+        speak(msg);
         body.innerHTML = `
           <div style="margin:auto; background:#0f172a; border:3px solid #f59e0b; border-radius:20px; padding:36px; max-width:820px; text-align:center;">
-            <div style="font-size:5rem; margin-bottom:14px;">${perm.reason === 'need_book' ? '📚' : '⏰'}</div>
-            <h3 style="font-size:1.6rem; line-height:1.5; margin-bottom:24px;">${perm.message}</h3>
+            <div style="font-size:5rem; margin-bottom:14px;">${perm && perm.reason === 'need_book' ? '📚' : '⏰'}</div>
+            <h3 style="font-size:1.6rem; line-height:1.5; margin-bottom:24px;">${msg}</h3>
             <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
               <button type="button" class="big-btn" style="background:#10b981; font-size:1.2rem;" onclick="openBooksLibrary()">📚 LER UM LIVRO MÁGICO AGORA</button>
               <button type="button" class="big-btn" style="background:#a855f7; font-size:1.2rem;" onclick="openMusicComposer()">🎵 CRIAR MELODIAS</button>
@@ -9812,97 +9924,191 @@
         return;
       }
 
-      let rem = perm.remaining_sec;
-      let warned = false;
-      speak(`Horário liberado, ${appState.config.child_name}! Escolha YouTube Kids ou Netflix Infantil. Quando o tempo acabar, faremos uma nova atividade!`);
+      cinemaActiveSession = true;
+      cinemaWarnedTwoMin = false;
+      let rem = perm.remaining_sec || 0;
+      cinemaLastTickTime = Date.now();
 
-      body.innerHTML = `
-        <div id="cinema-timer" style="text-align:center; font-size:2.2rem; font-weight:900; color:#34d399; margin-bottom:20px;">
-          ⏱ Tempo disponível hoje: ${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px; flex:1; align-items:stretch; margin-bottom:12px;">
-          <!-- CARD OFICIAL YOUTUBE KIDS -->
-          <button type="button" class="big-btn" id="btn-yt" style="background:linear-gradient(145deg, #1f0b0b 0%, #100404 100%); border:3px solid #ff0000; border-radius:24px; padding:24px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; box-shadow:0 12px 32px rgba(255,0,0,0.35); transition:all 0.25s ease;">
-            <div style="background:#ffffff; border-radius:18px; padding:12px 20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(255,0,0,0.5);">
-              <svg xmlns="http://www.w3.org/2000/svg" width="68" height="48" fill="#FF0000" class="bi bi-youtube" viewBox="0 0 16 16">
-                <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/>
-              </svg>
+      // Registra cleanup na pilha modal caso o usuário feche pelo botão Voltar ou Sala do Jarvis
+      if (modalNavStack.length) {
+        modalNavStack[modalNavStack.length - 1].cleanup = () => {
+          encerrarSessaoCinema(false);
+        };
+      }
+
+      speak(`Horário liberado, ${appState.config.child_name || 'Campeão'}! Escolha YouTube Kids ou Netflix Infantil. Quando o tempo acabar, a tela fechará automaticamente!`);
+
+      let isWatchingVideo = false;
+      let currentServiceLabel = '';
+      let lastVideoUrl = '';
+
+      function renderCinemaUI() {
+        const mins = String(Math.floor(rem / 60)).padStart(2, '0');
+        const secs = String(rem % 60).padStart(2, '0');
+        const timerColor = rem <= 120 ? '#ef4444' : (rem <= 300 ? '#f59e0b' : '#34d399');
+
+        if (!isWatchingVideo) {
+          body.innerHTML = `
+            <div id="cinema-timer" style="text-align:center; font-size:2.2rem; font-weight:900; color:${timerColor}; margin-bottom:18px;">
+              ⏱ Tempo disponível hoje: ${mins}:${secs}
             </div>
-            <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">YOUTUBE KIDS</div>
-            <div style="font-size:1.05rem; font-weight:700; color:#fca5a5;">▶ Desenhos, Clipes e Músicas</div>
-            <div style="background:rgba(239,68,68,0.25); border:1px solid #ef4444; border-radius:999px; padding:5px 16px; font-size:0.9rem; color:#fecaca; font-weight:700;">⏱ Cronômetro Stark Ativo</div>
-          </button>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:24px; flex:1; align-items:stretch; margin-bottom:12px;">
+              <!-- CARD OFICIAL YOUTUBE KIDS -->
+              <button type="button" class="big-btn" id="btn-yt" style="background:linear-gradient(145deg, #1f0b0b 0%, #100404 100%); border:3px solid #ff0000; border-radius:24px; padding:24px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; box-shadow:0 12px 32px rgba(255,0,0,0.35); transition:all 0.25s ease;">
+                <div style="background:#ffffff; border-radius:18px; padding:12px 20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(255,0,0,0.5);">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="68" height="48" fill="#FF0000" class="bi bi-youtube" viewBox="0 0 16 16">
+                    <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/>
+                  </svg>
+                </div>
+                <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">YOUTUBE KIDS</div>
+                <div style="font-size:1.05rem; font-weight:700; color:#fca5a5;">▶ Desenhos, Clipes e Músicas</div>
+                <div style="background:rgba(239,68,68,0.25); border:1px solid #ef4444; border-radius:999px; padding:5px 16px; font-size:0.9rem; color:#fecaca; font-weight:700;">⏱ Cronômetro Stark Ativo</div>
+              </button>
 
-          <!-- CARD OFICIAL NETFLIX INFANTIL -->
-          <button type="button" class="big-btn" id="btn-nf" style="background:linear-gradient(145deg, #140505 0%, #080202 100%); border:3px solid #E50914; border-radius:24px; padding:24px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; box-shadow:0 12px 32px rgba(229,9,20,0.35); transition:all 0.25s ease;">
-            <div style="background:#000000; border:2px solid rgba(229,9,20,0.6); border-radius:18px; padding:8px 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(229,9,20,0.5); min-height:72px;">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 111 160" width="48" height="64" style="overflow:visible; display:block;">
-                <path fill="#B1060E" d="M0 0h34.6v160H0z"/>
-                <path fill="#B1060E" d="M76.4 0H111v160H76.4z"/>
-                <path fill="#E50914" d="M0 0h34.6l41.8 160H41.8z" filter="drop-shadow(0 0 4px rgba(0,0,0,0.9))"/>
-              </svg>
+              <!-- CARD OFICIAL NETFLIX INFANTIL -->
+              <button type="button" class="big-btn" id="btn-nf" style="background:linear-gradient(145deg, #140505 0%, #080202 100%); border:3px solid #E50914; border-radius:24px; padding:24px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; box-shadow:0 12px 32px rgba(229,9,20,0.35); transition:all 0.25s ease;">
+                <div style="background:#000000; border:2px solid rgba(229,9,20,0.6); border-radius:18px; padding:8px 24px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(229,9,20,0.5); min-height:72px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 111 160" width="48" height="64" style="overflow:visible; display:block;">
+                    <path fill="#B1060E" d="M0 0h34.6v160H0z"/>
+                    <path fill="#B1060E" d="M76.4 0H111v160H76.4z"/>
+                    <path fill="#E50914" d="M0 0h34.6l41.8 160H41.8z" filter="drop-shadow(0 0 4px rgba(0,0,0,0.9))"/>
+                  </svg>
+                </div>
+                <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:1px;">NETFLIX INFANTIL</div>
+                <div style="font-size:1.05rem; font-weight:700; color:#fca5a5;">🎬 Filmes e Séries Divertidas</div>
+                <div style="background:rgba(229,9,20,0.25); border:1px solid #E50914; border-radius:999px; padding:5px 16px; font-size:0.9rem; color:#fecaca; font-weight:700;">⏱ Cronômetro Stark Ativo</div>
+              </button>
             </div>
-            <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:1px;">NETFLIX INFANTIL</div>
-            <div style="font-size:1.05rem; font-weight:700; color:#fca5a5;">🎬 Filmes e Séries Divertidas</div>
-            <div style="background:rgba(229,9,20,0.25); border:1px solid #E50914; border-radius:999px; padding:5px 16px; font-size:0.9rem; color:#fecaca; font-weight:700;">⏱ Cronômetro Stark Ativo</div>
-          </button>
-        </div>
-      `;
+          `;
 
-      let popupWin = null;
+          const bYt = document.getElementById('btn-yt');
+          const bNf = document.getElementById('btn-nf');
+          if (bYt) bYt.onclick = () => launchControlledVideo(appState.config.youtube_url || 'https://www.youtubekids.com', 'YouTube Kids');
+          if (bNf) bNf.onclick = () => launchControlledVideo(appState.config.netflix_url || 'https://www.netflix.com/Kids', 'Netflix Infantil');
+        } else {
+          // TELA DURANTE A REPRODUÇÃO DO VÍDEO (COM CRONÔMETRO E CONTROLE VISÍVEL)
+          body.innerHTML = `
+            <div style="margin:auto; max-width:800px; text-align:center; background:rgba(15,23,42,0.95); border:3px solid #38bdf8; border-radius:24px; padding:28px 20px; box-shadow:0 12px 32px rgba(0,0,0,0.8);">
+              <div style="font-size:3.5rem; margin-bottom:8px;">🎬✨</div>
+              <h2 style="font-size:1.6rem; color:#38bdf8; font-weight:900; margin-bottom:10px;">
+                ${currentServiceLabel.toUpperCase()} EM EXECUÇÃO
+              </h2>
+              <div id="cinema-timer" style="font-size:2.8rem; font-weight:900; color:${timerColor}; margin:14px 0;">
+                ⏱ Tempo Restante: ${mins}:${secs}
+              </div>
+              <p style="color:#cbd5e1; font-size:1.15rem; max-width:600px; margin:0 auto 20px auto; line-height:1.5;">
+                O cronômetro Stark está ativo! Quando o tempo terminar, a janela fechará automaticamente.
+              </p>
+              <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                <button type="button" class="big-btn" id="btn-refocus-cinema" style="background:#0284c7; font-size:1.1rem; padding:12px 24px;">
+                  🔍 Ver Janela do Vídeo
+                </button>
+                <button type="button" class="big-btn" id="btn-stop-cinema-early" style="background:#334155; border:2px solid #64748b; font-size:1.1rem; padding:12px 24px;">
+                  ⏹ Parar e Guardar Tempo
+                </button>
+              </div>
+            </div>
+          `;
+
+          const bRefocus = document.getElementById('btn-refocus-cinema');
+          if (bRefocus) {
+            bRefocus.onclick = () => {
+              if (cinemaPopupWin && !cinemaPopupWin.closed) {
+                cinemaPopupWin.focus();
+              } else {
+                launchControlledVideo(lastVideoUrl, currentServiceLabel);
+              }
+            };
+          }
+
+          const bStop = document.getElementById('btn-stop-cinema-early');
+          if (bStop) {
+            bStop.onclick = () => {
+              playTone(523, 120);
+              speak(`Muito bem, ${appState.config.child_name || 'Campeão'}! Você guardou seu tempo restante de vídeo para depois! Ganhou uma estrela!`);
+              addStar(1);
+              encerrarSessaoCinema(false);
+            };
+          }
+        }
+      }
+
       function launchControlledVideo(url, label) {
+        lastVideoUrl = url;
+        currentServiceLabel = label;
+        isWatchingVideo = true;
         speak(`Abrindo ${label}! Eu aviso você dois minutinhos antes de terminar!`);
-        popupWin = window.open(url, 'StarkCinemaWindow', 'width=1000,height=600');
-        if (activeInterval) clearInterval(activeInterval);
+        fecharJanelaEProcessoVideo();
+        cinemaPopupWin = window.open(url, 'StarkCinemaWindow', 'width=1000,height=600');
+        renderCinemaUI();
+      }
 
-        activeInterval = setInterval(async () => {
+      renderCinemaUI();
+
+      // Inicia timer de contagem contínua e sincronização com o backend
+      cinemaLastTickTime = Date.now();
+      cinemaTimerInterval = setInterval(async () => {
+        if (!cinemaActiveSession) {
+          clearInterval(cinemaTimerInterval);
+          return;
+        }
+
+        const now = Date.now();
+        const elapsedSec = Math.max(1, Math.round((now - cinemaLastTickTime) / 1000));
+        cinemaLastTickTime = now;
+
+        // Desconta os segundos no backend
+        try {
           const res = await fetch('/api/media/tick', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ seconds: 5 })
+            body: JSON.stringify({ seconds: elapsedSec })
           });
           const d = await res.json();
-          rem = d.remaining_sec;
-          const el = document.getElementById('cinema-timer');
-          if (el) el.textContent = `⏱ Tempo restante hoje: ${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}`;
-
-          if (rem <= 120 && rem >= 114 && !warned) {
-            warned = true;
-            speak(`Atenção, ${appState.config.child_name}! Faltam dois minutinhos para terminar o filminho!`);
+          if (d.remaining_sec !== undefined) {
+            rem = d.remaining_sec;
+          } else {
+            rem = Math.max(0, rem - elapsedSec);
           }
+
+          // Se o servidor indicar que não está mais liberado (tempo acabou ou horário expirou)
+          if (d.allowed === false || rem <= 0) {
+            encerrarSessaoCinema(true);
+            return;
+          }
+        } catch (e) {
+          rem = Math.max(0, rem - elapsedSec);
           if (rem <= 0) {
-            clearInterval(activeInterval);
-            if (popupWin && !popupWin.closed) popupWin.close();
-            fetch('/api/media/close', { method: 'POST' }).catch(() => {});
-            closeModal(false);
-            triggerCinemaLockdown();
+            encerrarSessaoCinema(true);
+            return;
           }
-        }, 5000);
-      }
+        }
 
-      document.getElementById('btn-yt').onclick = () => launchControlledVideo(appState.config.youtube_url || 'https://www.youtubekids.com', 'YouTube Kids');
-      document.getElementById('btn-nf').onclick = () => launchControlledVideo(appState.config.netflix_url || 'https://www.netflix.com/Kids', 'Netflix Infantil');
-    }
+        // Atualiza mostrador do timer
+        const timerEl = document.getElementById('cinema-timer');
+        if (timerEl) {
+          const mins = String(Math.floor(rem / 60)).padStart(2, '0');
+          const secs = String(rem % 60).padStart(2, '0');
+          const timerColor = rem <= 120 ? '#ef4444' : (rem <= 300 ? '#f59e0b' : '#34d399');
+          timerEl.style.color = timerColor;
+          timerEl.textContent = isWatchingVideo 
+            ? `⏱ Tempo Restante: ${mins}:${secs}`
+            : `⏱ Tempo disponível hoje: ${mins}:${secs}`;
+        }
 
-    function triggerCinemaLockdown() {
-      try {
-        if (popupWin && !popupWin.closed) popupWin.close();
-      } catch (e) {}
-      fetch('/api/media/close', { method: 'POST' }).catch(() => {});
-      playTone(330, 250);
-      setTimeout(() => playTone(220, 350), 280);
-      document.getElementById('cinema-shield').classList.add('open');
-      speak(`O tempo do filminho terminou por hoje, ${appState.config.child_name}! Parabéns por cumprir o combinado com sabedoria!`);
-    }
+        // Aviso gentil aos 2 minutos
+        if (rem <= 120 && rem >= 110 && !cinemaWarnedTwoMin) {
+          cinemaWarnedTwoMin = true;
+          playTone(440, 150);
+          speak(`Atenção, ${appState.config.child_name || 'Campeão'}! Faltam dois minutinhos para terminar o filminho!`);
+          showHudToast('⏰ Faltam 2 minutos para terminar o cinema!');
+        }
 
-    function closeShieldAndGoBooks() {
-      document.getElementById('cinema-shield').classList.remove('open');
-      openBooksLibrary();
-    }
-
-    function closeShieldAndGoMusic() {
-      document.getElementById('cinema-shield').classList.remove('open');
-      openMusicComposer();
+        // Se zerou, encerra na hora e fecha a tela!
+        if (rem <= 0) {
+          encerrarSessaoCinema(true);
+        }
+      }, 3000);
     }
 
     // =========================================================================
@@ -20004,6 +20210,10 @@
             const relModal = document.getElementById('media-time-release-modal');
             if (relModal && relModal.style.display === 'flex') {
               relModal.style.display = 'none';
+            }
+            // Se o cinema estiver bloqueado/zerado e a sessão de assistir estiver ativa ou aberta, fecha imediatamente!
+            if (cinemaActiveSession || isCinemaModalAberto() || (cinemaPopupWin && !cinemaPopupWin.closed)) {
+              encerrarSessaoCinema(true);
             }
           }
         }
