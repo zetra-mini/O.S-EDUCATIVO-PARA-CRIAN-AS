@@ -7128,165 +7128,75 @@
     }
 
     // =========================================================================
-    // MOTOR BIOMÉTRICO 3D DE RECONHECIMENTO DE DEDOS (ANTI-FALSO POSITIVO)
-    // Calcula com precisão a lei dos cossenos 3D articular, extensão anatômica
-    // e isolamento do polegar/pinça para eliminar 100% dos falsos positivos.
+    // MOTOR DE LEITURA UNIVERSAL E ROBUSTO (OPENCV / MEDIAPIPE CANÔNICO)
+    // Código clássico e estável: comparações diretas de juntas sem falsos positivos.
     // =========================================================================
-    function avaliarDedosMao(lm, curls) {
+    function contarDedosRobusto(lm) {
       if (!lm || lm.length < 21) {
         return { estados: [false, false, false, false, false], total: 0 };
       }
 
-      function dist3D(pA, pB) {
-        const dx = pA[0] - pB[0];
-        const dy = pA[1] - pB[1];
-        const dz = (pA[2] || 0) - (pB[2] || 0);
-        return Math.hypot(dx, dy, dz);
-      }
-
-      function dist2D(pA, pB) {
-        return Math.hypot(pA[0] - pB[0], pA[1] - pB[1]);
-      }
-
-      function angulo3D(pA, pB, pC) {
-        const dBA = dist3D(pA, pB);
-        const dBC = dist3D(pC, pB);
-        const dAC = dist3D(pA, pC);
-        if (dBA * dBC === 0) return 180;
-        const cosVal = (dBA * dBA + dBC * dBC - dAC * dAC) / (2 * dBA * dBC);
-        const clamped = Math.max(-1, Math.min(1, cosVal));
-        return Math.acos(clamped) * (180 / Math.PI);
-      }
-
-      const wrist = lm[0];
-      const thumbCmc = lm[1];
-      const thumbMcp = lm[2];
-      const thumbIp  = lm[3];
-      const thumbTip = lm[4];
-
-      const indexMcp = lm[5];
-      const indexPip = lm[6];
-      const indexDip = lm[7];
-      const indexTip = lm[8];
-
-      const pinkyMcp = lm[17];
-
-      // Dimensões de referência anatômica da palma
-      const palmWidth = dist2D(indexMcp, pinkyMcp) || 1;
-      const palmHeight = dist2D(wrist, lm[9]) || 1; // MCP do dedo médio
-      const escalaPalma = Math.max(palmWidth, palmHeight * 0.7);
-
-      // 1. DETECÇÃO ROBUSTA DE PINÇA / GESTO "OK" (Polegar tocando Indicador ou Médio)
-      // Se a ponta do polegar estiver encostando na ponta ou junta do indicador,
-      // NENHUM dos dois dedos pode ser contado como estendido!
-      const distThumbTipIndexTip = dist2D(thumbTip, indexTip);
-      const distThumbTipIndexPip = dist2D(thumbTip, indexPip);
-      const isIndexPinching = (distThumbTipIndexTip < escalaPalma * 0.40) || (distThumbTipIndexPip < escalaPalma * 0.42);
-
-      const distThumbTipMiddleTip = dist2D(thumbTip, lm[12]);
-      const isMiddlePinching = (distThumbTipMiddleTip < escalaPalma * 0.38);
-
-      const isPinching = isIndexPinching || isMiddlePinching;
-
       const estados = [false, false, false, false, false]; // [Polegar, Indicador, Médio, Anelar, Mindinho]
 
-      // 2. AVALIAÇÃO DOS 4 DEDOS (Indicador, Médio, Anelar, Mindinho)
+      // 1. Quatro Dedos Superiores: Indicador (8), Médio (12), Anelar (16), Mindinho (20)
       const tips = [8, 12, 16, 20];
-      const pips = [6, 10, 14, 18];
       const dips = [7, 11, 15, 19];
+      const pips = [6, 10, 14, 18];
       const mcps = [5, 9, 13, 17];
-      const nomes = ['index', 'middle', 'ring', 'pinky'];
 
       for (let i = 0; i < 4; i++) {
-        // Se estiver em pinça/OK com o polegar, o dedo correspondente está dobrado/fechado
-        if (i === 0 && isIndexPinching) {
-          estados[1] = false;
-          continue;
-        }
-        if (i === 1 && isMiddlePinching) {
-          estados[2] = false;
-          continue;
-        }
-
         const tip = lm[tips[i]];
-        const pip = lm[pips[i]];
         const dip = lm[dips[i]];
+        const pip = lm[pips[i]];
         const mcp = lm[mcps[i]];
-        const nome = nomes[i];
 
-        // Ângulo articular 3D na junta PIP (MCP -> PIP -> TIP)
-        const anguloPip = angulo3D(mcp, pip, tip);
+        const dTipWrist = Math.hypot(tip[0] - lm[0][0], tip[1] - lm[0][1]);
+        const dPipWrist = Math.hypot(pip[0] - lm[0][0], pip[1] - lm[0][1]);
+        const dMcpWrist = Math.hypot(mcp[0] - lm[0][0], mcp[1] - lm[0][1]);
 
-        // Proporção de extensão da ponta em relação à junta proximal
-        const dTipMcp = dist3D(tip, mcp);
-        const dPipMcp = dist3D(pip, mcp);
-        const ratioExtensao = dTipMcp / (dPipMcp + 1e-5);
-
-        // Distância ao punho em 3D
-        const dTipWrist = dist3D(tip, wrist);
-        const dPipWrist = dist3D(pip, wrist);
-
-        // Verificação vertical no espaço de tela (Y cresce para baixo)
-        const pontaAcimaPip = tip[1] < pip[1] + (escalaPalma * 0.15);
-        const pontaAcimaMcp = tip[1] < mcp[1] + (escalaPalma * 0.12);
-
-        // Curl anatômico do Human (se disponível)
-        const curlHuman = curls && curls[nome] ? curls[nome].curl : null;
-        const curlNaoFechado = curlHuman !== 'full';
-
-        // Regra canônica de dedo estendido:
-        // Junta aberta (>= 125°), ponta estendida além do PIP (>= 1.25x),
-        // mais distante do punho que o PIP, voltada para cima e curl não 'full'
-        const estendido = curlNaoFechado &&
-                          (anguloPip >= 125) &&
-                          (ratioExtensao >= 1.25) &&
-                          (dTipWrist > dPipWrist * 1.08) &&
-                          pontaAcimaPip &&
-                          pontaAcimaMcp;
-
-        if (estendido) {
+        // O dedo levantado PRECISA ter a ponta acima de PIP e DIP (Y menor)
+        // E estar afastado do punho mais que a junta intermediária
+        if (tip[1] < pip[1] && tip[1] < dip[1] && dTipWrist > dPipWrist * 1.05 && dTipWrist > dMcpWrist * 1.15) {
           estados[i + 1] = true;
         }
       }
 
-      // 3. AVALIAÇÃO ANATÔMICA DO POLEGAR
-      // O polegar só é contado se:
-      // A) Estiver em Joinha vertical estrito 👍 (quando TODOS os outros 4 dedos estão FECHADOS)
-      // B) OU estiver com a mão aberta / estendido lateralmente para fora da mão
-      if (!isPinching) {
-        const outrosDedosEstendidos = estados.slice(1).filter(Boolean).length;
-        const anguloThumb = angulo3D(thumbMcp, thumbIp, thumbTip);
+      // 2. Trava Inequívoca de Pinça / Gesto "OK" 👌
+      const thumbTip = lm[4];
+      const indexTip = lm[8];
+      const indexPip = lm[6];
+      const distThumbIndexTip = Math.hypot(thumbTip[0] - indexTip[0], thumbTip[1] - indexTip[1]);
+      const distThumbIndexPip = Math.hypot(thumbTip[0] - indexPip[0], thumbTip[1] - indexPip[1]);
+      const palmSize = Math.hypot(lm[5][0] - lm[17][0], lm[5][1] - lm[17][1]) || 50;
 
-        const dThumbTipIndexMcp = dist2D(thumbTip, indexMcp);
-        const dThumbTipPinkyMcp = dist2D(thumbTip, pinkyMcp);
-        const dThumbMcpPinkyMcp = dist2D(thumbMcp, pinkyMcp);
+      if (distThumbIndexTip < palmSize * 0.45 || distThumbIndexPip < palmSize * 0.45) {
+        estados[1] = false; // Indicador está curvado em anel -> NÃO conta
+        estados[0] = false; // Polegar está em pinça -> NÃO conta
+      }
 
-        // Quando o polegar está aberto (5 dedos), ele fica mais longe do mindinho que a sua base.
-        // Quando está dobrado cruzando a palma (4 dedos levantados), fica mais perto do mindinho!
-        const polegarAfastadoDoMindinho = dThumbTipPinkyMcp > dThumbMcpPinkyMcp * 1.06;
+      // 3. Avaliação do Polegar (Landmark 4)
+      if (distThumbIndexTip >= palmSize * 0.45 && distThumbIndexPip >= palmSize * 0.45) {
+        const outrosDedosAbertos = estados.slice(1).filter(Boolean).length;
+        const thumbMcp = lm[2];
+        const thumbIp = lm[3];
+        const pinkyMcp = lm[17];
+        const indexMcp = lm[5];
 
-        // Afastamento lateral em relação à base do indicador
-        const polegarAfastadoDoIndicador = dThumbTipIndexMcp > escalaPalma * 0.55;
+        // Joinha exclusivo 👍 (Apenas polegar para cima, outros 4 dedos fechados)
+        const isJoinha = (outrosDedosAbertos === 0) &&
+                         (thumbTip[1] < thumbIp[1] && thumbIp[1] < thumbMcp[1]) &&
+                         (thumbTip[1] < indexMcp[1]);
 
-        // Curl do polegar
-        const curlThumb = curls && curls.thumb ? curls.thumb.curl : null;
-        const curlThumbOk = curlThumb !== 'full';
+        // Polegar aberto lateralmente (Mão aberta / 5 dedos):
+        const dThumbPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
+        const dMcpPinky = Math.hypot(thumbMcp[0] - pinkyMcp[0], thumbMcp[1] - pinkyMcp[1]);
+        const dThumbIndexMcp = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
 
-        // Caso A: Polegar Aberto Lateralmente (Mão aberta / 5 Dedos)
-        const polegarAberto = curlThumbOk &&
-                              (anguloThumb >= 125) &&
-                              polegarAfastadoDoMindinho &&
-                              polegarAfastadoDoIndicador &&
-                              (dist2D(thumbTip, thumbMcp) > dist2D(thumbIp, thumbMcp) * 1.15);
+        const isAbertoLateral = (dThumbPinky > dMcpPinky * 1.08) &&
+                                (dThumbIndexMcp > palmSize * 0.52) &&
+                                (Math.hypot(thumbTip[0] - thumbMcp[0], thumbTip[1] - thumbMcp[1]) > Math.hypot(thumbIp[0] - thumbMcp[0], thumbIp[1] - thumbMcp[1]) * 1.10);
 
-        // Caso B: Joinha Vertical Exclusivo 👍 (Apenas polegar erguido, outros 4 dedos fechados)
-        const polegarJoinha = (outrosDedosEstendidos === 0) &&
-                              (thumbTip[1] < thumbIp[1] && thumbIp[1] < thumbMcp[1]) &&
-                              (thumbTip[1] < indexMcp[1] - (escalaPalma * 0.12)) &&
-                              (anguloThumb >= 125) &&
-                              curlThumbOk;
-
-        if (polegarAberto || polegarJoinha) {
+        if (isJoinha || isAbertoLateral) {
           estados[0] = true;
         }
       }
@@ -7323,7 +7233,7 @@
             }
 
             if (lm) {
-              const { estados, total } = avaliarDedosMao(lm, h.landmarks);
+              const { estados, total } = contarDedosRobusto(lm);
               totalDedos += total;
 
               // Desenho elegante do esqueleto da mão (feedback visual Stark imediato)
@@ -7538,9 +7448,13 @@
               
               <!-- COLUNA ESQUERDA: CÂMERA GIGANTE E NÍTIDA PARA A CRIANÇA SE VER BEM -->
               <div style="display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px; width:100%;">
-                <div style="font-size:0.95rem; font-weight:800; color:#38bdf8; display:flex; align-items:center; justify-content:space-between; width:100%;">
+                <div style="font-size:0.92rem; font-weight:800; color:#38bdf8; display:flex; align-items:center; justify-content:space-between; width:100%; gap:6px;">
                   <span>📸 Câmera Espelho IA</span>
-                  <span id="fc-engine-tag" style="background:#0284c7; color:#fff; font-size:0.75rem; padding:2px 10px; border-radius:999px; font-weight:900;">Visão Inteligente</span>
+                  <select id="fc-engine-selector" style="background:#0284c7; color:#fff; font-size:0.75rem; padding:3px 8px; border-radius:8px; font-weight:900; border:1px solid #38bdf8; cursor:pointer;" onchange="trocarMotorCameraManualmente(this.value)">
+                    <option value="mediapipe" selected>🌟 MediaPipe Oficial</option>
+                    <option value="human">🤖 Human IA Local</option>
+                    <option value="canvas">⚡ Motor Geométrico</option>
+                  </select>
                 </div>
 
                 <!-- FEED DE VÍDEO EXPANDIDO E ESPELHADO -->
@@ -7673,7 +7587,21 @@
         btn.textContent = i;
         btn.onclick = () => {
           stopCountingSong();
+          // Pausa a sobreposição da câmera por 3.5 segundos para o usuário ver o número escolhido
+          fcPausaCameraPorToqueManualAte = Date.now() + 3500;
           setCountingNumber(i, true);
+
+          // Atualiza também os displays do modo câmera
+          const camBigNum = document.getElementById('fc-cam-big-num');
+          const camWordTitle = document.getElementById('fc-cam-word-title');
+          const camConcrete = document.getElementById('fc-cam-concrete-items');
+          const camBadge = document.getElementById('fc-cam-badge-text');
+          const data = FINGER_COUNT_DATA[i] || FINGER_COUNT_DATA[0];
+          if (camBigNum) camBigNum.textContent = i;
+          if (camWordTitle) camWordTitle.textContent = data.word;
+          if (camConcrete) camConcrete.textContent = data.items;
+          if (camBadge) camBadge.textContent = `⭐ Botão ${i} Selecionado!`;
+          renderConcreteShelf(i);
         };
         bar.appendChild(btn);
       }
@@ -7915,12 +7843,91 @@
       });
     }
 
+    let fcMotorAtual = 'mediapipe';
+    let fcPausaCameraPorToqueManualAte = 0;
+
+    async function trocarMotorCameraManualmente(novoMotor) {
+      fcMotorAtual = novoMotor;
+      const video = document.getElementById('fc-video-feed');
+      const overlay = document.getElementById('fc-canvas-overlay');
+      if (!video || !fcCameraStream) return;
+
+      if (fcCameraInterval) { clearInterval(fcCameraInterval); fcCameraInterval = null; }
+      if (fcCameraAnimationId) { cancelAnimationFrame(fcCameraAnimationId); fcCameraAnimationId = null; }
+      if (fcMediaPipeCameraInstance) {
+        try { fcMediaPipeCameraInstance.stop(); } catch(e) {}
+        fcMediaPipeCameraInstance = null;
+      }
+      if (fcMediaPipeHandsInstance) {
+        try { fcMediaPipeHandsInstance.close(); } catch(e) {}
+        fcMediaPipeHandsInstance = null;
+      }
+      if (overlay) {
+        const ctx = overlay.getContext('2d');
+        if (ctx) ctx.clearRect(0, 0, overlay.width, overlay.height);
+      }
+
+      showToast(`🔄 Alternando para motor: ${novoMotor.toUpperCase()}...`);
+
+      if (novoMotor === 'mediapipe') {
+        await iniciarMediaPipeHands(video);
+      } else if (novoMotor === 'human') {
+        iniciarLoopHumanHands(video);
+      } else {
+        iniciarMotorBiometricoCanvas(video);
+      }
+    }
+
+    async function iniciarMediaPipeHands(video) {
+      const select = document.getElementById('fc-engine-selector');
+      if (select) select.value = 'mediapipe';
+
+      try {
+        const ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
+        const ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
+
+        if (ok1 && ok2 && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
+          const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+          });
+          hands.setOptions({
+            maxNumHands: 2,
+            modelComplexity: 0,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+          });
+          hands.onResults((results) => {
+            if (fcMotorAtual === 'mediapipe') {
+              processarResultadoMediaPipe(results);
+            }
+          });
+
+          const camera = new Camera(video, {
+            onFrame: async () => {
+              if (fcCameraStream && hands && fcMotorAtual === 'mediapipe') {
+                await hands.send({ image: video });
+              }
+            },
+            width: 320,
+            height: 240
+          });
+          camera.start();
+          fcMediaPipeHandsInstance = hands;
+          fcMediaPipeCameraInstance = camera;
+          showToast('🌟 Google MediaPipe Ativado!');
+          return true;
+        }
+      } catch(e) {
+        console.warn('Falha MediaPipe Hands:', e);
+      }
+      return false;
+    }
+
     async function startFingerCameraMode() {
       const camBox = document.getElementById('fc-cam-box');
       const freeWrap = document.getElementById('fc-free-wrapper');
       const numBar = document.getElementById('fc-num-bar');
       const quizBox = document.getElementById('fc-quiz-box');
-      const engineTag = document.getElementById('fc-engine-tag');
 
       if (quizBox) quizBox.style.display = 'none';
       if (numBar) numBar.style.display = 'flex';
@@ -7935,7 +7942,8 @@
       fcCandidatoEstavel = -1;
       fcInicioCandidato = 0;
       fcUltimoConfirmado = -1;
-      fcUltimoTimestampFala = Date.now(); // Cooldown inicial de 3s para a frase de boas-vindas
+      fcPausaCameraPorToqueManualAte = 0;
+      fcUltimoTimestampFala = Date.now();
 
       // Reset visual dos displays de câmera para aguardar a detecção
       const camBigNum = document.getElementById('fc-cam-big-num');
@@ -7973,49 +7981,22 @@
           };
         }
 
-        // 1. Prioridade Máxima: Vladmandic/Human Local (100% Offline e calibrado para Intel Atom)
-        let usouMotorLocal = false;
-        if (typeof Human !== 'undefined') {
-          try {
-            const human = await obterJarvisHuman('hand');
-            if (human) {
-              usouMotorLocal = true;
-              if (engineTag) engineTag.textContent = 'Human IA Local (2 Mãos)';
-              iniciarLoopHumanHands(video);
-            }
-          } catch(eH) {
-            console.warn('Human falhou, tentando fallback:', eH);
+        // Prioridade 1: Google MediaPipe Hands Oficial (maior acurácia e padrão mundial)
+        fcMotorAtual = 'mediapipe';
+        const okMp = await iniciarMediaPipeHands(video);
+
+        // Fallback para Human Local ou Canvas se MediaPipe falhar
+        if (!okMp) {
+          const select = document.getElementById('fc-engine-selector');
+          if (typeof Human !== 'undefined') {
+            fcMotorAtual = 'human';
+            if (select) select.value = 'human';
+            iniciarLoopHumanHands(video);
+          } else {
+            fcMotorAtual = 'canvas';
+            if (select) select.value = 'canvas';
+            iniciarMotorBiometricoCanvas(video);
           }
-        }
-
-        // 2. Se Human não estiver disponível, tenta MediaPipe CDN
-        if (!usouMotorLocal) {
-          try {
-            const ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
-            const ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
-            if (ok1 && ok2 && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
-              const hands = new Hands({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-              });
-              hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.55, minTrackingConfidence: 0.5 });
-              hands.onResults((results) => { processarResultadoMediaPipe(results); });
-              const camera = new Camera(video, {
-                onFrame: async () => { if (fcCameraStream && hands) await hands.send({ image: video }); },
-                width: 320, height: 240
-              });
-              camera.start();
-              fcMediaPipeHandsInstance = hands;
-              fcMediaPipeCameraInstance = camera;
-              usouMotorLocal = true;
-              if (engineTag) engineTag.textContent = 'MediaPipe IA (2 Mãos)';
-            }
-          } catch (eMp) {}
-        }
-
-        // 3. Fallback final: Motor Biométrico em Canvas local
-        if (!usouMotorLocal) {
-          if (engineTag) engineTag.textContent = 'Visão Geométrica Local';
-          iniciarMotorBiometricoCanvas(video);
         }
 
       } catch (err) {
@@ -8035,14 +8016,14 @@
       let lastProcessTime = 0;
 
       const loop = async () => {
-        if (!fcCameraStream || !video || video.readyState < 2) {
-          if (fcCameraStream) fcCameraAnimationId = requestAnimationFrame(loop);
+        if (!fcCameraStream || !video || video.readyState < 2 || fcMotorAtual !== 'human') {
+          if (fcCameraStream && fcMotorAtual === 'human') fcCameraAnimationId = requestAnimationFrame(loop);
           return;
         }
 
         const now = performance.now();
-        // Cadência dinâmica de 40ms (~25 FPS fluidos) com descarte preventivo de frames
-        if (now - lastProcessTime >= 40 && !isHumanHandProcessing) {
+        // Cadência dinâmica de 35ms (~28 FPS fluidos)
+        if (now - lastProcessTime >= 35 && !isHumanHandProcessing) {
           isHumanHandProcessing = true;
           lastProcessTime = now;
           try {
@@ -8056,7 +8037,7 @@
           }
         }
 
-        if (fcCameraStream) {
+        if (fcCameraStream && fcMotorAtual === 'human') {
           fcCameraAnimationId = requestAnimationFrame(loop);
         }
       };
@@ -8077,7 +8058,7 @@
           const rawLm = results.multiHandLandmarks[h];
           const lm = rawLm.map(pt => [pt.x * overlay.width, pt.y * overlay.height, (pt.z || 0) * overlay.width]);
 
-          const { estados, total } = avaliarDedosMao(lm, null);
+          const { estados, total } = contarDedosRobusto(lm);
           totalDedosLevantados += total;
 
           // Desenha conexões dos dedos no canvas
@@ -8214,6 +8195,7 @@
     // -------------------------------------------------------------------------
     function alimentarFiltroEstabilidade(dedosBrutos) {
       if (typeof dedosBrutos !== 'number' || dedosBrutos < 0) return;
+      if (Date.now() < fcPausaCameraPorToqueManualAte) return;
 
       // 1. ATUALIZAÇÃO VISUAL INSTANTÂNEA EM TEMPO REAL (Zero Lag)
       const data = FINGER_COUNT_DATA[dedosBrutos] || FINGER_COUNT_DATA[0];
