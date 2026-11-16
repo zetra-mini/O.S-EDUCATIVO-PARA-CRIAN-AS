@@ -7070,7 +7070,7 @@
               detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.15 },
               skeleton: { modelPath: 'handlandmark-lite.json' }
             },
-            gesture: { enabled: true }
+            gesture: { enabled: false }
           };
           jarvisHumanInstance = new HumanConstructor(config);
           await jarvisHumanInstance.load();
@@ -7083,21 +7083,15 @@
               async: true,
               warmup: 'none',
               filter: { enabled: true, width: 240, height: 180 },
-              face: {
-                enabled: modo === 'face_emotion',
-                detector: { modelPath: 'blazeface.json', minConfidence: 0.20 },
-                emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.20 }
-              },
+              face: { enabled: false },
               body: { enabled: false },
-              gesture: { enabled: true },
+              gesture: { enabled: false },
               hand: {
                 enabled: modo === 'hand',
                 landmarks: true,
-                skipFrames: 0,
-                skipTime: 0,
-                minConfidence: 0.15,
                 maxDetected: 2,
-                detector: { modelPath: 'handtrack.json', minConfidence: 0.15 },
+                minConfidence: 0.25,
+                detector: { modelPath: 'handtrack.json', minConfidence: 0.25 },
                 skeleton: { modelPath: 'handlandmark-lite.json' }
               }
             });
@@ -7113,17 +7107,13 @@
         if (modo === 'hand') {
           jarvisHumanInstance.config.face.enabled = false;
           jarvisHumanInstance.config.hand.enabled = true;
-          jarvisHumanInstance.config.hand.landmarks = true;
-          jarvisHumanInstance.config.hand.skipFrames = 0;
-          jarvisHumanInstance.config.hand.skipTime = 0;
-          jarvisHumanInstance.config.hand.detector = { modelPath: 'handtrack.json', minConfidence: 0.15, maxDetected: 2 };
-          jarvisHumanInstance.config.hand.skeleton = { modelPath: 'handlandmark-lite.json' };
-          jarvisHumanInstance.config.gesture = { enabled: true };
+          jarvisHumanInstance.config.gesture.enabled = false;
         } else if (modo === 'face_emotion') {
           jarvisHumanInstance.config.face.enabled = true;
           jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.25 };
           jarvisHumanInstance.config.face.emotion = { enabled: true, modelPath: 'emotion.json', minConfidence: 0.20 };
           jarvisHumanInstance.config.hand.enabled = false;
+          jarvisHumanInstance.config.gesture.enabled = false;
         }
       }
       return jarvisHumanInstance;
@@ -7144,9 +7134,7 @@
             ctx.clearRect(0, 0, overlay.width, overlay.height);
           }
 
-          res.hand.forEach((h, handIdx) => {
-            // Em Human: h.keypoints é o array com as 21 coordenadas [x, y, z]
-            // h.landmarks é o objeto com as análises de curvatura { thumb: { curl, direction }, ... }
+          res.hand.forEach(h => {
             const rawKps = h.keypoints;
             let lm = null;
             if (Array.isArray(rawKps) && rawKps.length >= 21) {
@@ -7158,17 +7146,7 @@
               });
             }
 
-            const curls = (h.landmarks && typeof h.landmarks === 'object') ? h.landmarks : null;
             const estadosDedos = [false, false, false, false, false]; // Polegar, Indicador, Médio, Anelar, Mindinho
-
-            // Verifica gestos reconhecidos pelo classificador neural do Human
-            const handGestures = Array.isArray(res.gesture)
-              ? res.gesture.filter(g => g.hand === handIdx || g.hand === undefined)
-              : [];
-            const isVictory = handGestures.some(g => /victory|peace/i.test(g.gesture));
-            const isPoint = handGestures.some(g => /point/i.test(g.gesture));
-            const isOpenPalm = handGestures.some(g => /open palm|palm/i.test(g.gesture));
-            const isThumbsUp = handGestures.some(g => /thumbs up/i.test(g.gesture));
 
             if (lm) {
               const wrist = lm[0];
@@ -7177,97 +7155,48 @@
               // 1. Quatro Dedos Principais: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
               const tips = [8, 12, 16, 20];
               const pips = [6, 10, 14, 18];
-              const mcps = [5, 9, 13, 17];
-              const nomes = ['index', 'middle', 'ring', 'pinky'];
 
               for (let i = 0; i < 4; i++) {
                 const tip = lm[tips[i]];
                 const pip = lm[pips[i]];
-                const mcp = lm[mcps[i]];
                 const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
                 const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
-                const dTipMcp   = Math.hypot(tip[0] - mcp[0], tip[1] - mcp[1]);
-                const dPipMcp   = Math.hypot(pip[0] - mcp[0], pip[1] - mcp[1]);
-                const nome = nomes[i];
-                const curlVal = (curls && curls[nome]) ? curls[nome].curl : null;
 
-                // Critérios combinados: geométrico radial + ângulo de curvatura
-                const estendidoGeo = (tip[1] < pip[1]) || (dTipWrist > dPipWrist * 1.05) || (dTipMcp > dPipMcp * 1.15);
-                const naoCurvado = (curlVal !== 'full');
-                const estendidoCurl = (curlVal === 'none' || curlVal === 'half');
-
-                let up = false;
-                if (estendidoCurl && estendidoGeo) {
-                  up = true;
-                } else if (estendidoGeo && naoCurvado) {
-                  up = true;
-                } else if (dTipMcp > dPipMcp * 1.35) {
-                  up = true;
+                // Regra canônica rápida e estrita:
+                // O dedo levantado PRECISA estar acima da junta intermediária (tip[1] < pip[1])
+                // E mais estendido que ela em relação ao pulso.
+                // Dedos recuados/fechados na mão SEMPRE falham e NUNCA contam!
+                if (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05) {
+                  estadosDedos[i + 1] = true;
+                  totalDedos++;
                 }
-
-                estadosDedos[i + 1] = up;
               }
 
-              // 2. Polegar(4)
-              const thumbTip = lm[4];
-              const thumbIp  = lm[3];
-              const thumbMcp = lm[2];
-              const indexMcp = lm[5];
+              // 2. Polegar(4): estendido apenas quando a ponta estiver aberta para fora
+              // Quando o polegar está recuado/dobrado na palma ou punho, a ponta dobra-se para dentro
+              // e dThumbTipMcp fica bem menor que dThumbIpMcp (ratio ~ 0.5), logo NUNCA conta!
+              const thumbTip  = lm[4];
+              const thumbIp   = lm[3];
+              const thumbMcp  = lm[2];
+              const indexMcp  = lm[5];
 
+              const dThumbTipMcp   = Math.hypot(thumbTip[0] - thumbMcp[0], thumbTip[1] - thumbMcp[1]);
+              const dThumbIpMcp    = Math.hypot(thumbIp[0] - thumbMcp[0], thumbIp[1] - thumbMcp[1]);
               const dThumbTipPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
               const dThumbIpPinky  = Math.hypot(thumbIp[0] - pinkyMcp[0], thumbIp[1] - pinkyMcp[1]);
               const dThumbTipIndex = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
               const dThumbIpIndex  = Math.hypot(thumbIp[0] - indexMcp[0], thumbIp[1] - indexMcp[1]);
-              const thumbCurlVal   = (curls && curls.thumb) ? curls.thumb.curl : null;
 
-              let thumbUp = false;
-              if (thumbCurlVal === 'none') {
-                thumbUp = (dThumbTipIndex > dThumbIpIndex * 1.05 || dThumbTipPinky > dThumbIpPinky * 1.05);
-              } else if (thumbCurlVal === 'half') {
-                thumbUp = (dThumbTipIndex > dThumbIpIndex * 1.12 && dThumbTipPinky > dThumbIpPinky * 1.06);
-              } else {
-                thumbUp = (dThumbTipIndex > dThumbIpIndex * 1.20 && dThumbTipPinky > dThumbIpPinky * 1.10);
-              }
-              estadosDedos[0] = thumbUp;
+              const thumbEstendido = (dThumbTipMcp > dThumbIpMcp * 1.12);
+              const thumbAberto    = (dThumbTipPinky > dThumbIpPinky * 1.10) || (dThumbTipIndex > dThumbIpIndex * 1.15);
 
-              // 3. Calibração e Harmonização com Classificador Neural de Gestos do Human
-              if (isVictory) {
-                // Vitória/Paz ✌️: Indicador e Médio levantados, Polegar/Anelar/Mindinho fechados = EXATOS 2 DEDOS!
-                estadosDedos[0] = false;
-                estadosDedos[1] = true;
-                estadosDedos[2] = true;
-                estadosDedos[3] = false;
-                estadosDedos[4] = false;
-              } else if (isOpenPalm) {
-                // Palma aberta 🖐️: Todos os 5 dedos estendidos!
+              if (thumbEstendido && thumbAberto) {
                 estadosDedos[0] = true;
-                estadosDedos[1] = true;
-                estadosDedos[2] = true;
-                estadosDedos[3] = true;
-                estadosDedos[4] = true;
-              } else if (isPoint) {
-                // Apontando ☝️: Apenas indicador levantado!
-                estadosDedos[0] = false;
-                estadosDedos[1] = true;
-                estadosDedos[2] = false;
-                estadosDedos[3] = false;
-                estadosDedos[4] = false;
-              } else if (isThumbsUp) {
-                // Joinha 👍: Apenas polegar levantado!
-                estadosDedos[0] = true;
-                estadosDedos[1] = false;
-                estadosDedos[2] = false;
-                estadosDedos[3] = false;
-                estadosDedos[4] = false;
+                totalDedos++;
               }
-
-              // Soma os dedos levantados desta mão
-              const dedosMao = estadosDedos.filter(Boolean).length;
-              totalDedos += dedosMao;
 
               // Desenho elegante do esqueleto da mão (feedback visual Stark imediato)
               if (ctx && overlay) {
-                // Linhas conectando juntas dos dedos
                 const conexoes = [
                   [0, 1], [1, 2], [2, 3], [3, 4],       // Polegar
                   [0, 5], [5, 6], [6, 7], [7, 8],       // Indicador
@@ -7292,7 +7221,8 @@
                   ctx.fill();
                 });
 
-                // Destaca as 5 pontas dos dedos com cor vibrante (verde = levantado, laranja = dobrado)
+                // Destaca as 5 pontas dos dedos com cor vibrante:
+                // VERDE = levantado, LARANJA = recuado/dobrado
                 const tipIndices = [4, 8, 12, 16, 20];
                 tipIndices.forEach((tIdx, dIdx) => {
                   const pt = lm[tIdx];
@@ -7302,21 +7232,6 @@
                   ctx.fillStyle = up ? '#22c55e' : '#f97316';
                   ctx.fill();
                 });
-              }
-
-            } else if (curls) {
-              // Fallback se keypoints falhou mas curl existe
-              if (isVictory) {
-                totalDedos += 2;
-              } else if (isOpenPalm) {
-                totalDedos += 5;
-              } else if (isPoint || isThumbsUp) {
-                totalDedos += 1;
-              } else {
-                ['index', 'middle', 'ring', 'pinky'].forEach(f => {
-                  if (curls[f] && (curls[f].curl === 'none' || curls[f].curl === 'half')) totalDedos++;
-                });
-                if (curls.thumb && curls.thumb.curl !== 'full') totalDedos++;
               }
             }
           });
@@ -8035,22 +7950,23 @@
             }
           }
 
-          // 2. Polegar (4): Distância da ponta ao metacarpo do mindinho (17) e indicador (5)
-          const thumbTip = lm[4];
-          const thumbIp  = lm[3];
-          const indexMcp = lm[5];
+          // 2. Polegar (4): estendido apenas quando a ponta estiver aberta para fora
+          const thumbTip  = lm[4];
+          const thumbIp   = lm[3];
+          const thumbMcp  = lm[2];
+          const indexMcp  = lm[5];
+          const dThumbTipMcp   = Math.hypot(thumbTip.x - thumbMcp.x, thumbTip.y - thumbMcp.y);
+          const dThumbIpMcp    = Math.hypot(thumbIp.x - thumbMcp.x, thumbIp.y - thumbMcp.y);
           const dThumbTipPinky = Math.hypot(thumbTip.x - pinkyMcp.x, thumbTip.y - pinkyMcp.y);
           const dThumbIpPinky  = Math.hypot(thumbIp.x - pinkyMcp.x, thumbIp.y - pinkyMcp.y);
           const dThumbTipIndex = Math.hypot(thumbTip.x - indexMcp.x, thumbTip.y - indexMcp.y);
           const dThumbIpIndex  = Math.hypot(thumbIp.x - indexMcp.x, thumbIp.y - indexMcp.y);
 
-          if (dThumbTipIndex > dThumbIpIndex * 1.15 && dThumbTipPinky > dThumbIpPinky * 1.08) {
-            estados[0] = true;
-          }
+          const thumbEstendido = (dThumbTipMcp > dThumbIpMcp * 1.12);
+          const thumbAberto    = (dThumbTipPinky > dThumbIpPinky * 1.10) || (dThumbTipIndex > dThumbIpIndex * 1.15);
 
-          // Se apenas indicador e médio estiverem levantados (gesto ✌️ de 2 dedos), isola polegar
-          if (estados[1] && estados[2] && !estados[3] && !estados[4]) {
-            estados[0] = false;
+          if (thumbEstendido && thumbAberto) {
+            estados[0] = true;
           }
 
           const dedosNestaMao = estados.filter(Boolean).length;
