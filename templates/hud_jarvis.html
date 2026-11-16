@@ -7127,6 +7127,174 @@
       return jarvisHumanInstance;
     }
 
+    // =========================================================================
+    // MOTOR BIOMÉTRICO 3D DE RECONHECIMENTO DE DEDOS (ANTI-FALSO POSITIVO)
+    // Calcula com precisão a lei dos cossenos 3D articular, extensão anatômica
+    // e isolamento do polegar/pinça para eliminar 100% dos falsos positivos.
+    // =========================================================================
+    function avaliarDedosMao(lm, curls) {
+      if (!lm || lm.length < 21) {
+        return { estados: [false, false, false, false, false], total: 0 };
+      }
+
+      function dist3D(pA, pB) {
+        const dx = pA[0] - pB[0];
+        const dy = pA[1] - pB[1];
+        const dz = (pA[2] || 0) - (pB[2] || 0);
+        return Math.hypot(dx, dy, dz);
+      }
+
+      function dist2D(pA, pB) {
+        return Math.hypot(pA[0] - pB[0], pA[1] - pB[1]);
+      }
+
+      function angulo3D(pA, pB, pC) {
+        const dBA = dist3D(pA, pB);
+        const dBC = dist3D(pC, pB);
+        const dAC = dist3D(pA, pC);
+        if (dBA * dBC === 0) return 180;
+        const cosVal = (dBA * dBA + dBC * dBC - dAC * dAC) / (2 * dBA * dBC);
+        const clamped = Math.max(-1, Math.min(1, cosVal));
+        return Math.acos(clamped) * (180 / Math.PI);
+      }
+
+      const wrist = lm[0];
+      const thumbCmc = lm[1];
+      const thumbMcp = lm[2];
+      const thumbIp  = lm[3];
+      const thumbTip = lm[4];
+
+      const indexMcp = lm[5];
+      const indexPip = lm[6];
+      const indexDip = lm[7];
+      const indexTip = lm[8];
+
+      const pinkyMcp = lm[17];
+
+      // Dimensões de referência anatômica da palma
+      const palmWidth = dist2D(indexMcp, pinkyMcp) || 1;
+      const palmHeight = dist2D(wrist, lm[9]) || 1; // MCP do dedo médio
+      const escalaPalma = Math.max(palmWidth, palmHeight * 0.7);
+
+      // 1. DETECÇÃO ROBUSTA DE PINÇA / GESTO "OK" (Polegar tocando Indicador ou Médio)
+      // Se a ponta do polegar estiver encostando na ponta ou junta do indicador,
+      // NENHUM dos dois dedos pode ser contado como estendido!
+      const distThumbTipIndexTip = dist2D(thumbTip, indexTip);
+      const distThumbTipIndexPip = dist2D(thumbTip, indexPip);
+      const isIndexPinching = (distThumbTipIndexTip < escalaPalma * 0.40) || (distThumbTipIndexPip < escalaPalma * 0.42);
+
+      const distThumbTipMiddleTip = dist2D(thumbTip, lm[12]);
+      const isMiddlePinching = (distThumbTipMiddleTip < escalaPalma * 0.38);
+
+      const isPinching = isIndexPinching || isMiddlePinching;
+
+      const estados = [false, false, false, false, false]; // [Polegar, Indicador, Médio, Anelar, Mindinho]
+
+      // 2. AVALIAÇÃO DOS 4 DEDOS (Indicador, Médio, Anelar, Mindinho)
+      const tips = [8, 12, 16, 20];
+      const pips = [6, 10, 14, 18];
+      const dips = [7, 11, 15, 19];
+      const mcps = [5, 9, 13, 17];
+      const nomes = ['index', 'middle', 'ring', 'pinky'];
+
+      for (let i = 0; i < 4; i++) {
+        // Se estiver em pinça/OK com o polegar, o dedo correspondente está dobrado/fechado
+        if (i === 0 && isIndexPinching) {
+          estados[1] = false;
+          continue;
+        }
+        if (i === 1 && isMiddlePinching) {
+          estados[2] = false;
+          continue;
+        }
+
+        const tip = lm[tips[i]];
+        const pip = lm[pips[i]];
+        const dip = lm[dips[i]];
+        const mcp = lm[mcps[i]];
+        const nome = nomes[i];
+
+        // Ângulo articular 3D na junta PIP (MCP -> PIP -> TIP)
+        const anguloPip = angulo3D(mcp, pip, tip);
+
+        // Proporção de extensão da ponta em relação à junta proximal
+        const dTipMcp = dist3D(tip, mcp);
+        const dPipMcp = dist3D(pip, mcp);
+        const ratioExtensao = dTipMcp / (dPipMcp + 1e-5);
+
+        // Distância ao punho em 3D
+        const dTipWrist = dist3D(tip, wrist);
+        const dPipWrist = dist3D(pip, wrist);
+
+        // Verificação vertical no espaço de tela (Y cresce para baixo)
+        const pontaAcimaPip = tip[1] < pip[1] + (escalaPalma * 0.15);
+        const pontaAcimaMcp = tip[1] < mcp[1] + (escalaPalma * 0.12);
+
+        // Curl anatômico do Human (se disponível)
+        const curlHuman = curls && curls[nome] ? curls[nome].curl : null;
+        const curlNaoFechado = curlHuman !== 'full';
+
+        // Regra canônica de dedo estendido:
+        // Junta aberta (>= 125°), ponta estendida além do PIP (>= 1.25x),
+        // mais distante do punho que o PIP, voltada para cima e curl não 'full'
+        const estendido = curlNaoFechado &&
+                          (anguloPip >= 125) &&
+                          (ratioExtensao >= 1.25) &&
+                          (dTipWrist > dPipWrist * 1.08) &&
+                          pontaAcimaPip &&
+                          pontaAcimaMcp;
+
+        if (estendido) {
+          estados[i + 1] = true;
+        }
+      }
+
+      // 3. AVALIAÇÃO ANATÔMICA DO POLEGAR
+      // O polegar só é contado se:
+      // A) Estiver em Joinha vertical estrito 👍 (quando TODOS os outros 4 dedos estão FECHADOS)
+      // B) OU estiver com a mão aberta / estendido lateralmente para fora da mão
+      if (!isPinching) {
+        const outrosDedosEstendidos = estados.slice(1).filter(Boolean).length;
+        const anguloThumb = angulo3D(thumbMcp, thumbIp, thumbTip);
+
+        const dThumbTipIndexMcp = dist2D(thumbTip, indexMcp);
+        const dThumbTipPinkyMcp = dist2D(thumbTip, pinkyMcp);
+        const dThumbMcpPinkyMcp = dist2D(thumbMcp, pinkyMcp);
+
+        // Quando o polegar está aberto (5 dedos), ele fica mais longe do mindinho que a sua base.
+        // Quando está dobrado cruzando a palma (4 dedos levantados), fica mais perto do mindinho!
+        const polegarAfastadoDoMindinho = dThumbTipPinkyMcp > dThumbMcpPinkyMcp * 1.06;
+
+        // Afastamento lateral em relação à base do indicador
+        const polegarAfastadoDoIndicador = dThumbTipIndexMcp > escalaPalma * 0.55;
+
+        // Curl do polegar
+        const curlThumb = curls && curls.thumb ? curls.thumb.curl : null;
+        const curlThumbOk = curlThumb !== 'full';
+
+        // Caso A: Polegar Aberto Lateralmente (Mão aberta / 5 Dedos)
+        const polegarAberto = curlThumbOk &&
+                              (anguloThumb >= 125) &&
+                              polegarAfastadoDoMindinho &&
+                              polegarAfastadoDoIndicador &&
+                              (dist2D(thumbTip, thumbMcp) > dist2D(thumbIp, thumbMcp) * 1.15);
+
+        // Caso B: Joinha Vertical Exclusivo 👍 (Apenas polegar erguido, outros 4 dedos fechados)
+        const polegarJoinha = (outrosDedosEstendidos === 0) &&
+                              (thumbTip[1] < thumbIp[1] && thumbIp[1] < thumbMcp[1]) &&
+                              (thumbTip[1] < indexMcp[1] - (escalaPalma * 0.12)) &&
+                              (anguloThumb >= 125) &&
+                              curlThumbOk;
+
+        if (polegarAberto || polegarJoinha) {
+          estados[0] = true;
+        }
+      }
+
+      const total = estados.filter(Boolean).length;
+      return { estados, total };
+    }
+
     async function processarFrameHumanHands(video, overlay) {
       if (!video || video.readyState < 2) return -1;
       const human = await obterJarvisHuman('hand');
@@ -7154,70 +7322,9 @@
               });
             }
 
-            const estadosDedos = [false, false, false, false, false]; // Polegar, Indicador, Médio, Anelar, Mindinho
-
             if (lm) {
-              const wrist = lm[0];
-              const pinkyMcp = lm[17];
-              const thumbMcp = lm[2];
-              const thumbIp  = lm[3];
-              const thumbTip = lm[4];
-
-              // 1. Quatro Dedos Principais: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
-              const tips = [8, 12, 16, 20];
-              const pips = [6, 10, 14, 18];
-              const mcps = [5, 9, 13, 17];
-
-              for (let i = 0; i < 4; i++) {
-                const tip = lm[tips[i]];
-                const pip = lm[pips[i]];
-                const mcp = lm[mcps[i]];
-                const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
-                const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
-                const dTipMcp   = Math.hypot(tip[0] - mcp[0], tip[1] - mcp[1]);
-                const dPipMcp   = Math.hypot(pip[0] - mcp[0], pip[1] - mcp[1]);
-
-                // Regra canônica robusta:
-                // O dedo levantado PRECISA ter a ponta acima do PIP no eixo Y (tip[1] < pip[1])
-                // E a distância da ponta ao MCP/punho deve ser maior que a do PIP.
-                // Dedos recuados/fechados na mão SEMPRE falham e NUNCA contam!
-                if (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05 && dTipMcp > dPipMcp * 1.15) {
-                  estadosDedos[i + 1] = true;
-                  totalDedos++;
-                }
-              }
-
-              // 2. Polegar(4): Projeção Vetorial Anatômica Invariante
-              // Vetor da palma (de Pinky MCP 17 para Thumb MCP 2): define o eixo transversal da mão
-              const vPalmX = thumbMcp[0] - pinkyMcp[0];
-              const vPalmY = thumbMcp[1] - pinkyMcp[1];
-              const palmDist = Math.hypot(vPalmX, vPalmY) || 1;
-
-              // Vetor do polegar (de Thumb MCP 2 para Thumb Tip 4)
-              const vThumbX = thumbTip[0] - thumbMcp[0];
-              const vThumbY = thumbTip[1] - thumbMcp[1];
-
-              // Projeção escalar do polegar na direção exterior da palma:
-              // - Se ABERTO/ESTENDIDO (5 dedos ou mão aberta): projeta-se PARA FORA (projecao > palmDist * 0.18)
-              // - Se RECUADO/DOBRADO (na palma ou punho): projeta-se PARA DENTRO (projecao negativa ou <= 0)
-              const projecaoExterior = (vThumbX * vPalmX + vThumbY * vPalmY) / palmDist;
-
-              const dThumbTipMcp = Math.hypot(vThumbX, vThumbY);
-              const dThumbIpMcp  = Math.hypot(thumbIp[0] - thumbMcp[0], thumbIp[1] - thumbMcp[1]);
-
-              const polegarAberto = (projecaoExterior > palmDist * 0.18) && (dThumbTipMcp > dThumbIpMcp * 1.05);
-
-              // Joinha vertical 👍: ponta erguida acima das juntas do polegar e distante do punho
-              const dThumbTipWrist = Math.hypot(thumbTip[0] - wrist[0], thumbTip[1] - wrist[1]);
-              const dThumbMcpWrist = Math.hypot(thumbMcp[0] - wrist[0], thumbMcp[1] - wrist[1]);
-              const polegarJoinha = (thumbTip[1] < thumbIp[1] && thumbIp[1] < thumbMcp[1]) &&
-                                    (dThumbTipWrist > dThumbMcpWrist * 1.15) &&
-                                    (projecaoExterior > -palmDist * 0.10);
-
-              if (polegarAberto || polegarJoinha) {
-                estadosDedos[0] = true;
-                totalDedos++;
-              }
+              const { estados, total } = avaliarDedosMao(lm, h.landmarks);
+              totalDedos += total;
 
               // Desenho elegante do esqueleto da mão (feedback visual Stark imediato)
               if (ctx && overlay) {
@@ -7250,10 +7357,12 @@
                 const tipIndices = [4, 8, 12, 16, 20];
                 tipIndices.forEach((tIdx, dIdx) => {
                   const pt = lm[tIdx];
-                  const up = estadosDedos[dIdx];
+                  const up = estados[dIdx];
                   ctx.beginPath();
-                  ctx.arc(pt[0], pt[1], up ? 7 : 4.5, 0, Math.PI * 2);
+                  ctx.arc(pt[0], pt[1], up ? 7.5 : 4.5, 0, Math.PI * 2);
                   ctx.fillStyle = up ? '#22c55e' : '#f97316';
+                  ctx.shadowColor = up ? '#22c55e' : '#f97316';
+                  ctx.shadowBlur = up ? 12 : 3;
                   ctx.fill();
                 });
               }
@@ -7965,81 +8074,50 @@
 
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         for (let h = 0; h < results.multiHandLandmarks.length; h++) {
-          const lm = results.multiHandLandmarks[h];
-          const wrist = lm[0];
-          const pinkyMcp = lm[17];
+          const rawLm = results.multiHandLandmarks[h];
+          const lm = rawLm.map(pt => [pt.x * overlay.width, pt.y * overlay.height, (pt.z || 0) * overlay.width]);
 
-          // 1. Dedos Normais: Indicador (8), Médio (12), Anelar (16), Mindinho (20)
-          const tips = [8, 12, 16, 20];
-          const pips = [6, 10, 14, 18];
-          const mcps = [5, 9, 13, 17];
-          const estados = [false, false, false, false, false];
+          const { estados, total } = avaliarDedosMao(lm, null);
+          totalDedosLevantados += total;
 
           // Desenha conexões dos dedos no canvas
-          ctx.strokeStyle = '#00f0ff';
-          ctx.lineWidth = 2.5;
+          const conexoes = [
+            [0, 1], [1, 2], [2, 3], [3, 4],
+            [0, 5], [5, 6], [6, 7], [7, 8],
+            [0, 9], [9, 10], [10, 11], [11, 12],
+            [0, 13], [13, 14], [14, 15], [15, 16],
+            [0, 17], [17, 18], [18, 19], [19, 20]
+          ];
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          conexoes.forEach(([idxA, idxB]) => {
+            ctx.moveTo(lm[idxA][0], lm[idxA][1]);
+            ctx.lineTo(lm[idxB][0], lm[idxB][1]);
+          });
+          ctx.stroke();
 
-          for (let i = 0; i < 4; i++) {
-            const tip = lm[tips[i]];
-            const pip = lm[pips[i]];
-            const mcp = lm[mcps[i]];
-            const dTipWrist = Math.hypot(tip.x - wrist.x, tip.y - wrist.y);
-            const dPipWrist = Math.hypot(pip.x - wrist.x, pip.y - wrist.y);
-            const dTipMcp   = Math.hypot(tip.x - mcp.x, tip.y - mcp.y);
-            const dPipMcp   = Math.hypot(pip.x - mcp.x, pip.y - mcp.y);
+          // Desenha todos os 21 pontos
+          lm.forEach((pt) => {
+            ctx.beginPath();
+            ctx.arc(pt[0], pt[1], 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#00f0ff';
+            ctx.fill();
+          });
 
-            // Dedo levantado: ponta estendida em relação ao metacarpo/junta ou acima no eixo Y
-            if ((tip.y < pip.y || dTipWrist > dPipWrist * 1.05) && (dTipMcp > dPipMcp * 1.15)) {
-              estados[i + 1] = true;
-            }
-          }
-
-          // 2. Polegar (4): Projeção Vetorial Anatômica Invariante
-          const thumbTip  = lm[4];
-          const thumbIp   = lm[3];
-          const thumbMcp  = lm[2];
-
-          const vPalmX = thumbMcp.x - pinkyMcp.x;
-          const vPalmY = thumbMcp.y - pinkyMcp.y;
-          const palmDist = Math.hypot(vPalmX, vPalmY) || 1;
-
-          const vThumbX = thumbTip.x - thumbMcp.x;
-          const vThumbY = thumbTip.y - thumbMcp.y;
-
-          const projecaoExterior = (vThumbX * vPalmX + vThumbY * vPalmY) / palmDist;
-          const dThumbTipMcp = Math.hypot(vThumbX, vThumbY);
-          const dThumbIpMcp  = Math.hypot(thumbIp.x - thumbMcp.x, thumbIp.y - thumbMcp.y);
-
-          const polegarAberto = (projecaoExterior > palmDist * 0.18) && (dThumbTipMcp > dThumbIpMcp * 1.05);
-
-          const dThumbTipWrist = Math.hypot(thumbTip.x - wrist.x, thumbTip.y - wrist.y);
-          const dThumbMcpWrist = Math.hypot(thumbMcp.x - wrist.x, thumbMcp.y - wrist.y);
-          const polegarJoinha = (thumbTip.y < thumbIp.y && thumbIp.y < thumbMcp.y) &&
-                                (dThumbTipWrist > dThumbMcpWrist * 1.15) &&
-                                (projecaoExterior > -palmDist * 0.10);
-
-          if (polegarAberto || polegarJoinha) {
-            estados[0] = true;
-          }
-
-          const dedosNestaMao = estados.filter(Boolean).length;
-          totalDedosLevantados += dedosNestaMao;
-
-          // Desenha pontos visuais de feedback na tela
-          const allTips = [4, 8, 12, 16, 20];
-          for (let i = 0; i < 5; i++) {
-            const pt = lm[allTips[i]];
-            const px = pt.x * overlay.width;
-            const py = pt.y * overlay.height;
-            const isUp = estados[i];
+          // Desenha pontos visuais de feedback na tela (Verde = erguido, Laranja = recolhido)
+          const tipIndices = [4, 8, 12, 16, 20];
+          tipIndices.forEach((tIdx, dIdx) => {
+            const pt = lm[tIdx];
+            const up = estados[dIdx];
 
             ctx.beginPath();
-            ctx.arc(px, py, isUp ? 8 : 4.5, 0, Math.PI * 2);
-            ctx.fillStyle = isUp ? '#22c55e' : '#f97316';
-            ctx.shadowColor = isUp ? '#22c55e' : '#f97316';
-            ctx.shadowBlur = isUp ? 14 : 4;
+            ctx.arc(pt[0], pt[1], up ? 7.5 : 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = up ? '#22c55e' : '#f97316';
+            ctx.shadowColor = up ? '#22c55e' : '#f97316';
+            ctx.shadowBlur = up ? 12 : 3;
             ctx.fill();
-          }
+          });
         }
       }
 

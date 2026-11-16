@@ -27,21 +27,18 @@ test_cases = [
 ]
 
 all_passed = True
-for query, expected_intencao, expected_acao in test_cases:
-    res = brain.interpret_command(query)
-    intencao = res.get("intencao")
-    acao = res.get("acao_frontend")
-    exp_int = [expected_intencao] if isinstance(expected_intencao, str) else expected_intencao
-    exp_ac = [expected_acao] if isinstance(expected_acao, str) else expected_acao
-    ok = (intencao in exp_int and acao in exp_ac)
-    status = "PASS" if ok else "FAIL"
-    if not ok:
-        all_passed = False
-    print(f"[{status}] \"{query}\" -> intencao={intencao} (esperado {expected_intencao}), acao={acao} (esperado {expected_acao})")
+import unittest
 
-if all_passed:
-    print("\n>>> ALL NLP TESTS PASSED PERFECTLY! <<<")
-    exit(0)
-else:
-    print("\n>>> SOME TESTS FAILED! <<<")
-    exit(1)
+class TestNLPIntencoes(unittest.TestCase):
+    def test_all_cases(self):
+        for query, expected_intencao, expected_acao in test_cases:
+            res = brain.interpret_command(query)
+            intencao = res.get("intencao")
+            acao = res.get("acao_frontend")
+            exp_int = [expected_intencao] if isinstance(expected_intencao, str) else expected_intencao
+            exp_ac = [expected_acao] if isinstance(expected_acao, str) else expected_acao
+            self.assertIn(intencao, exp_int, f"Falha na intenção para '{query}'")
+            self.assertIn(acao, exp_ac, f"Falha na ação para '{query}'")
+
+if __name__ == '__main__':
+    unittest.main()
