@@ -671,7 +671,7 @@
         <div class="card-title" style="margin:0;">🤖 Motores de Inteligência Artificial</div>
         <div id="admin-active-pill" style="background:#065f46; color:#a7f3d0; padding:6px 14px; border-radius:20px; font-weight:800; font-size:0.88rem; border:1px solid #10b981; display:flex; align-items:center; gap:6px;">
           <span>✅ Ativo no Jarvis:</span>
-          <span id="admin-active-pill-name" style="color:#fff; text-decoration:underline;">IA Local (Ollama)</span>
+          <span id="admin-active-pill-name" style="color:#fff; text-decoration:underline;">Carregando...</span>
         </div>
       </div>
       <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">
@@ -1323,7 +1323,7 @@
       recarregarEstatisticasFala();
     });
 
-    let currentAdminProvider = 'opencode';
+    let currentAdminProvider = null;
     let adminConfig = {};
 
     function switchAdminTab(tabId) {
@@ -1333,6 +1333,13 @@
       if (activeBtn) activeBtn.classList.add('active');
       const targetPane = document.getElementById(`pane-${tabId}`);
       if (targetPane) targetPane.classList.add('active');
+      if (tabId === 'ia') {
+        const savedProv = adminConfig.active_provider || adminConfig.mode || currentAdminProvider || 'ollama';
+        const box = document.getElementById('admin-provider-box');
+        if (!box || !box.innerHTML.trim() || currentAdminProvider !== savedProv) {
+          selecionarProvedorAdmin(savedProv, false);
+        }
+      }
       if (tabId === 'livros') carregarLivrosAdmin();
       if (tabId === 'diag') carregarLogsAdmin();
       if (tabId === 'tesouros') carregarResgatesFamiliaAdmin();
@@ -1491,9 +1498,13 @@
         const chkBook = document.getElementById('adm-req-book');
         if (chkBook && document.activeElement !== chkBook) chkBook.checked = !!adminConfig.require_book_before_media;
 
+        const savedProv = adminConfig.active_provider || adminConfig.mode || 'ollama';
+        const pillName = document.getElementById('admin-active-pill-name');
+        if (pillName) pillName.textContent = NOMES_PROVEDORES_AI[savedProv] || savedProv;
+
         if (!currentAdminProvider) {
-          currentAdminProvider = adminConfig.active_provider || adminConfig.mode || 'ollama';
-          selecionarProvedorAdmin(currentAdminProvider, false);
+          currentAdminProvider = savedProv;
+          selecionarProvedorAdmin(savedProv, false);
         }
       } catch (e) {}
     }
@@ -1653,9 +1664,10 @@
     }
 
     async function salvarProvedorAtual() {
+      const prov = currentAdminProvider || adminConfig.active_provider || adminConfig.mode || 'ollama';
       const payload = {
-        active_provider: currentAdminProvider,
-        mode: currentAdminProvider
+        active_provider: prov,
+        mode: prov
       };
       const keyInp = document.getElementById('adm-prov-key');
       const servInp = document.getElementById('adm-prov-server');
@@ -1742,10 +1754,11 @@
     }
 
     async function salvarConfiguracoesAdmin() {
+      const prov = currentAdminProvider || adminConfig.active_provider || adminConfig.mode || 'ollama';
       const payload = {
         child_name: (document.getElementById('adm-child-name')?.value || '').trim() || 'Super Herói',
-        active_provider: currentAdminProvider,
-        mode: currentAdminProvider,
+        active_provider: prov,
+        mode: prov,
         voice_profile: document.getElementById('adm-voice-profile')?.value || 'jarvis_antonio',
         geo_cidade: (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo',
         geo_estado: (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná',

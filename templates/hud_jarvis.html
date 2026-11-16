@@ -7451,7 +7451,7 @@
                 <div style="font-size:0.92rem; font-weight:800; color:#38bdf8; display:flex; align-items:center; justify-content:space-between; width:100%; gap:6px;">
                   <span>📸 Câmera Espelho IA</span>
                   <select id="fc-engine-selector" style="background:#0284c7; color:#fff; font-size:0.75rem; padding:3px 8px; border-radius:8px; font-weight:900; border:1px solid #38bdf8; cursor:pointer;" onchange="trocarMotorCameraManualmente(this.value)">
-                    <option value="mediapipe" selected>🌟 MediaPipe Oficial</option>
+                    <option value="mediapipe" selected>🌟 Google MediaPipe (Oficial & Padrão)</option>
                     <option value="human">🤖 Human IA Local</option>
                     <option value="canvas">⚡ Motor Geométrico</option>
                   </select>
@@ -7809,9 +7809,17 @@
         fcMediaPipeHandsInstance = null;
       }
       if (fcCameraStream) {
-        fcCameraStream.getTracks().forEach(t => t.stop());
+        try {
+          fcCameraStream.getTracks().forEach(t => t.stop());
+        } catch(e) {}
         fcCameraStream = null;
       }
+      const videoEl = document.getElementById('fc-video-feed');
+      if (videoEl) videoEl.srcObject = null;
+
+      fcMotorAtual = 'mediapipe';
+      const engineSelect = document.getElementById('fc-engine-selector');
+      if (engineSelect) engineSelect.value = 'mediapipe';
 
       fcHistoricoAmostras = [];
       fcCandidatoEstavel = -1;
@@ -7846,11 +7854,36 @@
     let fcMotorAtual = 'mediapipe';
     let fcPausaCameraPorToqueManualAte = 0;
 
+    async function assegurarStreamCameraAtivo(video) {
+      const precisaNovoStream = !fcCameraStream || 
+        fcCameraStream.getVideoTracks().length === 0 || 
+        fcCameraStream.getVideoTracks().some(t => t.readyState === 'ended');
+
+      if (precisaNovoStream) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 320 }, height: { ideal: 240 } },
+            audio: false
+          });
+          fcCameraStream = stream;
+          if (video) {
+            video.srcObject = stream;
+            await video.play().catch(() => {});
+          }
+        } catch (e) {
+          console.warn('Erro ao reobter stream de câmera:', e);
+        }
+      } else if (video && video.paused) {
+        await video.play().catch(() => {});
+      }
+      return fcCameraStream;
+    }
+
     async function trocarMotorCameraManualmente(novoMotor) {
       fcMotorAtual = novoMotor;
       const video = document.getElementById('fc-video-feed');
       const overlay = document.getElementById('fc-canvas-overlay');
-      if (!video || !fcCameraStream) return;
+      if (!video) return;
 
       if (fcCameraInterval) { clearInterval(fcCameraInterval); fcCameraInterval = null; }
       if (fcCameraAnimationId) { cancelAnimationFrame(fcCameraAnimationId); fcCameraAnimationId = null; }
@@ -7867,7 +7900,11 @@
         if (ctx) ctx.clearRect(0, 0, overlay.width, overlay.height);
       }
 
-      showToast(`🔄 Alternando para motor: ${novoMotor.toUpperCase()}...`);
+      // Reassegura câmera aberta e ativa antes de iniciar qualquer motor
+      await assegurarStreamCameraAtivo(video);
+
+      const nomeExibicao = novoMotor === 'mediapipe' ? 'Google MediaPipe (Padrão Oficial)' : novoMotor.toUpperCase();
+      showToast(`🔄 Alternando para motor: ${nomeExibicao}...`);
 
       if (novoMotor === 'mediapipe') {
         await iniciarMediaPipeHands(video);
@@ -7904,7 +7941,7 @@
 
           const camera = new Camera(video, {
             onFrame: async () => {
-              if (fcCameraStream && hands && fcMotorAtual === 'mediapipe') {
+              if (video && !video.paused && video.readyState >= 2 && hands && fcMotorAtual === 'mediapipe') {
                 await hands.send({ image: video });
               }
             },
@@ -7914,7 +7951,7 @@
           camera.start();
           fcMediaPipeHandsInstance = hands;
           fcMediaPipeCameraInstance = camera;
-          showToast('🌟 Google MediaPipe Ativado!');
+          showToast('🌟 Google MediaPipe Ativado (Padrão Oficial)!');
           return true;
         }
       } catch(e) {
