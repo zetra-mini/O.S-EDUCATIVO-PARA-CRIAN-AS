@@ -834,6 +834,21 @@ def excluir_missao_rotina(missao_id: int) -> bool:
         return False
 
 
+def limpar_missoes_cumpridas(data_dia: Optional[str] = None) -> int:
+    """Limpa ou reinicia as missões cumpridas do dia (ou todas se data_dia='todas'), permitindo novo ciclo de rotina."""
+    import datetime
+    try:
+        if data_dia == "todas":
+            res = db.executar_escrita("DELETE FROM missoes_cumpridas;")
+        else:
+            dia = data_dia or datetime.date.today().isoformat()
+            res = db.executar_escrita("DELETE FROM missoes_cumpridas WHERE data_dia = ?;", (dia,))
+        return int(res or 0)
+    except Exception as e:
+        logger.error(f"Erro ao limpar missões cumpridas: {e}")
+        return 0
+
+
 def cumprir_missao_rotina(missao_id: int, data_dia: Optional[str] = None) -> Dict[str, Any]:
     """Marca uma missão como cumprida hoje, credita as moedas no cofre e registra na linha do tempo."""
     import datetime

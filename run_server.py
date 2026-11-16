@@ -52,6 +52,7 @@ from banco_dados import (
     listar_galeria_arte,
     listar_linha_tempo,
     listar_missoes_rotina,
+    limpar_missoes_cumpridas,
     obter_logs,
     obter_resumo_progresso_idiomas,
     registrar_atividade_linha_tempo,
@@ -1582,6 +1583,20 @@ def api_missoes_cumprir(request: Request):
     return json_response(resultado)
 
 
+@app.route("/api/missoes/limpar", methods=["POST"])
+def api_missoes_limpar(request: Request):
+    """Limpa as missões cumpridas de hoje (ou todas) para reiniciar o ciclo do Quartel-General."""
+    data = request.json or {}
+    modo = data.get("modo", "hoje")
+    qtd = limpar_missoes_cumpridas("todas" if modo == "todas" else None)
+    return json_response({
+        "ok": True,
+        "limpas": qtd,
+        "mensagem": "Quartel-general de missões limpo e pronto para novas conquistas!",
+        "missoes": listar_missoes_rotina()
+    })
+
+
 @app.route("/api/admin/missoes", methods=["GET", "POST"])
 def api_admin_missoes(request: Request):
     """Gerenciamento de missões de rotina pelo painel dos pais."""
@@ -1600,6 +1615,17 @@ def api_admin_missoes(request: Request):
         registrar_atividade_linha_tempo("missao", f"Papai/Mamãe adicionou nova missão: {titulo}", f"Recompensa: +{recompensa} moedas", icone)
         return json_response({"ok": True, "id": novo_id, "mensagem": "Missão criada com sucesso!"})
     return json_response({"ok": True, "missoes": listar_missoes_rotina()})
+
+
+@app.route("/api/admin/missoes/limpar", methods=["POST"])
+def api_admin_missoes_limpar(request: Request):
+    """Permite aos pais limpar/reiniciar todas as missões cumpridas."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
+    data = request.json or {}
+    modo = data.get("modo", "hoje")
+    qtd = limpar_missoes_cumpridas("todas" if modo == "todas" else None)
+    return json_response({"ok": True, "limpas": qtd, "missoes": listar_missoes_rotina()})
 
 
 @app.route("/api/admin/missoes/<id>", methods=["DELETE"])
