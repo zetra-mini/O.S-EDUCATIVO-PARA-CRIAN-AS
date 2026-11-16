@@ -247,22 +247,31 @@ class JarvisBrain:
         if not t:
             return False
 
+        # Remover wake words antes de analisar perguntas
+        t_clean = re.sub(
+            r"^(jarvis|e[ií]\s+jarvis|ok\s+jarvis|ol[aá]\s+jarvis|rob[oô]\s+jarvis|bom\s+dia\s+jarvis|boa\s+tarde\s+jarvis|boa\s+noite\s+jarvis)[\s,:\-!]*",
+            "",
+            t,
+        ).strip()
+        if not t_clean:
+            t_clean = t
+
         # Termina com ponto de interrogação
-        if t.endswith("?"):
-            if not any(u in t for u in ["que horas", "horas sao", "temperatura hoje", "previsao do tempo", "quantas moedas"]):
+        if t.endswith("?") or t_clean.endswith("?"):
+            if not any(u in t_clean for u in ["que horas", "horas sao", "temperatura hoje", "previsao do tempo", "quantas moedas", "saldo de moedas"]):
                 return True
 
         # Padrões interrogativos explícitos
         padroes_pergunta = [
             r"^(por\s*que|porque|pq|o\s*que|oq|qual|quais|como|quem|onde|aonde|quando|quanto|quantos|quantas)\b",
-            r"^(me\s+explica|me\s+conta|conta\s+sobre|fale\s+sobre|voc[eê]\s+sabe|voc[eê]\s+conhece|voc[eê]\s+gosta|o\s+que\s+acha|me\s+diz|me\s+ajuda\s+a\s+entender)\b",
-            r"^(quanto\s+[eé]|quantos\s+[eé]|como\s+[eé]|por\s*que\s+[eé]|o\s+que\s+[eé])\b",
-            r"^(ser[aá]\s+que|voc[eê]\s+pode\s+me\s+explicar|me\s+ajuda\s+a\s+entender)\b",
+            r"^(me\s+explica|me\s+conta|conta\s+sobre|fale\s+sobre|fala\s+sobre|diga\s+sobre|me\s+fala\s+sobre|me\s+fale\s+sobre|voc[eê]\s+sabe|voc[eê]\s+conhece|voc[eê]\s+gosta|o\s+que\s+acha|me\s+diz|me\s+ajuda\s+a\s+entender|sabe\s+me\s+dizer)\b",
+            r"^(quanto\s+[eé]|quantos\s+[eé]|como\s+[eé]|por\s*que\s+[eé]|o\s+que\s+[eé]|quem\s+[eé]|qual\s+[eé])\b",
+            r"^(ser[aá]\s+que|voc[eê]\s+pode\s+me\s+explicar|voc[eê]\s+pode\s+explicar|me\s+ajuda\s+a\s+entender)\b",
             r"\b(por\s*que|porque)\b",
         ]
         for p in padroes_pergunta:
-            if re.search(p, t):
-                if any(u in t for u in ["que horas", "horas sao", "temperatura hoje", "previsao do tempo", "quantas moedas"]):
+            if re.search(p, t_clean):
+                if any(u in t_clean for u in ["que horas", "horas sao", "temperatura hoje", "previsao do tempo", "quantas moedas", "saldo de moedas"]):
                     return False
                 return True
 
@@ -273,12 +282,19 @@ class JarvisBrain:
         Interpreta a intenção do comando de voz do Campeão:
         1. Comandos de Utilidade Imediata (horas, saldo, clima) -> 0ms
         2. Perguntas Cognitivas/Curiosidades/Dúvidas -> IA API (Llama Local / Provedor configurado)
-        3. Comandos de Abrir Jogos/Atividades -> Execução Direta do Jogo
+        3. Comandos de Abrir Jogos/Atividades -> Execução Direta do Jogo (exige comando explícito)
         """
         text_lower = (user_text or "").lower().strip()
+        clean_text = re.sub(
+            r"^(jarvis|e[ií]\s+jarvis|ok\s+jarvis|ol[aá]\s+jarvis|rob[oô]\s+jarvis|bom\s+dia\s+jarvis|boa\s+tarde\s+jarvis|boa\s+noite\s+jarvis)[\s,:\-!]*",
+            "",
+            text_lower,
+        ).strip()
+        if not clean_text:
+            clean_text = text_lower
 
         # 0. COMANDOS DE UTILIDADE IMEDIATA DO SISTEMA (Relógio, Clima Exato, Moedas)
-        if any(w in text_lower for w in ["que horas", "que horas sao", "horas agora", "horario agora"]):
+        if any(w in clean_text for w in ["que horas", "que horas sao", "horas agora", "horario agora"]):
             import datetime
             agora = datetime.datetime.now()
             reply = f"Bip bip, herói {self.name}! Agora no relógio são exatamente {agora.hour} horas e {agora.minute} minutos!"
@@ -290,7 +306,7 @@ class JarvisBrain:
                 "dados": {"hora": agora.strftime("%H:%M")},
             }
 
-        if any(w in text_lower for w in ["quantas moedas", "saldo de moedas", "meu tesouro", "pote de moedas", "saldo atual"]):
+        if any(w in clean_text for w in ["quantas moedas", "saldo de moedas", "meu tesouro", "pote de moedas", "saldo atual"]):
             try:
                 from economia_fichas import token_mgr
                 status = token_mgr.obter_status_pote()
@@ -306,7 +322,7 @@ class JarvisBrain:
             except Exception:
                 pass
 
-        if any(w in text_lower for w in ["previsão do tempo", "previsao do tempo", "temperatura hoje", "vai chover hoje", "clima hoje"]):
+        if any(w in clean_text for w in ["previsão do tempo", "previsao do tempo", "temperatura hoje", "vai chover hoje", "clima hoje"]):
             try:
                 from clima_estacoes import weather_mgr
                 cidade_cfg = self.config.get("geo_cidade", "São Paulo")
@@ -330,7 +346,7 @@ class JarvisBrain:
 
         # 1. SE FOR UMA PERGUNTA COGNITIVA (DÚVIDA, CURIOSIDADE, CIÊNCIA, AMIZADE):
         # NUNCA abre jogos nem rotinas! Vai DIRETO para o cérebro da IA (Llama local / Provedor ativo)!
-        if self.is_cognitive_question(user_text):
+        if self.is_cognitive_question(clean_text) or self.is_cognitive_question(user_text):
             reply, engine = self.ask(user_text)
             return {
                 "ok": True,
@@ -340,8 +356,52 @@ class JarvisBrain:
                 "dados": {"engine": engine, "pergunta": user_text},
             }
 
+        # 2. EXIGÊNCIA DE COMANDOS EXPLÍCITOS PARA JOGOS / ATIVIDADES:
+        # Se a frase não contiver verbos de ação claros ou prefixos de comando de jogos/rotinas,
+        # NUNCA abre jogos por menções isoladas a palavras como 'filme', 'livro', 'xadrez' ou 'dinossauro'!
+        # Todo o restante é direcionado para a IA inteligente do Jarvis.
+        padrao_comando_jogo = (
+            r"^(abrir|iniciar|come[cç]ar|jogar|quero\s+jogar|vamos\s+jogar|colocar|mostrar|ver|assistir|tocar|pintar|desenhar)\b|"
+            r"^jogo\s+(d[oaes]\s+|de\s+)?|"
+            r"\b(abrir\s+jogo|jogar\s+jogo|iniciar\s+jogo|vamos\s+jogar|quero\s+jogar|jogo\s+do|jogo\s+da|jogo\s+de|jogo\s+dos|jogo\s+das)\b|"
+            r"^(escovar\s+dentes?|lavar\s+as\s+m[aã]os|arrumar\s+quarto|guardar\s+brinquedos|sortear\s+palavra|palavra\s+nova)\b|"
+            r"^(boa\s+noite|bom\s+dia)\b"
+        )
+        tem_comando_jogo = bool(re.search(padrao_comando_jogo, clean_text))
+
+        if not tem_comando_jogo:
+            reply, engine = self.ask(user_text)
+            return {
+                "ok": True,
+                "intencao": "conversa_ia",
+                "resposta_voz": reply,
+                "acao_frontend": "nenhuma",
+                "dados": {"engine": engine, "pergunta": user_text},
+            }
+
+        # 3. CUMPRIMENTOS
+        if re.search(r"^(boa\s+noite)\b", clean_text):
+            reply = f"Boa noite, super herói {self.name}! Durma bem e tenha lindos sonhos!"
+            return {
+                "ok": True,
+                "intencao": "cumprimento",
+                "resposta_voz": reply,
+                "acao_frontend": "nenhuma",
+                "dados": {},
+            }
+
+        if re.search(r"^(bom\s+dia)\b", clean_text):
+            reply = f"Bom dia, campeão {self.name}! Hoje será um dia incrível e cheio de aventuras!"
+            return {
+                "ok": True,
+                "intencao": "cumprimento",
+                "resposta_voz": reply,
+                "acao_frontend": "nenhuma",
+                "dados": {},
+            }
+
         # 0. Cinema Stark / YouTube / Netflix (com verificação estrita de bloqueio e orientação)
-        if any(w in text_lower for w in ["cinema", "youtube", "netflix", "desenho", "desenhos", "assistir", "filme"]):
+        if any(w in clean_text for w in ["cinema", "youtube", "netflix", "desenho", "desenhos", "assistir", "filme"]):
             try:
                 from gestao_tempo_midia import MediaTimeManager
                 from banco_dados import db
@@ -392,7 +452,7 @@ class JarvisBrain:
                 pass
 
         # 1. Histórias Mágicas / Livros de Virtudes
-        if any(w in text_lower for w in ["história", "historia", "histórias", "historias", "historinha", "livro", "livros", "ler", "leitura", "biblioteca"]):
+        if any(w in clean_text for w in ["história", "historia", "histórias", "historias", "historinha", "livro", "livros", "ler", "leitura", "biblioteca"]):
             reply = "Abrindo a nossa Biblioteca Mágica de Histórias de Herói! Escolha uma linda virtude para aprender hoje!"
             return {
                 "ok": True,
@@ -403,7 +463,7 @@ class JarvisBrain:
             }
 
         # 2. Laboratório Musical / Piano / Bateria
-        if any(w in text_lower for w in ["música", "musica", "piano", "tocar", "canção", "cancao", "bateria", "cantar"]):
+        if any(w in clean_text for w in ["música", "musica", "piano", "tocar", "canção", "cancao", "bateria", "cantar"]):
             reply = "Abrindo o Laboratório Musical do Jarvis! Vamos tocar o piano mágico e soltar o som dos tambores!"
             return {
                 "ok": True,
@@ -414,7 +474,7 @@ class JarvisBrain:
             }
 
         # 3. Pintura & Lousa Mágica Neon
-        if any(w in text_lower for w in ["pintar", "pintura", "desenhar", "lousa", "colorir", "arte"]):
+        if any(w in clean_text for w in ["pintar", "pintura", "desenhar", "lousa", "colorir", "arte"]):
             reply = "Abrindo a Lousa Neon e Pintura Mágica! Solte a sua imaginação e crie uma obra de arte com cores brilhantes!"
             return {
                 "ok": True,
@@ -425,7 +485,7 @@ class JarvisBrain:
             }
 
         # 4. Academia Tech: Teclado, Mouse & Rodinha Scroll
-        if any(w in text_lower for w in ["teclado", "mouse", "rodinha", "scroll", "digitar", "clique", "setinha"]):
+        if any(w in clean_text for w in ["teclado", "mouse", "rodinha", "scroll", "digitar", "clique", "setinha"]):
             reply = "Abrindo a Academia Tech! Vamos treinar os dedinhos no teclado, o clique do mouse e o movimento da rodinha mágica!"
             return {
                 "ok": True,
@@ -436,7 +496,7 @@ class JarvisBrain:
             }
 
         # 5. Festas & Datas Comemorativas do Brasil
-        if any(w in text_lower for w in ["data", "datas", "comemorativa", "comemorativas", "festa", "festas", "carnaval", "páscoa", "pascoa", "natal", "dia das mães", "dia dos pais", "7 de setembro"]):
+        if any(w in clean_text for w in ["data", "datas", "comemorativa", "comemorativas", "festa", "festas", "carnaval", "páscoa", "pascoa", "natal", "dia das mães", "dia dos pais", "7 de setembro"]):
             reply = "Abrindo o Calendário de Festas e Datas Comemorativas do Brasil! Vamos descobrir o que celebramos com alegria!"
             return {
                 "ok": True,
@@ -447,7 +507,7 @@ class JarvisBrain:
             }
 
         # 6. Alimentação Saudável / Prato dos Campeões
-        if any(w in text_lower for w in ["prato", "comida saudável", "comida saudavel", "alimentação", "alimentacao", "nutrição", "nutricao", "comidinha"]):
+        if any(w in clean_text for w in ["prato", "comida saudável", "comida saudavel", "alimentação", "alimentacao", "nutrição", "nutricao", "comidinha"]):
             reply = "Abrindo o Prato dos Super Campeões! Vamos escolher comidinhas saudáveis e coloridas para ficar bem forte!"
             return {
                 "ok": True,
@@ -458,7 +518,7 @@ class JarvisBrain:
             }
 
         # 7. Higiene dos Heróis / Banho, Mãos e Dentes
-        if any(w in text_lower for w in ["higiene", "banho", "limpinho", "sabão", "sabao", "lavar mão", "lavar as mãos"]):
+        if any(w in clean_text for w in ["higiene", "banho", "limpinho", "sabão", "sabao", "lavar mão", "lavar as mãos"]):
             reply = "Missão Super Herói Limpinho ativada! Vamos cuidar do nosso corpinho, tomar um banho gostoso e lavar as mãozinhas!"
             return {
                 "ok": True,
@@ -469,7 +529,7 @@ class JarvisBrain:
             }
 
         # 8. Mãos & Contar de 1 a 10
-        if any(w in text_lower for w in ["contar", "dedinhos", "mãozinha", "maozinha", "1 a 10", "número", "numeros"]):
+        if any(w in clean_text for w in ["contar", "dedinhos", "mãozinha", "maozinha", "1 a 10", "número", "numeros"]):
             reply = "Abrindo o jogo de contar com as mãozinhas! Vamos levantar os dedinhos e aprender a contar de 1 a 10!"
             return {
                 "ok": True,
@@ -480,7 +540,7 @@ class JarvisBrain:
             }
 
         # 9. Ler & Escrever (Método Fônico)
-        if any(w in text_lower for w in ["alfabeto", "letrinha", "letrinhas", "escrever", "fônico", "fonico", "ler"]):
+        if any(w in clean_text for w in ["alfabeto", "letrinha", "letrinhas", "escrever", "fônico", "fonico", "ler"]):
             reply = "Abrindo o treino fônico das letrinhas! Vamos ouvir o som que cada letrinha faz e praticar na lousa neon!"
             return {
                 "ok": True,
@@ -491,7 +551,7 @@ class JarvisBrain:
             }
 
         # 10. Idiomas Mágicos (English & Español)
-        if any(w in text_lower for w in ["inglês", "ingles", "espanhol", "idioma", "idiomas", "english"]):
+        if any(w in clean_text for w in ["inglês", "ingles", "espanhol", "idioma", "idiomas", "english"]):
             reply = "Welcome! Abrindo os Idiomas Mágicos! Vamos aprender palavras em inglês e espanhol com cartões falantes!"
             return {
                 "ok": True,
@@ -502,7 +562,7 @@ class JarvisBrain:
             }
 
         # 11. Semáforo & Atenção
-        if any(w in text_lower for w in ["semáforo", "semaforo", "sinal", "atenção", "atencao"]):
+        if any(w in clean_text for w in ["semáforo", "semaforo", "sinal", "atenção", "atencao"]):
             reply = "Abrindo o Desafio do Semáforo Stark! Foco total: quando ficar verde a gente clica, quando ficar vermelho a gente espera!"
             return {
                 "ok": True,
@@ -513,7 +573,7 @@ class JarvisBrain:
             }
 
         # 12. Emoções & Flor da Calma
-        if any(w in text_lower for w in ["emoção", "emocao", "emoções", "emocoes", "calma", "respirar", "raiva", "triste", "medo"]):
+        if any(w in clean_text for w in ["emoção", "emocao", "emoções", "emocoes", "calma", "respirar", "raiva", "triste", "medo"]):
             reply = "Abrindo o Centro das Emoções e a Flor da Calma! Vamos respirar fundo, soltar o ar e acalmar o coraçãozinho!"
             return {
                 "ok": True,
@@ -524,7 +584,7 @@ class JarvisBrain:
             }
 
         # 12.1 Fonoaudiologia & Dicção / Palavra Nova do Jarvis
-        if any(w in text_lower for w in ["palavra nova", "palavra mágica", "palavra magica", "nova palavra", "mostrar palavra", "sortear palavra"]):
+        if any(w in clean_text for w in ["palavra nova", "palavra mágica", "palavra magica", "nova palavra", "mostrar palavra", "sortear palavra"]):
             reply = f"Bip bip, super-herói {self.name}! O Jarvis vai sortear agora mesmo uma palavra mágica novinha para você treinar a dicção!"
             return {
                 "ok": True,
@@ -534,7 +594,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["fono", "fonoaudiologia", "dicção", "diccao", "trava-língua", "trava lingua", "travalingua", "treinar fala", "aprender a falar"]):
+        if any(w in clean_text for w in ["fono", "fonoaudiologia", "dicção", "diccao", "trava-língua", "trava lingua", "travalingua", "treinar fala", "aprender a falar"]):
             reply = f"Abrindo a Academia de Dicção e Fonoaudiologia do Herói, {self.name}! Vamos treinar a boquinha com o Jarvis!"
             return {
                 "ok": True,
@@ -545,7 +605,7 @@ class JarvisBrain:
             }
 
         # 13. Clima / Tempo / Estações (não conflita com Sistema Solar)
-        if ("solar" not in text_lower) and (any(w in text_lower for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "previsão", "previsao", "estação", "estacoes", "geografia"]) or re.search(r'\b(sol|ensolarado)\b', text_lower)):
+        if ("solar" not in clean_text) and (any(w in clean_text for w in ["tempo", "clima", "chover", "chuva", "calor", "frio", "previsão", "previsao", "estação", "estacoes", "geografia"]) or re.search(r'\b(sol|ensolarado)\b', clean_text)):
             try:
                 from clima_estacoes import weather_mgr
                 cidade_cfg = self.config.get("geo_cidade", "São Paulo")
@@ -554,7 +614,7 @@ class JarvisBrain:
                 crianca = self.name
 
                 # 13.1 Previsão para AMANHÃ
-                is_amanha = any(w in text_lower for w in ["amanhã", "amanha", "dia seguinte", "próximo dia", "proximo dia"])
+                is_amanha = any(w in clean_text for w in ["amanhã", "amanha", "dia seguinte", "próximo dia", "proximo dia"])
                 if is_amanha:
                     prev = weather_mgr.obter_previsao_amanha()
                     t_max = prev.get("temp_max", 20)
@@ -589,7 +649,7 @@ class JarvisBrain:
                 pass
 
         # 14. Moedas / Tesouro Real
-        if any(w in text_lower for w in ["moeda", "moedas", "tesouro", "saldo", "pote", "fichas", "dinheiro"]):
+        if any(w in clean_text for w in ["moeda", "moedas", "tesouro", "saldo", "pote", "fichas", "dinheiro"]):
             try:
                 from economia_fichas import token_mgr
                 status = token_mgr.obter_status_pote()
@@ -606,7 +666,7 @@ class JarvisBrain:
                 pass
 
         # 15. Escovar os dentes
-        if any(w in text_lower for w in ["dente", "dentes", "escova", "escovar"]):
+        if any(w in clean_text for w in ["dente", "dentes", "escova", "escovar"]):
             reply = "Missão Dente Brilhante ativada, Campeão! Pegue a sua escovinha que o cronômetro de 2 minutos vai começar agora! Vamos deixar o sorriso brilhando!"
             return {
                 "ok": True,
@@ -617,7 +677,7 @@ class JarvisBrain:
             }
 
         # 16. Guardar brinquedos / Quarto limpo
-        if any(w in text_lower for w in ["quarto", "brinquedo", "brinquedos", "guardar", "bagunça", "arrumar"]):
+        if any(w in clean_text for w in ["quarto", "brinquedo", "brinquedos", "guardar", "bagunça", "arrumar"]):
             reply = "Operação Quarto Limpo ativada! Vamos guardar todos os brinquedos no baú antes do tempo acabar! Você é um super-herói veloz!"
             return {
                 "ok": True,
@@ -628,7 +688,7 @@ class JarvisBrain:
             }
 
         # 17. Novos Jogos Educativos (Sistema Solar, Animais, Relógio, Detetive, Ciências, Xadrez, Dinos)
-        if any(w in text_lower for w in ["sistema solar", "planetas", "planeta", "astronomia", "galáxia", "saturno", "marte", "júpiter"]):
+        if any(w in clean_text for w in ["sistema solar", "planetas", "planeta", "astronomia", "galáxia", "saturno", "marte", "júpiter"]):
             reply = f"Nave espacial Stark pronta para decolar, astronauta {self.name}! Abrindo o mapa do Sistema Solar e dos planetas!"
             return {
                 "ok": True,
@@ -638,7 +698,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["animais", "animal", "sons dos animais", "som dos animais", "bicho", "bichos", "natureza"]):
+        if any(w in clean_text for w in ["animais", "animal", "sons dos animais", "som dos animais", "bicho", "bichos", "natureza"]):
             reply = f"Expedição dos Bichos ativada, {self.name}! Vamos ouvir os sons dos animais e aprender sobre a natureza com o Jarvis!"
             return {
                 "ok": True,
@@ -648,7 +708,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["relógio", "relogio", "que horas são", "horas", "minutos"]):
+        if any(w in clean_text for w in ["relógio", "relogio", "que horas são", "horas", "minutos"]):
             reply = f"Abrindo o Relógio Mágico do Tempo, herói {self.name}! Vamos aprender as horas e a rotina do dia juntos!"
             return {
                 "ok": True,
@@ -658,7 +718,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["detetive", "sete erros", "7 erros", "jogo dos erros", "olhos de águia"]):
+        if any(w in clean_text for w in ["detetive", "sete erros", "7 erros", "jogo dos erros", "olhos de águia"]):
             reply = f"Ativando olhos de águia, super detetive {self.name}! Vamos encontrar todos os 7 detalhes escondidos na cena!"
             return {
                 "ok": True,
@@ -668,7 +728,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["ciência", "ciencias", "experiência", "experiencia", "laboratório", "mistura", "misturas"]):
+        if any(w in clean_text for w in ["ciência", "ciencias", "experiência", "experiencia", "laboratório", "mistura", "misturas"]):
             reply = f"Laboratório Científico Stark ativo, cientista {self.name}! Vamos misturar poções mágicas e brincar com ímãs!"
             return {
                 "ok": True,
@@ -678,7 +738,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["xadrez", "jogar xadrez", "aprender xadrez", "peça de xadrez", "cavalo em l", "torre"]):
+        if any(w in clean_text for w in ["xadrez", "jogar xadrez", "aprender xadrez", "peça de xadrez", "cavalo em l", "torre"]):
             reply = f"Bem-vindo ao Reino do Xadrez, pequeno grande mestre {self.name}! Vamos aprender a movimentar o Cavalo, a Torre e o Peão!"
             return {
                 "ok": True,
@@ -688,7 +748,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["dinossauro", "dinossauros", "fóssil", "fósseis", "fossil", "fosseis", "t-rex", "t rex", "paleontologia"]):
+        if any(w in clean_text for w in ["dinossauro", "dinossauros", "fóssil", "fósseis", "fossil", "fosseis", "t-rex", "t rex", "paleontologia"]):
             reply = f"Pás e pincéis a postos, paleontólogo {self.name}! Vamos escavar a rocha e desenterrar o esqueleto do T-Rex!"
             return {
                 "ok": True,
@@ -698,7 +758,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["engenharia", "blockly", "programação", "programacao", "robótica", "robotica", "código", "codigo"]):
+        if any(w in clean_text for w in ["engenharia", "blockly", "programação", "programacao", "robótica", "robotica", "código", "codigo"]):
             reply = f"Abrindo a Bancada de Programação e Engenharia Stark, pequeno engenheiro {self.name}!"
             return {
                 "ok": True,
@@ -708,7 +768,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["matemática", "matematica", "somar", "diminuir", "multiplicar", "dividir", "continha", "continhas", "fazer conta", "tabuada", "adição", "adicao", "subtração", "subtracao"]):
+        if any(w in clean_text for w in ["matemática", "matematica", "somar", "diminuir", "multiplicar", "dividir", "continha", "continhas", "fazer conta", "tabuada", "adição", "adicao", "subtração", "subtracao"]):
             reply = f"Laboratório de Matemática Stark ativo, super campeão {self.name}! Vamos somar, diminuir, multiplicar e dividir com frutas e heróis!"
             return {
                 "ok": True,
@@ -718,7 +778,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["reciclagem", "reciclar", "lixo", "lixeira", "guardiões da terra", "guardioes da terra", "meio ambiente", "salvar o planeta"]):
+        if any(w in clean_text for w in ["reciclagem", "reciclar", "lixo", "lixeira", "guardiões da terra", "guardioes da terra", "meio ambiente", "salvar o planeta"]):
             reply = f"Missão Guardiões da Terra iniciada, herói {self.name}! Vamos separar o lixo nas lixeiras coloridas e cuidar do nosso planeta!"
             return {
                 "ok": True,
@@ -728,7 +788,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["corrida", "carro", "pilotar", "pista", "turbo", "super carro", "automóvel", "automovel", "corrida turbo"]):
+        if any(w in clean_text for w in ["corrida", "carro", "pilotar", "pista", "turbo", "super carro", "automóvel", "automovel", "corrida turbo"]):
             reply = f"Motores roncando e turbo calibrado, piloto {self.name}! Abrindo a Corrida Turbo Stark! Aperte o cinto e acelere!"
             return {
                 "ok": True,
@@ -738,7 +798,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["defensor galáctico", "defensor galactico", "tiro espacial", "batalha espacial", "invasores", "jogo de nave", "voo espacial", "homem de ferro"]):
+        if any(w in clean_text for w in ["defensor galáctico", "defensor galactico", "tiro espacial", "batalha espacial", "invasores", "jogo de nave", "voo espacial", "homem de ferro"]):
             reply = f"Sistemas de tiro de plasma armados, piloto {self.name}! Abrindo o Defensor Galáctico Stark! Defenda a galáxia com tiros turbo!"
             return {
                 "ok": True,
@@ -748,7 +808,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["arkanoid", "quebra blocos", "quebra-blocos", "destruir blocos", "bola turbo", "reator arkanoid", "submarino"]):
+        if any(w in clean_text for w in ["arkanoid", "quebra blocos", "quebra-blocos", "destruir blocos", "bola turbo", "reator arkanoid", "submarino"]):
             reply = f"Base magnética energizada, mestre {self.name}! Abrindo o Reator Arkanoid Stark! Rebata a esfera quântica e quebre todos os blocos!"
             return {
                 "ok": True,
@@ -758,7 +818,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["jetpack", "propulsor", "voar com homem de ferro", "flappy", "gravidade", "voo gravitacional", "hoverboard"]):
+        if any(w in clean_text for w in ["jetpack", "propulsor", "voar com homem de ferro", "flappy", "gravidade", "voo gravitacional", "hoverboard"]):
             reply = f"Propulsores repulsores acionados, herói {self.name}! Abrindo o Jetpack Repulsor Stark! Voe contra a gravidade e passe pelos portais!"
             return {
                 "ok": True,
@@ -768,7 +828,7 @@ class JarvisBrain:
                 "dados": {},
             }
 
-        if any(w in text_lower for w in ["cobrinha", "snake", "circuito neon", "jogo da cobrinha", "tron", "helicóptero", "helicoptero"]):
+        if any(w in clean_text for w in ["cobrinha", "snake", "circuito neon", "jogo da cobrinha", "tron", "helicóptero", "helicoptero"]):
             reply = f"Circuito de alta velocidade conectado, campeão {self.name}! Abrindo o Circuito Neon Stark! Colete os núcleos e acelere no turbo!"
             return {
                 "ok": True,
@@ -780,7 +840,7 @@ class JarvisBrain:
 
         # 18. Jogar / Brincar geral (Apenas se nenhum jogo específico acima foi detectado)
         termos_gerais = ["jogar", "jogo", "brincar", "brincadeira", "jogos", "todos os jogos", "menu de jogos", "lista de jogos"]
-        if any(w in text_lower for w in termos_gerais):
+        if any(w in clean_text for w in termos_gerais):
             reply = "Eba! Adoro brincar com você, Campeão! Abrindo a lista de todos os jogos incríveis!"
             return {
                 "ok": True,
