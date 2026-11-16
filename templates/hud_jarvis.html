@@ -7089,9 +7089,14 @@
                 emotion: { enabled: modo === 'face_emotion', modelPath: 'emotion.json', minConfidence: 0.20 }
               },
               body: { enabled: false },
+              gesture: { enabled: true },
               hand: {
                 enabled: modo === 'hand',
                 landmarks: true,
+                skipFrames: 0,
+                skipTime: 0,
+                minConfidence: 0.15,
+                maxDetected: 2,
                 detector: { modelPath: 'handtrack.json', minConfidence: 0.15 },
                 skeleton: { modelPath: 'handlandmark-lite.json' }
               }
@@ -7109,8 +7114,11 @@
           jarvisHumanInstance.config.face.enabled = false;
           jarvisHumanInstance.config.hand.enabled = true;
           jarvisHumanInstance.config.hand.landmarks = true;
+          jarvisHumanInstance.config.hand.skipFrames = 0;
+          jarvisHumanInstance.config.hand.skipTime = 0;
           jarvisHumanInstance.config.hand.detector = { modelPath: 'handtrack.json', minConfidence: 0.15, maxDetected: 2 };
           jarvisHumanInstance.config.hand.skeleton = { modelPath: 'handlandmark-lite.json' };
+          jarvisHumanInstance.config.gesture = { enabled: true };
         } else if (modo === 'face_emotion') {
           jarvisHumanInstance.config.face.enabled = true;
           jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.25 };
@@ -7136,7 +7144,7 @@
             ctx.clearRect(0, 0, overlay.width, overlay.height);
           }
 
-          res.hand.forEach(h => {
+          res.hand.forEach((h, handIdx) => {
             // Em Human: h.keypoints é o array com as 21 coordenadas [x, y, z]
             // h.landmarks é o objeto com as análises de curvatura { thumb: { curl, direction }, ... }
             const rawKps = h.keypoints;
@@ -7152,6 +7160,15 @@
 
             const curls = (h.landmarks && typeof h.landmarks === 'object') ? h.landmarks : null;
             const estadosDedos = [false, false, false, false, false]; // Polegar, Indicador, Médio, Anelar, Mindinho
+
+            // Verifica gestos reconhecidos pelo classificador neural do Human
+            const handGestures = Array.isArray(res.gesture)
+              ? res.gesture.filter(g => g.hand === handIdx || g.hand === undefined)
+              : [];
+            const isVictory = handGestures.some(g => /victory|peace/i.test(g.gesture));
+            const isPoint = handGestures.some(g => /point/i.test(g.gesture));
+            const isOpenPalm = handGestures.some(g => /open palm|palm/i.test(g.gesture));
+            const isThumbsUp = handGestures.some(g => /thumbs up/i.test(g.gesture));
 
             if (lm) {
               const wrist = lm[0];
@@ -7169,16 +7186,26 @@
                 const mcp = lm[mcps[i]];
                 const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
                 const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
-                const dMcpWrist = Math.hypot(mcp[0] - wrist[0], mcp[1] - wrist[1]);
+                const dTipMcp   = Math.hypot(tip[0] - mcp[0], tip[1] - mcp[1]);
+                const dPipMcp   = Math.hypot(pip[0] - mcp[0], pip[1] - mcp[1]);
                 const nome = nomes[i];
+                const curlVal = (curls && curls[nome]) ? curls[nome].curl : null;
 
-                const estendidoGeo = (tip[1] < pip[1]) || (dTipWrist > dPipWrist * 1.04) || (dTipWrist > dMcpWrist * 1.25);
-                const estendidoCurl = curls && curls[nome] && (curls[nome].curl === 'none' || curls[nome].curl === 'half');
+                // Critérios combinados: geométrico radial + ângulo de curvatura
+                const estendidoGeo = (tip[1] < pip[1]) || (dTipWrist > dPipWrist * 1.05) || (dTipMcp > dPipMcp * 1.15);
+                const naoCurvado = (curlVal !== 'full');
+                const estendidoCurl = (curlVal === 'none' || curlVal === 'half');
 
-                if (estendidoGeo || estendidoCurl) {
-                  estadosDedos[i + 1] = true;
-                  totalDedos++;
+                let up = false;
+                if (estendidoCurl && estendidoGeo) {
+                  up = true;
+                } else if (estendidoGeo && naoCurvado) {
+                  up = true;
+                } else if (dTipMcp > dPipMcp * 1.35) {
+                  up = true;
                 }
+
+                estadosDedos[i + 1] = up;
               }
 
               // 2. Polegar(4)
@@ -7186,20 +7213,57 @@
               const thumbIp  = lm[3];
               const thumbMcp = lm[2];
               const indexMcp = lm[5];
+
               const dThumbTipPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
               const dThumbIpPinky  = Math.hypot(thumbIp[0] - pinkyMcp[0], thumbIp[1] - pinkyMcp[1]);
-              const dThumbTipWrist = Math.hypot(thumbTip[0] - wrist[0], thumbTip[1] - wrist[1]);
-              const dThumbMcpWrist = Math.hypot(thumbMcp[0] - wrist[0], thumbMcp[1] - wrist[1]);
               const dThumbTipIndex = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
               const dThumbIpIndex  = Math.hypot(thumbIp[0] - indexMcp[0], thumbIp[1] - indexMcp[1]);
+              const thumbCurlVal   = (curls && curls.thumb) ? curls.thumb.curl : null;
 
-              const thumbGeo = (dThumbTipPinky > dThumbIpPinky * 1.04) || (dThumbTipWrist > dThumbMcpWrist * 1.15) || (dThumbTipIndex > dThumbIpIndex * 1.04);
-              const thumbCurl = curls && curls.thumb && (curls.thumb.curl === 'none' || curls.thumb.curl === 'half');
-
-              if (thumbGeo || thumbCurl) {
-                estadosDedos[0] = true;
-                totalDedos++;
+              let thumbUp = false;
+              if (thumbCurlVal === 'none') {
+                thumbUp = (dThumbTipIndex > dThumbIpIndex * 1.05 || dThumbTipPinky > dThumbIpPinky * 1.05);
+              } else if (thumbCurlVal === 'half') {
+                thumbUp = (dThumbTipIndex > dThumbIpIndex * 1.12 && dThumbTipPinky > dThumbIpPinky * 1.06);
+              } else {
+                thumbUp = (dThumbTipIndex > dThumbIpIndex * 1.20 && dThumbTipPinky > dThumbIpPinky * 1.10);
               }
+              estadosDedos[0] = thumbUp;
+
+              // 3. Calibração e Harmonização com Classificador Neural de Gestos do Human
+              if (isVictory) {
+                // Vitória/Paz ✌️: Indicador e Médio levantados, Polegar/Anelar/Mindinho fechados = EXATOS 2 DEDOS!
+                estadosDedos[0] = false;
+                estadosDedos[1] = true;
+                estadosDedos[2] = true;
+                estadosDedos[3] = false;
+                estadosDedos[4] = false;
+              } else if (isOpenPalm) {
+                // Palma aberta 🖐️: Todos os 5 dedos estendidos!
+                estadosDedos[0] = true;
+                estadosDedos[1] = true;
+                estadosDedos[2] = true;
+                estadosDedos[3] = true;
+                estadosDedos[4] = true;
+              } else if (isPoint) {
+                // Apontando ☝️: Apenas indicador levantado!
+                estadosDedos[0] = false;
+                estadosDedos[1] = true;
+                estadosDedos[2] = false;
+                estadosDedos[3] = false;
+                estadosDedos[4] = false;
+              } else if (isThumbsUp) {
+                // Joinha 👍: Apenas polegar levantado!
+                estadosDedos[0] = true;
+                estadosDedos[1] = false;
+                estadosDedos[2] = false;
+                estadosDedos[3] = false;
+                estadosDedos[4] = false;
+              }
+
+              // Soma os dedos levantados desta mão
+              const dedosMao = estadosDedos.filter(Boolean).length;
+              totalDedos += dedosMao;
 
               // Desenho elegante do esqueleto da mão (feedback visual Stark imediato)
               if (ctx && overlay) {
@@ -7242,10 +7306,18 @@
 
             } else if (curls) {
               // Fallback se keypoints falhou mas curl existe
-              ['index', 'middle', 'ring', 'pinky'].forEach(f => {
-                if (curls[f] && (curls[f].curl === 'none' || curls[f].curl === 'half')) totalDedos++;
-              });
-              if (curls.thumb && curls.thumb.curl !== 'full') totalDedos++;
+              if (isVictory) {
+                totalDedos += 2;
+              } else if (isOpenPalm) {
+                totalDedos += 5;
+              } else if (isPoint || isThumbsUp) {
+                totalDedos += 1;
+              } else {
+                ['index', 'middle', 'ring', 'pinky'].forEach(f => {
+                  if (curls[f] && (curls[f].curl === 'none' || curls[f].curl === 'half')) totalDedos++;
+                });
+                if (curls.thumb && curls.thumb.curl !== 'full') totalDedos++;
+              }
             }
           });
 
@@ -7721,9 +7793,9 @@
     let fcMediaPipeCameraInstance = null;
 
     // Buffer temporal de suavização e histerese (elimina oscilações rápidas)
-    const BUFFER_SMOOTH_SIZE = 5;
-    const TEMPO_ESTABILIDADE_DEDOS_MS = 750;  // Segurar estável por 0.75s para oficializar (rápido e suave no Netbook)
-    const COOLDOWN_FALA_CAM_MS = 2500;        // Mínimo de 2.5s entre falas do Jarvis
+    const BUFFER_SMOOTH_SIZE = 3;
+    const TEMPO_ESTABILIDADE_DEDOS_MS = 320;  // Segurar estável por 0.32s para oficializar (rápido e suave no Netbook)
+    const COOLDOWN_FALA_CAM_MS = 1500;        // Mínimo de 1.5s entre falas do Jarvis
 
     let fcHistoricoAmostras = [];
     let fcCandidatoEstavel = -1;
@@ -7951,25 +8023,38 @@
           for (let i = 0; i < 4; i++) {
             const tip = lm[tips[i]];
             const pip = lm[pips[i]];
+            const mcp = lm[mcps[i]];
             const dTipWrist = Math.hypot(tip.x - wrist.x, tip.y - wrist.y);
             const dPipWrist = Math.hypot(pip.x - wrist.x, pip.y - wrist.y);
+            const dTipMcp   = Math.hypot(tip.x - mcp.x, tip.y - mcp.y);
+            const dPipMcp   = Math.hypot(pip.x - mcp.x, pip.y - mcp.y);
 
-            // Dedo levantado: ponta acima da junta e estendida em relação ao pulso
-            if (tip.y < pip.y && dTipWrist > dPipWrist * 1.08) {
+            // Dedo levantado: ponta estendida em relação ao metacarpo/junta ou acima no eixo Y
+            if ((tip.y < pip.y || dTipWrist > dPipWrist * 1.05) && (dTipMcp > dPipMcp * 1.15)) {
               estados[i + 1] = true;
-              totalDedosLevantados++;
             }
           }
 
-          // 2. Polegar (4): Distância da ponta ao metacarpo do mindinho (17)
+          // 2. Polegar (4): Distância da ponta ao metacarpo do mindinho (17) e indicador (5)
           const thumbTip = lm[4];
           const thumbIp  = lm[3];
+          const indexMcp = lm[5];
           const dThumbTipPinky = Math.hypot(thumbTip.x - pinkyMcp.x, thumbTip.y - pinkyMcp.y);
           const dThumbIpPinky  = Math.hypot(thumbIp.x - pinkyMcp.x, thumbIp.y - pinkyMcp.y);
-          if (dThumbTipPinky > dThumbIpPinky * 1.15) {
+          const dThumbTipIndex = Math.hypot(thumbTip.x - indexMcp.x, thumbTip.y - indexMcp.y);
+          const dThumbIpIndex  = Math.hypot(thumbIp.x - indexMcp.x, thumbIp.y - indexMcp.y);
+
+          if (dThumbTipIndex > dThumbIpIndex * 1.15 && dThumbTipPinky > dThumbIpPinky * 1.08) {
             estados[0] = true;
-            totalDedosLevantados++;
           }
+
+          // Se apenas indicador e médio estiverem levantados (gesto ✌️ de 2 dedos), isola polegar
+          if (estados[1] && estados[2] && !estados[3] && !estados[4]) {
+            estados[0] = false;
+          }
+
+          const dedosNestaMao = estados.filter(Boolean).length;
+          totalDedosLevantados += dedosNestaMao;
 
           // Desenha pontos visuais de feedback na tela
           const allTips = [4, 8, 12, 16, 20];
@@ -8081,6 +8166,7 @@
     // FILTRO DE HISTÉRESE TEMPORAL E EMISSÃO DE ÁUDIO BLINDADA (ZERO JITTER)
     // -------------------------------------------------------------------------
     function alimentarFiltroEstabilidade(dedosBrutos) {
+      if (typeof dedosBrutos !== 'number' || dedosBrutos < 0) return;
       fcHistoricoAmostras.push(dedosBrutos);
       if (fcHistoricoAmostras.length > BUFFER_SMOOTH_SIZE) {
         fcHistoricoAmostras.shift();
@@ -8102,9 +8188,9 @@
       const badgeText = document.getElementById('fc-cam-badge-text');
       const barStability = document.getElementById('fc-cam-stability-bar');
 
-      // Exige pelo menos 70% de consenso no buffer para considerar o número
-      const proporcao = maxVotos / fcHistoricoAmostras.length;
-      if (proporcao >= 0.70 && moda >= 0) {
+      // Com BUFFER_SMOOTH_SIZE = 3: exige maioria simples (2 de 3 votos)
+      const temConsenso = (fcHistoricoAmostras.length <= 2 && maxVotos >= 1) || (maxVotos >= 2);
+      if (temConsenso && moda >= 0) {
         // Se mudou de candidato dominante, reinicia o timer de estabilidade
         if (fcCandidatoEstavel !== moda) {
           fcCandidatoEstavel = moda;
@@ -8121,7 +8207,7 @@
           barStability.textContent = pctProgresso < 100 ? `Segure firme... ${pctProgresso}%` : '✨ Confirmado!';
         }
 
-        // OFICIALIZAÇÃO APENAS APÓS 1.1s SUSTENTADOS E SEM OSCILAÇÃO!
+        // OFICIALIZAÇÃO APÓS ~320ms SUSTENTADOS
         if (tempoDecorrido >= TEMPO_ESTABILIDADE_DEDOS_MS && moda !== fcUltimoConfirmado) {
           fcUltimoConfirmado = moda;
           if (badgeText) badgeText.textContent = `⭐ Confirmado: ${moda} Dedinho(s)!`;
@@ -8142,7 +8228,7 @@
           }
         }
       } else {
-        // Mão em movimento ou iluminação transitória: NÃO MUDA O NÚMERO
+        // Mão em transição
         if (barStability) barStability.textContent = 'Mão em movimento...';
       }
     }
