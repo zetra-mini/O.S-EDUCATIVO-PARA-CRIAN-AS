@@ -7053,8 +7053,8 @@
             backend: 'webgl',
             async: true,
             warmup: 'none',
-            cacheSensitivity: 0.7,
-            filter: { enabled: true, width: 320, height: 240 },
+            cacheSensitivity: 0.75,
+            filter: { enabled: true, width: 220, height: 165 },
             face: {
               enabled: modo === 'face_emotion',
               detector: { modelPath: 'blazeface.json', minConfidence: 0.25 },
@@ -7063,14 +7063,16 @@
               description: { enabled: false }
             },
             body: { enabled: false },
+            gesture: { enabled: false },
+            segmentation: { enabled: false },
+            object: { enabled: false },
             hand: {
               enabled: modo === 'hand',
               rotation: false,
               landmarks: true,
-              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.15 },
+              detector: { modelPath: 'handtrack.json', maxDetected: 2, minConfidence: 0.20 },
               skeleton: { modelPath: 'handlandmark-lite.json' }
-            },
-            gesture: { enabled: false }
+            }
           };
           jarvisHumanInstance = new HumanConstructor(config);
           await jarvisHumanInstance.load();
@@ -7082,16 +7084,18 @@
               backend: 'cpu',
               async: true,
               warmup: 'none',
-              filter: { enabled: true, width: 240, height: 180 },
+              filter: { enabled: true, width: 220, height: 165 },
               face: { enabled: false },
               body: { enabled: false },
               gesture: { enabled: false },
+              segmentation: { enabled: false },
+              object: { enabled: false },
               hand: {
                 enabled: modo === 'hand',
                 landmarks: true,
                 maxDetected: 2,
-                minConfidence: 0.25,
-                detector: { modelPath: 'handtrack.json', minConfidence: 0.25 },
+                minConfidence: 0.20,
+                detector: { modelPath: 'handtrack.json', minConfidence: 0.20 },
                 skeleton: { modelPath: 'handlandmark-lite.json' }
               }
             });
@@ -7108,6 +7112,10 @@
           jarvisHumanInstance.config.face.enabled = false;
           jarvisHumanInstance.config.hand.enabled = true;
           jarvisHumanInstance.config.gesture.enabled = false;
+          if (jarvisHumanInstance.config.filter) {
+            jarvisHumanInstance.config.filter.width = 220;
+            jarvisHumanInstance.config.filter.height = 165;
+          }
         } else if (modo === 'face_emotion') {
           jarvisHumanInstance.config.face.enabled = true;
           jarvisHumanInstance.config.face.detector = { modelPath: 'blazeface.json', minConfidence: 0.25 };
@@ -7552,6 +7560,8 @@
       
       const renderContent = (target, isCam = false) => {
         if (!target) return;
+        if (target.getAttribute('data-current-num') === String(num)) return;
+        target.setAttribute('data-current-num', String(num));
         target.innerHTML = '';
         if (num === 0) {
           target.innerHTML = `<span style="color:#94a3b8; font-size:${isCam ? '0.85rem' : '1.05rem'}; font-weight:700;">✊ Mãozinhas fechadas!</span>`;
@@ -7619,16 +7629,16 @@
       const activePill = document.getElementById(`pill-num-${num}`);
       if (activePill) activePill.classList.add('active');
 
-      const freq = FINGER_TONES[Math.min(9, Math.max(0, num - 1))] || 440;
-      playTone(freq, 220);
-
-      if (num === 10) {
-        setTimeout(() => playTone(659, 120), 120);
-        setTimeout(() => playTone(880, 250), 240);
-        addStarReward();
-      }
-
       if (shouldSpeak) {
+        const freq = FINGER_TONES[Math.min(9, Math.max(0, num - 1))] || 440;
+        playTone(freq, 220);
+
+        if (num === 10) {
+          setTimeout(() => playTone(659, 120), 120);
+          setTimeout(() => playTone(880, 250), 240);
+          addStarReward();
+        }
+
         speakCurrentNumberHint();
       }
     }
@@ -7704,12 +7714,13 @@
     // -------------------------------------------------------------------------
     let fcCameraStream = null;
     let fcCameraInterval = null;
+    let fcCameraAnimationId = null;
     let fcMediaPipeHandsInstance = null;
     let fcMediaPipeCameraInstance = null;
 
     // Buffer temporal de suavização e histerese (elimina oscilações rápidas)
     const BUFFER_SMOOTH_SIZE = 3;
-    const TEMPO_ESTABILIDADE_DEDOS_MS = 320;  // Segurar estável por 0.32s para oficializar (rápido e suave no Netbook)
+    const TEMPO_ESTABILIDADE_DEDOS_MS = 150;  // Confirmação ágil em 0.15s (resposta instantânea no Netbook)
     const COOLDOWN_FALA_CAM_MS = 1500;        // Mínimo de 1.5s entre falas do Jarvis
 
     let fcHistoricoAmostras = [];
@@ -7735,6 +7746,7 @@
 
     function stopFingerCameraMode() {
       if (fcCameraInterval) { clearInterval(fcCameraInterval); fcCameraInterval = null; }
+      if (fcCameraAnimationId) { cancelAnimationFrame(fcCameraAnimationId); fcCameraAnimationId = null; }
       if (fcMediaPipeCameraInstance) {
         try { fcMediaPipeCameraInstance.stop(); } catch (e) {}
         fcMediaPipeCameraInstance = null;
@@ -7891,24 +7903,40 @@
 
     // Processamento do esqueleto MediaPipe Hands (Inspirado nos 3 repositórios)
     function iniciarLoopHumanHands(video) {
-      if (fcCameraInterval) clearInterval(fcCameraInterval);
+      if (fcCameraInterval) { clearInterval(fcCameraInterval); fcCameraInterval = null; }
+      if (fcCameraAnimationId) { cancelAnimationFrame(fcCameraAnimationId); fcCameraAnimationId = null; }
       const overlay = document.getElementById('fc-canvas-overlay');
       let isHumanHandProcessing = false;
+      let lastProcessTime = 0;
 
-      fcCameraInterval = setInterval(async () => {
-        if (!fcCameraStream || !video || video.readyState < 2) return;
-        if (isHumanHandProcessing) return; // Drop-frame preventivo: nunca engasga a CPU do Intel Atom
-        isHumanHandProcessing = true;
-        try {
-          const total = await processarFrameHumanHands(video, overlay);
-          if (total >= 0) {
-            alimentarFiltroEstabilidade(total);
-          }
-        } catch(e) {
-        } finally {
-          isHumanHandProcessing = false;
+      const loop = async () => {
+        if (!fcCameraStream || !video || video.readyState < 2) {
+          if (fcCameraStream) fcCameraAnimationId = requestAnimationFrame(loop);
+          return;
         }
-      }, 180); // ~5.5 FPS, consumo mínimo de CPU no Acer Aspire One
+
+        const now = performance.now();
+        // Cadência dinâmica de 40ms (~25 FPS fluidos) com descarte preventivo de frames
+        if (now - lastProcessTime >= 40 && !isHumanHandProcessing) {
+          isHumanHandProcessing = true;
+          lastProcessTime = now;
+          try {
+            const total = await processarFrameHumanHands(video, overlay);
+            if (total >= 0) {
+              alimentarFiltroEstabilidade(total);
+            }
+          } catch(e) {
+          } finally {
+            isHumanHandProcessing = false;
+          }
+        }
+
+        if (fcCameraStream) {
+          fcCameraAnimationId = requestAnimationFrame(loop);
+        }
+      };
+
+      fcCameraAnimationId = requestAnimationFrame(loop);
     }
 
     function processarResultadoMediaPipe(results) {
@@ -8083,12 +8111,39 @@
     // -------------------------------------------------------------------------
     function alimentarFiltroEstabilidade(dedosBrutos) {
       if (typeof dedosBrutos !== 'number' || dedosBrutos < 0) return;
+
+      // 1. ATUALIZAÇÃO VISUAL INSTANTÂNEA EM TEMPO REAL (Zero Lag)
+      const data = FINGER_COUNT_DATA[dedosBrutos] || FINGER_COUNT_DATA[0];
+      const camBigNum = document.getElementById('fc-cam-big-num');
+      const camWordTitle = document.getElementById('fc-cam-word-title');
+      const camConcrete = document.getElementById('fc-cam-concrete-items');
+      const badgeText = document.getElementById('fc-cam-badge-text');
+      const barStability = document.getElementById('fc-cam-stability-bar');
+
+      if (camBigNum && camBigNum.textContent !== String(dedosBrutos)) {
+        camBigNum.textContent = dedosBrutos;
+      }
+      if (camWordTitle && camWordTitle.textContent !== data.word) {
+        camWordTitle.textContent = data.word;
+      }
+      if (camConcrete && camConcrete.textContent !== data.items) {
+        camConcrete.textContent = data.items;
+      }
+
+      // Atualiza estante de maçãs imediatamente
+      renderConcreteShelf(dedosBrutos);
+
+      // Destaca pílula do número correspondente
+      document.querySelectorAll('.num-pill-btn').forEach(b => b.classList.remove('active'));
+      const activePill = document.getElementById(`pill-num-${dedosBrutos}`);
+      if (activePill) activePill.classList.add('active');
+
+      // 2. FILTRO DE HISTÉRESE RÁPIDO PARA CONFIRMAÇÃO & VOZ
       fcHistoricoAmostras.push(dedosBrutos);
       if (fcHistoricoAmostras.length > BUFFER_SMOOTH_SIZE) {
         fcHistoricoAmostras.shift();
       }
 
-      // 1. Calcula a moda estatística da janela
       const contagem = {};
       fcHistoricoAmostras.forEach(v => { contagem[v] = (contagem[v] || 0) + 1; });
 
@@ -8101,41 +8156,30 @@
         }
       }
 
-      const badgeText = document.getElementById('fc-cam-badge-text');
-      const barStability = document.getElementById('fc-cam-stability-bar');
-
-      // Com BUFFER_SMOOTH_SIZE = 3: exige maioria simples (2 de 3 votos)
       const temConsenso = (fcHistoricoAmostras.length <= 2 && maxVotos >= 1) || (maxVotos >= 2);
       if (temConsenso && moda >= 0) {
-        // Se mudou de candidato dominante, reinicia o timer de estabilidade
         if (fcCandidatoEstavel !== moda) {
           fcCandidatoEstavel = moda;
           fcInicioCandidato = Date.now();
         }
 
         const tempoDecorrido = Date.now() - fcInicioCandidato;
-        const pctProgresso = Math.min(100, Math.round((tempoDecorrido / TEMPO_ESTABILIDADE_DEDOS_MS) * 100));
 
         if (badgeText) {
           badgeText.textContent = moda > 0 ? `🖐️ Jarvis vê: ${moda} Dedinho(s)` : '🖐️ Mãozinha fechada...';
         }
-        if (barStability) {
-          barStability.textContent = pctProgresso < 100 ? `Segure firme... ${pctProgresso}%` : '✨ Confirmado!';
-        }
 
-        // OFICIALIZAÇÃO APÓS ~320ms SUSTENTADOS
+        // CONFIRMAÇÃO ÁGIL APÓS APENAS ~150ms
         if (tempoDecorrido >= TEMPO_ESTABILIDADE_DEDOS_MS && moda !== fcUltimoConfirmado) {
           fcUltimoConfirmado = moda;
           if (badgeText) badgeText.textContent = `⭐ Confirmado: ${moda} Dedinho(s)!`;
-
-          // Atualiza o display visual e as maçãs sem disparar áudio longo antigo
-          setCountingNumber(moda, false);
+          if (barStability) barStability.textContent = '✨ Confirmado!';
 
           // Toca som harmônico suave
           const freq = FINGER_TONES[Math.min(9, Math.max(0, moda - 1))] || 440;
-          playTone(freq, 120);
+          playTone(freq, 100);
 
-          // DISPARO DE VOZ CONTROLADO: NUNCA SOBREPÕE E RESPEITA COOLDOWN
+          // DISPARO DE VOZ CONTROLADO
           const agora = Date.now();
           if (!isJarvisSpeaking && (agora - fcUltimoTimestampFala >= COOLDOWN_FALA_CAM_MS)) {
             fcUltimoTimestampFala = agora;
@@ -8144,7 +8188,6 @@
           }
         }
       } else {
-        // Mão em transição
         if (barStability) barStability.textContent = 'Mão em movimento...';
       }
     }
