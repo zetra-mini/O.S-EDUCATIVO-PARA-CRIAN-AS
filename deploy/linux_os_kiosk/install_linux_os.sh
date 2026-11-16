@@ -21,19 +21,22 @@ INSTALL_DIR="/opt/jarvis-kids-os"
 APP_USER="jarvis"
 
 echo "📦 1. Atualizando pacotes e instalando dependências mínimas do SO..."
-apt-get update -y
+apt-get update -y || true
 apt-get install -y --no-install-recommends \
   python3 \
   python3-pip \
   python3-venv \
+  curl \
+  git || true
+
+apt-get install -y --no-install-recommends \
   xorg \
   openbox \
-  chromium-browser \
   alsa-utils \
   pulseaudio \
-  unclutter \
-  curl \
-  git
+  unclutter 2>/dev/null || true
+
+apt-get install -y chromium 2>/dev/null || apt-get install -y chromium-browser 2>/dev/null || apt-get install -y firefox-esr 2>/dev/null || true
 
 echo "👤 2. Criando usuário de sistema '$APP_USER'..."
 if ! id "$APP_USER" &>/dev/null; then

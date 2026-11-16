@@ -13121,18 +13121,18 @@
     function renderSolarSystemBody(body) {
       const p = BANCO_SISTEMA_SOLAR[corpoSolarIdx];
       body.innerHTML = `
-        <div style="display:grid; grid-template-columns: 210px 1fr; height:100%; max-height:calc(100vh - 72px); gap:10px; box-sizing:border-box; overflow:hidden;">
+        <div style="display:grid; grid-template-columns: 270px 1fr; height:100%; max-height:calc(100vh - 72px); gap:12px; box-sizing:border-box; overflow:hidden;">
           
-          <!-- BARRA LATERAL ESQUERDA: LISTA VERTICAL DE PLANETAS -->
-          <div style="display:flex; flex-direction:column; gap:4px; background:#071224; border:1.5px solid #1e3a63; border-radius:14px; padding:8px; justify-content:space-between; overflow:hidden;">
+          <!-- BARRA LATERAL ESQUERDA: LISTA EM 2 COLUNAS COMPACTAS (SEM SCROLL) -->
+          <div style="display:flex; flex-direction:column; gap:6px; background:#071224; border:1.5px solid #1e3a63; border-radius:14px; padding:10px; justify-content:space-between; overflow:hidden; box-sizing:border-box;">
             <div>
-              <div style="font-size:0.85rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:6px; text-align:center;">
-                🪐 Astres & Planetas
+              <div style="font-size:0.86rem; font-weight:900; color:#38bdf8; text-transform:uppercase; margin-bottom:8px; text-align:center; letter-spacing:0.5px;">
+                🪐 Astros & Planetas
               </div>
-              <div style="display:flex; flex-direction:column; gap:3px; overflow-y:auto; max-height:310px; scrollbar-width:thin; scrollbar-color:#38bdf8 #071224; padding-right:2px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; margin-bottom:8px;">
                 ${BANCO_SISTEMA_SOLAR.map((item, idx) => `
-                  <button type="button" class="big-btn" style="padding:6px 8px; font-size:0.8rem; font-weight:800; border-radius:8px; display:flex; align-items:center; gap:6px; ${idx === corpoSolarIdx ? `background:${item.cor}25; border:1.5px solid ${item.cor}; color:#fff;` : 'background:#0f172a; border:1px solid #1e293b; color:#94a3b8;'}" onclick="selecionarCorpoSolar(${idx})">
-                    <span style="font-size:1.15rem; line-height:1;">${item.icon}</span>
+                  <button type="button" class="big-btn" style="padding:6px 6px; font-size:0.78rem; font-weight:800; border-radius:8px; display:flex; align-items:center; gap:5px; text-align:left; ${idx === corpoSolarIdx ? `background:${item.cor}25; border:1.5px solid ${item.cor}; color:#fff; box-shadow:0 0 10px ${item.cor}40;` : 'background:#0f172a; border:1px solid #1e293b; color:#94a3b8;'}" onclick="selecionarCorpoSolar(${idx})">
+                    <span style="font-size:1.1rem; line-height:1;">${item.icon}</span>
                     <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.nome.split(' ')[0]}</span>
                   </button>
                 `).join('')}
@@ -13140,7 +13140,7 @@
             </div>
 
             <!-- AÇÕES RÁPIDAS NO PAINEL LATERAL -->
-            <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+            <div style="display:flex; flex-direction:column; gap:4px; margin-top:auto;">
               <button type="button" class="big-btn" style="background:#0284c7; border:1.5px solid #38bdf8; color:#fff; padding:6px 8px; font-size:0.8rem; font-weight:900; border-radius:8px;" onclick="ouvirCuriosidadeSolar()">
                 🔊 Ouvir Curiosidade
               </button>
@@ -13153,20 +13153,21 @@
             </div>
           </div>
 
-          <!-- PALCO PRINCIPAL DIREITO: PLANETA EM DESTAQUE (LAYOUT HARMONIOSO STARK) -->
-          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:2.5px solid ${p.cor}; border-radius:14px; padding:18px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
+          <!-- PALCO PRINCIPAL DIREITO: PLANETA EM DESTAQUE (HARMONIOSO & SEM ROLAGEM) -->
+          <div style="background:radial-gradient(circle at center, #0f274a 0%, #030712 100%); border:2.5px solid ${p.cor}; border-radius:14px; padding:16px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center; box-shadow:0 0 35px ${p.cor}33; position:relative; overflow:hidden;">
             
-            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-              <div style="font-size:4.8rem; line-height:1; filter:drop-shadow(0 0 24px ${p.cor}); animation:pulse 2.2s infinite;">${p.icon}</div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+              <div style="font-size:4.4rem; line-height:1; filter:drop-shadow(0 0 24px ${p.cor}); animation:pulse 2.2s infinite;">${p.icon}</div>
               
-              <div style="display:flex; gap:8px; justify-content:center; align-items:center; margin-top:2px;">
-                <span style="background:${p.cor}33; color:${p.cor}; border:1.5px solid ${p.cor}; padding:3px 12px; border-radius:999px; font-size:0.8rem; font-weight:900;">${p.tipo}</span>
-                <span style="background:#1e293b; color:#94a3b8; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:700;">🌡️ ${p.temp}</span>
+              <div style="display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:2px;">
+                <span style="background:${p.cor}33; color:${p.cor}; border:1.5px solid ${p.cor}; padding:3px 12px; border-radius:999px; font-size:0.82rem; font-weight:900;">${p.tipo}</span>
+                <span style="background:#1e293b; color:#94a3b8; padding:3px 10px; border-radius:999px; font-size:0.82rem; font-weight:700;">🌡️ ${p.temp}</span>
+                <span style="background:#1e293b; color:#38bdf8; padding:3px 10px; border-radius:999px; font-size:0.82rem; font-weight:700;">📏 ${p.diametro}</span>
               </div>
               <div style="font-size:1.85rem; font-weight:900; color:#ffffff; letter-spacing:0.5px;">${p.nome}</div>
             </div>
 
-            <div style="font-size:1.02rem; color:#e2e8f0; max-width:620px; line-height:1.45; background:rgba(0,0,0,0.5); padding:12px 18px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+            <div style="font-size:1.02rem; color:#e2e8f0; max-width:620px; line-height:1.45; background:rgba(0,0,0,0.55); padding:14px 20px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); box-shadow:0 4px 15px rgba(0,0,0,0.3);">
               ${p.desc}
             </div>
 

@@ -4,22 +4,44 @@
 # Otimizado para Acer Aspire One 532 (1024x600, antiX Linux / Intel Atom N450)
 # Microdot Server Ultraleve (< 15 MB RAM) + Chromium/Firefox Kiosk
 # ==============================================================================
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 cd "$DIR"
 
-# 1. Encerra instâncias antigas na porta 8000 se houver
-fuser -k 8000/tcp >/dev/null 2>&1 || true
+PORT="${1:-8000}"
 
-# 2. Inicia o servidor Microdot ultraleve em segundo plano (< 15 MB RAM)
-python3 run_server.py 8000 &
-SERVER_PID=$!
+# Determina Python (prioriza venv do projeto)
+if [ -f "$DIR/venv/bin/python" ]; then
+  PYTHON="$DIR/venv/bin/python"
+else
+  PYTHON="python3"
+fi
 
-sleep 1.5
+# 1. Inicia o servidor se não estiver ativo
+if ! pgrep -f "run_server.py.*$PORT" >/dev/null 2>&1 && ! pgrep -f "run_server.py" >/dev/null 2>&1; then
+  nohup "$PYTHON" "$DIR/run_server.py" "$PORT" > "$DIR/jarvis_server.log" 2>&1 &
+  SERVER_PID=$!
+  sleep 1.8
+else
+  SERVER_PID=$(pgrep -f "run_server.py" | head -n1)
+fi
 
-# 3. Abre o navegador leve em modo quiosque limpo (sem abas, sem barra de navegação)
-# Flags de otimização de baixo consumo de RAM e GPU GMA 3150
-KIOSK_URL="http://127.0.0.1:8000"
+KIOSK_URL="http://127.0.0.1:${PORT}"
 
+# Se estiver em VPS / ambiente sem interface gráfica, mantém o servidor ativo e sai
+if [ -z "$DISPLAY" ]; then
+  echo "J.A.R.V.I.S. Kids OS ativo em http://127.0.0.1:${PORT}"
+  echo "Ambiente Headless detectado (sem display gráfico)."
+  exit 0
+fi
+
+# 2. Abre o navegador leve em modo quiosque limpo
 if command -v chromium >/dev/null 2>&1; then
   chromium --app="$KIOSK_URL" \
     --start-fullscreen \
@@ -48,9 +70,8 @@ elif command -v chromium-browser >/dev/null 2>&1; then
     --disk-cache-size=10485760
 elif command -v firefox-esr >/dev/null 2>&1; then
   firefox-esr --kiosk "$KIOSK_URL"
+elif command -v firefox >/dev/null 2>&1; then
+  firefox --kiosk "$KIOSK_URL"
 elif command -v midori >/dev/null 2>&1; then
   midori -e Fullscreen -a "$KIOSK_URL"
 fi
-
-# 4. Encerra o backend ao sair do quiosque
-kill $SERVER_PID >/dev/null 2>&1 || true

@@ -49,13 +49,15 @@ if command -v apt-get >/dev/null 2>&1; then
     python3 \
     python3-pip \
     python3-venv \
-    python3-tk \
+    curl || true
+  $SUDO_CMD apt-get install -y \
     alsa-utils \
     espeak-ng \
-    mpg123 \
-    x11-xserver-utils \
-    unclutter \
-    chromium-browser || $SUDO_CMD apt-get install -y chromium || $SUDO_CMD apt-get install -y firefox-esr || true
+    mpg123 2>/dev/null || true
+  if [ -n "$DISPLAY" ]; then
+    $SUDO_CMD apt-get install -y unclutter 2>/dev/null || true
+    $SUDO_CMD apt-get install -y chromium 2>/dev/null || $SUDO_CMD apt-get install -y chromium-browser 2>/dev/null || $SUDO_CMD apt-get install -y firefox-esr 2>/dev/null || true
+  fi
 elif command -v pacman >/dev/null 2>&1; then
   $SUDO_CMD pacman -Sy --noconfirm python python-pip alsa-utils espeak-ng mpg123 chromium || true
 elif command -v dnf >/dev/null 2>&1; then
@@ -72,7 +74,7 @@ if [ ! -d "$APP_DIR/venv" ]; then
 fi
 
 if [ -f "$APP_DIR/venv/bin/pip" ]; then
-  "$APP_DIR/venv/bin/pip" install --upgrade pip --no-cache-dir
+  "$APP_DIR/venv/bin/pip" install --upgrade pip --no-cache-dir 2>/dev/null || true
   "$APP_DIR/venv/bin/pip" install microdot bottle edge-tts google-genai requests --no-cache-dir || true
 else
   python3 -m pip install --user --break-system-packages microdot bottle edge-tts google-genai requests --no-cache-dir 2>/dev/null || \

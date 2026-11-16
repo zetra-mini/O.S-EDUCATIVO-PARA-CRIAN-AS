@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # 🚀 J.A.R.V.I.S. KIDS OS — GERENCIADOR & INSTALADOR UNIVERSAL: PKG
-# Utilitário Oficial para Linux (antiX, xlinux, Debian, Ubuntu, Alpine, Termux, Void)
-# Otimizado para Hardware Modesto (Asus Eee PC, Acer Aspire One, Intel Atom N450/N270)
+# Utilitário Oficial para Linux (antiX, Debian, Ubuntu, Alpine, Termux, VPS, Void)
+# Otimizado para Hardware Modesto (Asus Eee PC, Acer Aspire One, Intel Atom) e VPS Nuvem
 # ==============================================================================
-
-set -e
 
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
@@ -14,19 +12,27 @@ RED='\033[0;31m'
 BOLD='\033[1m'
 NC='\033[0m' # Sem cor
 
-APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolução canônica de links simbólicos para determinar o diretório real do projeto
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+APP_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+
 ACTION="${1:-install}"
 PORT="${JARVIS_PORT:-8000}"
 
 banner() {
   echo -e "${CYAN}==================================================================${NC}"
   echo -e "${CYAN}   🚀 J.A.R.V.I.S. KIDS OS — GERENCIADOR DE PACOTES 'PKG'         ${NC}"
-  echo -e "${CYAN}   Sistema Educativo Stark para Netbooks & Desktops Leves        ${NC}"
+  echo -e "${CYAN}   Sistema Educativo Stark para Netbooks, PCs & VPS Cloud        ${NC}"
   echo -e "${CYAN}==================================================================${NC}"
 }
 
 detect_pkg_manager() {
-  if command -v pkg >/dev/null 2>&1 && [ -f /data/data/com.termux/files/usr/bin/pkg 2>/dev/null ]; then
+  if [ -d /data/data/com.termux ] && command -v pkg >/dev/null 2>&1; then
     echo "termux-pkg"
   elif command -v apt-get >/dev/null 2>&1; then
     echo "apt"
@@ -34,12 +40,12 @@ detect_pkg_manager() {
     echo "apk"
   elif command -v pacman >/dev/null 2>&1; then
     echo "pacman"
+  elif command -v dnf >/dev/null 2>&1; then
+    echo "dnf"
   elif command -v xbps-install >/dev/null 2>&1; then
     echo "xbps"
-  elif command -v pkg >/dev/null 2>&1; then
-    echo "pkg-native"
   else
-    echo "unknown"
+    echo "generic"
   fi
 }
 
@@ -52,84 +58,105 @@ cmd_install() {
   echo -e "${YELLOW}📦 [2/6] Instalando dependências essenciais do sistema...${NC}"
   case "$PM" in
     apt)
-      if [ "$EUID" -eq 0 ]; then
-        apt-get update -qq || true
-        apt-get install -y python3 python3-pip python3-venv alsa-utils espeak-ng mpg123 unclutter \
-          chromium-browser 2>/dev/null || apt-get install -y chromium 2>/dev/null || apt-get install -y firefox-esr 2>/dev/null || true
+      local APT="apt-get"
+      [ "$EUID" -ne 0 ] && APT="sudo apt-get"
+
+      $APT update -qq || true
+
+      # 1. Base Python essencial (obrigatória para o servidor em VPS e Desktop)
+      echo -e "   Instalando Python 3, venv e pip..."
+      $APT install -y python3 python3-pip python3-venv curl || true
+
+      # 2. Utilitários de áudio leves (opcionais, com tolerância a falhas)
+      echo -e "   Instalando suporte de áudio e fala..."
+      $APT install -y alsa-utils espeak-ng mpg123 2>/dev/null || true
+
+      # 3. Navegador quiosque (apenas se ambiente gráfico ou desktop estiver disponível)
+      if [ -n "$DISPLAY" ]; then
+        echo -e "   Ambiente gráfico detectado. Instalando quiosque..."
+        $APT install -y unclutter 2>/dev/null || true
+        $APT install -y chromium 2>/dev/null || $APT install -y chromium-browser 2>/dev/null || $APT install -y firefox-esr 2>/dev/null || true
       else
-        sudo apt-get update -qq || true
-        sudo apt-get install -y python3 python3-pip python3-venv alsa-utils espeak-ng mpg123 unclutter \
-          chromium-browser 2>/dev/null || sudo apt-get install -y chromium 2>/dev/null || sudo apt-get install -y firefox-esr 2>/dev/null || true
+        echo -e "   Ambiente Headless / VPS detectado (sem monitor). Omitindo navegador gráfico."
       fi
       ;;
     apk)
-      if [ "$EUID" -eq 0 ]; then
-        apk update || true
-        apk add python3 py3-pip py3-virtualenv alsa-utils mpg123 chromium || true
-      else
-        sudo apk update || true
-        sudo apk add python3 py3-pip py3-virtualenv alsa-utils mpg123 chromium || true
-      fi
+      local APK="apk"
+      [ "$EUID" -ne 0 ] && APK="sudo apk"
+      $APK update || true
+      $APK add python3 py3-pip py3-virtualenv curl || true
+      $APK add alsa-utils mpg123 2>/dev/null || true
+      [ -n "$DISPLAY" ] && $APK add chromium 2>/dev/null || true
       ;;
     pacman)
-      if [ "$EUID" -eq 0 ]; then
-        pacman -Sy --noconfirm python python-pip alsa-utils espeak-ng mpg123 chromium || true
-      else
-        sudo pacman -Sy --noconfirm python python-pip alsa-utils espeak-ng mpg123 chromium || true
-      fi
+      local PAC="pacman"
+      [ "$EUID" -ne 0 ] && PAC="sudo pacman"
+      $PAC -Sy --noconfirm python python-pip curl || true
+      $PAC -S --noconfirm alsa-utils espeak-ng mpg123 2>/dev/null || true
+      [ -n "$DISPLAY" ] && $PAC -S --noconfirm chromium 2>/dev/null || true
+      ;;
+    dnf)
+      local DNF="dnf"
+      [ "$EUID" -ne 0 ] && DNF="sudo dnf"
+      $DNF install -y python3 python3-pip curl || true
+      $DNF install -y alsa-utils espeak-ng mpg123 2>/dev/null || true
+      [ -n "$DISPLAY" ] && $DNF install -y chromium 2>/dev/null || true
       ;;
     termux-pkg)
       pkg update -y || true
-      pkg install -y python alsa-utils mpg123 || true
+      pkg install -y python alsa-utils mpg123 curl || true
       ;;
     *)
-      echo -e "${YELLOW}   Aviso: Gerenciador padrão não identificado diretamente. Tentando python3 direto...${NC}"
+      echo -e "${YELLOW}   Aviso: Gerenciador padrão não identificado diretamente. Usando Python do sistema...${NC}"
       ;;
   esac
 
   echo -e "${YELLOW}🐍 [3/6] Configurando ambiente Python de ultra-baixo consumo...${NC}"
   cd "$APP_DIR"
+
+  # Se o venv existir mas estiver corrompido (sem pip), recria
+  if [ -d "$APP_DIR/venv" ] && [ ! -f "$APP_DIR/venv/bin/pip" ]; then
+    echo -e "   Limpando ambiente virtual corrompido..."
+    rm -rf "$APP_DIR/venv" 2>/dev/null || true
+  fi
+
   if [ ! -d "$APP_DIR/venv" ]; then
     python3 -m venv "$APP_DIR/venv" 2>/dev/null || true
   fi
 
   if [ -f "$APP_DIR/venv/bin/pip" ]; then
+    echo -e "   Instalando pacotes no ambiente virtual (venv)..."
     "$APP_DIR/venv/bin/pip" install --upgrade pip --no-cache-dir 2>/dev/null || true
     "$APP_DIR/venv/bin/pip" install microdot bottle edge-tts requests google-genai --no-cache-dir || true
   else
+    echo -e "   Instalando pacotes com pip global..."
+    python3 -m pip install --break-system-packages microdot bottle edge-tts requests google-genai --no-cache-dir 2>/dev/null || \
     python3 -m pip install --user --break-system-packages microdot bottle edge-tts requests google-genai --no-cache-dir 2>/dev/null || \
     python3 -m pip install --user microdot bottle edge-tts requests google-genai --no-cache-dir 2>/dev/null || true
   fi
 
-  echo -e "${YELLOW}⚡ [4/6] Aplicando otimizações para Asus One / Acer One (Intel Atom N450)...${NC}"
-  # Ajuste de Swappiness leve (15) para evitar engasgos em HDs lentos de netbooks
-  if [ "$EUID" -eq 0 ]; then
-    if [ -d /etc/sysctl.d ]; then
-      echo "vm.swappiness=15" > /etc/sysctl.d/99-jarvis-kids.conf 2>/dev/null || true
-      echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.d/99-jarvis-kids.conf 2>/dev/null || true
-      sysctl -p /etc/sysctl.d/99-jarvis-kids.conf >/dev/null 2>&1 || true
-    fi
-  elif command -v sudo >/dev/null 2>&1; then
-    sudo sh -c 'echo "vm.swappiness=15" > /etc/sysctl.d/99-jarvis-kids.conf' 2>/dev/null || true
-    sudo sysctl -p /etc/sysctl.d/99-jarvis-kids.conf >/dev/null 2>&1 || true
+  echo -e "${YELLOW}⚡ [4/6] Aplicando otimizações de sistema e memória...${NC}"
+  # Ajuste de Swappiness leve (15) para evitar engasgos em HDs lentos ou VPS
+  if [ -w /proc/sys/vm/swappiness ] 2>/dev/null; then
+    sysctl -w vm.swappiness=15 >/dev/null 2>&1 || true
+    sysctl -w vm.vfs_cache_pressure=50 >/dev/null 2>&1 || true
   fi
 
   echo -e "${YELLOW}🔗 [5/6] Instalando comando global 'pkg' e 'jarvis-kids'...${NC}"
-  # Link simbólico para o comando pkg poder ser chamado de qualquer pasta
   INSTALL_BIN="/usr/local/bin"
-  if [ ! -w "$INSTALL_BIN" ] && command -v sudo >/dev/null 2>&1; then
-    sudo ln -sf "$APP_DIR/pkg" "$INSTALL_BIN/pkg" 2>/dev/null || true
-    sudo ln -sf "$APP_DIR/iniciar_web_kiosk.sh" "$INSTALL_BIN/jarvis-kids" 2>/dev/null || true
-  elif [ -w "$INSTALL_BIN" ]; then
+  if [ -w "$INSTALL_BIN" ]; then
     ln -sf "$APP_DIR/pkg" "$INSTALL_BIN/pkg" 2>/dev/null || true
-    ln -sf "$APP_DIR/iniciar_web_kiosk.sh" "$INSTALL_BIN/jarvis-kids" 2>/dev/null || true
+    ln -sf "$APP_DIR/pkg" "$INSTALL_BIN/jarvis-kids" 2>/dev/null || true
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo ln -sf "$APP_DIR/pkg" "$INSTALL_BIN/pkg" 2>/dev/null || true
+    sudo ln -sf "$APP_DIR/pkg" "$INSTALL_BIN/jarvis-kids" 2>/dev/null || true
   else
     mkdir -p "$HOME/.local/bin"
     ln -sf "$APP_DIR/pkg" "$HOME/.local/bin/pkg" 2>/dev/null || true
-    ln -sf "$APP_DIR/iniciar_web_kiosk.sh" "$HOME/.local/bin/jarvis-kids" 2>/dev/null || true
+    ln -sf "$APP_DIR/pkg" "$HOME/.local/bin/jarvis-kids" 2>/dev/null || true
   fi
 
-  # Cria lançador de desktop
+  # Cria lançador de desktop apenas se pasta Desktop existir
   DESKTOP_DIR="$HOME/Desktop"
   [ ! -d "$DESKTOP_DIR" ] && DESKTOP_DIR="$HOME/Área de Trabalho"
   if [ -d "$DESKTOP_DIR" ]; then
@@ -137,7 +164,7 @@ cmd_install() {
 [Desktop Entry]
 Name=J.A.R.V.I.S. Kids OS
 Comment=Sistema Educativo Infantil Stark
-Exec=$APP_DIR/iniciar_web_kiosk.sh
+Exec=$APP_DIR/pkg start
 Icon=$APP_DIR/static/icons/icon-192.png
 Terminal=false
 Type=Application
@@ -153,7 +180,7 @@ EOF
   echo -e "${GREEN}   ✅ INSTALAÇÃO CONCLUÍDA COM SUCESSO!                          ${NC}"
   echo -e "${GREEN}==================================================================${NC}"
   echo -e "Você agora pode usar o comando ${BOLD}pkg${NC} para controlar o sistema:\n"
-  echo -e "   ${CYAN}pkg start${NC}    ➔ Iniciar o J.A.R.V.I.S. Kids OS em tela cheia"
+  echo -e "   ${CYAN}pkg start${NC}    ➔ Iniciar o J.A.R.V.I.S. Kids OS"
   echo -e "   ${CYAN}pkg status${NC}   ➔ Verificar integridade, porta e consumo de RAM"
   echo -e "   ${CYAN}pkg stop${NC}     ➔ Parar o servidor"
   echo -e "   ${CYAN}pkg update${NC}   ➔ Atualizar o sistema com as últimas novidades"
@@ -161,34 +188,73 @@ EOF
 }
 
 cmd_start() {
+  banner
   echo -e "${CYAN}🚀 Iniciando o J.A.R.V.I.S. Kids OS na porta ${PORT}...${NC}"
   cd "$APP_DIR"
-  
-  # Determina python
+
+  # Determina interpretador Python
   if [ -f "$APP_DIR/venv/bin/python" ]; then
     PY="$APP_DIR/venv/bin/python"
   else
     PY="python3"
   fi
 
-  # Se o servidor não estiver rodando, inicia em background
-  if ! pgrep -f "run_server.py $PORT" >/dev/null 2>&1; then
-    nohup "$PY" "$APP_DIR/run_server.py" "$PORT" > "$APP_DIR/jarvis_server.log" 2>&1 &
-    sleep 1.8
+  # Verifica e auto-corrige dependência microdot se necessário
+  if ! "$PY" -c "import microdot" >/dev/null 2>&1; then
+    echo -e "${YELLOW}⚠️ Dependência 'microdot' não detectada. Instalando rapidamente...${NC}"
+    if [ -f "$APP_DIR/venv/bin/pip" ]; then
+      "$APP_DIR/venv/bin/pip" install microdot bottle edge-tts requests google-genai --no-cache-dir || true
+    else
+      python3 -m pip install --break-system-packages microdot bottle edge-tts requests google-genai --no-cache-dir 2>/dev/null || \
+      python3 -m pip install --user --break-system-packages microdot bottle edge-tts requests google-genai --no-cache-dir 2>/dev/null || \
+      python3 -m pip install --user microdot bottle edge-tts requests google-genai --no-cache-dir 2>/dev/null || true
+    fi
   fi
 
-  # Abre o quiosque
-  if [ -f "$APP_DIR/iniciar_web_kiosk.sh" ]; then
-    bash "$APP_DIR/iniciar_web_kiosk.sh" "$PORT" &
-  elif command -v chromium-browser >/dev/null 2>&1; then
-    chromium-browser --kiosk --disable-gpu --disable-dev-shm-usage --app="http://127.0.0.1:${PORT}" &
-  elif command -v chromium >/dev/null 2>&1; then
-    chromium --kiosk --disable-gpu --disable-dev-shm-usage --app="http://127.0.0.1:${PORT}" &
-  elif command -v firefox >/dev/null 2>&1; then
-    firefox --kiosk "http://127.0.0.1:${PORT}" &
+  # Se o servidor não estiver rodando na porta alvo, inicia em segundo plano
+  if ! pgrep -f "run_server.py.*$PORT" >/dev/null 2>&1 && ! pgrep -f "run_server.py" >/dev/null 2>&1; then
+    nohup "$PY" "$APP_DIR/run_server.py" "$PORT" > "$APP_DIR/jarvis_server.log" 2>&1 &
+    sleep 2
+  fi
+
+  # Valida se o servidor está ativo
+  if pgrep -f "run_server.py" >/dev/null 2>&1; then
+    PID=$(pgrep -f "run_server.py" | head -n1)
+    echo -e "${GREEN}==================================================================${NC}"
+    echo -e "${GREEN}   ✅ J.A.R.V.I.S. KIDS OS ATIVO COM SUCESSO (PID: ${PID})        ${NC}"
+    echo -e "${GREEN}==================================================================${NC}"
+    
+    # Detecção de IP
+    LOCAL_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
+    [ -z "$LOCAL_IP" ] && LOCAL_IP="127.0.0.1"
+
+    echo -e "   🏠 Acesso Local:    ${BOLD}http://localhost:${PORT}${NC}"
+    echo -e "   🌐 Acesso na Rede:  ${BOLD}http://${LOCAL_IP}:${PORT}${NC}"
+    echo -e "   📱 Painel dos Pais: ${BOLD}http://${LOCAL_IP}:${PORT}/pais${NC}\n"
+
+    # Se estiver com monitor gráfico ativo (X11 / Desktop), abre o navegador Kiosk
+    if [ -n "$DISPLAY" ]; then
+      echo -e "${CYAN}🖥️ Interface gráfica detectada (${DISPLAY}). Abrindo quiosque...${NC}"
+      if command -v chromium >/dev/null 2>&1; then
+        chromium --kiosk --disable-gpu --disable-dev-shm-usage --app="http://127.0.0.1:${PORT}" &
+      elif command -v chromium-browser >/dev/null 2>&1; then
+        chromium-browser --kiosk --disable-gpu --disable-dev-shm-usage --app="http://127.0.0.1:${PORT}" &
+      elif command -v firefox-esr >/dev/null 2>&1; then
+        firefox-esr --kiosk "http://127.0.0.1:${PORT}" &
+      elif command -v firefox >/dev/null 2>&1; then
+        firefox --kiosk "http://127.0.0.1:${PORT}" &
+      fi
+    else
+      echo -e "${YELLOW}☁️ Modo Headless / Servidor VPS ativo (sem monitor conectado).${NC}"
+      echo -e "O Jarvis está rodando em segundo plano e pronto para receber acessos!"
+      echo -e "Acompanhe os logs com: ${BOLD}tail -f ${APP_DIR}/jarvis_server.log${NC}"
+    fi
   else
-    echo -e "${GREEN}Servidor ativo em http://127.0.0.1:${PORT}${NC}"
-    echo -e "Abra no navegador de sua preferência."
+    echo -e "${RED}❌ Erro ao iniciar o servidor! Verifique o log em: ${APP_DIR}/jarvis_server.log${NC}"
+    if [ -f "$APP_DIR/jarvis_server.log" ]; then
+      echo -e "${YELLOW}Últimas linhas do log:${NC}"
+      tail -n 12 "$APP_DIR/jarvis_server.log"
+    fi
   fi
 }
 
@@ -196,6 +262,7 @@ cmd_stop() {
   echo -e "${YELLOW}🛑 Encerrando o J.A.R.V.I.S. Kids OS...${NC}"
   pkill -f "run_server.py $PORT" 2>/dev/null || true
   pkill -f "run_server.py" 2>/dev/null || true
+  sleep 1
   echo -e "${GREEN}✅ Servidor encerrado.${NC}"
 }
 
@@ -205,12 +272,14 @@ cmd_status() {
   if pgrep -f "run_server.py" >/dev/null 2>&1; then
     PID=$(pgrep -f "run_server.py" | head -n1)
     MEM=$(ps -o rss= -p "$PID" 2>/dev/null | awk '{printf "%.1f MB", $1/1024}' || echo "N/A")
-    echo -e "   Servidor: ${GREEN}ATIVO (PID: ${PID})${NC}"
-    echo -e "   Porta:    ${GREEN}http://127.0.0.1:${PORT}${NC}"
-    echo -e "   Memória:  ${GREEN}${MEM}${NC}"
+    LOCAL_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
+    echo -e "   Servidor:   ${GREEN}ATIVO (PID: ${PID})${NC}"
+    echo -e "   Porta:      ${GREEN}http://127.0.0.1:${PORT}${NC}"
+    echo -e "   IP na Rede: ${GREEN}http://${LOCAL_IP}:${PORT}${NC}"
+    echo -e "   Memória:    ${GREEN}${MEM}${NC}"
   else
-    echo -e "   Servidor: ${RED}PARADO${NC}"
-    echo -e "   Dica:     Execute ${CYAN}pkg start${NC} para iniciar."
+    echo -e "   Servidor:   ${RED}PARADO${NC}"
+    echo -e "   Dica:       Execute ${CYAN}pkg start${NC} para iniciar."
   fi
 }
 
@@ -230,8 +299,8 @@ cmd_help() {
   banner
   echo -e "Uso: ${BOLD}pkg <comando>${NC} ou ${BOLD}./pkg <comando>${NC}\n"
   echo -e "Comandos disponíveis:"
-  echo -e "  ${CYAN}install${NC}   Instala todas as dependências, atalhos e otimiza o sistema (Padrão)"
-  echo -e "  ${CYAN}start${NC}     Inicia o servidor e abre o J.A.R.V.I.S. Kids em tela cheia"
+  echo -e "  ${CYAN}install${NC}   Instala todas as dependências essenciais do sistema (Padrão)"
+  echo -e "  ${CYAN}start${NC}     Inicia o servidor em segundo plano e abre navegador (se desktop)"
   echo -e "  ${CYAN}stop${NC}      Encerra o servidor com segurança"
   echo -e "  ${CYAN}status${NC}    Exibe o status do servidor, uso de memória RAM e porta"
   echo -e "  ${CYAN}update${NC}    Atualiza o código com a versão mais recente do GitHub"

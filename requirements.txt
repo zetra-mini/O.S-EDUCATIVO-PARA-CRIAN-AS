@@ -10,8 +10,8 @@ microdot>=2.0.0
 edge-tts>=6.1.0
 
 # Inteligência Artificial de Borda (TensorFlow Lite Edge Engine - Opcional)
-# Pesa apenas 3.8 MB (substitui o monólito tensorflow de 850 MB!)
-tflite-runtime>=2.14.0; sys_platform != "win32"
+# O ai_edge_engine.py possui fallback nativo automático caso tflite não esteja instalado no sistema.
+# tflite-runtime>=2.14.0; sys_platform != "win32" and python_version < "3.11"
 
 # Inteligência Artificial na Nuvem (Opcional - Google Gemini)
 google-genai>=0.1.0
