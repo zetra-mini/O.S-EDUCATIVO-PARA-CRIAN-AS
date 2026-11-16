@@ -7160,16 +7160,19 @@
               // 1. Quatro Dedos Principais: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
               const tips = [8, 12, 16, 20];
               const pips = [6, 10, 14, 18];
+              const mcps = [5, 9, 13, 17];
               const nomes = ['index', 'middle', 'ring', 'pinky'];
 
               for (let i = 0; i < 4; i++) {
                 const tip = lm[tips[i]];
                 const pip = lm[pips[i]];
+                const mcp = lm[mcps[i]];
                 const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
                 const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
+                const dMcpWrist = Math.hypot(mcp[0] - wrist[0], mcp[1] - wrist[1]);
                 const nome = nomes[i];
 
-                const estendidoGeo = (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05) || (dTipWrist > dPipWrist * 1.15);
+                const estendidoGeo = (tip[1] < pip[1]) || (dTipWrist > dPipWrist * 1.04) || (dTipWrist > dMcpWrist * 1.25);
                 const estendidoCurl = curls && curls[nome] && (curls[nome].curl === 'none' || curls[nome].curl === 'half');
 
                 if (estendidoGeo || estendidoCurl) {
@@ -7181,9 +7184,16 @@
               // 2. Polegar(4)
               const thumbTip = lm[4];
               const thumbIp  = lm[3];
+              const thumbMcp = lm[2];
+              const indexMcp = lm[5];
               const dThumbTipPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
               const dThumbIpPinky  = Math.hypot(thumbIp[0] - pinkyMcp[0], thumbIp[1] - pinkyMcp[1]);
-              const thumbGeo = (dThumbTipPinky > dThumbIpPinky * 1.08);
+              const dThumbTipWrist = Math.hypot(thumbTip[0] - wrist[0], thumbTip[1] - wrist[1]);
+              const dThumbMcpWrist = Math.hypot(thumbMcp[0] - wrist[0], thumbMcp[1] - wrist[1]);
+              const dThumbTipIndex = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
+              const dThumbIpIndex  = Math.hypot(thumbIp[0] - indexMcp[0], thumbIp[1] - indexMcp[1]);
+
+              const thumbGeo = (dThumbTipPinky > dThumbIpPinky * 1.04) || (dThumbTipWrist > dThumbMcpWrist * 1.15) || (dThumbTipIndex > dThumbIpIndex * 1.04);
               const thumbCurl = curls && curls.thumb && (curls.thumb.curl === 'none' || curls.thumb.curl === 'half');
 
               if (thumbGeo || thumbCurl) {
@@ -7449,17 +7459,6 @@
                 <button type="button" class="big-btn" style="background:#059669; font-size:0.88rem; font-weight:900; padding:6px 12px; border-radius:10px;" onclick="speakCurrentNumberHint()">
                   🔊 Ouvir Dica do Jarvis
                 </button>
-              </div>
-            </div>
-
-                <div id="fc-cam-concrete-shelf" style="display:flex; align-items:center; justify-content:center; gap:4px; flex-wrap:wrap; min-height:36px; padding:4px 8px; background:#040e1e; border:1.5px dashed #38bdf8; border-radius:10px;">
-                  <span style="color:#94a3b8; font-size:0.82rem; font-weight:700;">Levante os dedinhos na câmera!</span>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-                  <span style="font-size:0.78rem; color:#fef08a; font-weight:800;">✨ Segure a mãozinha estável!</span>
-                  <button type="button" class="big-btn" style="background:#059669; font-size:0.78rem; padding:4px 10px;" onclick="speakCurrentNumberHint()">🔊 Ouvir</button>
-                </div>
               </div>
             </div>
 
@@ -7813,6 +7812,18 @@
       fcInicioCandidato = 0;
       fcUltimoConfirmado = -1;
       fcUltimoTimestampFala = Date.now(); // Cooldown inicial de 3s para a frase de boas-vindas
+
+      // Reset visual dos displays de câmera para aguardar a detecção
+      const camBigNum = document.getElementById('fc-cam-big-num');
+      const camWordTitle = document.getElementById('fc-cam-word-title');
+      const camConcrete = document.getElementById('fc-cam-concrete-items');
+      const camBadgeText = document.getElementById('fc-cam-badge-text');
+      const camStability = document.getElementById('fc-cam-stability-bar');
+      if (camBigNum) camBigNum.textContent = '🖐️';
+      if (camWordTitle) camWordTitle.textContent = 'AGUARDANDO MÃOZINHA';
+      if (camConcrete) camConcrete.textContent = 'Mostre 1, 2, 3, 4 ou 5 dedinhos na frente da câmera!';
+      if (camBadgeText) camBadgeText.textContent = '🖐️ Levante os dedinhos na câmera!';
+      if (camStability) camStability.textContent = '';
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
