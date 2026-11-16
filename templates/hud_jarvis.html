@@ -7159,46 +7159,62 @@
             if (lm) {
               const wrist = lm[0];
               const pinkyMcp = lm[17];
+              const thumbMcp = lm[2];
+              const thumbIp  = lm[3];
+              const thumbTip = lm[4];
 
               // 1. Quatro Dedos Principais: Indicador(8), Médio(12), Anelar(16), Mindinho(20)
               const tips = [8, 12, 16, 20];
               const pips = [6, 10, 14, 18];
+              const mcps = [5, 9, 13, 17];
 
               for (let i = 0; i < 4; i++) {
                 const tip = lm[tips[i]];
                 const pip = lm[pips[i]];
+                const mcp = lm[mcps[i]];
                 const dTipWrist = Math.hypot(tip[0] - wrist[0], tip[1] - wrist[1]);
                 const dPipWrist = Math.hypot(pip[0] - wrist[0], pip[1] - wrist[1]);
+                const dTipMcp   = Math.hypot(tip[0] - mcp[0], tip[1] - mcp[1]);
+                const dPipMcp   = Math.hypot(pip[0] - mcp[0], pip[1] - mcp[1]);
 
-                // Regra canônica rápida e estrita:
-                // O dedo levantado PRECISA estar acima da junta intermediária (tip[1] < pip[1])
-                // E mais estendido que ela em relação ao pulso.
+                // Regra canônica robusta:
+                // O dedo levantado PRECISA ter a ponta acima do PIP no eixo Y (tip[1] < pip[1])
+                // E a distância da ponta ao MCP/punho deve ser maior que a do PIP.
                 // Dedos recuados/fechados na mão SEMPRE falham e NUNCA contam!
-                if (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05) {
+                if (tip[1] < pip[1] && dTipWrist > dPipWrist * 1.05 && dTipMcp > dPipMcp * 1.15) {
                   estadosDedos[i + 1] = true;
                   totalDedos++;
                 }
               }
 
-              // 2. Polegar(4): estendido apenas quando a ponta estiver aberta para fora
-              // Quando o polegar está recuado/dobrado na palma ou punho, a ponta dobra-se para dentro
-              // e dThumbTipMcp fica bem menor que dThumbIpMcp (ratio ~ 0.5), logo NUNCA conta!
-              const thumbTip  = lm[4];
-              const thumbIp   = lm[3];
-              const thumbMcp  = lm[2];
-              const indexMcp  = lm[5];
+              // 2. Polegar(4): Projeção Vetorial Anatômica Invariante
+              // Vetor da palma (de Pinky MCP 17 para Thumb MCP 2): define o eixo transversal da mão
+              const vPalmX = thumbMcp[0] - pinkyMcp[0];
+              const vPalmY = thumbMcp[1] - pinkyMcp[1];
+              const palmDist = Math.hypot(vPalmX, vPalmY) || 1;
 
-              const dThumbTipMcp   = Math.hypot(thumbTip[0] - thumbMcp[0], thumbTip[1] - thumbMcp[1]);
-              const dThumbIpMcp    = Math.hypot(thumbIp[0] - thumbMcp[0], thumbIp[1] - thumbMcp[1]);
-              const dThumbTipPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
-              const dThumbIpPinky  = Math.hypot(thumbIp[0] - pinkyMcp[0], thumbIp[1] - pinkyMcp[1]);
-              const dThumbTipIndex = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
-              const dThumbIpIndex  = Math.hypot(thumbIp[0] - indexMcp[0], thumbIp[1] - indexMcp[1]);
+              // Vetor do polegar (de Thumb MCP 2 para Thumb Tip 4)
+              const vThumbX = thumbTip[0] - thumbMcp[0];
+              const vThumbY = thumbTip[1] - thumbMcp[1];
 
-              const thumbEstendido = (dThumbTipMcp > dThumbIpMcp * 1.12);
-              const thumbAberto    = (dThumbTipPinky > dThumbIpPinky * 1.10) || (dThumbTipIndex > dThumbIpIndex * 1.15);
+              // Projeção escalar do polegar na direção exterior da palma:
+              // - Se ABERTO/ESTENDIDO (5 dedos ou mão aberta): projeta-se PARA FORA (projecao > palmDist * 0.18)
+              // - Se RECUADO/DOBRADO (na palma ou punho): projeta-se PARA DENTRO (projecao negativa ou <= 0)
+              const projecaoExterior = (vThumbX * vPalmX + vThumbY * vPalmY) / palmDist;
 
-              if (thumbEstendido && thumbAberto) {
+              const dThumbTipMcp = Math.hypot(vThumbX, vThumbY);
+              const dThumbIpMcp  = Math.hypot(thumbIp[0] - thumbMcp[0], thumbIp[1] - thumbMcp[1]);
+
+              const polegarAberto = (projecaoExterior > palmDist * 0.18) && (dThumbTipMcp > dThumbIpMcp * 1.05);
+
+              // Joinha vertical 👍: ponta erguida acima das juntas do polegar e distante do punho
+              const dThumbTipWrist = Math.hypot(thumbTip[0] - wrist[0], thumbTip[1] - wrist[1]);
+              const dThumbMcpWrist = Math.hypot(thumbMcp[0] - wrist[0], thumbMcp[1] - wrist[1]);
+              const polegarJoinha = (thumbTip[1] < thumbIp[1] && thumbIp[1] < thumbMcp[1]) &&
+                                    (dThumbTipWrist > dThumbMcpWrist * 1.15) &&
+                                    (projecaoExterior > -palmDist * 0.10);
+
+              if (polegarAberto || polegarJoinha) {
                 estadosDedos[0] = true;
                 totalDedos++;
               }
@@ -7978,22 +7994,31 @@
             }
           }
 
-          // 2. Polegar (4): estendido apenas quando a ponta estiver aberta para fora
+          // 2. Polegar (4): Projeção Vetorial Anatômica Invariante
           const thumbTip  = lm[4];
           const thumbIp   = lm[3];
           const thumbMcp  = lm[2];
-          const indexMcp  = lm[5];
-          const dThumbTipMcp   = Math.hypot(thumbTip.x - thumbMcp.x, thumbTip.y - thumbMcp.y);
-          const dThumbIpMcp    = Math.hypot(thumbIp.x - thumbMcp.x, thumbIp.y - thumbMcp.y);
-          const dThumbTipPinky = Math.hypot(thumbTip.x - pinkyMcp.x, thumbTip.y - pinkyMcp.y);
-          const dThumbIpPinky  = Math.hypot(thumbIp.x - pinkyMcp.x, thumbIp.y - pinkyMcp.y);
-          const dThumbTipIndex = Math.hypot(thumbTip.x - indexMcp.x, thumbTip.y - indexMcp.y);
-          const dThumbIpIndex  = Math.hypot(thumbIp.x - indexMcp.x, thumbIp.y - indexMcp.y);
 
-          const thumbEstendido = (dThumbTipMcp > dThumbIpMcp * 1.12);
-          const thumbAberto    = (dThumbTipPinky > dThumbIpPinky * 1.10) || (dThumbTipIndex > dThumbIpIndex * 1.15);
+          const vPalmX = thumbMcp.x - pinkyMcp.x;
+          const vPalmY = thumbMcp.y - pinkyMcp.y;
+          const palmDist = Math.hypot(vPalmX, vPalmY) || 1;
 
-          if (thumbEstendido && thumbAberto) {
+          const vThumbX = thumbTip.x - thumbMcp.x;
+          const vThumbY = thumbTip.y - thumbMcp.y;
+
+          const projecaoExterior = (vThumbX * vPalmX + vThumbY * vPalmY) / palmDist;
+          const dThumbTipMcp = Math.hypot(vThumbX, vThumbY);
+          const dThumbIpMcp  = Math.hypot(thumbIp.x - thumbMcp.x, thumbIp.y - thumbMcp.y);
+
+          const polegarAberto = (projecaoExterior > palmDist * 0.18) && (dThumbTipMcp > dThumbIpMcp * 1.05);
+
+          const dThumbTipWrist = Math.hypot(thumbTip.x - wrist.x, thumbTip.y - wrist.y);
+          const dThumbMcpWrist = Math.hypot(thumbMcp.x - wrist.x, thumbMcp.y - wrist.y);
+          const polegarJoinha = (thumbTip.y < thumbIp.y && thumbIp.y < thumbMcp.y) &&
+                                (dThumbTipWrist > dThumbMcpWrist * 1.15) &&
+                                (projecaoExterior > -palmDist * 0.10);
+
+          if (polegarAberto || polegarJoinha) {
             estados[0] = true;
           }
 
