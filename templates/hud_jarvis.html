@@ -7133,10 +7133,11 @@
     // =========================================================================
     function contarDedosRobusto(lm) {
       if (!lm || lm.length < 21) {
-        return { estados: [false, false, false, false, false], total: 0 };
+        return { estados: [false, false, false, false, false], total: 0, gesto: 'nenhum' };
       }
 
       const estados = [false, false, false, false, false]; // [Polegar, Indicador, Médio, Anelar, Mindinho]
+      const palmSize = Math.hypot(lm[5][0] - lm[17][0], lm[5][1] - lm[17][1]) || 50;
 
       // 1. Quatro Dedos Superiores: Indicador (8), Médio (12), Anelar (16), Mindinho (20)
       const tips = [8, 12, 16, 20];
@@ -7150,13 +7151,27 @@
         const pip = lm[pips[i]];
         const mcp = lm[mcps[i]];
 
+        // Distâncias anatômicas críticas
+        const dTipMcp = Math.hypot(tip[0] - mcp[0], tip[1] - mcp[1]);
+        const dPipMcp = Math.hypot(pip[0] - mcp[0], pip[1] - mcp[1]) || 1;
         const dTipWrist = Math.hypot(tip[0] - lm[0][0], tip[1] - lm[0][1]);
-        const dPipWrist = Math.hypot(pip[0] - lm[0][0], pip[1] - lm[0][1]);
-        const dMcpWrist = Math.hypot(mcp[0] - lm[0][0], mcp[1] - lm[0][1]);
+        const dPipWrist = Math.hypot(pip[0] - lm[0][0], pip[1] - lm[0][1]) || 1;
 
-        // O dedo levantado PRECISA ter a ponta acima de PIP e DIP (Y menor)
-        // E estar afastado do punho mais que a junta intermediária
-        if (tip[1] < pip[1] && tip[1] < dip[1] && dTipWrist > dPipWrist * 1.05 && dTipWrist > dMcpWrist * 1.15) {
+        // Vetores de direção MCP->PIP e PIP->TIP (Detecção de alinhamento vs curvatura)
+        const v1x = pip[0] - mcp[0];
+        const v1y = pip[1] - mcp[1];
+        const v2x = tip[0] - pip[0];
+        const v2y = tip[1] - pip[1];
+        const mag1 = Math.hypot(v1x, v1y) || 1;
+        const mag2 = Math.hypot(v2x, v2y) || 1;
+        const cosAngle = (v1x * v2x + v1y * v2y) / (mag1 * mag2);
+
+        // O dedo levantado PRECISA satisfazer simultaneamente as 4 regras geométricas:
+        // 1. Ponta mais alta que juntas PIP e DIP (Y menor no canvas)
+        // 2. Ponta estendida além do nódulo (proporção típica de dedo aberto >= 1.30)
+        // 3. Ponta mais distante do punho que a junta intermediária
+        // 4. Cosseno do ângulo positivo (> 0.35), provando que o dedo não está dobrado para dentro
+        if (tip[1] < pip[1] && tip[1] < dip[1] && (dTipMcp > dPipMcp * 1.30) && (dTipWrist > dPipWrist * 1.10) && (cosAngle > 0.35)) {
           estados[i + 1] = true;
         }
       }
@@ -7167,34 +7182,50 @@
       const indexPip = lm[6];
       const distThumbIndexTip = Math.hypot(thumbTip[0] - indexTip[0], thumbTip[1] - indexTip[1]);
       const distThumbIndexPip = Math.hypot(thumbTip[0] - indexPip[0], thumbTip[1] - indexPip[1]);
-      const palmSize = Math.hypot(lm[5][0] - lm[17][0], lm[5][1] - lm[17][1]) || 50;
 
-      if (distThumbIndexTip < palmSize * 0.45 || distThumbIndexPip < palmSize * 0.45) {
-        estados[1] = false; // Indicador está curvado em anel -> NÃO conta
-        estados[0] = false; // Polegar está em pinça -> NÃO conta
+      if (distThumbIndexTip < palmSize * 0.45 || distThumbIndexPip * 0.45 < palmSize * 0.45) {
+        if (distThumbIndexTip < palmSize * 0.45) {
+          estados[1] = false; // Indicador está curvado em anel -> NÃO conta
+          estados[0] = false; // Polegar está em pinça -> NÃO conta
+        }
       }
 
-      // 3. Avaliação do Polegar (Landmark 4)
-      if (distThumbIndexTip >= palmSize * 0.45 && distThumbIndexPip >= palmSize * 0.45) {
+      // 3. Avaliação Estrita do Polegar (Landmark 4)
+      if (distThumbIndexTip >= palmSize * 0.45) {
         const outrosDedosAbertos = estados.slice(1).filter(Boolean).length;
         const thumbMcp = lm[2];
         const thumbIp = lm[3];
-        const pinkyMcp = lm[17];
         const indexMcp = lm[5];
+        const middleMcp = lm[9];
 
-        // Joinha exclusivo 👍 (Apenas polegar para cima, outros 4 dedos fechados)
+        // Vetores de extensão do polegar
+        const vt1x = thumbIp[0] - thumbMcp[0];
+        const vt1y = thumbIp[1] - thumbMcp[1];
+        const vt2x = thumbTip[0] - thumbIp[0];
+        const vt2y = thumbTip[1] - thumbIp[1];
+        const magT1 = Math.hypot(vt1x, vt1y) || 1;
+        const magT2 = Math.hypot(vt2x, vt2y) || 1;
+        const cosThumb = (vt1x * vt2x + vt1y * vt2y) / (magT1 * magT2);
+
+        const dTipMiddleMcp = Math.hypot(thumbTip[0] - middleMcp[0], thumbTip[1] - middleMcp[1]);
+        const dTipIndexMcp = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
+        const dMcpMiddleMcp = Math.hypot(thumbMcp[0] - middleMcp[0], thumbMcp[1] - middleMcp[1]);
+        const dTipWrist = Math.hypot(thumbTip[0] - lm[0][0], thumbTip[1] - lm[0][1]);
+        const dMcpWrist = Math.hypot(thumbMcp[0] - lm[0][0], thumbMcp[1] - lm[0][1]);
+
+        // Regra A: Joinha exclusivo 👍 (Apenas polegar erguido, outros 4 dedos recolhidos na palma)
         const isJoinha = (outrosDedosAbertos === 0) &&
                          (thumbTip[1] < thumbIp[1] && thumbIp[1] < thumbMcp[1]) &&
-                         (thumbTip[1] < indexMcp[1]);
+                         (thumbTip[1] < indexMcp[1]) &&
+                         (dTipWrist > dMcpWrist * 1.15) &&
+                         (cosThumb > 0.30);
 
-        // Polegar aberto lateralmente (Mão aberta / 5 dedos):
-        const dThumbPinky = Math.hypot(thumbTip[0] - pinkyMcp[0], thumbTip[1] - pinkyMcp[1]);
-        const dMcpPinky = Math.hypot(thumbMcp[0] - pinkyMcp[0], thumbMcp[1] - pinkyMcp[1]);
-        const dThumbIndexMcp = Math.hypot(thumbTip[0] - indexMcp[0], thumbTip[1] - indexMcp[1]);
-
-        const isAbertoLateral = (dThumbPinky > dMcpPinky * 1.08) &&
-                                (dThumbIndexMcp > palmSize * 0.52) &&
-                                (Math.hypot(thumbTip[0] - thumbMcp[0], thumbTip[1] - thumbMcp[1]) > Math.hypot(thumbIp[0] - thumbMcp[0], thumbIp[1] - thumbMcp[1]) * 1.10);
+        // Regra B: Polegar aberto lateralmente (Mão aberta / High-Five)
+        // Quando o polegar está dobrado contra a palma (ex: mostrando 4 dedos), dTipMiddleMcp fica < 0.85 * palmSize
+        const isAbertoLateral = (dTipMiddleMcp > palmSize * 0.95) &&
+                                (dTipIndexMcp > palmSize * 0.70) &&
+                                (dTipMiddleMcp > dMcpMiddleMcp * 1.08) &&
+                                (cosThumb > 0.40);
 
         if (isJoinha || isAbertoLateral) {
           estados[0] = true;
@@ -7202,7 +7233,16 @@
       }
 
       const total = estados.filter(Boolean).length;
-      return { estados, total };
+
+      // Classificação de Biometria Afetiva
+      let gesto = 'normal';
+      if (estados[0] && estados.slice(1).every(v => !v)) {
+        gesto = 'joinha'; // 👍
+      } else if (!estados[0] && estados[1] && estados[2] && !estados[3] && !estados[4]) {
+        gesto = 'paz'; // ✌️
+      }
+
+      return { estados, total, gesto };
     }
 
     async function processarFrameHumanHands(video, overlay) {
@@ -7920,12 +7960,20 @@
       if (select) select.value = 'mediapipe';
 
       try {
-        const ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
-        const ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
+        // Tenta primeiro os arquivos locais para 100% de autonomia e rapidez offline
+        let ok1 = await carregarScriptVisionAsync('/static/vendor/mediapipe/camera_utils.js');
+        let ok2 = await carregarScriptVisionAsync('/static/vendor/mediapipe/hands.js');
+
+        // Fallback resiliente para CDN caso não esteja em servidor local
+        if (!ok1) ok1 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js');
+        if (!ok2) ok2 = await carregarScriptVisionAsync('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js');
 
         if (ok1 && ok2 && typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
           const hands = new Hands({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            locateFile: (file) => {
+              // Verifica se arquivo wasm/data local está disponível, com fallback para CDN
+              return `/static/vendor/mediapipe/${file}`;
+            }
           });
           hands.setOptions({
             maxNumHands: 2,
@@ -7951,7 +7999,7 @@
           camera.start();
           fcMediaPipeHandsInstance = hands;
           fcMediaPipeCameraInstance = camera;
-          showToast('🌟 Google MediaPipe Ativado (Padrão Oficial)!');
+          showToast('🌟 Google MediaPipe Ativado (Padrão Oficial Offline)!');
           return true;
         }
       } catch(e) {
@@ -8082,6 +8130,20 @@
       fcCameraAnimationId = requestAnimationFrame(loop);
     }
 
+    let fcUltimoTimestampGestoAfetivo = 0;
+    function dispararGestoAfetivo(tipo) {
+      const agora = Date.now();
+      if (agora - fcUltimoTimestampGestoAfetivo < 12000) return; // Debounce de 12 segundos
+      fcUltimoTimestampGestoAfetivo = agora;
+      if (tipo === 'coracao') {
+        speak('Que coraçãozinho lindo! O Jarvis tem muito carinho por você, campeão!');
+      } else if (tipo === 'joinha') {
+        speak('Joinha, campeão! Tudo nota dez!');
+      } else if (tipo === 'paz') {
+        speak('Paz e amor! Viva a alegria e a amizade!');
+      }
+    }
+
     function processarResultadoMediaPipe(results) {
       const overlay = document.getElementById('fc-canvas-overlay');
       if (!overlay) return;
@@ -8089,14 +8151,16 @@
       ctx.clearRect(0, 0, overlay.width, overlay.height);
 
       let totalDedosLevantados = 0;
+      let ultimoGestoDetectado = 'nenhum';
 
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         for (let h = 0; h < results.multiHandLandmarks.length; h++) {
           const rawLm = results.multiHandLandmarks[h];
           const lm = rawLm.map(pt => [pt.x * overlay.width, pt.y * overlay.height, (pt.z || 0) * overlay.width]);
 
-          const { estados, total } = contarDedosRobusto(lm);
+          const { estados, total, gesto } = contarDedosRobusto(lm);
           totalDedosLevantados += total;
+          if (gesto !== 'nenhum') ultimoGestoDetectado = gesto;
 
           // Desenha conexões dos dedos no canvas
           const conexoes = [
@@ -8136,6 +8200,36 @@
             ctx.shadowBlur = up ? 12 : 3;
             ctx.fill();
           });
+        }
+
+        // Detecção de Coração com as 2 mãos (Biometria Afetiva)
+        if (results.multiHandLandmarks.length >= 2) {
+          const raw0 = results.multiHandLandmarks[0];
+          const raw1 = results.multiHandLandmarks[1];
+          const lm0 = raw0.map(pt => [pt.x * overlay.width, pt.y * overlay.height]);
+          const lm1 = raw1.map(pt => [pt.x * overlay.width, pt.y * overlay.height]);
+          const distThumbs = Math.hypot(lm0[4][0] - lm1[4][0], lm0[4][1] - lm1[4][1]);
+          const distIndexTips = Math.hypot(lm0[8][0] - lm1[8][0], lm0[8][1] - lm1[8][1]);
+          if (distThumbs < 55 && distIndexTips < 55) {
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillStyle = '#f43f5e';
+            ctx.textAlign = 'center';
+            const midX = (lm0[8][0] + lm1[8][0]) / 2;
+            ctx.fillText('🫶 Coração!', midX, 32);
+            dispararGestoAfetivo('coracao');
+          }
+        } else if (ultimoGestoDetectado === 'joinha') {
+          ctx.font = 'bold 20px sans-serif';
+          ctx.fillStyle = '#22c55e';
+          ctx.textAlign = 'center';
+          ctx.fillText('👍 Legal, Campeão!', overlay.width / 2, 32);
+          dispararGestoAfetivo('joinha');
+        } else if (ultimoGestoDetectado === 'paz') {
+          ctx.font = 'bold 20px sans-serif';
+          ctx.fillStyle = '#38bdf8';
+          ctx.textAlign = 'center';
+          ctx.fillText('✌️ Paz & Amor!', overlay.width / 2, 32);
+          dispararGestoAfetivo('paz');
         }
       }
 

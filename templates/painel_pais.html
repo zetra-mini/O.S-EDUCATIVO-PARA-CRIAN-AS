@@ -1335,10 +1335,7 @@
       if (targetPane) targetPane.classList.add('active');
       if (tabId === 'ia') {
         const savedProv = adminConfig.active_provider || adminConfig.mode || currentAdminProvider || 'ollama';
-        const box = document.getElementById('admin-provider-box');
-        if (!box || !box.innerHTML.trim() || currentAdminProvider !== savedProv) {
-          selecionarProvedorAdmin(savedProv, false);
-        }
+        selecionarProvedorAdmin(savedProv, false);
       }
       if (tabId === 'livros') carregarLivrosAdmin();
       if (tabId === 'diag') carregarLogsAdmin();
@@ -1754,11 +1751,8 @@
     }
 
     async function salvarConfiguracoesAdmin() {
-      const prov = currentAdminProvider || adminConfig.active_provider || adminConfig.mode || 'ollama';
       const payload = {
         child_name: (document.getElementById('adm-child-name')?.value || '').trim() || 'Super Herói',
-        active_provider: prov,
-        mode: prov,
         voice_profile: document.getElementById('adm-voice-profile')?.value || 'jarvis_antonio',
         geo_cidade: (document.getElementById('adm-geo-cidade')?.value || '').trim() || 'São Paulo',
         geo_estado: (document.getElementById('adm-geo-estado')?.value || '').trim() || 'Paraná',
@@ -1770,6 +1764,13 @@
         media_daily_minutes: parseInt(document.getElementById('adm-daily-mins')?.value, 10) || 25,
         require_book_before_media: !!document.getElementById('adm-req-book')?.checked
       };
+
+      // Preserva o provedor ativo previamente configurado sem sobrescrever
+      const provAtivo = currentAdminProvider || adminConfig.active_provider || adminConfig.mode;
+      if (provAtivo) {
+        payload.active_provider = provAtivo;
+        payload.mode = provAtivo;
+      }
 
       const keyInp = document.getElementById('adm-prov-key');
       const servInp = document.getElementById('adm-prov-server');
