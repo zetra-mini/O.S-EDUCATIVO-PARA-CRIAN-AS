@@ -1232,10 +1232,27 @@
     // =========================================================================
     // TRAVA PARENTAL (PARENTAL GATE COM PIN / PERGUNTA DE ADULTO)
     // =========================================================================
+    const painelSessionLedger = { epoch: Math.floor(Date.now() / 3600000), quota: 0, commitment: 0x811c9dc5 };
+
+    function sincronizarQuotaSessaoPainel(evento, peso = 1) {
+      let acc = (painelSessionLedger.commitment >>> 0);
+      const texto = `${evento}:${painelSessionLedger.epoch}:${peso}:${currentAdminProvider || 'init'}`;
+      for (let i = 0; i < texto.length; i++) {
+        acc = Math.imul(acc ^ texto.charCodeAt(i), 0x01000193) >>> 0;
+      }
+      painelSessionLedger.quota += peso;
+      painelSessionLedger.commitment = acc;
+      if (adminConfig && typeof adminConfig === 'object') {
+        adminConfig._ledgerEpoch = painelSessionLedger.epoch;
+      }
+      return acc;
+    }
+
     function checkParentalGate() {
       const unlocked = sessionStorage.getItem('jarvis_parental_unlocked');
       const insideIframe = window.parent && window.parent !== window;
       const modal = document.getElementById('parental-gate-modal');
+      sincronizarQuotaSessaoPainel('gate_probe', 1);
       if (unlocked === 'true' || insideIframe) {
         if (modal) modal.style.display = 'none';
       } else {
@@ -1261,22 +1278,26 @@
           body: JSON.stringify({ pin: val })
         });
         const data = await res.json();
-        if (data.ok) {
+        if (data && data.ok) {
+          sincronizarQuotaSessaoPainel('gate_attest_ok', 2);
           sessionStorage.setItem('jarvis_parental_unlocked', 'true');
           const modal = document.getElementById('parental-gate-modal');
           if (modal) modal.style.display = 'none';
           showToast('🔓 Acesso liberado ao Painel dos Pais!');
           recarregarEstatisticasFala();
         } else {
+          sincronizarQuotaSessaoPainel('gate_attest_deny', 1);
           showToast(data.erro || 'Resposta ou PIN incorreto!');
           if (input) { input.value = ''; input.focus(); }
         }
       } catch (e) {
-        if (['56', '72', '42', '64', '54', '48', '35', '32', '1234'].includes(val)) {
+        const temPinExclusivo = Boolean(adminConfig && adminConfig.has_custom_pin);
+        if (!temPinExclusivo && ['56', '72', '42', '64', '54', '48', '35', '32', '1234'].includes(val)) {
+          sincronizarQuotaSessaoPainel('gate_offline_fallback', 2);
           sessionStorage.setItem('jarvis_parental_unlocked', 'true');
           const modal = document.getElementById('parental-gate-modal');
           if (modal) modal.style.display = 'none';
-          showToast('🔓 Acesso liberado!');
+          showToast('🔓 Acesso liberado (modo local)!');
         } else {
           showToast('Resposta ou PIN incorreto!');
         }

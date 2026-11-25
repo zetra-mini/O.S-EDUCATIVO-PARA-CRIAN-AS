@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Gerador Local de Pacote .deb — JARVIS Kids OS v3.7.0
+# Gerador Local de Pacote .deb — JARVIS Kids OS
 # Compatível com antiX Linux, Debian 11/12, Ubuntu e Raspberry Pi OS
+# Suporta blindagem opcional Counter-REA via Blind LLM Agents (--bla)
 # ==============================================================================
 
 set -e
@@ -10,9 +11,28 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -f "$ROOT_DIR/VERSION" ]; then
   DEFAULT_VER="$(cat "$ROOT_DIR/VERSION" | tr -d '[:space:]')"
 else
-  DEFAULT_VER="3.9.5"
+  DEFAULT_VER="3.9.7"
 fi
-VERSION="${1:-$DEFAULT_VER}"
+
+USE_BLA="${BLA_HARDEN:-0}"
+BLA_INTENSITY="${BLA_INTENSITY:-balanced}"
+VERSION="$DEFAULT_VER"
+
+for arg in "$@"; do
+  case "$arg" in
+    --bla)
+      USE_BLA="1"
+      ;;
+    --bankrupt)
+      USE_BLA="1"
+      BLA_INTENSITY="bankrupt"
+      ;;
+    *)
+      VERSION="$arg"
+      ;;
+  esac
+done
+
 ARCH="all"
 DEB_DIR="jarvis-kids-os_${VERSION}_${ARCH}"
 
@@ -28,19 +48,44 @@ mkdir -p "${DEB_DIR}/opt/jarvis-kids-os"
 mkdir -p "${DEB_DIR}/usr/bin"
 mkdir -p "${DEB_DIR}/usr/share/applications"
 
-# Copia os arquivos do sistema
+# Copia os arquivos do sistema (incluindo .blarc se blindagem for usada)
 cp -r ./* "${DEB_DIR}/opt/jarvis-kids-os/" 2>/dev/null || true
+[ -f ".blarc" ] && cp ".blarc" "${DEB_DIR}/opt/jarvis-kids-os/.blarc"
 
-# Limpeza de pastas desnecessárias no pacote
+# Higiene estrita de release: remove segredos locais, bancos pessoais, caches e artefatos dev
 rm -rf "${DEB_DIR}/opt/jarvis-kids-os/${DEB_DIR}" \
        "${DEB_DIR}/opt/jarvis-kids-os/node_modules" \
+       "${DEB_DIR}/opt/jarvis-kids-os/venv" \
+       "${DEB_DIR}/opt/jarvis-kids-os/.venv" \
        "${DEB_DIR}/opt/jarvis-kids-os/.git" \
        "${DEB_DIR}/opt/jarvis-kids-os/.cache" \
+       "${DEB_DIR}/opt/jarvis-kids-os/.bla-hardened" \
+       "${DEB_DIR}/opt/jarvis-kids-os/dist" \
+       "${DEB_DIR}/opt/jarvis-kids-os/scratch" \
+       "${DEB_DIR}/opt/jarvis-kids-os/tests" \
        "${DEB_DIR}/opt/jarvis-kids-os/__pycache__" \
+       "${DEB_DIR}/opt/jarvis-kids-os/static/sounds/cache_tts" \
+       "${DEB_DIR}/opt/jarvis-kids-os/config.json" \
+       "${DEB_DIR}/opt/jarvis-kids-os/config_nuvem.json" \
+       "${DEB_DIR}/opt/jarvis-kids-os/uso_diario.json" \
+       "${DEB_DIR}/opt/jarvis-kids-os"/*.db \
+       "${DEB_DIR}/opt/jarvis-kids-os"/*.db-wal \
+       "${DEB_DIR}/opt/jarvis-kids-os"/*.db-shm \
+       "${DEB_DIR}/opt/jarvis-kids-os"/*.log \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.deb \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.tar.gz \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.zip \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.apk 2>/dev/null || true
+
+# Opcional: aplica Blindagem Counter-REA (Blind LLM Agents) no staging antes de empacotar
+if [ "$USE_BLA" = "1" ]; then
+  echo "🛡️ Aplicando Blindagem Counter-REA (BLA: ${BLA_INTENSITY}) no pacote .deb..."
+  python3 "$ROOT_DIR/scripts/blindar_release_bla.py" \
+    --out "${ROOT_DIR}/$DEB_DIR/opt/jarvis-kids-os" \
+    --intensity "$BLA_INTENSITY" \
+    --in-place-staging \
+    --skip-tests
+fi
 
 # 1. Script executável global /usr/bin/jarvis-kids
 cat << 'EOF' > "${DEB_DIR}/usr/bin/jarvis-kids"

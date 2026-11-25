@@ -23,11 +23,13 @@ DB_PATH = os.path.join(BASE_DIR, "banco_educativo.db")
 
 
 def configurar_pragmas(conn: sqlite3.Connection) -> None:
-    """Injeta pragmas essenciais para ultra-desempenho no SQLite."""
+    """Injeta pragmas essenciais para ultra-desempenho e controle de WAL no SQLite."""
     conn.execute("PRAGMA journal_mode = WAL;")
     conn.execute("PRAGMA synchronous = NORMAL;")
     conn.execute("PRAGMA temp_store = MEMORY;")
     conn.execute("PRAGMA busy_timeout = 5000;")
+    conn.execute("PRAGMA wal_autocheckpoint = 200;")
+    conn.execute("PRAGMA journal_size_limit = 1048576;")
     conn.execute("PRAGMA foreign_keys = ON;")
 
 
@@ -640,7 +642,14 @@ class DatabaseManager:
             )
 
         conn.commit()
+        try:
+            conn.execute("PRAGMA wal_checkpoint(TRUNCATE);")
+        except Exception:
+            pass
         conn.close()
+
+    # Alias de compatibilidade legado para consultas SQL
+    query = consultar_todos
 
 
 # Instância singleton global do Banco de Dados

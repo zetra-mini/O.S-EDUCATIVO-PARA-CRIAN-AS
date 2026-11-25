@@ -13073,13 +13073,18 @@
       const sorteado = pares[Math.floor(Math.random() * pares.length)];
       gateExpectedAnswer = sorteado.ans;
 
+      const temPinExclusivo = Boolean(appState && appState.config && appState.config.has_custom_pin);
       const qEl = document.getElementById('gate-question');
-      if (qEl) qEl.textContent = `${sorteado.q} (Ou digite seu PIN)`;
+      if (qEl) {
+        qEl.textContent = temPinExclusivo
+          ? '🔒 Digite o PIN exclusivo configurado pelos Pais'
+          : `${sorteado.q} (Ou digite seu PIN)`;
+      }
 
       const inp = document.getElementById('gate-input');
       if (inp) {
         inp.value = '';
-        inp.placeholder = `Resposta (${sorteado.ans} ou PIN)`;
+        inp.placeholder = temPinExclusivo ? 'Digite seu PIN numérico' : 'Resposta ou PIN dos Pais';
       }
 
       const errEl = document.getElementById('gate-error');
@@ -13107,25 +13112,34 @@
       if (errEl) errEl.textContent = '';
     }
 
-    function verifyParentsGate() {
+    async function verifyParentsGate() {
       const inp = document.getElementById('gate-input');
       const valStr = (inp ? inp.value : '').trim();
       const val = parseInt(valStr, 10);
+      if (!valStr) return;
 
-      const pinSalvo = appState && appState.config ? String(appState.config.parental_pin || '').trim() : '';
-      const pinValido = (
-        val === gateExpectedAnswer ||
-        val === 56 ||
-        val === 1234 ||
-        val === 42 ||
-        val === 64 ||
-        val === 54 ||
-        val === 32 ||
-        val === 35 ||
-        valStr === '56' ||
-        valStr === '1234' ||
-        (pinSalvo && valStr === pinSalvo)
-      );
+      const temPinExclusivo = Boolean(appState && appState.config && appState.config.has_custom_pin);
+      let pinValido = false;
+
+      if (window.location.protocol !== 'file:') {
+        try {
+          const res = await fetch('/api/parental/verify-pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: valStr })
+          });
+          const data = await res.json();
+          if (data && data.ok) {
+            pinValido = true;
+          } else if (!temPinExclusivo && val === gateExpectedAnswer) {
+            pinValido = true;
+          }
+        } catch (err) {
+          pinValido = !temPinExclusivo && (val === gateExpectedAnswer || valStr === '1234');
+        }
+      } else {
+        pinValido = !temPinExclusivo && (val === gateExpectedAnswer || valStr === '1234');
+      }
 
       if (pinValido) {
         closeParentsGate();
@@ -13133,7 +13147,11 @@
       } else {
         playTone(220, 160);
         const errEl = document.getElementById('gate-error');
-        if (errEl) errEl.textContent = `Resposta incorreta. Dica: digite ${gateExpectedAnswer} ou 56!`;
+        if (errEl) {
+          errEl.textContent = temPinExclusivo
+            ? 'PIN exclusivo incorreto. Tente novamente!'
+            : 'Resposta ou PIN incorreto. Tente novamente!';
+        }
         if (inp) {
           inp.value = '';
           inp.focus();

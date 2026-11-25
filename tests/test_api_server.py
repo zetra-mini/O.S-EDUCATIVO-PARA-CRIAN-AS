@@ -69,8 +69,39 @@ class TestApiServer(unittest.TestCase):
             self.assertEqual(res_val.status_code, 200)
             self.assertTrue(res_val.json.get("ok"))
 
+            # Garante que os códigos padrão ("1234" e "56") NÃO burlam um PIN exclusivo definido pelos pais
+            res_bypass_1 = await self.client.post('/api/parental/verify-pin', body=json.dumps({"pin": "1234"}), headers={'Content-Type': 'application/json'})
+            self.assertEqual(res_bypass_1.status_code, 401)
+            self.assertFalse(res_bypass_1.json.get("ok"))
+
+            res_bypass_2 = await self.client.post('/api/parental/verify-pin', body=json.dumps({"pin": "56"}), headers={'Content-Type': 'application/json'})
+            self.assertEqual(res_bypass_2.status_code, 401)
+            self.assertFalse(res_bypass_2.json.get("ok"))
+
             # Restaura PIN original
             await self.client.post('/api/parental/change-pin', body=json.dumps({"pin": "1234"}), headers={'Content-Type': 'application/json'})
+        asyncio.run(run())
+
+    def test_static_mediapipe_wasm_and_icons(self):
+        async def run():
+            res_wasm = await self.client.get('/static/vendor/mediapipe/hands_solution_simd_wasm_bin.wasm')
+            self.assertEqual(res_wasm.status_code, 200)
+            self.assertIn('application/wasm', res_wasm.headers.get('Content-Type', ''))
+
+            res_pb = await self.client.get('/static/vendor/mediapipe/hands.binarypb')
+            self.assertEqual(res_pb.status_code, 200)
+
+            res_icon = await self.client.get('/static/icons/icon-192.png')
+            self.assertEqual(res_icon.status_code, 200)
+            self.assertIn('image/png', res_icon.headers.get('Content-Type', ''))
+        asyncio.run(run())
+
+    def test_estatisticas_fala_endpoint(self):
+        async def run():
+            res = await self.client.get('/api/estatisticas/fala')
+            self.assertEqual(res.status_code, 200)
+            self.assertTrue(res.json.get("ok"))
+            self.assertIn("total_palavras_treinadas", res.json)
         asyncio.run(run())
 
     def test_api_livros(self):

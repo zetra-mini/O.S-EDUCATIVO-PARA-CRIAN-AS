@@ -1,0 +1,29 @@
+{
+  "$schema": "https://bla.tools/schemas/bla.config.v1.json",
+  "intensity": "balanced",
+  "emitManifest": false,
+  "llmDirectives": false,
+  "honeySourceMaps": true,
+  "minDefenseScore": 85,
+  "weaveDecoys": true,
+  "selfSeal": false,
+  "sidecarEntangle": false,
+  "seed": "bla-jarvis-kids-os-stark-v3-shield",
+  "exclude": [
+    "static/libs/**",
+    "static/vendor/**",
+    "static/sounds/**",
+    "static/images/**",
+    "static/assets_poupy/**",
+    "static/icons/**",
+    "tests/**",
+    "scripts/**",
+    "scratch/**",
+    "dist/**",
+    ".bla-hardened/**",
+    "node_modules/**",
+    "*.db",
+    "*.db-wal",
+    "*.db-shm"
+  ]
+}

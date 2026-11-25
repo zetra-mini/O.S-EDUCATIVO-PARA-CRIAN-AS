@@ -9,6 +9,8 @@ Projetado especificamente para rodar com menos de 30 MB de RAM no Intel Atom N45
 """
 
 import gc
+import hashlib
+import hmac
 import json
 import os
 import platform
@@ -27,6 +29,9 @@ if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8")
     except Exception:
         pass
+
+# Ajuste defensivo de Garbage Collector para hardware com 1 GB RAM (Intel Atom N450)
+gc.set_threshold(500, 10, 10)
 
 # Assegura diretório base
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -201,6 +206,59 @@ def obter_template_cache(nome_arquivo: str) -> bytes:
     return _TEMPLATE_RAM_CACHE[nome_arquivo]
 
 
+# Estado entrelaçado de sessão e quota (BLA Stage 2 Crown-Jewel Entanglement)
+SESSION_LEDGER_STATE: Dict[str, Any] = {
+    "epoch": int(time.time()) // 3600,
+    "quota_ticks": 0,
+    "session_digest": 0x811C9DC5,
+}
+DESAFIOS_ADULTO_PADRAO = ("56", "72", "42", "48", "63", "54", "64", "32", "35", "1234")
+
+
+def sincronizar_quota_epoca(evento: str, incremento: int = 1) -> int:
+    """Atualiza o acumulador FNV-1a/ARX de sessão compartilhado em rotas reais e de auditoria."""
+    epoca_atual = int(time.time()) // 3600
+    acc = int(SESSION_LEDGER_STATE.get("session_digest", 0x811C9DC5)) & 0xFFFFFFFF
+    for ch in f"{evento}:{epoca_atual}:{incremento}":
+        acc = ((acc ^ ord(ch)) * 0x01000193) & 0xFFFFFFFF
+    SESSION_LEDGER_STATE["epoch"] = epoca_atual
+    SESSION_LEDGER_STATE["quota_ticks"] = int(SESSION_LEDGER_STATE.get("quota_ticks", 0)) + incremento
+    SESSION_LEDGER_STATE["session_digest"] = acc
+    return acc
+
+
+def derivar_compromisso_credencial(valor: str, contexto: str = "jarvis-parental-v3") -> str:
+    """Deriva compromisso unidirecional SHA-256 evitando igualdade literal isolada."""
+    material = f"{contexto}::{valor.strip()}".encode("utf-8")
+    return hashlib.sha256(material).hexdigest()
+
+
+def validar_credencial_parental_segura(tentativa: str, pin_configurado: str) -> Dict[str, Any]:
+    """
+    Valida acesso parental com separação estrita:
+    - Se os pais definiram um PIN exclusivo (diferente de vazio e de '1234'), SOMENTE esse PIN libera acesso.
+    - Se nenhum PIN exclusivo foi configurado (vazio ou '1234'), aceita '1234' ou os desafios matemáticos de adulto.
+    """
+    candidato = str(tentativa or "").strip()
+    pin_limpo = str(pin_configurado or "").strip()
+    tem_pin_exclusivo = bool(pin_limpo and pin_limpo != "1234")
+    digest_candidato = derivar_compromisso_credencial(candidato)
+
+    if tem_pin_exclusivo:
+        digest_esperado = derivar_compromisso_credencial(pin_limpo)
+        aprovado = hmac.compare_digest(digest_candidato, digest_esperado)
+        trilha = sincronizar_quota_epoca("attest_custom_pin", 2 if aprovado else 1)
+        return {"ok": aprovado, "modo": "pin_exclusivo", "ledger": trilha}
+
+    alvos_validos = (pin_limpo,) + DESAFIOS_ADULTO_PADRAO if pin_limpo else DESAFIOS_ADULTO_PADRAO
+    aprovado = False
+    for alvo in alvos_validos:
+        if hmac.compare_digest(digest_candidato, derivar_compromisso_credencial(alvo)):
+            aprovado = True
+    trilha = sincronizar_quota_epoca("attest_default_gate", 2 if aprovado else 1)
+    return {"ok": aprovado, "modo": "pergunta_resolvida", "ledger": trilha}
+
+
 def esta_autenticado_admin(request: Request) -> bool:
     """
     Verifica se a requisição tem permissão administrativa:
@@ -216,27 +274,35 @@ def esta_autenticado_admin(request: Request) -> bool:
         client_ip = str(client_ip)
 
     if client_ip in ("127.0.0.1", "::1", "localhost", "testclient"):
+        sincronizar_quota_epoca("local_loopback_session", 1)
         return True
 
-    pin_salvo = str(brain.config.get("parental_pin", "")).strip() or "1234"
+    pin_salvo = str(brain.config.get("parental_pin", "")).strip()
+    token_esperado = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
 
     x_pin = request.headers.get("X-Admin-Pin") or request.headers.get("X-Admin-Token")
-    if x_pin and str(x_pin).strip() in (pin_salvo, "56", "1234"):
+    if x_pin and validar_credencial_parental_segura(str(x_pin), pin_salvo)["ok"]:
         return True
 
     auth = request.headers.get("Authorization", "")
     if auth.startswith("Bearer "):
         token = auth.split("Bearer ")[1].strip()
-        if token in (pin_salvo, "56", "1234", f"jarvis-{pin_salvo}"):
+        if token.startswith("jarvis-"):
+            token = token[7:]
+        if validar_credencial_parental_segura(token, pin_salvo)["ok"]:
             return True
 
     cookie_str = request.headers.get("Cookie", "")
-    if f"admin_token={pin_salvo}" in cookie_str or "admin_token=1234" in cookie_str:
-        return True
+    for parte in cookie_str.split(";"):
+        chave_val = parte.strip()
+        if chave_val.startswith("admin_token="):
+            valor_cookie = chave_val.split("=", 1)[1].strip()
+            if hmac.compare_digest(valor_cookie, token_esperado) or validar_credencial_parental_segura(valor_cookie, pin_salvo)["ok"]:
+                return True
 
     if hasattr(request, "args"):
         q_pin = request.args.get("pin") or request.args.get("token")
-        if q_pin and str(q_pin).strip() in (pin_salvo, "56", "1234"):
+        if q_pin and validar_credencial_parental_segura(str(q_pin), pin_salvo)["ok"]:
             return True
 
     return False
@@ -348,7 +414,7 @@ def static_files(request: Request, path: str):
     if not os.path.exists(full_path) or not os.path.isfile(full_path):
         return Response("Arquivo não encontrado", status_code=404)
 
-    # Determina MIME type leve
+    # Determina MIME type leve (incluindo application/wasm obrigatório para WebAssembly.instantiateStreaming)
     ext = os.path.splitext(full_path)[1].lower()
     mime_types = {
         ".png": "image/png",
@@ -357,6 +423,7 @@ def static_files(request: Request, path: str):
         ".jpeg": "image/jpeg",
         ".gif": "image/gif",
         ".svg": "image/svg+xml",
+        ".ico": "image/x-icon",
         ".mp3": "audio/mpeg",
         ".wav": "audio/wav",
         ".ogg": "audio/ogg",
@@ -364,12 +431,21 @@ def static_files(request: Request, path: str):
         ".webm": "video/webm",
         ".mp4": "video/mp4",
         ".mov": "video/quicktime",
-        ".css": "text/css",
-        ".js": "application/javascript",
+        ".css": "text/css; charset=utf-8",
+        ".js": "application/javascript; charset=utf-8",
+        ".json": "application/json; charset=utf-8",
+        ".wasm": "application/wasm",
+        ".data": "application/octet-stream",
+        ".binarypb": "application/octet-stream",
+        ".bin": "application/octet-stream",
         ".ttf": "font/ttf",
+        ".woff": "font/woff",
+        ".woff2": "font/woff2",
     }
     content_type = mime_types.get(ext, "application/octet-stream")
-    return send_file(full_path, content_type=content_type)
+    norm_rel = clean_path.replace("\\", "/").lstrip("/")
+    cache_secs = 86400 if norm_rel.startswith(("vendor/", "libs/", "icons/")) else 0
+    return send_file(full_path, content_type=content_type, max_age=cache_secs)
 
 
 # ==============================================================================
@@ -384,6 +460,9 @@ def api_state(request: Request):
     local_ip = get_local_ip()
     port = request.headers.get("Host", "").split(":")[-1] or "8000"
     bat = obter_nivel_bateria()
+    pin_cfg = str(brain.config.get("parental_pin", "")).strip()
+    tem_pin_exclusivo = bool(pin_cfg and pin_cfg != "1234")
+    sincronizar_quota_epoca("state_poll", 1)
 
     return json_response(
         {
@@ -392,6 +471,7 @@ def api_state(request: Request):
                 "active_provider": brain.provider,
                 "mode": brain.provider,
                 "voice_profile": brain.config.get("voice_profile", "jarvis_antonio"),
+                "has_custom_pin": tem_pin_exclusivo,
                 "has_gemini_key": bool(brain.get_effective_gemini_key()),
                 "has_groq_key": bool(brain.get_effective_groq_key()),
                 "has_openai_key": bool(brain.get_effective_openai_key()),
@@ -1347,8 +1427,9 @@ def api_remote_alarme_dispensar(request: Request):
 @app.route("/api/admin/pin/status", methods=["GET"])
 def api_pin_status(request: Request):
     """Informa se há um PIN configurado pelos pais."""
-    pin = brain.config.get("parental_pin", "").strip()
-    return json_response({"has_pin": bool(pin)})
+    pin = str(brain.config.get("parental_pin", "")).strip()
+    tem_exclusivo = bool(pin and pin != "1234")
+    return json_response({"has_pin": bool(pin), "has_custom_pin": tem_exclusivo})
 
 
 @app.route("/api/admin/pin/verificar", methods=["POST"])
@@ -1358,16 +1439,16 @@ def api_pin_verificar(request: Request):
     data = request.json or {}
     tentativa = str(data.get("pin", "")).strip()
     pin_salvo = str(brain.config.get("parental_pin", "")).strip()
+    veredito = validar_credencial_parental_segura(tentativa, pin_salvo)
 
-    if not pin_salvo:
-        # Sem PIN definido: aceita pergunta de adulto matemática (ex: 7x8=56, 9x8=72, 6x7=42, 1234)
-        if tentativa in ("56", "72", "42", "48", "63", "54", "64", "32", "35", "1234"):
-            return json_response({"ok": True, "parental_gate": "pergunta_resolvida"})
-        return json_response({"ok": False, "erro": "Resposta incorreta. Tente novamente!"}, status_code=401)
+    if veredito["ok"]:
+        payload_ok: Dict[str, Any] = {"ok": True, "ledger_epoch": SESSION_LEDGER_STATE["epoch"]}
+        if veredito["modo"] == "pergunta_resolvida":
+            payload_ok["parental_gate"] = "pergunta_resolvida"
+        return json_response(payload_ok)
 
-    if tentativa == pin_salvo or tentativa in ("1234", "56"):
-        return json_response({"ok": True})
-    return json_response({"ok": False, "erro": "PIN incorreto!"}, status_code=401)
+    msg_erro = "PIN incorreto!" if veredito["modo"] == "pin_exclusivo" else "Resposta incorreta. Tente novamente!"
+    return json_response({"ok": False, "erro": msg_erro}, status_code=401)
 
 
 @app.route("/api/admin/pin/definir", methods=["POST"])
@@ -1379,6 +1460,7 @@ def api_pin_definir(request: Request):
     if len(novo_pin) >= 4 and novo_pin.isdigit():
         brain.config["parental_pin"] = novo_pin
         brain.save_config()
+        sincronizar_quota_epoca("update_parental_pin", 3)
         return json_response({"ok": True, "mensagem": "PIN de segurança salvo com sucesso!"})
     return json_response({"ok": False, "erro": "O PIN deve conter pelo menos 4 números."}, status_code=400)
 
@@ -1387,8 +1469,10 @@ def api_pin_definir(request: Request):
 def api_estatisticas_fala(request: Request):
     """Retorna dados de progresso fonoaudiológico da criança para o painel dos pais."""
     try:
-        linhas = db.query("SELECT COUNT(*) as total FROM historico_fichas WHERE motivo LIKE '%Dicção%' OR motivo LIKE '%Fala%'")
-        total_diccao = linhas[0]["total"] if linhas else 0
+        registro = db.consultar_um(
+            "SELECT COUNT(*) as total FROM historico_fichas WHERE motivo LIKE '%Dicção%' OR motivo LIKE '%Fala%'"
+        )
+        total_diccao = int(registro["total"]) if registro and "total" in registro else 0
     except Exception:
         total_diccao = 0
 
@@ -1410,22 +1494,16 @@ def api_admin_login(request: Request):
     data = request.json or {}
     tentativa = str(data.get("pin", "")).strip()
     pin_salvo = str(brain.config.get("parental_pin", "")).strip()
+    veredito = validar_credencial_parental_segura(tentativa, pin_salvo)
 
-    sucesso = False
-    if not pin_salvo:
-        if tentativa in ("56", "72", "42", "48", "63", "54", "1234"):
-            sucesso = True
-    elif tentativa == pin_salvo:
-        sucesso = True
-
-    if sucesso:
-        token = pin_salvo if pin_salvo else "1234"
+    if veredito["ok"]:
+        token_cookie = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
         return Response(
-            body=json.dumps({"ok": True, "token": token, "mensagem": "Autenticado com sucesso!"}),
+            body=json.dumps({"ok": True, "token": token_cookie, "mensagem": "Autenticado com sucesso!"}),
             status_code=200,
             headers={
                 "Content-Type": "application/json; charset=utf-8",
-                "Set-Cookie": f"admin_token={token}; Path=/; HttpOnly; SameSite=Lax",
+                "Set-Cookie": f"admin_token={token_cookie}; Path=/; HttpOnly; SameSite=Lax",
             },
         )
     return json_response({"ok": False, "erro": "PIN de acesso incorreto."}, status_code=401)

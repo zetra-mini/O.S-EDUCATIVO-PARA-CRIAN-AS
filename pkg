@@ -211,6 +211,10 @@ cmd_start() {
     fi
   fi
 
+  # Limite estrito de RAM para Acer Aspire One 532 (1 GB RAM)
+  export PYTHONOPTIMIZE=1
+  export MALLOC_ARENA_MAX=2
+
   # Se o servidor não estiver rodando na porta alvo, inicia em segundo plano
   if ! pgrep -f "run_server.py.*$PORT" >/dev/null 2>&1 && ! pgrep -f "run_server.py" >/dev/null 2>&1; then
     nohup "$PY" "$APP_DIR/run_server.py" "$PORT" > "$APP_DIR/jarvis_server.log" 2>&1 &
@@ -232,13 +236,14 @@ cmd_start() {
     echo -e "   🌐 Acesso na Rede:  ${BOLD}http://${LOCAL_IP}:${PORT}${NC}"
     echo -e "   📱 Painel dos Pais: ${BOLD}http://${LOCAL_IP}:${PORT}/pais${NC}\n"
 
-    # Se estiver com monitor gráfico ativo (X11 / Desktop), abre o navegador Kiosk
+    # Se estiver com monitor gráfico ativo (X11 / Desktop), abre o navegador Kiosk em modo 1 GB RAM
     if [ -n "$DISPLAY" ]; then
-      echo -e "${CYAN}🖥️ Interface gráfica detectada (${DISPLAY}). Abrindo quiosque...${NC}"
+      echo -e "${CYAN}🖥️ Interface gráfica detectada (${DISPLAY}). Abrindo quiosque (1 GB RAM)...${NC}"
+      KIOSK_FLAGS="--kiosk --disable-gpu --disable-dev-shm-usage --renderer-process-limit=1 --js-flags=--max-old-space-size=192 --disable-extensions --disable-background-networking --disk-cache-size=10485760"
       if command -v chromium >/dev/null 2>&1; then
-        chromium --kiosk --disable-gpu --disable-dev-shm-usage --app="http://127.0.0.1:${PORT}" &
+        chromium $KIOSK_FLAGS --app="http://127.0.0.1:${PORT}" &
       elif command -v chromium-browser >/dev/null 2>&1; then
-        chromium-browser --kiosk --disable-gpu --disable-dev-shm-usage --app="http://127.0.0.1:${PORT}" &
+        chromium-browser $KIOSK_FLAGS --app="http://127.0.0.1:${PORT}" &
       elif command -v firefox-esr >/dev/null 2>&1; then
         firefox-esr --kiosk "http://127.0.0.1:${PORT}" &
       elif command -v firefox >/dev/null 2>&1; then
@@ -295,6 +300,18 @@ cmd_update() {
   echo -e "${GREEN}✅ Atualização concluída com sucesso!${NC}"
 }
 
+cmd_harden() {
+  banner
+  INTENSIDADE="${2:-balanced}"
+  echo -e "${CYAN}🛡️ Gerando release blindada com Blind LLM Agents (Intensidade: ${INTENSIDADE})...${NC}"
+  cd "$APP_DIR"
+  if [ -f "$APP_DIR/venv/bin/python" ]; then
+    "$APP_DIR/venv/bin/python" "$APP_DIR/scripts/blindar_release_bla.py" --intensity "$INTENSIDADE"
+  else
+    python3 "$APP_DIR/scripts/blindar_release_bla.py" --intensity "$INTENSIDADE"
+  fi
+}
+
 cmd_help() {
   banner
   echo -e "Uso: ${BOLD}pkg <comando>${NC} ou ${BOLD}./pkg <comando>${NC}\n"
@@ -304,6 +321,7 @@ cmd_help() {
   echo -e "  ${CYAN}stop${NC}      Encerra o servidor com segurança"
   echo -e "  ${CYAN}status${NC}    Exibe o status do servidor, uso de memória RAM e porta"
   echo -e "  ${CYAN}update${NC}    Atualiza o código com a versão mais recente do GitHub"
+  echo -e "  ${CYAN}harden${NC}    Gera release blindada Counter-REA (Blind LLM Agents) em dist/"
   echo -e "  ${CYAN}help${NC}      Exibe este menu de ajuda\n"
 }
 
@@ -322,6 +340,9 @@ case "$ACTION" in
     ;;
   update|upgrade)
     cmd_update
+    ;;
+  harden|blindar|bla)
+    cmd_harden "$@"
     ;;
   help|-h|--help)
     cmd_help

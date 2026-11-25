@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # INICIADOR DO MODO WEB QUIOSQUE — JARVIS KIDS OS
-# Otimizado para Acer Aspire One 532 (1024x600, antiX Linux / Intel Atom N450)
-# Microdot Server Ultraleve (< 15 MB RAM) + Chromium/Firefox Kiosk
+# Otimizado para Acer Aspire One 532 (1024x600, 1 GB RAM, Intel Atom N450 / antiX)
+# Microdot Server Ultraleve (< 20 MB RAM) + Chromium/Firefox Kiosk Baixo Consumo
 # ==============================================================================
 
 SOURCE="${BASH_SOURCE[0]}"
@@ -16,12 +16,14 @@ cd "$DIR"
 
 PORT="${1:-8000}"
 
-# Determina Python (prioriza venv do projeto)
+# Determina Python (prioriza venv do projeto) e reduz sobrecarga de allocator em 1 GB RAM
 if [ -f "$DIR/venv/bin/python" ]; then
   PYTHON="$DIR/venv/bin/python"
 else
   PYTHON="python3"
 fi
+export PYTHONOPTIMIZE=1
+export MALLOC_ARENA_MAX=2
 
 # 1. Inicia o servidor se não estiver ativo
 if ! pgrep -f "run_server.py.*$PORT" >/dev/null 2>&1 && ! pgrep -f "run_server.py" >/dev/null 2>&1; then
@@ -41,33 +43,32 @@ if [ -z "$DISPLAY" ]; then
   exit 0
 fi
 
-# 2. Abre o navegador leve em modo quiosque limpo
+CHROMIUM_FLAGS=(
+  --app="$KIOSK_URL"
+  --start-fullscreen
+  --kiosk
+  --incognito
+  --noerrdialogs
+  --disable-infobars
+  --overscroll-history-navigation=0
+  --disable-gpu
+  --disable-dev-shm-usage
+  --renderer-process-limit=1
+  --process-per-site
+  --js-flags="--max-old-space-size=192"
+  --disable-extensions
+  --disable-features=Translate,OptimizationHints,MediaRouter
+  --disable-background-networking
+  --disable-smooth-scrolling
+  --disable-gpu-vsync
+  --disk-cache-size=10485760
+)
+
+# 2. Abre o navegador leve em modo quiosque limpo (otimizado para 1 GB RAM)
 if command -v chromium >/dev/null 2>&1; then
-  chromium --app="$KIOSK_URL" \
-    --start-fullscreen \
-    --kiosk \
-    --incognito \
-    --noerrdialogs \
-    --disable-infobars \
-    --overscroll-history-navigation=0 \
-    --process-per-site \
-    --disable-features=Translate,OptimizationHints,MediaRouter \
-    --disable-background-networking \
-    --disable-smooth-scrolling \
-    --disable-gpu-vsync \
-    --disk-cache-size=10485760
+  chromium "${CHROMIUM_FLAGS[@]}"
 elif command -v chromium-browser >/dev/null 2>&1; then
-  chromium-browser --app="$KIOSK_URL" \
-    --start-fullscreen \
-    --kiosk \
-    --incognito \
-    --noerrdialogs \
-    --disable-infobars \
-    --overscroll-history-navigation=0 \
-    --process-per-site \
-    --disable-features=Translate,OptimizationHints \
-    --disable-background-networking \
-    --disk-cache-size=10485760
+  chromium-browser "${CHROMIUM_FLAGS[@]}"
 elif command -v firefox-esr >/dev/null 2>&1; then
   firefox-esr --kiosk "$KIOSK_URL"
 elif command -v firefox >/dev/null 2>&1; then
