@@ -150,11 +150,11 @@ class DatabaseManager:
         Consulta paginada usando gerador (yield) linha por linha.
         Nunca carrega o dataset inteiro na memória RAM (essencial para 2GB de RAM).
         """
-        sql_paginado = f"{sql.rstrip(';')} LIMIT {limit} OFFSET {offset};"
+        sql_paginado = f"{sql.rstrip(';')} LIMIT ? OFFSET ?;"
         conn = self._get_read_connection()
         try:
             cur = conn.cursor()
-            cur.execute(sql_paginado, params)
+            cur.execute(sql_paginado, tuple(params) + (max(1, int(limit)), max(0, int(offset))))
             while True:
                 row = cur.fetchone()
                 if row is None:
@@ -767,17 +767,23 @@ def limpar_historico_completo(resetar_saldo_moedas: bool = False) -> bool:
 
 def registrar_progresso_idioma(idioma: str, categoria: str, palavra_id: str, acertou: bool) -> None:
     """Registra ou atualiza o progresso de aprendizado de vocabulário da criança."""
-    col_update = "acertos = acertos + 1" if acertou else "erros = erros + 1"
-    sql = f"""
-        INSERT INTO progresso_idiomas (idioma, categoria, palavra_id, acertos, erros, ultima_pratica)
-        VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        ON CONFLICT(idioma, categoria, palavra_id) DO UPDATE SET
-            {col_update},
-            ultima_pratica = CURRENT_TIMESTAMP;
-    """
-    acertos_init = 1 if acertou else 0
-    erros_init = 0 if acertou else 1
-    db.executar_escrita(sql, (idioma, categoria, palavra_id, acertos_init, erros_init), timeout=3.0)
+    if acertou:
+        sql = """
+            INSERT INTO progresso_idiomas (idioma, categoria, palavra_id, acertos, erros, ultima_pratica)
+            VALUES (?, ?, ?, 1, 0, CURRENT_TIMESTAMP)
+            ON CONFLICT(idioma, categoria, palavra_id) DO UPDATE SET
+                acertos = acertos + 1,
+                ultima_pratica = CURRENT_TIMESTAMP;
+        """
+    else:
+        sql = """
+            INSERT INTO progresso_idiomas (idioma, categoria, palavra_id, acertos, erros, ultima_pratica)
+            VALUES (?, ?, ?, 0, 1, CURRENT_TIMESTAMP)
+            ON CONFLICT(idioma, categoria, palavra_id) DO UPDATE SET
+                erros = erros + 1,
+                ultima_pratica = CURRENT_TIMESTAMP;
+        """
+    db.executar_escrita(sql, (idioma, categoria, palavra_id), timeout=3.0)
 
 
 def obter_resumo_progresso_idiomas() -> dict:
@@ -907,11 +913,15 @@ def cumprir_missao_rotina(missao_id: int, data_dia: Optional[str] = None) -> Dic
 # ==============================================================================
 
 def salvar_desenho_arte(imagem_base64: str, titulo: str = "Desenho Lousa Neon") -> Dict[str, Any]:
-    """Salva um desenho feito pelo Campeão no banco de dados e adiciona à linha do tempo."""
+    """Salva um desenho feito pelo Campeão no banco de dados com validação de formato e tamanho."""
     import datetime
+    import re
+    raw_img = str(imagem_base64 or "").strip()
+    if len(raw_img) > 5 * 1024 * 1024 or not re.match(r"^data:image/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=\r\n]+$", raw_img, re.IGNORECASE):
+        return {"sucesso": False, "erro": "Formato ou tamanho de desenho inválido."}
     dia = datetime.date.today().isoformat()
     hora = datetime.datetime.now().strftime("%H:%M")
-    tit = (titulo or "Desenho do Campeão").strip()
+    tit = (titulo or "Desenho do Campeão").strip()[:120]
 
     sql = """
         INSERT INTO galeria_arte (titulo, imagem_base64, data_dia, hora)

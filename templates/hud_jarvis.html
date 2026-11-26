@@ -21024,13 +21024,21 @@
     // =========================================================================
     async function liberarKioskEmergenciaPais() {
       const senha = prompt('🔐 Digite o PIN dos pais para liberar a área de trabalho do Linux (Kiosk Bypass):');
-      if (senha === '56' || senha === '1234' || (appState.config && senha === appState.config.admin_password)) {
+      if (senha === null) return;
+      try {
+        const resPin = await fetch('/api/admin/pin/verificar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ pin: senha.trim() })
+        });
+        if (!resPin.ok) {
+          alert('❌ PIN incorreto!');
+          return;
+        }
         showToast('🔓 Liberando desktop antiX Linux...');
-        try {
-          await fetch('/manutencao', { method: 'POST' });
-        } catch (e) {}
-      } else if (senha !== null) {
-        alert('❌ Senha incorreta!');
+        await fetch('/manutencao', { method: 'POST' });
+      } catch (e) {
+        alert('❌ Erro ao validar PIN no servidor.');
       }
     }
 

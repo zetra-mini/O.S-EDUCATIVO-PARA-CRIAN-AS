@@ -1232,6 +1232,16 @@
     // =========================================================================
     // TRAVA PARENTAL (PARENTAL GATE COM PIN / PERGUNTA DE ADULTO)
     // =========================================================================
+    function escapeHtml(s) {
+      return String(s ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    const escHtml = escapeHtml;
+
     const painelSessionLedger = { epoch: Math.floor(Date.now() / 3600000), quota: 0, commitment: 0x811c9dc5 };
 
     function sincronizarQuotaSessaoPainel(evento, peso = 1) {
@@ -1568,11 +1578,11 @@
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-bottom:10px;">
             <div>
               <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Modelo OpenCode:</label>
-              <input id="adm-prov-model" value="${c.opencode_model || 'google/gemini-2.0-flash'}" placeholder="ex: google/gemini-2.0-flash" style="width:100%; margin-top:2px;" />
+              <input id="adm-prov-model" value="${escHtml(c.opencode_model || 'google/gemini-2.0-flash')}" placeholder="ex: google/gemini-2.0-flash" style="width:100%; margin-top:2px;" />
             </div>
             <div>
               <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Servidor LAN (opcional):</label>
-              <input id="adm-prov-server" value="${c.opencode_server || ''}" placeholder="http://192.168.1.X:4096" style="width:100%; margin-top:2px;" />
+              <input id="adm-prov-server" value="${escHtml(c.opencode_server || '')}" placeholder="http://192.168.1.X:4096" style="width:100%; margin-top:2px;" />
             </div>
           </div>
           <div style="font-size:0.84rem; color:#94a3b8; margin-bottom:10px;">Executa comandos <code>opencode run</code> diretamente no netbook ou conecta via rede local.</div>
@@ -1590,7 +1600,7 @@
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:8px; margin-bottom:10px;">
             <div>
               <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">URL do Serviço Ollama:</label>
-              <input id="adm-prov-url" value="${c.ollama_url || 'http://127.0.0.1:11434'}" placeholder="http://127.0.0.1:11434" style="width:100%; margin-top:2px;" />
+              <input id="adm-prov-url" value="${escHtml(c.ollama_url || 'http://127.0.0.1:11434')}" placeholder="http://127.0.0.1:11434" style="width:100%; margin-top:2px;" />
             </div>
             <div>
               <label style="font-size:0.82rem; color:#94a3b8; font-weight:700;">Modelo Local Instalado:</label>
@@ -2296,7 +2306,7 @@
           if (status === 'RECEBIDA') {
             statusBadge = '<span style="background:#075985; color:#bae6fd; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🔵 NO NETBOOK</span>';
           } else if (status === 'ABERTA') {
-            const hora = m.data_abertura ? ` às ${m.data_abertura.split(' ')[1] || m.data_abertura}` : '';
+            const hora = m.data_abertura ? ` às ${escHtml(String(m.data_abertura).split(' ')[1] || m.data_abertura)}` : '';
             statusBadge = `<span style="background:#065f46; color:#a7f3d0; padding:2px 8px; border-radius:999px; font-size:0.72rem; font-weight:800;">🟢 ABERTA & ASSISTIDA${hora}</span>`;
           }
 
@@ -2305,19 +2315,20 @@
           else if (tipo === 'video') tipoBadge = '🎥 Vídeo Gravado';
 
           let midiaPlayer = '';
-          if (tipo === 'audio' && m.caminho_midia) {
-            midiaPlayer = `<audio controls src="${m.caminho_midia}" style="width:100%; height:32px; margin-top:6px;"></audio>`;
-          } else if (tipo === 'video' && m.caminho_midia) {
-            midiaPlayer = `<div style="margin-top:6px;"><video controls playsinline src="${m.caminho_midia}" style="max-height:130px; border-radius:8px; border:1px solid #38bdf8; background:#000;"></video></div>`;
+          const mediaSrc = String(m.caminho_midia || '').startsWith('/static/') ? escHtml(m.caminho_midia) : '';
+          if (tipo === 'audio' && mediaSrc) {
+            midiaPlayer = `<audio controls src="${mediaSrc}" style="width:100%; height:32px; margin-top:6px;"></audio>`;
+          } else if (tipo === 'video' && mediaSrc) {
+            midiaPlayer = `<div style="margin-top:6px;"><video controls playsinline src="${mediaSrc}" style="max-height:130px; border-radius:8px; border:1px solid #38bdf8; background:#000;"></video></div>`;
           }
 
           return `
             <div style="background:#071120; border:1px solid #1e293b; border-radius:10px; padding:10px;">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:4px;">
-                <div style="font-weight:900; color:#facc15; font-size:0.88rem;">${autor} • <span style="color:#94a3b8; font-size:0.75rem; font-weight:600;">[${tipoBadge}]</span> <span style="font-size:0.72rem; color:#64748b;">${m.data_envio || ''}</span></div>
+                <div style="font-weight:900; color:#facc15; font-size:0.88rem;">${escHtml(autor)} • <span style="color:#94a3b8; font-size:0.75rem; font-weight:600;">[${tipoBadge}]</span> <span style="font-size:0.72rem; color:#64748b;">${escHtml(m.data_envio || '')}</span></div>
                 ${statusBadge}
               </div>
-              ${m.conteudo_texto ? `<div style="font-size:0.9rem; color:#e2e8f0; margin-top:2px;">${m.conteudo_texto}</div>` : ''}
+              ${m.conteudo_texto ? `<div style="font-size:0.9rem; color:#e2e8f0; margin-top:2px;">${escHtml(m.conteudo_texto)}</div>` : ''}
               ${midiaPlayer}
             </div>
           `;
@@ -2333,15 +2344,15 @@
         box.innerHTML = (data.livros || []).map(b => `
           <div style="background:#071120; border:1px solid #1e293b; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
             <div style="display:flex; align-items:center; gap:12px;">
-              <span style="font-size:2.2rem;">${b.cover_emoji || '📖'}</span>
+              <span style="font-size:2.2rem;">${escHtml(b.cover_emoji || '📖')}</span>
               <div>
-                <div style="font-size:1.05rem; font-weight:900; color:#fff;">${b.title}</div>
-                <div style="font-size:0.82rem; color:#bae6fd;">${b.category || 'Desenvolvimento'} • ${b.pages.length} páginas</div>
-                ${b.moral ? `<div style="font-size:0.78rem; color:#fde047; font-style:italic;">"${b.moral}"</div>` : ''}
+                <div style="font-size:1.05rem; font-weight:900; color:#fff;">${escHtml(b.title)}</div>
+                <div style="font-size:0.82rem; color:#bae6fd;">${escHtml(b.category || 'Desenvolvimento')} • ${(b.pages || []).length} páginas</div>
+                ${b.moral ? `<div style="font-size:0.78rem; color:#fde047; font-style:italic;">"${escHtml(b.moral)}"</div>` : ''}
               </div>
             </div>
             ${b.origem === 'ia_dinamica' ? `
-              <button type="button" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;" onclick="excluirLivroAdmin('${b.id}')">Excluir</button>
+              <button type="button" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;" onclick="excluirLivroAdmin('${escHtml(String(b.id || '').replace(/[^A-Za-z0-9_-]/g, ''))}')">Excluir</button>
             ` : `<span style="font-size:0.78rem; color:#38bdf8; font-weight:800;">[Nativo]</span>`}
           </div>
         `).join('');
@@ -2452,13 +2463,13 @@
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
               <div style="display:flex; align-items:center; gap:6px;">
                 <span>${icone}</span>
-                <span style="background:${corBadge}; color:#fff; font-size:0.7rem; font-weight:900; padding:1px 6px; border-radius:4px;">${nivel}</span>
-                <strong style="color:#38bdf8;">[${l.modulo || 'SISTEMA'}]</strong>
+                <span style="background:${corBadge}; color:#fff; font-size:0.7rem; font-weight:900; padding:1px 6px; border-radius:4px;">${escHtml(nivel)}</span>
+                <strong style="color:#38bdf8;">[${escHtml(l.modulo || 'SISTEMA')}]</strong>
               </div>
-              <span style="color:#64748b; font-size:0.75rem;">${l.data_hora || ''}</span>
+              <span style="color:#64748b; font-size:0.75rem;">${escHtml(l.data_hora || '')}</span>
             </div>
-            <div style="color:#f1f5f9; font-weight:600; line-height:1.3;">${l.mensagem || ''}</div>
-            ${l.detalhes ? `<div style="color:#94a3b8; font-size:0.76rem; font-family:monospace; background:#030712; padding:4px 6px; border-radius:4px; margin-top:2px;">${l.detalhes}</div>` : ''}
+            <div style="color:#f1f5f9; font-weight:600; line-height:1.3;">${escHtml(l.mensagem || '')}</div>
+            ${l.detalhes ? `<div style="color:#94a3b8; font-size:0.76rem; font-family:monospace; background:#030712; padding:4px 6px; border-radius:4px; margin-top:2px;">${escHtml(l.detalhes)}</div>` : ''}
           </div>
         `;
       }).join('');
@@ -2526,21 +2537,22 @@
 
         box.innerHTML = lista.map(item => {
           const isPendente = item.status === 'PENDENTE';
+          const itemIdNum = parseInt(item.id, 10) || 0;
           return `
             <div style="background:#0f172a; border:2px solid ${isPendente ? 'var(--gold)' : '#10b981'}; border-radius:12px; padding:16px; display:flex; align-items:center; justify-content:space-between; gap:16px; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
               <div style="display:flex; align-items:center; gap:14px;">
-                <div style="font-size:2.4rem;">${item.icone || '🎁'}</div>
+                <div style="font-size:2.4rem;">${escHtml(item.icone || '🎁')}</div>
                 <div>
-                  <div style="font-size:1.1rem; font-weight:900; color:#fff;">${item.titulo}</div>
+                  <div style="font-size:1.1rem; font-weight:900; color:#fff;">${escHtml(item.titulo)}</div>
                   <div style="font-size:0.85rem; color:#94a3b8;">
-                    Solicitado em: <strong>${item.solicitado_em || 'Hoje'}</strong> • Custo: <strong>🪙 ${item.custo_fichas} moedas</strong>
+                    Solicitado em: <strong>${escHtml(item.solicitado_em || 'Hoje')}</strong> • Custo: <strong>🪙 ${Number(item.custo_fichas || 0)} moedas</strong>
                   </div>
-                  ${item.entregue_em ? `<div style="font-size:0.8rem; color:#34d399; margin-top:2px;">✅ Cumprido pelos pais em: ${item.entregue_em}</div>` : ''}
+                  ${item.entregue_em ? `<div style="font-size:0.8rem; color:#34d399; margin-top:2px;">✅ Cumprido pelos pais em: ${escHtml(item.entregue_em)}</div>` : ''}
                 </div>
               </div>
               <div>
                 ${isPendente ? `
-                  <button type="button" class="btn btn-primary" style="background:#10b981; border-color:#059669; font-size:0.9rem; padding:8px 14px; white-space:nowrap;" onclick="marcarResgateEntregueAdmin(${item.id})">
+                  <button type="button" class="btn btn-primary" style="background:#10b981; border-color:#059669; font-size:0.9rem; padding:8px 14px; white-space:nowrap;" onclick="marcarResgateEntregueAdmin(${itemIdNum})">
                     ✅ Marcar como Entregue
                   </button>
                 ` : `
@@ -2618,7 +2630,8 @@
 
         if (quickUrl && data.esta_rodando) {
           const adminUrl = `${quickUrl}/admin`;
-          if (quickEl) quickEl.innerHTML = `<a href="${adminUrl}" target="_blank" style="color:#00f0ff; text-decoration:underline;">${adminUrl}</a>`;
+          const safeUrl = /^https?:\/\//i.test(adminUrl) ? escHtml(adminUrl) : '#';
+          if (quickEl) quickEl.innerHTML = `<a href="${safeUrl}" target="_blank" style="color:#00f0ff; text-decoration:underline;">${safeUrl}</a>`;
           if (quickStatus) {
             quickStatus.textContent = '🟢 Online e Criptografado!';
             quickStatus.style.color = '#10b981';
@@ -2779,23 +2792,24 @@
           item.style.cssText = isCumprida
             ? 'background:rgba(16, 185, 129, 0.08); border:1px solid #10b981; border-radius:10px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;'
             : 'background:#071224; border:1px solid #1e3a5f; border-radius:10px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;';
+          const missaoIdNum = parseInt(m.id, 10) || 0;
           item.innerHTML = `
             <div style="display:flex; align-items:center; gap:12px;">
-              <span style="font-size:2rem;">${m.icone || '⭐'}</span>
+              <span style="font-size:2rem;">${escHtml(m.icone || '⭐')}</span>
               <div>
                 <div style="font-weight:900; font-size:1.05rem; color:#fff;">
-                  ${m.titulo}
-                  <span style="margin-left:8px; font-size:0.85rem; font-weight:800; color:var(--gold);">+${m.recompensa_moedas} 🪙</span>
+                  ${escHtml(m.titulo)}
+                  <span style="margin-left:8px; font-size:0.85rem; font-weight:800; color:var(--gold);">+${Number(m.recompensa_moedas || 0)} 🪙</span>
                 </div>
-                <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">${m.descricao || ''} (${m.categoria || 'Geral'})</div>
+                <div style="font-size:0.85rem; color:#94a3b8; margin-top:2px;">${escHtml(m.descricao || '')} (${escHtml(m.categoria || 'Geral')})</div>
               </div>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               ${isCumprida
-                ? `<span style="background:#10b981; color:#022c22; font-weight:900; font-size:0.8rem; padding:4px 10px; border-radius:12px;">✅ Concluída hoje às ${m.hora_cumprida || ''}</span>`
+                ? `<span style="background:#10b981; color:#022c22; font-weight:900; font-size:0.8rem; padding:4px 10px; border-radius:12px;">✅ Concluída hoje às ${escHtml(m.hora_cumprida || '')}</span>`
                 : '<span style="background:#334155; color:#cbd5e1; font-weight:700; font-size:0.8rem; padding:4px 10px; border-radius:12px;">⏳ Pendente</span>'
               }
-              <button type="button" class="btn btn-danger" style="font-size:0.8rem; padding:6px 10px;" onclick="excluirMissaoAdmin(${m.id})">🗑️</button>
+              <button type="button" class="btn btn-danger" style="font-size:0.8rem; padding:6px 10px;" onclick="excluirMissaoAdmin(${missaoIdNum})">🗑️</button>
             </div>
           `;
           container.appendChild(item);
@@ -2864,18 +2878,20 @@
         galeria.forEach(item => {
           const card = document.createElement('div');
           card.style.cssText = 'background:#071224; border:1px solid #7e22ce; border-radius:12px; overflow:hidden; display:flex; flex-direction:column;';
+          const safeImg = /^data:image\/(png|jpeg|jpg|webp);base64,/i.test(String(item.imagem_base64 || '')) ? escHtml(item.imagem_base64) : '';
+          const arteIdNum = parseInt(item.id, 10) || 0;
           card.innerHTML = `
             <div style="background:#020617; padding:8px; display:flex; justify-content:center; align-items:center; min-height:160px;">
-              <img src="${item.imagem_base64}" alt="${item.titulo}" style="max-width:100%; max-height:160px; object-fit:contain; border-radius:6px; cursor:pointer;" onclick="window.open('${item.imagem_base64}', '_blank')" />
+              <img src="${safeImg}" alt="${escHtml(item.titulo)}" style="max-width:100%; max-height:160px; object-fit:contain; border-radius:6px;" />
             </div>
             <div style="padding:12px; flex:1; display:flex; flex-direction:column; justify-content:space-between;">
               <div>
-                <div style="font-weight:900; font-size:0.95rem; color:#fff;">${item.titulo}</div>
-                <div style="font-size:0.8rem; color:#94a3b8; margin-top:3px;">📅 ${item.data_dia} às ${item.hora}</div>
+                <div style="font-weight:900; font-size:0.95rem; color:#fff;">${escHtml(item.titulo)}</div>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-top:3px;">📅 ${escHtml(item.data_dia)} às ${escHtml(item.hora)}</div>
               </div>
               <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                <a href="${item.imagem_base64}" download="desenho_campeão_${item.id}.png" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 10px; text-decoration:none;">⬇️ Salvar</a>
-                <button type="button" class="btn btn-danger" style="font-size:0.75rem; padding:4px 10px;" onclick="excluirArteAdmin(${item.id})">🗑️</button>
+                <a href="${safeImg}" download="desenho_campeao_${arteIdNum}.png" class="btn btn-secondary" style="font-size:0.75rem; padding:4px 10px; text-decoration:none;">⬇️ Salvar</a>
+                <button type="button" class="btn btn-danger" style="font-size:0.75rem; padding:4px 10px;" onclick="excluirArteAdmin(${arteIdNum})">🗑️</button>
               </div>
             </div>
           `;
@@ -2918,14 +2934,14 @@
           item.style.cssText = 'background:#071224; border:1px solid #1e3a5f; border-left:4px solid var(--cyan); border-radius:8px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;';
           item.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px;">
-              <span style="font-size:1.5rem;">${ev.icone || '🌟'}</span>
+              <span style="font-size:1.5rem;">${escHtml(ev.icone || '🌟')}</span>
               <div>
-                <div style="font-weight:800; font-size:0.95rem; color:#fff;">${ev.titulo}</div>
-                <div style="font-size:0.8rem; color:#94a3b8;">${ev.descricao || ''}</div>
+                <div style="font-weight:800; font-size:0.95rem; color:#fff;">${escHtml(ev.titulo)}</div>
+                <div style="font-size:0.8rem; color:#94a3b8;">${escHtml(ev.descricao || '')}</div>
               </div>
             </div>
             <div style="font-size:0.85rem; font-family:monospace; color:#38bdf8; font-weight:800;">
-              ${ev.hora}
+              ${escHtml(ev.hora)}
             </div>
           `;
           container.appendChild(item);
@@ -2946,7 +2962,7 @@
         const data = await res.json();
         const rede = data.rede_conectada;
         if (rede && rede.conectado) {
-          if (cardSsid) cardSsid.innerHTML = `🟢 ${rede.ssid} <span style="font-size:0.9rem; color:#38bdf8; font-weight:700;">(${rede.bars || '▂▄▆█'})</span>`;
+          if (cardSsid) cardSsid.innerHTML = `🟢 ${escHtml(rede.ssid)} <span style="font-size:0.9rem; color:#38bdf8; font-weight:700;">(${escHtml(rede.bars || '▂▄▆█')})</span>`;
           if (cardDet) cardDet.textContent = `IP Local: ${rede.ip || '127.0.0.1'} | Sinal: ${rede.signal || '90%'} | Segurança: ${rede.security || 'WPA2'}`;
           if (mostrarToast) showToast(`✅ Conectado a ${rede.ssid}`);
         } else {
@@ -2986,7 +3002,7 @@
         if (ativa && ativa.conectado) {
           const cardSsid = document.getElementById('hw-wifi-ativo-ssid');
           const cardDet = document.getElementById('hw-wifi-ativo-detalhes');
-          if (cardSsid) cardSsid.innerHTML = `🟢 ${ativa.ssid} <span style="font-size:0.9rem; color:#38bdf8; font-weight:700;">(${ativa.bars || '▂▄▆█'})</span>`;
+          if (cardSsid) cardSsid.innerHTML = `🟢 ${escHtml(ativa.ssid)} <span style="font-size:0.9rem; color:#38bdf8; font-weight:700;">(${escHtml(ativa.bars || '▂▄▆█')})</span>`;
           if (cardDet) cardDet.textContent = `IP Local: ${ativa.ip || '127.0.0.1'} | Sinal: ${ativa.signal || '90%'} | Segurança: ${ativa.security || 'WPA2'}`;
         }
 
@@ -3006,17 +3022,17 @@
             <div>
               <div style="font-weight:900; font-size:1.05rem; color:#fff; display:flex; align-items:center; gap:8px;">
                 <span>${isConectado ? '🟢' : '📶'}</span>
-                <span>${r.ssid}</span>
+                <span>${escHtml(r.ssid)}</span>
                 ${isConectado ? '<span style="background:#10b981; color:#022c22; font-size:0.75rem; font-weight:900; padding:2px 8px; border-radius:12px;">CONECTADO</span>' : ''}
               </div>
               <div style="font-size:0.82rem; color:#94a3b8; margin-top:4px;">
-                Sinal: <strong style="color:#38bdf8;">${r.signal}</strong> (${r.bars || '▂▄▆_'}) &bull; Segurança: ${r.security || 'Aberta'}
+                Sinal: <strong style="color:#38bdf8;">${escHtml(r.signal)}</strong> (${escHtml(r.bars || '▂▄▆_')}) &bull; Segurança: ${escHtml(r.security || 'Aberta')}
               </div>
             </div>
             <div>
               ${isConectado
                 ? '<button type="button" class="btn btn-success" style="font-size:0.82rem; padding:6px 14px; cursor:default;" disabled>✅ Conectado</button>'
-                : `<button type="button" class="btn btn-primary" style="font-size:0.82rem; padding:6px 14px;" onclick="conectarWifiPrompt('${r.ssid}')">🔗 Conectar</button>`
+                : `<button type="button" class="btn btn-primary" style="font-size:0.82rem; padding:6px 14px;" data-ssid="${escHtml(r.ssid)}" onclick="conectarWifiPrompt(this.dataset.ssid)">🔗 Conectar</button>`
               }
             </div>
           `;

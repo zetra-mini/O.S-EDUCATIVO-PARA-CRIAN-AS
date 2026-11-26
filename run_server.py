@@ -259,13 +259,51 @@ def validar_credencial_parental_segura(tentativa: str, pin_configurado: str) -> 
     return {"ok": aprovado, "modo": "pergunta_resolvida", "ledger": trilha}
 
 
+_ADMIN_AUTH_ATTEMPTS: Dict[str, list] = {}
+_ADMIN_MAX_ATTEMPTS = 10
+_ADMIN_WINDOW_SECS = 300.0
+
+
+def _obter_ip_cliente(request: Request) -> str:
+    cf_ip = request.headers.get("CF-Connecting-IP")
+    xff = request.headers.get("X-Forwarded-For")
+    if cf_ip:
+        return str(cf_ip).strip()
+    if xff:
+        return str(xff).split(",")[0].strip()
+    client_ip = getattr(request, "client_addr", None)
+    if isinstance(client_ip, (list, tuple)) and len(client_ip) > 0:
+        return str(client_ip[0])
+    return str(client_ip or "unknown")
+
+
+def _possui_headers_proxy_remoto(request: Request) -> bool:
+    return bool(
+        request.headers.get("CF-Connecting-IP")
+        or request.headers.get("X-Forwarded-For")
+        or request.headers.get("Forwarded")
+    )
+
+
+def _verificar_rate_limit_admin(request: Request) -> bool:
+    ip = _obter_ip_cliente(request)
+    agora = time.time()
+    recentes = [t for t in _ADMIN_AUTH_ATTEMPTS.get(ip, []) if agora - t < _ADMIN_WINDOW_SECS]
+    _ADMIN_AUTH_ATTEMPTS[ip] = recentes
+    return len(recentes) < _ADMIN_MAX_ATTEMPTS
+
+
+def _registrar_falha_admin(request: Request) -> None:
+    ip = _obter_ip_cliente(request)
+    _ADMIN_AUTH_ATTEMPTS.setdefault(ip, []).append(time.time())
+
+
 def esta_autenticado_admin(request: Request) -> bool:
     """
     Verifica se a requisição tem permissão administrativa:
-    1. Acesso local no próprio netbook (127.0.0.1 ou ::1 ou localhost) -> liberado
-    2. Cabeçalho 'X-Admin-Pin' ou 'Authorization: Bearer <pin>' -> valida contra parental_pin
-    3. Cookie 'admin_token' -> valida
-    4. Parâmetro query '?pin=...' ou '?token=...' -> valida
+    1. Acesso físico direto no netbook (127.0.0.1 / ::1 / localhost / testclient) SEM cabeçalhos de proxy remoto
+    2. Cabeçalho 'X-Admin-Pin' ou 'Authorization: Bearer <pin>' com proteção anti brute-force
+    3. Cookie HttpOnly 'admin_token' assinado
     """
     client_ip = getattr(request, "client_addr", None)
     if isinstance(client_ip, (list, tuple)) and len(client_ip) > 0:
@@ -273,24 +311,12 @@ def esta_autenticado_admin(request: Request) -> bool:
     elif client_ip:
         client_ip = str(client_ip)
 
-    if client_ip in ("127.0.0.1", "::1", "localhost", "testclient"):
+    if not _possui_headers_proxy_remoto(request) and client_ip in ("127.0.0.1", "::1", "localhost", "testclient"):
         sincronizar_quota_epoca("local_loopback_session", 1)
         return True
 
     pin_salvo = str(brain.config.get("parental_pin", "")).strip()
     token_esperado = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
-
-    x_pin = request.headers.get("X-Admin-Pin") or request.headers.get("X-Admin-Token")
-    if x_pin and validar_credencial_parental_segura(str(x_pin), pin_salvo)["ok"]:
-        return True
-
-    auth = request.headers.get("Authorization", "")
-    if auth.startswith("Bearer "):
-        token = auth.split("Bearer ")[1].strip()
-        if token.startswith("jarvis-"):
-            token = token[7:]
-        if validar_credencial_parental_segura(token, pin_salvo)["ok"]:
-            return True
 
     cookie_str = request.headers.get("Cookie", "")
     for parte in cookie_str.split(";"):
@@ -300,10 +326,25 @@ def esta_autenticado_admin(request: Request) -> bool:
             if hmac.compare_digest(valor_cookie, token_esperado) or validar_credencial_parental_segura(valor_cookie, pin_salvo)["ok"]:
                 return True
 
-    if hasattr(request, "args"):
-        q_pin = request.args.get("pin") or request.args.get("token")
-        if q_pin and validar_credencial_parental_segura(str(q_pin), pin_salvo)["ok"]:
+    if not _verificar_rate_limit_admin(request):
+        return False
+
+    x_pin = request.headers.get("X-Admin-Pin") or request.headers.get("X-Admin-Token")
+    if x_pin:
+        if validar_credencial_parental_segura(str(x_pin), pin_salvo)["ok"]:
             return True
+        _registrar_falha_admin(request)
+        return False
+
+    auth = request.headers.get("Authorization", "")
+    if auth.startswith("Bearer "):
+        token = auth.split("Bearer ")[1].strip()
+        if token.startswith("jarvis-"):
+            token = token[7:]
+        if validar_credencial_parental_segura(token, pin_salvo)["ok"]:
+            return True
+        _registrar_falha_admin(request)
+        return False
 
     return False
 
@@ -408,7 +449,7 @@ def static_files(request: Request, path: str):
     clean_path = urllib.parse.unquote(path)
     base_static = os.path.abspath(STATIC_DIR)
     full_path = os.path.abspath(os.path.join(base_static, clean_path))
-    if not full_path.startswith(base_static):
+    if os.path.commonpath([base_static, full_path]) != base_static:
         return Response("Acesso negado: fora do diretório permitido", status_code=403)
 
     if not os.path.exists(full_path) or not os.path.isfile(full_path):
@@ -858,6 +899,8 @@ def api_mensagens_marcar_aberta(request: Request):
 @app.route("/api/mensagens/enviar", methods=["POST"])
 @app.route("/api/admin/mensagem/enviar", methods=["POST"])
 def api_admin_mensagem_enviar(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"sucesso": False, "erro": "Acesso não autorizado."}, status_code=401)
     data = request.json or {}
     remetente = data.get("remetente") or data.get("autor", "Papai")
     tipo = data.get("tipo", "texto")
@@ -882,6 +925,8 @@ def api_admin_mensagem_enviar(request: Request):
 @app.route("/api/mensagens/historico", methods=["GET"])
 @app.route("/api/admin/mensagens/status", methods=["GET"])
 def api_admin_mensagens_status(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     msgs = messages_mgr.listar_status_pais()
     formatadas = []
     for m in msgs:
@@ -894,6 +939,8 @@ def api_admin_mensagens_status(request: Request):
 
 @app.route("/api/admin/sos", methods=["POST"])
 def api_admin_sos(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"sucesso": False, "erro": "Acesso não autorizado."}, status_code=401)
     data = request.json or {}
     acao = data.get("acao", "ajuda_brinquedos")
     REMOTE_STATE["sos_action"] = acao
@@ -903,6 +950,8 @@ def api_admin_sos(request: Request):
 @app.route("/api/admin/sistema/atualizar", methods=["POST"])
 def api_admin_sistema_atualizar(request: Request):
     """Dispara a atualização desacoplada do GitHub via script sem travar o HTTP."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     script_sh = os.path.join(BASE_DIR, "atualizar_sistema.sh")
     if os.path.exists(script_sh):
         try:
@@ -946,7 +995,7 @@ def executar_diagnostico_completo() -> Dict[str, Any]:
         row_tabs = db.consultar_um("SELECT count(*) as qtd FROM sqlite_master WHERE type='table';")
         diag["sqlite"]["tabelas"] = row_tabs["qtd"] if row_tabs else 0
     except Exception as e:
-        diag["sqlite"]["status"] = f"ERRO: {e}"
+        diag["sqlite"]["status"] = "ERRO_INTERNO"
         registrar_log("ERRO", "diagnostico", f"Erro no teste SQLite: {e}")
 
     # Checa Memória RAM
@@ -977,6 +1026,8 @@ def executar_diagnostico_completo() -> Dict[str, Any]:
 @app.route("/api/logs", methods=["GET"])
 @app.route("/api/admin/logs", methods=["GET"])
 def api_admin_logs(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"logs": [], "total": 0, "erro": "Acesso não autorizado."}, status_code=401)
     try:
         limite = int(request.args.get("limite", 100))
         nivel = request.args.get("nivel", None)
@@ -985,23 +1036,29 @@ def api_admin_logs(request: Request):
         return json_response({"logs": logs, "total": len(logs)})
     except Exception as e:
         registrar_log("ERRO", "admin_logs", f"Falha ao carregar logs: {e}")
-        return json_response({"logs": [], "total": 0, "erro": str(e)})
+        return json_response({"logs": [], "total": 0, "erro": "Erro interno ao consultar logs."}, status_code=500)
 
 
 @app.route("/api/admin/logs/limpar", methods=["POST"])
 def api_admin_logs_limpar(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"sucesso": False, "erro": "Acesso não autorizado."}, status_code=401)
     ok = limpar_logs()
     return json_response({"sucesso": ok, "mensagem": "Logs do sistema limpos com sucesso!" if ok else "Falha ao limpar logs."})
 
 
 @app.route("/api/admin/mensagens/limpar", methods=["POST"])
 def api_admin_mensagens_limpar(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"sucesso": False, "erro": "Acesso não autorizado."}, status_code=401)
     ok = limpar_mensagens_familia()
     return json_response({"sucesso": ok, "mensagem": "Histórico de recados da família limpo com sucesso!" if ok else "Falha ao limpar recados."})
 
 
 @app.route("/api/admin/historico/limpar_tudo", methods=["POST"])
 def api_admin_historico_limpar_tudo(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"sucesso": False, "erro": "Acesso não autorizado."}, status_code=401)
     data = request.json or {}
     resetar_moedas = bool(data.get("resetar_saldo", False))
     ok = limpar_historico_completo(resetar_saldo_moedas=resetar_moedas)
@@ -1010,6 +1067,8 @@ def api_admin_historico_limpar_tudo(request: Request):
 
 @app.route("/api/admin/diagnostico", methods=["GET"])
 def api_admin_diagnostico(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     return json_response(executar_diagnostico_completo())
 
 
@@ -1177,6 +1236,8 @@ def api_tts(request: Request):
 
 @app.route("/api/provider/test", methods=["POST"])
 def api_provider_test(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     data = request.json or {}
     provider = data.get("provider", "gemini")
     key = data.get("api_key", "").strip()
@@ -1211,6 +1272,8 @@ def api_provider_test(request: Request):
 
 @app.route("/api/config", methods=["POST"])
 def api_config(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     try:
         data = request.json or {}
     except Exception:
@@ -1277,7 +1340,13 @@ def api_config(request: Request):
 
     brain.save_config()
     gc.collect()
-    cfg_resp = dict(brain.config)
+    pin_cfg = str(brain.config.get("parental_pin", "")).strip()
+    cfg_resp = {
+        k: v
+        for k, v in brain.config.items()
+        if k not in ("gemini_api_key", "openai_api_key", "groq_api_key", "picovoice_access_key", "parental_pin")
+    }
+    cfg_resp["has_custom_pin"] = bool(pin_cfg and pin_cfg != "1234")
     cfg_resp["has_gemini_key"] = bool(brain.get_effective_gemini_key())
     cfg_resp["has_openai_key"] = bool(brain.get_effective_openai_key())
     cfg_resp["has_groq_key"] = bool(brain.get_effective_groq_key())
@@ -1349,6 +1418,8 @@ def api_media_tick(request: Request):
 
 @app.route("/api/media/bonus", methods=["POST"])
 def api_media_bonus(request: Request):
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     data = request.json or {}
     mins = int(data.get("minutes", 15))
     novo_bonus = media_mgr.grant_bonus_minutes(mins)
@@ -1359,6 +1430,8 @@ def api_media_bonus(request: Request):
 @app.route("/api/admin/media/zerar", methods=["POST"])
 def api_admin_media_zerar(request: Request):
     """Zera e trava todo o tempo de cinema liberado imediatamente."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     res = media_mgr.revoke_all_media_time()
     return json_response(res)
 
@@ -1450,18 +1523,34 @@ def api_pin_status(request: Request):
 @app.route("/api/admin/pin/verificar", methods=["POST"])
 @app.route("/api/parental/verify-pin", methods=["POST"])
 def api_pin_verificar(request: Request):
-    """Valida o PIN dos pais ou resposta da pergunta matemática infantil."""
+    """Valida o PIN dos pais ou resposta da pergunta matemática infantil com proteção anti brute-force e cookie HttpOnly."""
+    if not _verificar_rate_limit_admin(request):
+        return json_response({"ok": False, "erro": "Muitas tentativas. Aguarde alguns minutos."}, status_code=429)
+
     data = request.json or {}
     tentativa = str(data.get("pin", "")).strip()
     pin_salvo = str(brain.config.get("parental_pin", "")).strip()
     veredito = validar_credencial_parental_segura(tentativa, pin_salvo)
 
     if veredito["ok"]:
+        token_cookie = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
         payload_ok: Dict[str, Any] = {"ok": True, "ledger_epoch": SESSION_LEDGER_STATE["epoch"]}
         if veredito["modo"] == "pergunta_resolvida":
             payload_ok["parental_gate"] = "pergunta_resolvida"
-        return json_response(payload_ok)
+        resp = Response(
+            body=json.dumps(payload_ok, ensure_ascii=False),
+            status_code=200,
+            headers={
+                "Content-Type": "application/json; charset=utf-8",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
+        resp.set_cookie("admin_token", token_cookie, path="/", max_age=60 * 60 * 24 * 30, http_only=True)
+        if isinstance(resp.headers.get("Set-Cookie"), list) and resp.headers["Set-Cookie"]:
+            resp.headers["Set-Cookie"][0] += "; SameSite=Lax"
+        return resp
 
+    _registrar_falha_admin(request)
     msg_erro = "PIN incorreto!" if veredito["modo"] == "pin_exclusivo" else "Resposta incorreta. Tente novamente!"
     return json_response({"ok": False, "erro": msg_erro}, status_code=401)
 
@@ -1469,7 +1558,9 @@ def api_pin_verificar(request: Request):
 @app.route("/api/admin/pin/definir", methods=["POST"])
 @app.route("/api/parental/change-pin", methods=["POST"])
 def api_pin_definir(request: Request):
-    """Permite aos pais definir ou trocar o PIN de segurança."""
+    """Permite aos pais autenticados definir ou trocar o PIN de segurança."""
+    if not esta_autenticado_admin(request):
+        return json_response({"ok": False, "erro": "Acesso não autorizado."}, status_code=401)
     data = request.json or {}
     novo_pin = str(data.get("pin", "")).strip()
     if len(novo_pin) >= 4 and novo_pin.isdigit():
@@ -1505,7 +1596,10 @@ def api_estatisticas_fala(request: Request):
 
 @app.route("/api/admin/login", methods=["POST"])
 def api_admin_login(request: Request):
-    """Autentica o acesso dos pais remotamente via PIN ou Pergunta de Adulto."""
+    """Autentica o acesso dos pais remotamente via PIN ou Pergunta de Adulto com cookie HttpOnly e rate-limit."""
+    if not _verificar_rate_limit_admin(request):
+        return json_response({"ok": False, "erro": "Muitas tentativas de login. Aguarde alguns minutos."}, status_code=429)
+
     data = request.json or {}
     tentativa = str(data.get("pin", "")).strip()
     pin_salvo = str(brain.config.get("parental_pin", "")).strip()
@@ -1513,14 +1607,19 @@ def api_admin_login(request: Request):
 
     if veredito["ok"]:
         token_cookie = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
-        return Response(
-            body=json.dumps({"ok": True, "token": token_cookie, "mensagem": "Autenticado com sucesso!"}),
+        resp = Response(
+            body=json.dumps({"ok": True, "mensagem": "Autenticado com sucesso!"}, ensure_ascii=False),
             status_code=200,
             headers={
                 "Content-Type": "application/json; charset=utf-8",
-                "Set-Cookie": f"admin_token={token_cookie}; Path=/; HttpOnly; SameSite=Lax",
+                "X-Content-Type-Options": "nosniff",
             },
         )
+        resp.set_cookie("admin_token", token_cookie, path="/", max_age=60 * 60 * 24 * 30, http_only=True)
+        if isinstance(resp.headers.get("Set-Cookie"), list) and resp.headers["Set-Cookie"]:
+            resp.headers["Set-Cookie"][0] += "; SameSite=Lax"
+        return resp
+    _registrar_falha_admin(request)
     return json_response({"ok": False, "erro": "PIN de acesso incorreto."}, status_code=401)
 
 
@@ -1758,7 +1857,8 @@ def api_ia_classificar_desenho(request: Request):
         resultado = edge_engine.classificar_desenho_base64(imagem)
         return json_response(resultado)
     except Exception as e:
-        return json_response({"ok": False, "erro": str(e)}, status_code=500)
+        registrar_log("ERRO", "ia_edge", f"Erro ao classificar desenho: {e}")
+        return json_response({"ok": False, "erro": "Não foi possível classificar o desenho agora."}, status_code=500)
 
 
 @app.route("/api/ia/status", methods=["GET"])
@@ -1768,7 +1868,8 @@ def api_ia_status(request: Request):
         from ai_edge_engine import edge_engine
         return json_response(edge_engine.obter_status())
     except Exception as e:
-        return json_response({"ok": False, "erro": str(e)}, status_code=500)
+        registrar_log("ERRO", "ia_edge", f"Erro ao consultar status da IA local: {e}")
+        return json_response({"ok": False, "erro": "Erro interno ao consultar motor local."}, status_code=500)
 
 
 @app.route("/api/admin/arte", methods=["GET"])

@@ -125,13 +125,35 @@ class FamilyMessagesManager:
         if missing_padding:
             b64_data += "=" * (4 - missing_padding)
 
-        filename = f"recado_{int(time.time())}_{uuid.uuid4().hex[:6]}.{ext}"
-        filepath = os.path.join(UPLOADS_DIR, filename)
+        max_bytes = 20 * 1024 * 1024
+        if len(b64_data) > int(max_bytes * 1.4):
+            print("Aviso: Mídia excede o limite de segurança de 20MB.")
+            return (tipo, "")
+
+        filename = os.path.basename(f"recado_{int(time.time())}_{uuid.uuid4().hex[:6]}.{ext}")
+        filepath = os.path.abspath(os.path.join(UPLOADS_DIR, filename))
+        base_uploads = os.path.abspath(UPLOADS_DIR)
+        if os.path.commonpath([base_uploads, filepath]) != base_uploads:
+            return (tipo, "")
 
         try:
-            file_bytes = base64.b64decode(b64_data)
-            if not file_bytes or len(file_bytes) < 100:
-                print("Aviso: Dados de mídia Base64 vazios ou menores que 100 bytes.")
+            file_bytes = base64.b64decode(b64_data, validate=False)
+            if not file_bytes or len(file_bytes) < 12 or len(file_bytes) > max_bytes:
+                print("Aviso: Dados de mídia Base64 vazios ou fora do limite permitido.")
+                return (tipo, "")
+
+            # Validação de assinatura binária real (Magic Bytes) para evitar scripts disfarçados
+            header_bytes = file_bytes[:32]
+            is_valid_media = (
+                header_bytes.startswith(b"\x1a\x45\xdf\xa3")  # WebM / Matroska
+                or (header_bytes[:4] == b"RIFF" and header_bytes[8:12] == b"WAVE")  # WAV
+                or header_bytes.startswith(b"OggS")  # OGG
+                or header_bytes.startswith(b"ID3")  # MP3 com ID3
+                or (len(header_bytes) >= 2 and header_bytes[0] == 0xFF and (header_bytes[1] & 0xE0) == 0xE0)  # Frame MP3/AAC ADTS
+                or (len(header_bytes) >= 12 and header_bytes[4:8] in (b"ftyp", b"moov", b"mdat", b"wide", b"free"))  # MP4/MOV/M4A
+            )
+            if not is_valid_media:
+                print(f"Aviso: Assinatura binária (magic bytes) inválida para mídia '{ext}'.")
                 return (tipo, "")
 
             with open(filepath, "wb") as f:
@@ -233,12 +255,14 @@ class FamilyMessagesManager:
 
     def listar_status_pais(self, limite: int = 15) -> List[Dict[str, Any]]:
         """Retorna histórico de recados para visualização dos pais no smartphone."""
+        lim_seguro = max(1, min(int(limite or 15), 100))
         return self.db.consultar_todos(
-            f"""
+            """
             SELECT id, remetente, tipo, conteudo_texto, caminho_midia, status, data_envio, data_abertura
             FROM mensagens_familia
-            ORDER BY id DESC LIMIT {limite};
-            """
+            ORDER BY id DESC LIMIT ?;
+            """,
+            (lim_seguro,),
         )
 
 
