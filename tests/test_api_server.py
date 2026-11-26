@@ -40,6 +40,30 @@ class TestApiServer(unittest.TestCase):
             await self.client.post('/api/config', body=json.dumps({"active_provider": "ollama", "mode": "ollama"}), headers={'Content-Type': 'application/json'})
         asyncio.run(run())
 
+    def test_api_config_saves_gemini_key_cleanly(self):
+        async def run():
+            chave_anterior = brain.config.get("gemini_api_key", "")
+            prov_anterior = brain.config.get("active_provider", "ollama")
+            try:
+                payload = json.dumps({
+                    "active_provider": "gemini",
+                    "mode": "gemini",
+                    "gemini_api_key": "  AIzaSyTestKey12345  ",
+                })
+                res = await self.client.post('/api/config', body=payload, headers={'Content-Type': 'application/json'})
+                self.assertEqual(res.status_code, 200)
+                data = res.json
+                self.assertTrue(data.get("ok"))
+                self.assertEqual(data.get("config", {}).get("active_provider"), "gemini")
+                self.assertTrue(data.get("config", {}).get("has_gemini_key"))
+                self.assertEqual(brain.get_effective_gemini_key(), "AIzaSyTestKey12345")
+            finally:
+                brain.config["gemini_api_key"] = chave_anterior
+                brain.config["active_provider"] = prov_anterior
+                brain.config["mode"] = prov_anterior
+                brain.save_config()
+        asyncio.run(run())
+
     def test_parental_pin_verification(self):
         async def run():
             # Teste de verificação com PIN de contingência padrão "1234" ou "56"

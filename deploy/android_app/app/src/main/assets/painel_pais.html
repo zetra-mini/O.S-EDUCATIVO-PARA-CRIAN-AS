@@ -1720,7 +1720,11 @@
         });
         const data = await res.json();
         if (data.ok) {
-          adminConfig = data.config || adminConfig;
+          adminConfig = Object.assign({}, adminConfig, data.config || {});
+          if (keyInp && keyInp.value.trim()) {
+            keyInp.value = '';
+            keyInp.placeholder = '•••••••••••••••• (Chave salva no sistema — cole outra para trocar)';
+          }
           sBox.style.background = '#065f46';
           sBox.innerHTML = `✅ Configurações de <strong>${NOMES_PROVEDORES_AI[currentAdminProvider] || currentAdminProvider}</strong> salvas e ativadas com sucesso!`;
           showToast('✅ Configurações salvas e aplicadas com sucesso!');

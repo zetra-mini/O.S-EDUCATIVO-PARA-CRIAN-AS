@@ -1211,7 +1211,18 @@ def api_provider_test(request: Request):
 
 @app.route("/api/config", methods=["POST"])
 def api_config(request: Request):
-    data = request.json or {}
+    try:
+        data = request.json or {}
+    except Exception:
+        data = {}
+    if not data and getattr(request, "body", None):
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except Exception:
+            data = {}
+    if not isinstance(data, dict):
+        return json_response({"ok": False, "erro": "JSON inválido enviado ao servidor."}, status_code=400)
+
     for key in (
         "child_name",
         "active_provider",
@@ -1257,16 +1268,20 @@ def api_config(request: Request):
         brain.config.get("geo_pais", "Brasil")
     )
 
-    if "gemini_api_key" in data and data["gemini_api_key"].strip():
-        brain.config["gemini_api_key"] = data["gemini_api_key"].strip()
-    if "openai_api_key" in data and data["openai_api_key"].strip():
-        brain.config["openai_api_key"] = data["openai_api_key"].strip()
-    if "groq_api_key" in data and data["groq_api_key"].strip():
-        brain.config["groq_api_key"] = data["groq_api_key"].strip()
+    if "gemini_api_key" in data and str(data["gemini_api_key"]).strip():
+        brain.config["gemini_api_key"] = str(data["gemini_api_key"]).strip()
+    if "openai_api_key" in data and str(data["openai_api_key"]).strip():
+        brain.config["openai_api_key"] = str(data["openai_api_key"]).strip()
+    if "groq_api_key" in data and str(data["groq_api_key"]).strip():
+        brain.config["groq_api_key"] = str(data["groq_api_key"]).strip()
 
     brain.save_config()
     gc.collect()
-    return json_response({"ok": True, "config": brain.config})
+    cfg_resp = dict(brain.config)
+    cfg_resp["has_gemini_key"] = bool(brain.get_effective_gemini_key())
+    cfg_resp["has_openai_key"] = bool(brain.get_effective_openai_key())
+    cfg_resp["has_groq_key"] = bool(brain.get_effective_groq_key())
+    return json_response({"ok": True, "config": cfg_resp})
 
 
 # ==============================================================================

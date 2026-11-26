@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1110,6 +1111,56 @@ class JarvisBrain:
             pass
         return ""
 
+    def _call_gemini_rest(self, user_input: str, api_key: str, max_tokens: int = 220) -> tuple[str, str]:
+        """Fallback 100% padrão (urllib) para API oficial Gemini REST (funciona sem google-genai no Atom 32-bit)."""
+        pref = str(self.config.get("gemini_model", "") or "").strip()
+        modelos = []
+        for m in (pref, "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"):
+            if m and m not in modelos:
+                modelos.append(m)
+
+        payload_obj = {
+            "system_instruction": {"parts": [{"text": self._child_system_instruction()}]},
+            "contents": [{"role": "user", "parts": [{"text": user_input}]}],
+            "generationConfig": {"maxOutputTokens": max_tokens, "temperature": 0.6},
+        }
+        payload = json.dumps(payload_obj).encode("utf-8")
+        ultimo_erro = ""
+
+        for modelo in modelos:
+            endpoint = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{urllib.parse.quote(modelo, safe='')}:generateContent?key={urllib.parse.quote(api_key, safe='')}"
+            )
+            try:
+                req = urllib.request.Request(
+                    endpoint,
+                    data=payload,
+                    headers={"Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=12) as res:
+                    data = json.loads(res.read().decode("utf-8"))
+                    cands = data.get("candidates") or []
+                    if cands:
+                        parts = (cands[0].get("content") or {}).get("parts") or []
+                        texto = " ".join(str(p.get("text", "")) for p in parts if isinstance(p, dict)).strip()
+                        limpo = self._clean_llm_reply(texto)
+                        if limpo:
+                            return limpo, ""
+            except urllib.error.HTTPError as http_err:
+                try:
+                    err_body = http_err.read().decode("utf-8", errors="ignore")
+                    ultimo_erro = f"HTTP {http_err.code}: {err_body[:140]}"
+                except Exception:
+                    ultimo_erro = f"HTTP {http_err.code}"
+                # Em erro explícito de chave inválida (400/401/403), interrompe cedo
+                if http_err.code in (401, 403):
+                    break
+            except Exception as exc:
+                ultimo_erro = str(exc)[:140]
+        return "", ultimo_erro
+
     def _call_gemini_interactions(self, user_input: str, override_key: str = "") -> str:
         api_key = override_key.strip() or self.get_effective_gemini_key()
         if not api_key:
@@ -1118,32 +1169,45 @@ class JarvisBrain:
             from google import genai
 
             client = genai.Client(api_key=api_key)
-            model_name = self.config.get("gemini_model", "gemini-3.8-flash") or "gemini-3.8-flash"
-            if any(old in model_name for old in ("1.5", "2.0", "2.5")):
-                model_name = "gemini-3.8-flash"
+            model_name = self.config.get("gemini_model", "gemini-2.5-flash") or "gemini-2.5-flash"
 
-            kwargs = {
-                "model": model_name,
-                "system_instruction": self._child_system_instruction(),
-                "input": user_input,
-                "generation_config": {"max_output_tokens": 220},
-            }
-            if self.last_gemini_interaction_id and not override_key:
-                kwargs["previous_interaction_id"] = self.last_gemini_interaction_id
+            # 1. Tenta SDK Interactions / Generate Content
+            try:
+                if hasattr(client, "interactions"):
+                    kwargs = {
+                        "model": model_name,
+                        "system_instruction": self._child_system_instruction(),
+                        "input": user_input,
+                        "generation_config": {"max_output_tokens": 220},
+                    }
+                    if self.last_gemini_interaction_id and not override_key:
+                        kwargs["previous_interaction_id"] = self.last_gemini_interaction_id
+                    try:
+                        interaction = client.interactions.create(**kwargs)
+                    except Exception:
+                        kwargs.pop("previous_interaction_id", None)
+                        interaction = client.interactions.create(**kwargs)
+                    if not override_key and getattr(interaction, "id", None):
+                        self.last_gemini_interaction_id = interaction.id
+                    reply = self._clean_llm_reply(getattr(interaction, "output_text", "") or "")
+                    if reply:
+                        return reply
+            except Exception:
+                pass
 
             try:
-                interaction = client.interactions.create(**kwargs)
+                resp = client.models.generate_content(model=model_name, contents=user_input)
+                reply = self._clean_llm_reply(getattr(resp, "text", "") or "")
+                if reply:
+                    return reply
             except Exception:
-                kwargs.pop("previous_interaction_id", None)
-                interaction = client.interactions.create(**kwargs)
-
-            if not override_key and getattr(interaction, "id", None):
-                self.last_gemini_interaction_id = interaction.id
-
-            reply = self._clean_llm_reply(getattr(interaction, "output_text", "") or "")
-            return reply
+                pass
         except Exception:
-            return ""
+            pass
+
+        # 2. Fallback REST nativo (zero dependências externas — ideal para antiX Linux 1GB RAM)
+        reply_rest, _ = self._call_gemini_rest(user_input, api_key, max_tokens=220)
+        return reply_rest
 
     def _call_openai(self, user_input: str, override_key: str = "") -> str:
         key = override_key.strip() or self.get_effective_openai_key()
@@ -1284,23 +1348,30 @@ class JarvisBrain:
             key = candidate_key.strip() or self.get_effective_gemini_key()
             if not key:
                 return False, "Cole a chave do Google Gemini (obtida em aistudio.google.com/apikey) para testar."
+            sdk_erro = ""
             try:
                 from google import genai
 
                 client = genai.Client(api_key=key)
-                m = model.strip() or self.config.get("gemini_model", "gemini-3.8-flash")
-                interaction = client.interactions.create(
-                    model=m,
-                    system_instruction=self._child_system_instruction(),
-                    input=test_prompt,
-                    generation_config={"max_output_tokens": 90},
-                )
-                txt = self._clean_llm_reply(getattr(interaction, "output_text", "") or "")
-                if txt:
-                    return True, txt
-                return False, "Conectou ao Gemini, mas não houve texto retornado."
+                m = model.strip() or self.config.get("gemini_model", "gemini-2.5-flash")
+                if hasattr(client, "interactions"):
+                    interaction = client.interactions.create(
+                        model=m,
+                        system_instruction=self._child_system_instruction(),
+                        input=test_prompt,
+                        generation_config={"max_output_tokens": 90},
+                    )
+                    txt = self._clean_llm_reply(getattr(interaction, "output_text", "") or "")
+                    if txt:
+                        return True, txt
             except Exception as exc:
-                return False, f"Erro Gemini: {str(exc)[:130]}"
+                sdk_erro = str(exc)[:100]
+
+            # Fallback automático via REST padrão (funciona mesmo sem o pacote google-genai instalado)
+            txt_rest, rest_erro = self._call_gemini_rest(test_prompt, key, max_tokens=90)
+            if txt_rest:
+                return True, txt_rest
+            return False, f"Erro Gemini: {rest_erro or sdk_erro or 'Verifique sua chave e conexão.'}"
 
         elif p == "openai":
             key = candidate_key.strip() or self.get_effective_openai_key()
