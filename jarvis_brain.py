@@ -10,6 +10,20 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from seguranca_aes import (
+    criptografar_texto_aes256,
+    descriptografar_texto_aes256,
+    esta_criptografado_aes256,
+)
+
+CAMPOS_SENSIVEIS_CONFIG = (
+    "gemini_api_key",
+    "openai_api_key",
+    "groq_api_key",
+    "picovoice_access_key",
+    "parental_pin",
+)
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
 
@@ -65,7 +79,12 @@ class JarvisBrain:
             try:
                 with open(CONFIG_PATH, "r", encoding="utf-8") as f:
                     saved = json.load(f)
-                    self.config.update(saved)
+                    if isinstance(saved, dict):
+                        for campo in CAMPOS_SENSIVEIS_CONFIG:
+                            if campo in saved and esta_criptografado_aes256(saved[campo]):
+                                dec = descriptografar_texto_aes256(saved[campo], aad=f"cfg:{campo}")
+                                saved[campo] = dec
+                        self.config.update(saved)
             except Exception:
                 pass
         else:
@@ -74,8 +93,12 @@ class JarvisBrain:
     def save_config(self):
         tmp_path = f"{CONFIG_PATH}.tmp"
         try:
+            payload = dict(self.config)
+            for campo in CAMPOS_SENSIVEIS_CONFIG:
+                val = str(payload.get(campo, "") or "").strip()
+                payload[campo] = criptografar_texto_aes256(val, aad=f"cfg:{campo}") if val else ""
             with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(self.config, f, ensure_ascii=False, indent=2)
+                json.dump(payload, f, ensure_ascii=False, indent=2)
             os.replace(tmp_path, CONFIG_PATH)
             try:
                 if sys.platform != "win32":

@@ -106,9 +106,15 @@ class TestSecurityJarvis(unittest.TestCase):
                     self.assertNotIn("parental_pin", cfg_resp)
 
                 asyncio.run(run())
+                import seguranca_aes as sa
                 with open(jb.CONFIG_PATH, "r", encoding="utf-8") as f:
                     salvo = json.load(f)
-                self.assertEqual(salvo["gemini_api_key"], "AIzaSySegredoUltraPrivado999")
+                self.assertTrue(sa.esta_criptografado_aes256(salvo["gemini_api_key"]))
+                self.assertNotIn("AIzaSySegredoUltraPrivado999", salvo["gemini_api_key"])
+                self.assertEqual(
+                    sa.descriptografar_texto_aes256(salvo["gemini_api_key"], aad="cfg:gemini_api_key"),
+                    "AIzaSySegredoUltraPrivado999",
+                )
             finally:
                 jb.CONFIG_PATH = orig_cfg_path
                 rs.brain.config.clear()

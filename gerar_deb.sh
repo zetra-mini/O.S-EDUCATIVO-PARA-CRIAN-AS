@@ -68,6 +68,8 @@ rm -rf "${DEB_DIR}/opt/jarvis-kids-os/${DEB_DIR}" \
        "${DEB_DIR}/opt/jarvis-kids-os/config.json" \
        "${DEB_DIR}/opt/jarvis-kids-os/config_nuvem.json" \
        "${DEB_DIR}/opt/jarvis-kids-os/uso_diario.json" \
+       "${DEB_DIR}/opt/jarvis-kids-os/.jarvis_master.key" \
+       "${DEB_DIR}/opt/jarvis-kids-os"/*.aes.key \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.db \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.db-wal \
        "${DEB_DIR}/opt/jarvis-kids-os"/*.db-shm \

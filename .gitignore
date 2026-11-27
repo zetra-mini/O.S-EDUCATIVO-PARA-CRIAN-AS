@@ -4,6 +4,8 @@ __pycache__/
 config.json
 uso_diario.json
 config_nuvem.json
+.jarvis_master.key
+*.aes.key
 .env
 .venv/
 venv/

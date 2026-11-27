@@ -22,6 +22,12 @@ import urllib.parse
 from datetime import datetime
 from typing import Any, Dict
 
+from seguranca_aes import (
+    criptografar_json_aes256,
+    descriptografar_json_aes256,
+    status_criptografia_aes256,
+)
+
 # Assegura suporte a UTF-8 em terminais Windows/Linux
 if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
     try:
@@ -317,12 +323,16 @@ def esta_autenticado_admin(request: Request) -> bool:
 
     pin_salvo = str(brain.config.get("parental_pin", "")).strip()
     token_esperado = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
+    pin_digest = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-pin-bind")[:16]
 
     cookie_str = request.headers.get("Cookie", "")
     for parte in cookie_str.split(";"):
         chave_val = parte.strip()
         if chave_val.startswith("admin_token="):
             valor_cookie = chave_val.split("=", 1)[1].strip()
+            sess = descriptografar_json_aes256(valor_cookie, aad="jarvis-session-aes256")
+            if sess and int(sess.get("exp", 0)) > int(time.time()) and hmac.compare_digest(str(sess.get("p", "")), pin_digest):
+                return True
             if hmac.compare_digest(valor_cookie, token_esperado) or validar_credencial_parental_segura(valor_cookie, pin_salvo)["ok"]:
                 return True
 
@@ -985,6 +995,7 @@ def executar_diagnostico_completo() -> Dict[str, Any]:
         "clima": weather_mgr.obter_clima_atual(),
         "logs_resumo": {"total_erros_recentes": 0, "total_logs": 0},
         "idiomas": obter_resumo_progresso_idiomas(),
+        "criptografia": status_criptografia_aes256(),
     }
     # Checa SQLite
     try:
@@ -1520,10 +1531,18 @@ def api_pin_status(request: Request):
     return json_response({"has_pin": bool(pin), "has_custom_pin": tem_exclusivo})
 
 
+def _emitir_token_sessao_aes256(pin_salvo: str) -> str:
+    pin_digest = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-pin-bind")[:16]
+    return criptografar_json_aes256(
+        {"p": pin_digest, "exp": int(time.time()) + (60 * 60 * 24 * 30)},
+        aad="jarvis-session-aes256",
+    )
+
+
 @app.route("/api/admin/pin/verificar", methods=["POST"])
 @app.route("/api/parental/verify-pin", methods=["POST"])
 def api_pin_verificar(request: Request):
-    """Valida o PIN dos pais ou resposta da pergunta matemática infantil com proteção anti brute-force e cookie HttpOnly."""
+    """Valida o PIN dos pais ou resposta da pergunta matemática infantil com proteção anti brute-force e cookie AES-256."""
     if not _verificar_rate_limit_admin(request):
         return json_response({"ok": False, "erro": "Muitas tentativas. Aguarde alguns minutos."}, status_code=429)
 
@@ -1533,7 +1552,7 @@ def api_pin_verificar(request: Request):
     veredito = validar_credencial_parental_segura(tentativa, pin_salvo)
 
     if veredito["ok"]:
-        token_cookie = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
+        token_cookie = _emitir_token_sessao_aes256(pin_salvo)
         payload_ok: Dict[str, Any] = {"ok": True, "ledger_epoch": SESSION_LEDGER_STATE["epoch"]}
         if veredito["modo"] == "pergunta_resolvida":
             payload_ok["parental_gate"] = "pergunta_resolvida"
@@ -1606,7 +1625,7 @@ def api_admin_login(request: Request):
     veredito = validar_credencial_parental_segura(tentativa, pin_salvo)
 
     if veredito["ok"]:
-        token_cookie = derivar_compromisso_credencial(pin_salvo or "1234", "jarvis-cookie-v3")
+        token_cookie = _emitir_token_sessao_aes256(pin_salvo)
         resp = Response(
             body=json.dumps({"ok": True, "mensagem": "Autenticado com sucesso!"}, ensure_ascii=False),
             status_code=200,

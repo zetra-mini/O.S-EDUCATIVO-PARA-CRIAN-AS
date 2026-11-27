@@ -15,6 +15,7 @@ import shutil
 import subprocess
 from typing import Any, Dict, List, Optional
 from banco_dados import db
+from seguranca_aes import criptografar_texto_aes256, descriptografar_texto_aes256
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOADS_DIR = os.path.join(BASE_DIR, "static", "uploads_recados")
@@ -202,12 +203,14 @@ class FamilyMessagesManager:
                     "erro": f"Nenhum arquivo de {tipo} foi anexado ou gravado. Por favor, grave ou anexe a mídia primeiro.",
                 }
 
+        texto_limpo = (texto or "").strip()
+        texto_protegido = criptografar_texto_aes256(texto_limpo, aad="msg:familia") if texto_limpo else ""
         msg_id = self.db.executar_escrita(
             """
             INSERT INTO mensagens_familia (remetente, tipo, conteudo_texto, caminho_midia, status, data_envio)
             VALUES (?, ?, ?, ?, 'ENVIADA', CURRENT_TIMESTAMP);
             """,
-            (remetente, tipo, (texto or "").strip(), caminho_midia or ""),
+            (remetente, tipo, texto_protegido, caminho_midia or ""),
         )
         return {
             "sucesso": True,
@@ -232,6 +235,7 @@ class FamilyMessagesManager:
         )
         if msg:
             msg_dict = dict(msg)
+            msg_dict["conteudo_texto"] = descriptografar_texto_aes256(msg_dict.get("conteudo_texto", ""), aad="msg:familia")
             if msg_dict["status"] == "ENVIADA":
                 self.db.executar_escrita(
                     "UPDATE mensagens_familia SET status = 'RECEBIDA' WHERE id = ?;",
@@ -254,9 +258,9 @@ class FamilyMessagesManager:
         return {"sucesso": True, "status": "ABERTA"}
 
     def listar_status_pais(self, limite: int = 15) -> List[Dict[str, Any]]:
-        """Retorna histórico de recados para visualização dos pais no smartphone."""
+        """Retorna histórico de recados para visualização dos pais no smartphone (descriptografado em RAM)."""
         lim_seguro = max(1, min(int(limite or 15), 100))
-        return self.db.consultar_todos(
+        linhas = self.db.consultar_todos(
             """
             SELECT id, remetente, tipo, conteudo_texto, caminho_midia, status, data_envio, data_abertura
             FROM mensagens_familia
@@ -264,6 +268,9 @@ class FamilyMessagesManager:
             """,
             (lim_seguro,),
         )
+        for item in linhas:
+            item["conteudo_texto"] = descriptografar_texto_aes256(item.get("conteudo_texto", ""), aad="msg:familia")
+        return linhas
 
 
 # Instância global
